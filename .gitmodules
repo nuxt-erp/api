@@ -1,0 +1,3 @@
+[submodule "packages/Gfernandez/Dear"]
+	path = packages/Gfernandez/Dear
+	url = https://github.com/valor-distributions/integrations.dear.git
