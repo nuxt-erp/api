@@ -9,7 +9,7 @@ class Product extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'name', 'description', 'cost', 'status', 'barcode', 'sales_chanel', 'brand_id', 'category_id', 'supplier_id', 'company_id'
+        'company_id', 'sku', 'name', 'description', 'cost', 'status', 'barcode', 'sales_chanel', 'brand_id', 'category_id', 'supplier_id', 'width', 'length', 'weight', 'height'
     ];
 
     public function getRules($request, $item = null)
@@ -25,8 +25,9 @@ class Product extends Model
         // CREATE
         if (is_null($item))
         {
-            $rules['name'][]        = 'required';
-            $rules['company_id'][]  = 'required';
+            $rules['name'][] = 'required';
+            $rules['sku'][]  = 'required';
+            $rules['sku'][]  = 'unique:products';
         }
 
         return $rules;

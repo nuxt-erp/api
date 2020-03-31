@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
+use Auth;
 
 class ProductRepository extends RepositoryService
 {
@@ -49,6 +50,11 @@ class ProductRepository extends RepositoryService
             ->orWhere('name', 'LIKE', $sku);
         }
 
+        if (!empty($searchCriteria['id'])) {
+            $this->queryBuilder
+            ->where('id', $searchCriteria['id']);
+        }
+
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
             $searchCriteria['query_type'] = 'LIKE';
@@ -65,6 +71,12 @@ class ProductRepository extends RepositoryService
         }
 
         return parent::findBy($searchCriteria);
+    }
+
+    public function store($data)
+    {
+        $data["company_id"] = Auth::user()->company_id;
+        parent::store($data);
     }
 
 }
