@@ -67,7 +67,7 @@ class User extends LoginModel implements ModelInterface
     {
         $admin_role = Role::where('name', self::ADMIN_ROLE)->first();
 
-        $instance = $admin_role ? UsersRoles::create([
+        $instance = $admin_role ? UserRole::create([
             'user_id' => $this->id,
             'role_id' => $admin_role->id
         ]) : null;
@@ -79,7 +79,7 @@ class User extends LoginModel implements ModelInterface
     {
         $user_role = Role::where('name', self::USER_ROLE)->first();
 
-        $instance = $user_role ? UsersRoles::create([
+        $instance = $user_role ? UserRole::create([
             'user_id' => $this->id,
             'role_id' => $user_role->id
         ]) : null;
@@ -108,7 +108,7 @@ class User extends LoginModel implements ModelInterface
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'users_roles')->withTimestamps();
+        return $this->belongsToMany(Role::class, 'user_roles')->withTimestamps();
     }
 
     public function getAuthorizedPhases(){
@@ -122,9 +122,11 @@ class User extends LoginModel implements ModelInterface
         }
         return $phases;
     }
-
+    /*
     public function employee()
     {
         return $this->hasOne(Employee::class);
     }
+    */
+
 }
