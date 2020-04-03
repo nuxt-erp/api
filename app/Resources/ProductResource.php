@@ -13,6 +13,7 @@ class ProductResource extends JsonResource
             'sku'           => $this->sku,
             'name'          => $this->name,
             'company_id'    => $this->company_id,
+            'company_name'  => optional($this->company)->name,
             'description'   => $this->description,
             'cost'          => $this->cost,
             'status'        => $this->status,
@@ -24,12 +25,10 @@ class ProductResource extends JsonResource
             'sales_chanel'  => $this->sales_chanel,
             'brand_id'      => $this->brand_id,
             'brand_name'    => optional($this->brand)->name,
-            'category_id'   => $this->company_id,
+            'category_id'   => $this->category_id,
             'category_name' => optional($this->category)->name,
-            'supplier_id'   => $this->company_id,
+            'supplier_id'   => $this->supplier_id,
             'supplier_name' => optional($this->supplier)->name,
-            'company_id'    => $this->company_id,
-            'company_name'  => optional($this->company)->name,
             'can_be_deleted'=> true
         ];
     }

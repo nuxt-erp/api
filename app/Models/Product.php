@@ -9,7 +9,7 @@ class Product extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'company_id', 'sku', 'name', 'description', 'cost', 'status', 'barcode', 'sales_chanel', 'brand_id', 'category_id', 'supplier_id', 'width', 'length', 'weight', 'height'
+        'company_id', 'sku', 'name', 'description', 'cost', 'status', 'barcode', 'sales_chanel', 'brand_id', 'category_id', 'supplier_id', 'width', 'length', 'weight', 'height', 'price'
     ];
 
     public function getRules($request, $item = null)

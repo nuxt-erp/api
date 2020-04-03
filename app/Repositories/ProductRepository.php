@@ -5,6 +5,7 @@ namespace App\Repositories;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
 use Auth;
+use App\Models\ProductAttribute;
 
 class ProductRepository extends RepositoryService
 {
@@ -77,6 +78,7 @@ class ProductRepository extends RepositoryService
     {
         $data["company_id"] = Auth::user()->company_id;
         parent::store($data);
+        $this->generate($data); // GENERATE PRODUCT FAMILY
     }
 
     public function update($model, array $data)
@@ -85,60 +87,46 @@ class ProductRepository extends RepositoryService
         $this->generate($data); // GENERATE PRODUCT FAMILY
     }
 
-    // GENERATE FAMILY PRODUCT
-    /*
-    attribute_id product_id value
-    1 - size        1        30ml
-    1 - size        1        50ml
-    3 - color       1        white
-    4 - variation   1        salt
-
-    prod 1 30ml white salt
-    prod 1 50 ml white salt
-    */
     public function generate($data)
     {
+        $product_id = $this->model->id;
+        $object     = $data["prod_attributes"];
+        $attrib     = array(array());
+        $row        = 0;
+        $col        = 0;
+        $main       = [];
+        $tot        = 0;
+        $generate   = false;
 
-        $object = $data["prod_attributes"];
-        $attrib = array(array());
-        $row    = 0;
-        $col    = 0;
-        $main   = [];
-        $tot    = 0;
+        // REMOVE ALL TO INSERT AGAIN
+        ProductAttribute::where('product_id', $product_id)->delete();
 
         foreach ($object as $key => $attributes)
         {
-            echo "count geral: " . count($attributes) . "\n";
             $tot = count($attributes);
 
             for ($i=0; $i < $tot; $i++)
             {
                 if (isset($attributes[$i]))
                 {
-                    $get_array = $attributes[$i];
-                    $attrib["id"][$i] = $get_array["id"];
-                    $attrib["value"][$i] = $get_array["value"];
+                    if ($attributes[$i]!=0) {
+                        $get_array          = $attributes[$i];
+                        ProductAttribute::updateOrCreate([
+                            'product_id'    => $product_id,
+                            'attribute_id'  => $get_array["id"],
+                        ],
+                        [
+                            'value' => $get_array["value"]
+                        ]);
+                        // $attrib["id"][$i] = $get_array["id"];
+                        // $attrib["value"][$i] = $get_array["value"];
+                    }
                 }
             }
-
-            // FAMILY DETAILS
-            if (isset($attributes["generate"]))
-            {
-                $generate = $attributes["generate"];
-            }
-
-            if (isset($attributes["family"]))
-            {
-                $family_name  = $attributes["family"];
-            }
-
         }
 
         if ($generate)
         {
-            // LOOP INTO $data, check same attribute_id, if found create combinations with all other attributes
-            print_r($attrib);
-
             $tmp        = $attrib["id"];
             $tmp_value  = $attrib["value"];
             $insert     = [];
@@ -148,26 +136,7 @@ class ProductRepository extends RepositoryService
                     $insert[$i]  = $attrib["id"][$i] . "|" . $tmp_value["value"][$i];
                 }
             }
-
-            /*
-            $result = array(array());
-            foreach ($attrib as $property => $property_values)
-            {
-                $tmp = array();
-                foreach ($result as $result_item)
-                {
-                    foreach ($property_values as $property_value)
-                    {
-                        $tmp[] = array_merge($result_item, array($property => $property_value));
-                    }
-                }
-                $result = $tmp;
-            }
-            */
-
         }
-
-
     }
 
 }
