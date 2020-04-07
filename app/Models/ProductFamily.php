@@ -53,5 +53,15 @@ class ProductFamily extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    public function product()
+    {
+        return $this->hasMany(Product::class, 'family_id', 'id');
+    }
+
 }
 

@@ -18,28 +18,33 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('dashboard', 'DashboardController@index');
     Route::get('shopify_orders', 'ShopifyController@getShopifyOrder');
-
     Route::get('me', 'Admin\UserController@findMe');
 
     // BASIC ADMIN
     Route::group(['prefix' => 'admin'], function () {
         Route::resource('users', 'Admin\UserController');
         Route::resource('roles', 'Admin\RoleController');
-        Route::resource('actions', 'Admin\ActionController');
+        // Route::resource('actions', 'Admin\ActionController');
         Route::resource('employees', 'Admin\EmployeeController');
-        Route::resource('brands', 'Admin\BrandController');
-        Route::resource('attributes', 'Admin\AttributeController');
         Route::resource('locations', 'Admin\LocationController');
-        Route::resource('categories', 'Admin\CategoryController');
-        Route::resource('specifications', 'Admin\SpecificationController');
-        Route::resource('subspecifications', 'Admin\SubSpecificationController');
         Route::resource('countries', 'Admin\CountryController');
         Route::resource('provinces', 'Admin\ProvinceController');
         Route::resource('suppliers', 'Admin\SupplierController');
         Route::resource('parameters', 'Admin\SystemParameterController');
-        Route::resource('products', 'Admin\ProductController');
-        Route::resource('product_attributes', 'Admin\ProductAttributeController');
-        Route::resource('product_specifications', 'Admin\ProductSpecificationController');
     });
+
+      // BASIC ADMIN
+      Route::group(['prefix' => 'inventory'], function () {
+        Route::resource('brands', 'Inventory\BrandController');
+        Route::resource('attributes', 'Inventory\AttributeController');
+        Route::resource('categories', 'Inventory\CategoryController');
+        Route::resource('specifications', 'Inventory\SpecificationController');
+        Route::resource('subspecifications', 'Inventory\SubSpecificationController');
+        Route::resource('products', 'Inventory\ProductController');
+        Route::resource('product_attributes', 'Inventory\ProductAttributeController');
+        Route::resource('product_families', 'Inventory\ProductFamilyController');
+        Route::resource('product_specifications', 'Inventory\ProductSpecificationController');
+    });
+
 
 });
