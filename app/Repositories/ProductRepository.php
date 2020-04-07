@@ -6,6 +6,9 @@ use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
 use Auth;
 use App\Models\ProductAttribute;
+use App\Models\ProductFamily;
+use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class ProductRepository extends RepositoryService
 {
@@ -76,9 +79,39 @@ class ProductRepository extends RepositoryService
 
     public function store($data)
     {
-        $data["company_id"] = Auth::user()->company_id;
-        parent::store($data);
-        $this->createAttribute($data); // SAVE PRODUCT ATTRIBUTES
+        DB::transaction(function () use ($data)
+        {
+            $data["company_id"] = Auth::user()->company_id; // COMPANY ID FROM THE CURRENT USER LOGGED
+            $family_id = null;
+
+            if ($data["generate_family"]) // IT CAMES FROM PRODUCT FAMILY
+            {
+                $family_id = $this->createFamily($data);
+            }
+
+            $data["family_id"] = $family_id;
+            parent::store($data);
+
+            $this->createAttribute($data, $family_id); // SAVE PRODUCT ATTRIBUTES
+        });
+
+    }
+
+    private function createFamily($data)
+    {
+        $new                = new ProductFamily;
+        $new->name          = $data["name"];
+        $new->description   = $data["description"];
+        $new->status        = $data["status"];
+        $new->brand_id      = $data["brand_id"];
+        $new->category_id   = $data["category_id"];
+        $new->supplier_id   = $data["supplier_id"];
+        $new->company_id    = $data["company_id"];
+        $new->sku           = $data["sku"];
+        $new->location_id   = $data["location_id"];
+        $new->launch_date   = $data["launch_date"];
+        $new->save();
+        return $new->id;
     }
 
     public function update($model, array $data)
@@ -87,24 +120,19 @@ class ProductRepository extends RepositoryService
         $this->createAttribute($data); // SAVE PRODUCT ATTRIBUTES
     }
 
-    function get_combinations($arrays) {
-        $result = array(array());
-        foreach ($arrays as $property => $property_values) {
-            $tmp = array();
-            foreach ($result as $result_item) {
-                foreach ($property_values as $property_key => $property_value) {
-                    $tmp[] = $result_item + array($property_key => $property_value);
-                }
-            }
-            $result = $tmp;
-        }
-        return $result;
+    private function saveProductAttribute($product_id, $attribute_id, $value)
+    {
+        ProductAttribute::updateOrCreate([
+            'product_id'    => $product_id,
+            'attribute_id'  => $attribute_id,
+        ],
+        [
+            'value' => $value
+        ]);
     }
 
-
-    public function createAttribute($data)
+    public function createAttribute($data, $family_id = null)
     {
-
         $product_id         = $this->model->id; //SAVE CURRENT PRODUCT ID
         $all_products_id    = [];
         $ids                = $product_id;
@@ -114,6 +142,7 @@ class ProductRepository extends RepositoryService
         $tot                = 0;
         $generate           = $data["generate_family"];
         $sku_family         = $data["sku"];
+        $product_name       = $data["name"];
         $sku_increment      = 1;
         array_push($all_products_id, $product_id);
 
@@ -145,40 +174,25 @@ class ProductRepository extends RepositoryService
                                     // CREATE PRODUCT FAMILY
                                     if ($generate)
                                     {
+                                        $data["sku"] = $sku_family . " - " . $sku_increment;  // NEW SKU
+                                        $sku_increment++; // INCREMENT FOR THE NEXT PRODUCT FAMILY
+                                        $data["family_id"] = $family_id; // SET FAMILY ID FOR THIS PRODUCT
                                         parent::store($data); // CREATE A NEW PRODUCT
                                         $new_product_id = $this->model->id; //GETTING PRODUCT ID CREATED
 
                                         array_push($all_products_id, $new_product_id); // SAVE ALL PRODUCTS CREATED
                                         $ids .= ", " . $new_product_id; //SAVING BY COMMA ALL PRODUCT IDS
 
-                                        ProductAttribute::updateOrCreate([
-                                            'product_id'    => $new_product_id,
-                                            'attribute_id'  => $get_array["id"],
-                                        ],
-                                        [
-                                            'value' => $get_array["value"]
-                                        ]);
+                                        $this->saveProductAttribute($new_product_id, $get_array["id"], $get_array["value"]); // CREATE NEW PRODUCT ATTRIBUTE
                                     }
                                     else
                                     {
-                                        ProductAttribute::updateOrCreate([
-                                            'product_id'    => $product_id,
-                                            'attribute_id'  => $get_array["id"],
-                                        ],
-                                        [
-                                            'value' => $get_array["value"]
-                                        ]);
+                                        $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"]);
                                     }
 
                                 }
                             } else { // CREATING PRODUCT ATTRIBUTE
-                                ProductAttribute::updateOrCreate([
-                                    'product_id'    => $product_id,
-                                    'attribute_id'  => $get_array["id"],
-                                ],
-                                [
-                                    'value' => $get_array["value"]
-                                ]);
+                                $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"]);
                             }
 
                         }
@@ -191,11 +205,8 @@ class ProductRepository extends RepositoryService
         // CREATE PRODUCT FAMILY
         if ($generate)
         {
-            $sku_family = $data["sku"];
-            $sku_increment = 1;
-
             // FIND MAIN PRODUCT (WITH MORE ATTRIBUTES SAVED)
-            $main_prod = \DB::select('SELECT product_id, count(attribute_id) as tot FROM product_attributes WHERE product_id IN (' . $ids .') GROUP BY product_id ORDER BY 2 DESC LIMIT 1');
+            $main_prod = DB::select('SELECT product_id, count(attribute_id) as tot FROM product_attributes WHERE product_id IN (' . $ids .') GROUP BY product_id ORDER BY 2 DESC LIMIT 1');
             if ($main_prod)
             {
                 foreach ($all_products_id as $key => $value) // EACH ALL PRODUCTS CREATED
@@ -205,67 +216,77 @@ class ProductRepository extends RepositoryService
                         // GET THE ATTRIBUTES FROM THE MAIN PRODUCT - WE NEED TO CHECK WHICH ATTRIBUTE THE CHILD NEED INHERANCE FROM PARENT
                         $child = $value;
                         $sQuery = 'SELECT attribute_id, value FROM product_attributes WHERE product_id = ' . $main_prod[0]->product_id . ' and attribute_id NOT IN (SELECT attribute_id FROM product_attributes WHERE product_id = ' . $child . ')';
-                        $get_attributes = \DB::select($sQuery);
+                        $get_attributes = DB::select($sQuery);
 
                         foreach ($get_attributes as $v) // EACH ATTRIBUTE FROM THE PARENT
                         {
                             // CREATE NEW ATTRIBUTE FOR CHILD
-                            ProductAttribute::updateOrCreate([
-                                'product_id'    => $child,
-                                'attribute_id'  => $v->attribute_id,
-                            ],
-                            [
-                                'value' => $v->value
-                            ]);
+                            $this->saveProductAttribute($child, $v->attribute_id, $v->value);
                         }
                     }
                 }
             }
 
             // FIND PRODUCTS WITH SAME ATTRIBUTE BUT DIFF VALUES
-            $main_prod = \DB::select('SELECT product_id, count(attribute_id) as tot FROM product_attributes WHERE product_id IN (' . $ids .') GROUP BY product_id ORDER BY 2 DESC LIMIT 1');
+            $main_prod = DB::select('SELECT product_id, count(attribute_id) as tot FROM product_attributes WHERE product_id IN (' . $ids .') GROUP BY product_id ORDER BY 2 DESC LIMIT 1');
             if ($main_prod)
             {
                 // GET THE ATTRIBUTES FROM THE MAIN PRODUCT
-                $sQuery = 'SELECT attribute_id, value FROM product_attributes WHERE product_id in (' . $ids . ') and value not in (select value from product_attributes where product_id = ' . $main_prod[0]->product_id . ')';
-                $get_attributes = \DB::select($sQuery);
+                $sQuery = 'SELECT attribute_id, value FROM product_attributes WHERE product_id in (' . $ids . ') and value not in (SELECT value FROM product_attributes WHERE product_id = ' . $main_prod[0]->product_id . ')';
+                $get_attributes = DB::select($sQuery);
+
+                $data["sku"]  = $sku_family . " - " . $sku_increment;  // NEW SKU
+                $sku_increment++; // INCREMENT FOR THE NEXT PRODUCT FAMILY
+                $data["family_id"] = $family_id; // SET FAMILY ID FOR THIS PRODUCT
 
                 parent::store($data); // CREATE A NEW PRODUCT
                 $new_product_id = $this->model->id;
 
+                array_push($all_products_id, $new_product_id); // SAVE ALL PRODUCTS CREATED
+                $ids .= ", " . $new_product_id; //SAVING BY COMMA ALL PRODUCT IDS
+
                 foreach ($get_attributes as $v)
                 {
                     // CREATE NEW ATTRIBUTE FOR CHILD
-                    ProductAttribute::updateOrCreate([
-                        'product_id'    => $new_product_id,
-                        'attribute_id'  => $v->attribute_id,
-                    ],
-                    [
-                        'value' => $v->value
-                    ]);
+                    $this->saveProductAttribute($new_product_id, $v->attribute_id, $v->value);
                 }
 
                 // FINAL STEP - FIND MISSING ATTRIBUTES FOR THE NEW PRODUCT CREATED
                 $sQuery = 'SELECT DISTINCT a1.attribute_id, a2.product_id, a1.value
                 FROM product_attributes AS a1
                 CROSS JOIN product_attributes as a2
-                WHERE a1.product_id IN (' . $ids . ') AND a1.attribute_id not in (select attribute_id from product_attributes where product_id = a2.product_id )';
-                $get_attributes = \DB::select($sQuery);
+                WHERE a1.product_id IN (' . $ids . ') AND a1.attribute_id not in (SELECT attribute_id FROM product_attributes WHERE product_id = a2.product_id )';
+                $get_attributes = DB::select($sQuery);
 
                 foreach ($get_attributes as $v)
                 {
                     // CREATE NEW ATTRIBUTE FOR CHILD
-                    ProductAttribute::updateOrCreate([
-                        'product_id'    => $new_product_id,
-                        'attribute_id'  => $v->attribute_id,
-                    ],
-                    [
-                        'value' => $v->value
-                    ]);
+                    $this->saveProductAttribute($new_product_id, $v->attribute_id, $v->value);
+                }
+            }
+
+            // CONCAT PRODUCT NAME WITH ATTRIBUTE VALUE
+            $read            = DB::select('SELECT product_id, attribute_id, value, p.name FROM product_attributes pa INNER JOIN products p ON p.id = pa.product_id WHERE product_id IN (' . $ids .') ORDER BY product_id, attribute_id');
+            $new_name        = "";
+            $product_control = "";
+
+            foreach ($read as $v)
+            {
+                Product::where('id', $v->product_id)->update(['name' => ($new_name=="" ? ($v->name . " - " . $v->value) : ($new_name . " - " . $v->value))]);
+
+                // RESET WHEN CHANGE PRODUCT
+                if ($product_control!="" || $product_control != $v->product_id) {
+                    $new_name = "";
+                    $product_control = $v->product_id;
+                }
+
+                if ($new_name=="") { // CONCAT NAME + ATTRIBUTE VALUE
+                    $new_name = $v->name . " - " . $v->value;
+                } else {
+                    $new_name = $new_name . " - " . $v->value;
                 }
             }
         }
-
 
     }
 

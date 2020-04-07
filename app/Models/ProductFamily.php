@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class ProductFamily extends Model
 {
     public $timestamps = false;
 
     protected $fillable = [
-        'company_id', 'sku', 'name', 'description', 'cost', 'status', 'barcode', 'sales_chanel', 'brand_id', 'category_id', 'supplier_id', 'width', 'length', 'weight', 'height', 'price', 'family_id', 'launch_date'
+        'name', 'description', 'status', 'brand_id', 'category_id', 'supplier_id', 'company_id', 'sku', 'location_id', 'launch_date'
     ];
 
     public function getRules($request, $item = null)
@@ -33,15 +33,6 @@ class Product extends Model
         return $rules;
     }
 
-    /*public function setNameAttribute($value)
-    {
-        // $this->attributes['name'] =
-    }*/
-
-    public function attributes() {
-        return $this->hasMany('App\ProductAttribute');
-    }
-
     public function brand()
     {
         return $this->belongsTo(Brand::class, 'brand_id');
@@ -63,3 +54,4 @@ class Product extends Model
     }
 
 }
+

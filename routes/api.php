@@ -29,6 +29,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('employees', 'Admin\EmployeeController');
         Route::resource('brands', 'Admin\BrandController');
         Route::resource('attributes', 'Admin\AttributeController');
+        Route::resource('locations', 'Admin\LocationController');
         Route::resource('categories', 'Admin\CategoryController');
         Route::resource('specifications', 'Admin\SpecificationController');
         Route::resource('subspecifications', 'Admin\SubSpecificationController');

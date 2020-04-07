@@ -17,6 +17,7 @@ use App\Models\ProductAttribute;
 use App\Models\ProductSpecification;
 use App\Models\Employee;
 use App\Models\Role;
+use App\Models\Location;
 use App\Models\User;
 
 
@@ -33,6 +34,7 @@ use App\Repositories\CategoryRepository;
 use App\Repositories\AttributeRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\BrandRepository;
+use App\Repositories\LocationRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\EmployeeRepository;
 use App\Repositories\ProductRepository;
@@ -52,6 +54,7 @@ use App\Resources\AttributeResource;
 use App\Resources\RoleResource;
 use App\Resources\UserResource;
 use App\Resources\BrandResource;
+use App\Resources\LocationResource;
 use Illuminate\Support\ServiceProvider;
 use App\Resources\EmployeeResource;
 use App\Resources\ProductCategoryResource;
@@ -226,6 +229,7 @@ class RepositoriesServiceProvider extends ServiceProvider
             EmployeeRepository::class,
             ProductRepository::class,
             BrandRepository::class,
+            LocationRepository::class,
             WarehouseRepository::class,
             ProductAvailabilityRepository::class,
             AttributeRepository::class,
