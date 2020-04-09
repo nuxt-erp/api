@@ -7,11 +7,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Auth;
 use App\Models\ProductAttribute;
 use App\Models\ProductFamily;
+use App\Models\ProductFamilyAttribute;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
 class ProductRepository extends RepositoryService
 {
+
+    private $generate = false; // GENERATE PRODUCT FAMILY
 
     public function getList(array $searchCriteria = [])
     {
@@ -84,14 +87,15 @@ class ProductRepository extends RepositoryService
             $data["company_id"] = Auth::user()->company_id; // COMPANY ID FROM THE CURRENT USER LOGGED
             $family_id = null;
 
-            if ($data["generate_family"]) // IT CAMES FROM PRODUCT FAMILY
+            $this->generate = isset($data["generate_family"]) ? $data["generate_family"] : false;
+
+            if ($this->generate == true) // IT CAMES FROM PRODUCT FAMILY
             {
                 $family_id = $this->createFamily($data);
             }
 
             $data["family_id"] = $family_id;
             parent::store($data);
-
             $this->createAttribute($data, $family_id); // SAVE PRODUCT ATTRIBUTES
         });
 
@@ -117,11 +121,12 @@ class ProductRepository extends RepositoryService
     public function update($model, array $data)
     {
         parent::update($model, $data);
-        $this->createAttribute($data); // SAVE PRODUCT ATTRIBUTES
+        $this->createAttribute($data, isset($data["family_id"]) ? $data["family_id"] : null); // SAVE PRODUCT ATTRIBUTES
     }
 
-    private function saveProductAttribute($product_id, $attribute_id, $value)
+    private function saveProductAttribute($product_id, $attribute_id, $value, $family_id)
     {
+        // SAVE ATTRIBUTE BY PRODUCT
         ProductAttribute::updateOrCreate([
             'product_id'    => $product_id,
             'attribute_id'  => $attribute_id,
@@ -129,165 +134,184 @@ class ProductRepository extends RepositoryService
         [
             'value' => $value
         ]);
+
+        if ($this->generate == true)
+        {
+            // SAVE ATTRIBUTES FOR THE FAMILY
+            ProductFamilyAttribute::updateOrCreate(['family_id' => $family_id, 'attribute_id' => $attribute_id, 'value' => $value]);
+        }
     }
 
     public function createAttribute($data, $family_id = null)
     {
-        $product_id         = $this->model->id; //SAVE CURRENT PRODUCT ID
-        $all_products_id    = [];
-        $ids                = $product_id;
-        $object             = $data["prod_attributes"];
-        $attrib             = array(array());
-        $row                = 0;
-        $tot                = 0;
-        $generate           = $data["generate_family"];
-        $sku_family         = $data["sku"];
-        $product_name       = $data["name"];
-        $sku_increment      = 1;
-        array_push($all_products_id, $product_id);
-
-        // REMOVE ALL TO INSERT AGAIN
-        ProductAttribute::where('product_id', $product_id)->delete();
-        $row=0;
-
-        foreach ($object as $attributes) // EACH ATTRIBUTE
+        if (isset($data["prod_attributes"]))
         {
-            $row++;
-            $tot = count($attributes);
+            $product_id         = $this->model->id; //SAVE CURRENT PRODUCT ID
+            $all_products_id    = [];
+            $ids                = $product_id;
+            $object             = $data["prod_attributes"];
+            $attrib             = array(array());
+            $row                = 0;
+            $tot                = 0;
+            $sku_family         = $data["sku"];
+            $product_name       = $data["name"];
+            $sku_increment      = 1;
+            array_push($all_products_id, $product_id);
 
-            if ($row==1)
+            // REMOVE ALL TO INSERT AGAIN
+            // ProductAttribute::where('product_id', $product_id)->delete();
+
+            $row=0;
+
+            foreach ($object as $attributes) // EACH ATTRIBUTE
             {
-                for ($i=0; $i < $tot; $i++)
+                $row++;
+                $tot = count($attributes); // TOTAL ATTRIBUTES
+
+                if ($row==1) // ONE ROW CONTAINS ALL ATTRIBUTES
                 {
-                    if (isset($attributes[$i]))
+                    for ($i=0; $i < $tot; $i++) // WHILE FOUND ATTRIBUTES
                     {
-                        if ($attributes[$i]!=0)
+                        if (isset($attributes[$i]))
                         {
-                            $get_array = $attributes[$i];
+                            if ($attributes[$i]!=0)
+                            {
+                                $get_array = $attributes[$i];
 
-                            // FIND IF PRODUCT ALREADY HAS THE ATTRIBUTE
-                            $find = ProductAttribute::where(['product_id' => $product_id, 'attribute_id' => $get_array["id"]])->select('value')->first();
+                                // FIND IF PRODUCT ALREADY HAS THE ATTRIBUTE
+                                $find = ProductAttribute::where(['product_id' => $product_id, 'attribute_id' => $get_array["id"]])->select('value')->first();
 
-                            if ($find) { //FOUND THIS ATTRIBUTE FOR THE PRODUCT
-                                if ($find->value != $get_array["value"]) {  // SAME ATTRIBUTE, BUT DIFFERENT VALUE. CREATE A NEW PRODUCT
+                                if ($find) { //FOUND THIS ATTRIBUTE FOR THE PRODUCT
+                                    if ($find->value != $get_array["value"]) {  // SAME ATTRIBUTE, BUT DIFFERENT VALUE. CREATE A NEW PRODUCT
 
-                                    // CREATE PRODUCT FAMILY
-                                    if ($generate)
-                                    {
-                                        $data["sku"] = $sku_family . " - " . $sku_increment;  // NEW SKU
-                                        $sku_increment++; // INCREMENT FOR THE NEXT PRODUCT FAMILY
-                                        $data["family_id"] = $family_id; // SET FAMILY ID FOR THIS PRODUCT
-                                        parent::store($data); // CREATE A NEW PRODUCT
-                                        $new_product_id = $this->model->id; //GETTING PRODUCT ID CREATED
+                                        // CREATE PRODUCT FAMILY
+                                        if ($this->generate == true)
+                                        {
+                                            $data["sku"] = $sku_family . " - " . $sku_increment;  // NEW SKU
+                                            $sku_increment++; // INCREMENT FOR THE NEXT PRODUCT FAMILY
+                                            $data["family_id"] = $family_id; // SET FAMILY ID FOR THIS PRODUCT
 
-                                        array_push($all_products_id, $new_product_id); // SAVE ALL PRODUCTS CREATED
-                                        $ids .= ", " . $new_product_id; //SAVING BY COMMA ALL PRODUCT IDS
+                                            parent::store($data); // CREATE A NEW PRODUCT
+                                            $new_product_id = $this->model->id; //GETTING PRODUCT ID CREATED
 
-                                        $this->saveProductAttribute($new_product_id, $get_array["id"], $get_array["value"]); // CREATE NEW PRODUCT ATTRIBUTE
+                                            array_push($all_products_id, $new_product_id); // SAVE ALL PRODUCTS CREATED
+                                            $ids .= ", " . $new_product_id; //SAVING BY COMMA ALL PRODUCT IDS
+
+                                            $this->saveProductAttribute($new_product_id, $get_array["id"], $get_array["value"], $family_id); // CREATE NEW PRODUCT ATTRIBUTE
+                                        }
+                                        else
+                                        {
+                                            $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"], $family_id);
+                                        }
+
                                     }
-                                    else
-                                    {
-                                        $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"]);
-                                    }
-
+                                } else { // CREATING PRODUCT ATTRIBUTE
+                                    $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"], $family_id);
                                 }
-                            } else { // CREATING PRODUCT ATTRIBUTE
-                                $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"]);
+
                             }
-
                         }
-                    }
 
+                    }
                 }
             }
-        }
 
-        // CREATE PRODUCT FAMILY
-        if ($generate)
-        {
-            // FIND MAIN PRODUCT (WITH MORE ATTRIBUTES SAVED)
-            $main_prod = DB::select('SELECT product_id, count(attribute_id) as tot FROM product_attributes WHERE product_id IN (' . $ids .') GROUP BY product_id ORDER BY 2 DESC LIMIT 1');
-            if ($main_prod)
+            // CREATE PRODUCT FAMILY
+            if ($this->generate == true)
             {
-                foreach ($all_products_id as $key => $value) // EACH ALL PRODUCTS CREATED
+                // FIND MAIN PRODUCT (WITH MORE ATTRIBUTES SAVED)
+                $sQuery = 'SELECT product_id, count(attribute_id) as tot FROM product_attributes WHERE product_id IN (' . $ids .') GROUP BY product_id ORDER BY 2 DESC LIMIT 1';
+                echo $sQuery . " FIND MAIN PRODUCT (WITH MORE ATTRIBUTES SAVED) " . "\n";
+                $main_prod = DB::select($sQuery);
+                if ($main_prod)
                 {
-                    if ($value != $main_prod[0]->product_id) // WE DON'T NEED THE MAIN PRODUCT
+                    foreach ($all_products_id as $key => $value) // EACH ALL PRODUCTS CREATED
                     {
-                        // GET THE ATTRIBUTES FROM THE MAIN PRODUCT - WE NEED TO CHECK WHICH ATTRIBUTE THE CHILD NEED INHERANCE FROM PARENT
-                        $child = $value;
-                        $sQuery = 'SELECT attribute_id, value FROM product_attributes WHERE product_id = ' . $main_prod[0]->product_id . ' and attribute_id NOT IN (SELECT attribute_id FROM product_attributes WHERE product_id = ' . $child . ')';
-                        $get_attributes = DB::select($sQuery);
-
-                        foreach ($get_attributes as $v) // EACH ATTRIBUTE FROM THE PARENT
+                        if ($value != $main_prod[0]->product_id) // WE DON'T NEED THE MAIN PRODUCT
                         {
-                            // CREATE NEW ATTRIBUTE FOR CHILD
-                            $this->saveProductAttribute($child, $v->attribute_id, $v->value);
+                            // GET THE ATTRIBUTES FROM THE MAIN PRODUCT - WE NEED TO CHECK WHICH ATTRIBUTE THE CHILD NEED INHERANCE FROM PARENT
+                            $child = $value;
+                            $sQuery = 'SELECT attribute_id, value FROM product_attributes WHERE product_id = ' . $main_prod[0]->product_id . ' and attribute_id NOT IN (SELECT attribute_id FROM product_attributes WHERE product_id = ' . $child . ')';
+                            echo " GET THE ATTRIBUTES FROM THE MAIN PRODUCT - WE NEED TO CHECK WHICH ATTRIBUTE THE CHILD NEED INHERANCE FROM PARENT " . $sQuery . "\n";
+                            $get_attributes = DB::select($sQuery);
+
+                            foreach ($get_attributes as $v) // EACH ATTRIBUTE FROM THE PARENT
+                            {
+                                // CREATE NEW ATTRIBUTE FOR CHILD
+                                $this->saveProductAttribute($child, $v->attribute_id, $v->value, $family_id);
+                            }
                         }
                     }
                 }
-            }
 
-            // FIND PRODUCTS WITH SAME ATTRIBUTE BUT DIFF VALUES
-            $main_prod = DB::select('SELECT product_id, count(attribute_id) as tot FROM product_attributes WHERE product_id IN (' . $ids .') GROUP BY product_id ORDER BY 2 DESC LIMIT 1');
-            if ($main_prod)
-            {
-                // GET THE ATTRIBUTES FROM THE MAIN PRODUCT
-                $sQuery = 'SELECT attribute_id, value FROM product_attributes WHERE product_id in (' . $ids . ') and value not in (SELECT value FROM product_attributes WHERE product_id = ' . $main_prod[0]->product_id . ')';
-                $get_attributes = DB::select($sQuery);
 
-                $data["sku"]  = $sku_family . " - " . $sku_increment;  // NEW SKU
-                $sku_increment++; // INCREMENT FOR THE NEXT PRODUCT FAMILY
-                $data["family_id"] = $family_id; // SET FAMILY ID FOR THIS PRODUCT
-
-                parent::store($data); // CREATE A NEW PRODUCT
-                $new_product_id = $this->model->id;
-
-                array_push($all_products_id, $new_product_id); // SAVE ALL PRODUCTS CREATED
-                $ids .= ", " . $new_product_id; //SAVING BY COMMA ALL PRODUCT IDS
-
-                foreach ($get_attributes as $v)
+                // GET PRODUCT WITH MORE ATTRIBUTES
+                $sQuery = 'SELECT product_id, count(attribute_id) as tot FROM product_attributes WHERE product_id IN (' . $ids .') GROUP BY product_id ORDER BY 2 DESC LIMIT 1';
+                $main_prod = DB::select($sQuery);
+                echo " MORE ATTRIBUTES " . $sQuery . "\n";
+                if ($main_prod)
                 {
-                    // CREATE NEW ATTRIBUTE FOR CHILD
-                    $this->saveProductAttribute($new_product_id, $v->attribute_id, $v->value);
+                    // GET THE ATTRIBUTES FROM THE MAIN PRODUCT
+                    $sQuery = 'SELECT attribute_id, value FROM product_attributes WHERE product_id in (' . $ids . ') and value not in (SELECT value FROM product_attributes WHERE product_id = ' . $main_prod[0]->product_id . ')';
+                    $get_attributes = DB::select($sQuery);
+                    echo "GET THE ATTRIBUTES FROM THE MAIN PRODUCT " . $sQuery . "\n";
+
+                    $data["sku"]  = $sku_family . " - " . $sku_increment;  // NEW SKU
+                    $sku_increment++; // INCREMENT FOR THE NEXT PRODUCT FAMILY
+                    $data["family_id"] = $family_id; // SET FAMILY ID FOR THIS PRODUCT
+
+                    parent::store($data); // CREATE A NEW PRODUCT
+                    $new_product_id = $this->model->id;
+
+                    array_push($all_products_id, $new_product_id); // SAVE ALL PRODUCTS CREATED
+                    $ids .= ", " . $new_product_id; //SAVING BY COMMA ALL PRODUCT IDS
+
+                    foreach ($get_attributes as $v)
+                    {
+                        // CREATE NEW ATTRIBUTE FOR CHILD
+                        $this->saveProductAttribute($new_product_id, $v->attribute_id, $v->value, $family_id);
+                    }
+
+                    // FINAL STEP - FIND MISSING ATTRIBUTES FOR THE NEW PRODUCT CREATED
+                    $sQuery = 'SELECT DISTINCT a1.attribute_id, a2.product_id, a1.value
+                    FROM product_attributes AS a1
+                    CROSS JOIN product_attributes as a2
+                    WHERE a1.product_id IN (' . $ids . ')  AND a1.attribute_id not in (SELECT attribute_id FROM product_attributes WHERE product_id = a2.product_id ) ';
+                    $get_attributes = DB::select($sQuery);
+
+                    echo " HERE " . $sQuery . "\n";
+
+                    // SAVE MIXED ATTRIBUTES FOR EACH PRODUCT
+                    foreach ($get_attributes as $v)
+                    {
+                        $this->saveProductAttribute($new_product_id, $v->attribute_id, $v->value, $family_id);
+                    }
+
                 }
 
-                // FINAL STEP - FIND MISSING ATTRIBUTES FOR THE NEW PRODUCT CREATED
-                $sQuery = 'SELECT DISTINCT a1.attribute_id, a2.product_id, a1.value
-                FROM product_attributes AS a1
-                CROSS JOIN product_attributes as a2
-                WHERE a1.product_id IN (' . $ids . ') AND a1.attribute_id not in (SELECT attribute_id FROM product_attributes WHERE product_id = a2.product_id )';
-                $get_attributes = DB::select($sQuery);
+                // CONCAT PRODUCT NAME WITH ATTRIBUTE VALUE
+                $read            = DB::select('SELECT product_id, attribute_id, value, p.name FROM product_attributes pa INNER JOIN products p ON p.id = pa.product_id WHERE product_id IN (' . $ids .') ORDER BY product_id, attribute_id');
+                $new_name        = "";
+                $product_control = "";
 
-                foreach ($get_attributes as $v)
+                foreach ($read as $v)
                 {
-                    // CREATE NEW ATTRIBUTE FOR CHILD
-                    $this->saveProductAttribute($new_product_id, $v->attribute_id, $v->value);
-                }
-            }
+                    Product::where('id', $v->product_id)->update(['name' => ($new_name=="" ? ($v->name . " - " . $v->value) : ($new_name . " - " . $v->value))]);
 
-            // CONCAT PRODUCT NAME WITH ATTRIBUTE VALUE
-            $read            = DB::select('SELECT product_id, attribute_id, value, p.name FROM product_attributes pa INNER JOIN products p ON p.id = pa.product_id WHERE product_id IN (' . $ids .') ORDER BY product_id, attribute_id');
-            $new_name        = "";
-            $product_control = "";
+                    // RESET WHEN CHANGE PRODUCT
+                    if ($product_control!="" || $product_control != $v->product_id) {
+                        $new_name = "";
+                        $product_control = $v->product_id;
+                    }
 
-            foreach ($read as $v)
-            {
-                Product::where('id', $v->product_id)->update(['name' => ($new_name=="" ? ($v->name . " - " . $v->value) : ($new_name . " - " . $v->value))]);
-
-                // RESET WHEN CHANGE PRODUCT
-                if ($product_control!="" || $product_control != $v->product_id) {
-                    $new_name = "";
-                    $product_control = $v->product_id;
-                }
-
-                if ($new_name=="") { // CONCAT NAME + ATTRIBUTE VALUE
-                    $new_name = $v->name . " - " . $v->value;
-                } else {
-                    $new_name = $new_name . " - " . $v->value;
+                    if ($new_name=="") { // CONCAT NAME + ATTRIBUTE VALUE
+                        $new_name = $v->name . " - " . $v->value;
+                    } else {
+                        $new_name = $new_name . " - " . $v->value;
+                    }
                 }
             }
         }
-
     }
 
 }

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use App\Models\Product;
 
 class ProductFamilyRepository extends RepositoryService
 {
@@ -25,6 +26,24 @@ class ProductFamilyRepository extends RepositoryService
         return parent::getList($searchCriteria);
     }
 
+    public function getListProducts(array $searchCriteria = [])
+    {
+        $searchCriteria['order_by'] = [
+            'field'         => 'attribute_id',
+            'direction'     => 'asc'
+        ];
+
+        $searchCriteria['per_page'] = 50;
+
+        if (!empty($searchCriteria['family_id']))
+        {
+            $data = Product::where('family_id', $searchCriteria['family_id'])->get();
+        }
+
+        return $data;
+    }
+
+
     public function findBy(array $searchCriteria = [])
     {
         if (!empty($searchCriteria['name'])) {
@@ -32,6 +51,11 @@ class ProductFamilyRepository extends RepositoryService
             $searchCriteria['query_type'] = 'LIKE';
             $searchCriteria['where']      = 'OR';
             $searchCriteria['name'] = $name;
+        }
+
+        if (!empty($searchCriteria['id'])) {
+            $this->queryBuilder
+            ->where('id', Arr::pull($searchCriteria, 'id'));
         }
 
         return parent::findBy($searchCriteria);

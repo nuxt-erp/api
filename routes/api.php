@@ -33,8 +33,8 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('parameters', 'Admin\SystemParameterController');
     });
 
-      // BASIC ADMIN
-      Route::group(['prefix' => 'inventory'], function () {
+    // BASIC ADMIN
+    Route::group(['prefix' => 'inventory'], function () {
         Route::resource('brands', 'Inventory\BrandController');
         Route::resource('attributes', 'Inventory\AttributeController');
         Route::resource('categories', 'Inventory\CategoryController');
@@ -43,8 +43,12 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('products', 'Inventory\ProductController');
         Route::resource('product_attributes', 'Inventory\ProductAttributeController');
         Route::resource('product_families', 'Inventory\ProductFamilyController');
+        Route::resource('product_family_attributes', 'Inventory\ProductFamilyAttributeController');
         Route::resource('product_specifications', 'Inventory\ProductSpecificationController');
     });
+
+    // PRODUCT FAMILY
+    Route::get('product_families/get_products', 'Inventory\ProductFamilyController@getListProducts'); // LIST ALL PRODUCTS FROM CURRENT FAMILY
 
 
 });

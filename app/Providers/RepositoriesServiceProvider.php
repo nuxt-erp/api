@@ -20,6 +20,7 @@ use App\Models\Role;
 use App\Models\Location;
 use App\Models\User;
 use App\Models\ProductFamily;
+use App\Models\ProductFamilyAttribute;
 
 
 // REPOSITORIES
@@ -40,6 +41,7 @@ use App\Repositories\UserRepository;
 use App\Repositories\EmployeeRepository;
 use App\Repositories\ProductRepository;
 use App\Repositories\ProductFamilyRepository;
+use App\Repositories\ProductFamilyAttributeRepository;
 
 
 // RESOURCES
@@ -63,6 +65,7 @@ use App\Resources\ProductCategoryResource;
 use App\Resources\ProductResource;
 use App\Resources\WarehouseResource;
 use App\Resources\ProductFamilyResource;
+use App\Resources\ProductFamilyAttributeResource;
 
 
 class RepositoriesServiceProvider extends ServiceProvider
@@ -225,6 +228,14 @@ class RepositoriesServiceProvider extends ServiceProvider
             return new ProductFamilyResource(new ProductFamily());
         });
 
+        $this->app->bind(ProductFamilyAttributeRepository::class, function () {
+            return new ProductFamilyAttributeRepository(new ProductFamilyAttribute());
+        });
+
+        $this->app->bind(ProductFamilyAttributeResource::class, function () {
+            return new ProductFamilyAttributeResource(new ProductFamilyAttribute());
+        });
+
     }
 
     /**
@@ -254,6 +265,7 @@ class RepositoriesServiceProvider extends ServiceProvider
             ProductAttributeRepository::class,
             ProductFamilyRepository::class,
             ProductSpecificationRepository::class,
+            ProductFamilyAttributeRepository::class,
         ];
     }
 }

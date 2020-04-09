@@ -26,8 +26,8 @@ class Product extends Model
         if (is_null($item))
         {
             $rules['name'][] = 'required';
-            $rules['sku'][]  = 'required';
-            $rules['sku'][]  = 'unique:products';
+            // $rules['sku'][]  = 'required';
+            // $rules['sku'][]  = 'unique:products';
         }
 
         return $rules;
