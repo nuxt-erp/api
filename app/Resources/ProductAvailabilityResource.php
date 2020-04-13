@@ -18,13 +18,12 @@ class ProductAvailabilityResource extends JsonResource
             'id'                    => $this->id,
             'product_id'            => $this->product_id,
             'product_name'          => $this->product->name,
-            'warehouse_id'          => $this->warehouse_id,
-            'warehouse_name'        => optional($this->warehouse)->name,
+            'company_id'            => $this->company_id,
+            'company_name'          => optional($this->company)->name,
             'location_id'           => $this->location_id,
             'location_name'         => optional($this->location)->name,
-            'available_quantity'    => $this->available_quantity,
-            'created_at'            => optional($this->created_at)->format('Y-m-d H:i:s'),
-            'updated_at'            => optional($this->updated_at)->format('Y-m-d H:i:s'),
+            'available'             => $this->available,
+            'on_hand'               => $this->on_hand
         ];
     }
 }

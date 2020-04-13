@@ -14,18 +14,14 @@ class CategoryRepository extends RepositoryService
             'direction'     => 'asc'
         ];
 
-        $searchCriteria['per_page'] = 50;
+        $searchCriteria['per_page'] = 150;
 
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
-            $this->queryBuilder
-            ->where('name', 'LIKE', $name)
-            ->where('company_id', Auth::user()->company_id);
-        } else {
-            $this->queryBuilder
-            ->where('company_id', Auth::user()->company_id);
+            $this->queryBuilder->where('name', 'LIKE', $name);
         }
 
+        $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::getList($searchCriteria);
     }
 
@@ -37,6 +33,7 @@ class CategoryRepository extends RepositoryService
             $searchCriteria['where']      = 'OR';
             $searchCriteria['name'] = $name;
         }
+        $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::findBy($searchCriteria);
     }
 
@@ -46,8 +43,4 @@ class CategoryRepository extends RepositoryService
         parent::store($data);
     }
 
-    public function update($model, array $data)
-    {
-        parent::update($model, $data);
-    }
 }

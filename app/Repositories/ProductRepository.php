@@ -19,6 +19,7 @@ class ProductRepository extends RepositoryService
 
     public function getList(array $searchCriteria = [])
     {
+
         $searchCriteria['order_by'] = [
             'field'         => 'name',
             'direction'     => 'asc'
@@ -44,6 +45,8 @@ class ProductRepository extends RepositoryService
             $this->queryBuilder
             ->where('sku', 'LIKE', '%' . Arr::pull($searchCriteria, 'sku') . '%');
         }
+
+        $this->queryBuilder->where('company_id', Auth::user()->company_id);
 
         return parent::getList($searchCriteria);
     }
@@ -78,6 +81,7 @@ class ProductRepository extends RepositoryService
             $searchCriteria['sku']          = '%' . $name . '%';
         }
 
+        $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::findBy($searchCriteria);
     }
 
@@ -97,7 +101,8 @@ class ProductRepository extends RepositoryService
 
             $data["family_id"] = $family_id;
 
-            if ($this->generate == true) {
+            if ($this->generate == true)
+            {
                 $this->generateFamily($data, $family_id); // GENERATE FAMILY
             } else {
                 parent::store($data);
@@ -108,18 +113,20 @@ class ProductRepository extends RepositoryService
 
     }
 
-    private function createAttribute($data) {
-
+    private function createAttribute($data)
+    {
         if (isset($data["prod_attributes"]))
         {
-            $product_id         = $this->model->id; //SAVE CURRENT PRODUCT ID
+            $product_id         = isset($this->model->id) ? $this->model->id : $data["id"]; //SAVE CURRENT PRODUCT ID
             $object             = $data["prod_attributes"];
             $row                = 0;
             $tot                = 0;
             $sku_increment      = 1;
-            array_push($all_products_id, $product_id);
 
             $row=0;
+
+            // DELETE ATTRIBUTES TO INSERT AGAIN
+            ProductAttribute::where('product_id', $product_id)->delete();
 
             foreach ($object as $attributes) // EACH ATTRIBUTE
             {
@@ -135,7 +142,7 @@ class ProductRepository extends RepositoryService
                             if ($attributes[$i]!=0)
                             {
                                 $get_array = $attributes[$i];
-                                $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"], $family_id);
+                                $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"]);
                             }
                         }
                     }
@@ -163,11 +170,16 @@ class ProductRepository extends RepositoryService
 
     public function update($model, array $data)
     {
+        $this->generate = isset($data["generate_family"]) ? $data["generate_family"] : false;
         parent::update($model, $data);
-        $this->generateFamily($data, isset($data["family_id"]) ? $data["family_id"] : null); // SAVE PRODUCT ATTRIBUTES
+
+        if ($this->generate != true)
+        {
+            $this->createAttribute($data); // CREATE/EDIT ATTRIBUTES
+        }
     }
 
-    private function saveProductAttribute($product_id, $attribute_id, $value, $family_id)
+    private function saveProductAttribute($product_id, $attribute_id, $value)
     {
         // SAVE ATTRIBUTE BY PRODUCT
         ProductAttribute::updateOrCreate([
@@ -282,7 +294,6 @@ class ProductRepository extends RepositoryService
                         $this->saveProductAttribute($new_product_id, $get_array[0], $get_array[1], $family_id); // CREATE NEW PRODUCT ATTRIBUTE
                         $concat_name .= " - " . $get_array[1];
                     }
-
                 }
 
                 // CONCAT PRODUCT NAME WITH ATTRIBUTE VALUE
@@ -319,8 +330,10 @@ class ProductRepository extends RepositoryService
         {
             for ($j = 0; $j < $r; $j++)
             {
-                if (isset($data[$j-1])) {
-                    if (substr($data[$j],0,1) != substr($data[$j-1],0,1)) {
+                if (isset($data[$j-1]))
+                {
+                    if (substr($data[$j],0,1) != substr($data[$j-1],0,1))
+                    {
                         $comb .= $data[$j] . ",";
                         $qt_elements++;
                     }
@@ -340,7 +353,8 @@ class ProductRepository extends RepositoryService
         }
 
         // When no more elements are there to put in data[]
-        if ($i >= $n) {
+        if ($i >= $n)
+        {
             return;
         }
 
@@ -351,7 +365,8 @@ class ProductRepository extends RepositoryService
                         $data, $i + 1);
 
         // Remove duplicates
-        if (isset($arr[$i]) && isset($arr[$i+1])) {
+        if (isset($arr[$i]) && isset($arr[$i+1]))
+        {
             while ($arr[$i] == $arr[$i+1])
             {
                 $i++;

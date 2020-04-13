@@ -21,11 +21,13 @@ use App\Models\Location;
 use App\Models\User;
 use App\Models\ProductFamily;
 use App\Models\ProductFamilyAttribute;
+use App\Models\ProductAvailability;
 
 
 // REPOSITORIES
 use App\Repositories\ProductSpecificationRepository;
 use App\Repositories\ProductAttributeRepository;
+use App\Repositories\ProductAvailabilityRepository;
 use App\Repositories\SystemParameterRepository;
 use App\Repositories\SupplierRepository;
 use App\Repositories\ProvinceRepository;
@@ -47,6 +49,7 @@ use App\Repositories\ProductFamilyAttributeRepository;
 // RESOURCES
 use App\Resources\ProductSpecificationResource;
 use App\Resources\ProductAttributeResource;
+use App\Resources\ProductAvailabilityResource;
 use App\Resources\SystemParameterResource;
 use App\Resources\CountryResource;
 use App\Resources\SupplierResource;
@@ -236,6 +239,14 @@ class RepositoriesServiceProvider extends ServiceProvider
             return new ProductFamilyAttributeResource(new ProductFamilyAttribute());
         });
 
+        $this->app->bind(ProductAvailabilityRepository::class, function () {
+            return new ProductAvailabilityRepository(new ProductAvailability());
+        });
+
+        $this->app->bind(ProductAvailabilityResource::class, function () {
+            return new ProductAvailabilityResource(new ProductAvailability());
+        });
+
     }
 
     /**
@@ -266,6 +277,7 @@ class RepositoriesServiceProvider extends ServiceProvider
             ProductFamilyRepository::class,
             ProductSpecificationRepository::class,
             ProductFamilyAttributeRepository::class,
+            ProductAvailabilityRepository::class,
         ];
     }
 }

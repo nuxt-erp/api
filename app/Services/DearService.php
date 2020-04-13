@@ -4,14 +4,19 @@ namespace App\Services;
 
 use App\Models\Brand;
 use App\Models\Product;
-use App\Models\ProductCategory;
+use App\Models\Location;
+use App\Models\Category;
+use App\Models\ProductAttribute;
+use App\Models\ProductAvailability;
+use App\Models\Attribute;
 use App\Models\User;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Auth;
 
-class DearService{
-
+class DearService
+{
 
     private $dear_id;
     private $dear_key;
@@ -30,16 +35,27 @@ class DearService{
         ]);
 
         $this->limit = 500;
-        $this->user = auth()->user() ?? User::where('name', 'dear')->first();
+        $this->user = auth()->user() ?? User::where('name', 'admin')->first();
     }
 
-    public function syncProds($sku = null){
-
+    public function syncProds($sku = null)
+    {
         $result = FALSE;
         $flagLoop = FALSE;
         $total = 0;
         $page = 1;
         $count = 0;
+        $new_id = 0;
+
+        // GET STRENGTH ATTRIBUTE ID
+        $strength_id  = Attribute::where('name', 'LIKE', "%Strength%")
+        ->where('company_id', $this->user->company_id)
+        ->pluck('id')->first();
+
+        // GET SIZE ATTRIBUTE ID
+        $size_id  = Attribute::where('name', 'LIKE', "%Size%")
+        ->where('company_id', $this->user->company_id)
+        ->pluck('id')->first();
 
         do {
 
@@ -65,10 +81,10 @@ class DearService{
 
                     // CATEGORY HANDLE
                     if(!isset($categories_list[$formated_product->category])){
-                        $category = ProductCategory::where('name', $formated_product->category)
-                        ->whereNotNull('dear')
+                        $category = Category::where('name', $formated_product->category)
+                        ->where('company_id', $this->user->company_id)
                         ->first();
-                        if(!$category){
+                        if(!$category) {
                             $category = $this->syncCategories($formated_product->category);
                         }
                         $categories_list[$formated_product->category] = $category;
@@ -80,9 +96,9 @@ class DearService{
                     // BRAND HANDLE
                     if(!isset($brands_list[$formated_product->brand])){
                         $brand = Brand::where('name', $formated_product->brand)
-                        ->whereNotNull('dear')
+                        ->where('company_id', $this->user->company_id)
                         ->first();
-                        if(!$brand){
+                        if(!$brand) {
                             $brand = $this->syncBrands($formated_product->brand);
                         }
                         $brands_list[$formated_product->brand] = $brand;
@@ -91,7 +107,6 @@ class DearService{
                         $brand = $brands_list[$formated_product->brand];
                     }
 
-                    //@todo add author to know who did this
                     $new_prod = Product::updateOrCreate(
                         ['dear' => $prod->ID],
                         [
@@ -99,10 +114,32 @@ class DearService{
                             'brand_id'      => $brand->id ?? null,
                             'sku'           => $formated_product->sku,
                             'name'          => $formated_product->name,
-                            'strength'      => $formated_product->strength,
-                            'size'          => $formated_product->size,
+                            'company_id'    => $this->user->company_id,
+                            'description'   => $formated_product->description,
+                            'barcode'       => $formated_product->barcode
                         ]
                     );
+
+                    $new_id = $new_prod->id;
+
+                    // SAVE ATTRIBUTE BY PRODUCT
+                    ProductAttribute::updateOrCreate([
+                        'product_id'    => $new_id,
+                        'attribute_id'  => $strength_id,
+                    ],
+                    [
+                        'value' => $formated_product->strength
+                    ]);
+
+                    // SAVE ATTRIBUTE BY PRODUCT
+                    ProductAttribute::updateOrCreate([
+                        'product_id'    => $new_id,
+                        'attribute_id'  => $size_id,
+                    ],
+                    [
+                        'value' => $formated_product->size
+                    ]);
+
                     $count++;
 
                     if(!empty($sku)){
@@ -122,8 +159,8 @@ class DearService{
         return $result;
     }
 
-    public function syncCategories($name = NULL){
-
+    public function syncCategories($name = NULL)
+    {
         $page = 1;
         $final_item = FALSE;
         $filters = [
@@ -138,18 +175,73 @@ class DearService{
 
         if ($dear_result->status) {
             foreach ($dear_result->CategoryList as $item) {
-                $final_item = ProductCategory::updateOrCreate(
-                    ['dear' => $item->ID],
-                    ['name' => formatName($item->Name)]
-                );
+                $final_item = Category::updateOrCreate(['company_id' => $this->user->company_id, 'name' => formatName($item->Name)]);
             }
         }
 
         return $final_item;
     }
 
-    public function syncBrands($name = NULL){
+    public function syncAvailability()
+    {
+        $result = FALSE;
+        $flagLoop = FALSE;
+        $final_item = FALSE;
+        $total = 0;
+        $page = 1;
+        $count = 0;
 
+        do
+        {
+            $filters = [
+                'Page'  => $page,
+                'Limit' => 100
+            ];
+
+            $result = $this->makeRequest('ref/productavailability', $filters);
+
+            if ($result->status)
+            {
+                $total = $result->Total;
+                $list  = $result->ProductAvailabilityList;
+                if ($total > 0) {
+                    foreach ($list as $item) {
+                        $product = Product::where('dear', $item->ID)
+                        ->first();
+                        $location = !empty($item->Location) ? Location::where('name', $item->Location)
+                        ->first() : null;
+
+                        if ($product)
+                        {
+                            $final_item = ProductAvailability::updateOrCreate(
+                                [
+                                    'product_id' => $product->id,
+                                    'company_id' => Auth::user()->company_id
+                                ],
+                                [
+                                    'location_id'   => $location->id ?? null,
+                                    'available'     => $item->Available >= 0 ? $item->Available : 0,
+                                    'on_hand'       => $item->OnHand >= 0 ? $item->OnHand : 0
+                                ]
+                            );
+                        }
+                        $count++;
+                    }
+                }
+
+                $flagLoop = $total > 100 && $page <= ($total / 100);
+                $page++;
+            } else {
+                $flagLoop = FALSE;
+            }
+        } while ($flagLoop);
+
+        return $final_item;
+
+    }
+
+    public function syncBrands($name = NULL)
+    {
         $page = 1;
         $final_item = FALSE;
         $filters = [
@@ -164,10 +256,7 @@ class DearService{
 
         if ($dear_result->status) {
             foreach ($dear_result->BrandList as $item) {
-                $final_item = Brand::updateOrCreate(
-                    ['dear' => $item->ID],
-                    ['name' => formatName($item->Name)]
-                );
+                $final_item = Brand::updateOrCreate(['company_id' => $this->user->company_id, 'name' => formatName($item->Name)]);
             }
         }
 
@@ -246,7 +335,38 @@ class DearService{
         $new_product->strength = intval($new_strength);
         $new_product->category = formatName($product->Category);
         $new_product->brand = formatName($product->Brand);
+        $new_product->description = $product->Description;
+        $new_product->barcode = $product->Barcode;
+        $new_product->dear = $product->ID;
 
         return $new_product;
     }
+
+    public function syncLocations()
+    {
+        $page = 1;
+        $final_item = FALSE;
+        $filters = [
+            'Page'              => $page,
+            'Limit'             => !empty($name) ? 1 : $this->limit
+        ];
+
+        if(!empty($name))
+        {
+            $filters['Name'] = $name;
+        }
+
+        $dear_result = $this->makeRequest('ref/location', $filters);
+
+        if ($dear_result->status)
+        {
+            foreach ($dear_result->LocationList as $item)
+            {
+                $final_item = Location::updateOrCreate(['company_id' => $this->user->company_id, 'name' => formatName($item->Name)]);
+            }
+        }
+
+        return $final_item;
+    }
+
 }

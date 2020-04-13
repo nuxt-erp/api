@@ -22,11 +22,8 @@ class SupplierRepository extends RepositoryService
             $this->queryBuilder
             ->where('name', 'LIKE', $name)
             ->where('company_id', Auth::user()->company_id);
-        } else {
-            $this->queryBuilder
-            ->where('company_id', Auth::user()->company_id);
         }
-
+        $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::getList($searchCriteria);
     }
 
@@ -38,6 +35,8 @@ class SupplierRepository extends RepositoryService
             $searchCriteria['where']      = 'OR';
             $searchCriteria['name'] = $name;
         }
+
+        $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::findBy($searchCriteria);
     }
 
