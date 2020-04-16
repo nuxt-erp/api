@@ -18,7 +18,7 @@ class ProductAvailabilityResource extends JsonResource
             'product_id'            => $this->id,
             'name'                  => $this->name,
             'location_name'         => $this->location_name,
-            'available'             => $this->available,
+            'qty'                   => $this->available,
             'on_hand'               => $this->on_hand,
             'sku'                   => $this->sku,
             'brand_id'              => $this->brand_id,

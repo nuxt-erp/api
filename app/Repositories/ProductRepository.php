@@ -60,14 +60,14 @@ class ProductRepository extends RepositoryService
         return parent::findBy($searchCriteria);
     }
 
-    public function productAvailabilities(array $searchCriteria = []) {
-
-
+    // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
+    public function productAvailabilities(array $searchCriteria = [])
+    {
         $this->queryBuilder->select('products.id', 'products.name', 'products.sku', 'locations.name as location_name', 'pa.on_hand', 'products.category_id', 'products.brand_id');
         // EDITING STOCKTAKE
         if (!empty($searchCriteria['stocktake_id']))
         {
-            $this->queryBuilder->addSelect('dt.qty as available');
+            $this->queryBuilder->addSelect('dt.qty as qty');
             $this->queryBuilder->leftJoin('stocktake_details dt', 'dt.product_id', 'products.id');
         }
 

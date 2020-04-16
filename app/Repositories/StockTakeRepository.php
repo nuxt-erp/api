@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Support\Arr;
 use Auth;
+use App\Models\StockTakeDetails;
 
 class StockTakeRepository extends RepositoryService
 {
@@ -45,8 +46,66 @@ class StockTakeRepository extends RepositoryService
 
     public function store($data)
     {
+        // SET LOGGED USER'S COMPANY
         $data["company_id"] = Auth::user()->company_id;
+        // SAVE STOCK TAKE
         parent::store($data);
+        // SAVE STOCK TAKE PRODUCTS
+        $this->saveStockTakeDetails($data, $this->model->id);
+    }
+
+    private function saveStockTakeDetails($data, $id)
+    {
+
+        if (isset($data["prod_attributes"]))
+        {
+            $object = $data["prod_attributes"];
+            $row    = 0;
+            $tot    = 0;
+
+            // DELETE ITEMS TO INSERT THEM AGAIN
+            StockTakeDetails::where('stocktake_id', $id)->delete();
+
+            foreach ($object as $attributes) // EACH ATTRIBUTE
+            {
+                $row++;
+                $tot = count($attributes); // TOTAL ATTRIBUTES
+
+                if ($row==1) // ONE ROW CONTAINS ALL ATTRIBUTES
+                {
+                    for ($i=0; $i < $tot; $i++) // WHILE FOUND ATTRIBUTES
+                    {
+                        if (isset($attributes[$i]))
+                        {
+                            if ($attributes[$i]!=0)
+                            {
+                                $qty        = 0;
+                                $get_array  = $attributes[$i];
+
+                                if (array_key_exists('qty', $get_array))
+                                {
+                                    $qty = isset($get_array["qty"]) ? $get_array["qty"] : 0;
+                                }
+                                else
+                                {
+                                    $qty = 0;
+                                }
+
+                                StockTakeDetails::updateOrCreate([
+                                    'stocktake_id'  => $id,
+                                    'product_id'    => $get_array["product_id"]
+                                ],[
+                                    'qty'           => $qty,
+                                    'stock_on_hand' => $get_array["on_hand"],
+                                    'variance'      => ($qty - $get_array["on_hand"])
+                                ]);
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
