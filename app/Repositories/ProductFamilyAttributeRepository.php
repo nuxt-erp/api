@@ -3,46 +3,42 @@
 namespace App\Repositories;
 
 use Illuminate\Support\Arr;
-use Auth;
+use Illuminate\Support\Facades\DB;
 
-class SupplierRepository extends RepositoryService
+class ProductFamilyAttributeRepository extends RepositoryService
 {
-
     public function getList(array $searchCriteria = [])
     {
         $searchCriteria['order_by'] = [
-            'field'         => 'name',
+            'field'         => 'attribute_id',
             'direction'     => 'asc'
         ];
 
         $searchCriteria['per_page'] = 50;
 
-        if (!empty($searchCriteria['name'])) {
-            $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
+        if (!empty($searchCriteria['value'])) {
+            $value = '%' . Arr::pull($searchCriteria, 'value') . '%';
             $this->queryBuilder
-            ->where('name', 'LIKE', $name)
-            ->where('company_id', Auth::user()->company_id);
+            ->where('value', 'LIKE', $value);
         }
-        $this->queryBuilder->where('company_id', Auth::user()->company_id);
+
         return parent::getList($searchCriteria);
     }
 
     public function findBy(array $searchCriteria = [])
     {
-        if (!empty($searchCriteria['name'])) {
-            $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
+        if (!empty($searchCriteria['value'])) {
+            $value = '%' . Arr::pull($searchCriteria, 'value') . '%';
             $searchCriteria['query_type'] = 'LIKE';
             $searchCriteria['where']      = 'OR';
-            $searchCriteria['name'] = $name;
+            $searchCriteria['value'] = $value;
         }
 
-        $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::findBy($searchCriteria);
     }
 
     public function store($data)
     {
-        $data["company_id"] = Auth::user()->company_id;
         parent::store($data);
     }
 
@@ -50,4 +46,5 @@ class SupplierRepository extends RepositoryService
     {
         parent::update($model, $data);
     }
+
 }

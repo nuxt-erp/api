@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class ProductFamily extends Model
 {
     public $timestamps = false;
 
     protected $fillable = [
-        'company_id', 'sku', 'name', 'description', 'cost', 'status', 'barcode', 'sales_chanel', 'brand_id', 'category_id', 'supplier_id', 'width', 'length', 'weight', 'height', 'price', 'family_id', 'launch_date', 'dear'
+        'name', 'description', 'status', 'brand_id', 'category_id', 'supplier_id', 'company_id', 'sku', 'location_id', 'launch_date'
     ];
 
     public function getRules($request, $item = null)
@@ -26,34 +26,16 @@ class Product extends Model
         if (is_null($item))
         {
             $rules['name'][] = 'required';
-            // $rules['sku'][]  = 'required';
-            // $rules['sku'][]  = 'unique:products';
+            $rules['sku'][]  = 'required';
+            $rules['sku'][]  = 'unique:products';
         }
 
         return $rules;
     }
 
-    /*public function setNameAttribute($value)
-    {
-        // $this->attributes['name'] =
-    }*/
-
-    public function attributes() {
-        return $this->hasMany('App\Models\ProductAttribute');
-    }
-
-    public function availability() {
-        return $this->hasMany('App\Models\ProductAvailability', 'product_id');
-    }
-
     public function brand()
     {
         return $this->belongsTo(Brand::class, 'brand_id');
-    }
-
-    public function location()
-    {
-        return $this->belongsTo(Location::class, 'location_id');
     }
 
     public function category()
@@ -71,4 +53,15 @@ class Product extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    public function product()
+    {
+        return $this->hasMany(Product::class, 'family_id', 'id');
+    }
+
 }
+

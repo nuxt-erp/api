@@ -17,11 +17,8 @@ class LocationResource extends JsonResource
         return [
             'id'            => $this->id,
             'name'          => $this->name,
-            'dear'          => $this->dear,
-            'came_from_dear'=> !empty($this->dear),
-            'is_active'     => $this->is_active,
-            'created_at'    => optional($this->created_at)->format('Y-m-d H:i:s'),
-            'updated_at'    => optional($this->updated_at)->format('Y-m-d H:i:s'),
+            'company_id'     => $this->company_id,
+            'can_be_deleted' => true
         ];
     }
 }

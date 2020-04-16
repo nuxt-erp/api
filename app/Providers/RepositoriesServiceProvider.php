@@ -17,12 +17,19 @@ use App\Models\ProductAttribute;
 use App\Models\ProductSpecification;
 use App\Models\Employee;
 use App\Models\Role;
+use App\Models\Location;
 use App\Models\User;
+use App\Models\ProductFamily;
+use App\Models\ProductFamilyAttribute;
+use App\Models\ProductAvailability;
+use App\Models\StockTake;
+use App\Models\StockTakeDetails;
 
 
 // REPOSITORIES
 use App\Repositories\ProductSpecificationRepository;
 use App\Repositories\ProductAttributeRepository;
+use App\Repositories\ProductAvailabilityRepository;
 use App\Repositories\SystemParameterRepository;
 use App\Repositories\SupplierRepository;
 use App\Repositories\ProvinceRepository;
@@ -33,14 +40,20 @@ use App\Repositories\CategoryRepository;
 use App\Repositories\AttributeRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\BrandRepository;
+use App\Repositories\LocationRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\EmployeeRepository;
 use App\Repositories\ProductRepository;
+use App\Repositories\ProductFamilyRepository;
+use App\Repositories\ProductFamilyAttributeRepository;
+use App\Repositories\StockTakeRepository;
+use App\Repositories\StockTakeDetailsRepository;
 
 
 // RESOURCES
 use App\Resources\ProductSpecificationResource;
 use App\Resources\ProductAttributeResource;
+use App\Resources\ProductAvailabilityResource;
 use App\Resources\SystemParameterResource;
 use App\Resources\CountryResource;
 use App\Resources\SupplierResource;
@@ -52,11 +65,16 @@ use App\Resources\AttributeResource;
 use App\Resources\RoleResource;
 use App\Resources\UserResource;
 use App\Resources\BrandResource;
+use App\Resources\LocationResource;
 use Illuminate\Support\ServiceProvider;
 use App\Resources\EmployeeResource;
 use App\Resources\ProductCategoryResource;
 use App\Resources\ProductResource;
 use App\Resources\WarehouseResource;
+use App\Resources\ProductFamilyResource;
+use App\Resources\ProductFamilyAttributeResource;
+use App\Resources\StockTakeResource;
+use App\Resources\StockTakeDetailsResource;
 
 
 class RepositoriesServiceProvider extends ServiceProvider
@@ -211,6 +229,46 @@ class RepositoriesServiceProvider extends ServiceProvider
             return new LocationResource(new Location());
         });
 
+        $this->app->bind(ProductFamilyRepository::class, function () {
+            return new ProductFamilyRepository(new ProductFamily());
+        });
+
+        $this->app->bind(ProductFamilyResource::class, function () {
+            return new ProductFamilyResource(new ProductFamily());
+        });
+
+        $this->app->bind(ProductFamilyAttributeRepository::class, function () {
+            return new ProductFamilyAttributeRepository(new ProductFamilyAttribute());
+        });
+
+        $this->app->bind(ProductFamilyAttributeResource::class, function () {
+            return new ProductFamilyAttributeResource(new ProductFamilyAttribute());
+        });
+
+        $this->app->bind(ProductAvailabilityRepository::class, function () {
+            return new ProductAvailabilityRepository(new ProductAvailability());
+        });
+
+        $this->app->bind(ProductAvailabilityResource::class, function () {
+            return new ProductAvailabilityResource(new ProductAvailability());
+        });
+
+        $this->app->bind(StockTakeRepository::class, function () {
+            return new StockTakeRepository(new StockTake());
+        });
+
+        $this->app->bind(StockTakeResource::class, function () {
+            return new StockTakeResource(new StockTake());
+        });
+
+        $this->app->bind(StockTakeDetailsRepository::class, function () {
+            return new StockTakeDetailsRepository(new StockTakeDetails());
+        });
+
+        $this->app->bind(StockTakeDetailsResource::class, function () {
+            return new StockTakeDetailsResource(new StockTakeDetails());
+        });
+
     }
 
     /**
@@ -226,6 +284,7 @@ class RepositoriesServiceProvider extends ServiceProvider
             EmployeeRepository::class,
             ProductRepository::class,
             BrandRepository::class,
+            LocationRepository::class,
             WarehouseRepository::class,
             ProductAvailabilityRepository::class,
             AttributeRepository::class,
@@ -237,7 +296,12 @@ class RepositoriesServiceProvider extends ServiceProvider
             SupplierRepository::class,
             SystemParameterRepository::class,
             ProductAttributeRepository::class,
+            ProductFamilyRepository::class,
             ProductSpecificationRepository::class,
+            ProductFamilyAttributeRepository::class,
+            ProductAvailabilityRepository::class,
+            StockTakeRepository::class,
+            StockTakeDetailsRepository::class,
         ];
     }
 }

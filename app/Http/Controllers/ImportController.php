@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\ProductionOrdersImport;
-use App\Imports\RecipesImport;
+
 use Illuminate\Support\Facades\DB;
 use App\Models\Brand;
 use App\Models\Import;
@@ -11,8 +10,6 @@ use App\Models\Location;
 use App\Models\Product;
 use App\Models\ProductAvailability;
 use App\Models\ProductCategory;
-use App\Models\Recipe;
-use App\Models\RecipeItems;
 use App\Models\User;
 use App\Resources\ProductResource;
 use GuzzleHttp\Exception\ClientException;
@@ -22,7 +19,6 @@ use stdClass;
 
 class ImportController extends ControllerService
 {
-
     public function syncProduct($sku)
     {
         $api = resolve('Dear\API');
@@ -30,53 +26,11 @@ class ImportController extends ControllerService
         return $this->respondWithObject($product, ProductResource::class);
     }
 
-    public function xlsSyncRecipes(Request $request)
-    {
-
-        $import = new stdClass;
-        if ($request->hasFile('excel') && $request->file('excel')->isValid()) {
-            $path = $request->excel->store('imports');
-            $import = new RecipesImport;
-            $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
-
-            Import::create([
-                'name' => Import::XLS_SYNC_RECIPES,
-                'author_id' => $this->user_id,
-                'rows'  => $import->rows,
-                'status' => ''
-            ]);
-        }
-
-        return $this->respondWithNativeObject($import);
-    }
-
-    public function xlsInsertPO(Request $request)
-    {
-
-        $import = new stdClass;
-        if ($request->hasFile('excel') && $request->file('excel')->isValid()) {
-            $path = $request->excel->store('imports');
-            $import = new ProductionOrdersImport;
-            $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
-        }
-        if(!isset($import->rows) || $import->rows < 1){
-            $this->setStatus(FALSE);
-            $this->setMessage('No rows processed');
-        }
-        return $this->respondWithNativeObject($import);
-    }
 
     public function dearSyncCategories()
     {
         $api = resolve('Dear\API');
         $result = $api->syncCategories();
-
-        Import::create([
-            'name' => Import::DEAR_SYNC_CATEGORIES,
-            'author_id' => $this->user_id,
-            'rows'  => $result,
-            'status' => ''
-        ]);
 
         return $this->respondWithArray([
             'errors'    => [],
@@ -86,106 +40,28 @@ class ImportController extends ControllerService
 
     public function dearSyncLocations()
     {
-        $total      = 0;
-        $flagLoop   = FALSE;
 
-        do {
-            $result = $this->makeRequest('ref/location', [
-                'Page'  => $this->page,
-                'Limit' => $this->limit
-            ]);
-
-            if ($result->status) {
-                $total = $result->Total;
-                $list = $result->LocationList;
-                if ($total > 0) {
-                    foreach ($list as $item) {
-                        Location::updateOrCreate(
-                            ['dear' => $item->ID],
-                            ['name' => formatName($item->Name)]
-                        );
-                        $this->count++;
-                    }
-                }
-
-                $flagLoop = $total > $this->limit && $this->page <= $total / $this->limit;
-                $this->page++;
-            } else {
-                $flagLoop = FALSE;
-            }
-        } while ($flagLoop);
-
-        Import::create([
-            'name' => Import::DEAR_SYNC_LOCATIONS,
-            'author_id' => $this->user_id,
-            'rows'  => $this->count,
-            'status' => 'Errors found: ' . $this->errors_count
-        ]);
+        $api = resolve('Dear\API');
+        $result = $api->syncLocations();
 
         return $this->respondWithArray([
-            'errors'    => $this->errors,
-            'rows'      => $this->count
+            'errors'    => [],
+            'rows'      => $result
         ]);
+
     }
 
     public function dearSyncAvailabilities()
     {
-        $total      = 0;
-        $flagLoop   = FALSE;
 
-        do {
-            $result = $this->makeRequest('ref/productavailability', [
-                'Page'  => $this->page,
-                'Limit' => $this->limit
-            ]);
-
-            if ($result->status) {
-                $total = $result->Total;
-                $list = $result->ProductAvailabilityList;
-                if ($total > 0) {
-                    foreach ($list as $item) {
-                        $product = Product::where('dear', $item->ID)
-                        ->first();
-                        $location = !empty($item->Location) ? Location::where('name', $item->Location)
-                        ->first() : null;
-
-                        if ($product) {
-                            ProductAvailability::updateOrCreate(
-                                ['product_id' => $product->id],
-                                [
-                                    'location_id'       => $location->id ?? null,
-                                    'available_quantity'=> $item->Available >= 0 ? $item->Available : 0
-                                ]
-                            );
-                        }
-                        else{
-                            $this->count++;
-                            if(count($this->errors) <= 50)
-                                $this->errors[] = 'Product not found: ' . 'SKU: ' . $item->SKU;
-                            $this->errors_count++;
-                        }
-
-                    }
-                }
-
-                $flagLoop = $total > $this->limit && $this->page <= $total / $this->limit;
-                $this->page++;
-            } else {
-                $flagLoop = FALSE;
-            }
-        } while ($flagLoop);
-
-        Import::create([
-            'name' => Import::DEAR_SYNC_LOCATIONS,
-            'author_id' => $this->user->id,
-            'rows'  => $this->count,
-            'status' => 'Errors found: ' . $this->errors_count
-        ]);
+        $api = resolve('Dear\API');
+        $result = $api->syncAvailability();
 
         return $this->respondWithArray([
-            'errors'    => $this->errors,
-            'rows'      => $this->count
+            'errors'    => [],
+            'rows'      => $result
         ]);
+
     }
 
     public function dearSyncBrands()
@@ -195,7 +71,7 @@ class ImportController extends ControllerService
 
         Import::create([
             'name' => Import::DEAR_SYNC_BRANDS,
-            'author_id' => $this->user_id,
+            'author_id' => 1,
             'rows'  => $result,
             'status' => ''
         ]);
@@ -213,7 +89,7 @@ class ImportController extends ControllerService
 
         Import::create([
             'name' => Import::DEAR_SYNC_PRODUCTS,
-            'author_id' => $this->user_id,
+            'author_id' => 1,
             'rows'  => $result,
             'status' => ''
         ]);

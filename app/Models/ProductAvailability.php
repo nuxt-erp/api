@@ -11,9 +11,11 @@ class ProductAvailability extends ModelService
      *
      * @var array
      */
+
+     public $timestamps = false;
+
     protected $fillable = [
-        'product_id', 'warehouse_id', 'location_id',
-        'available_quantity'
+        'product_id', 'company_id', 'location_id', 'available', 'on_hand'
     ];
 
     public function getRules($request, $item = null)
@@ -21,16 +23,13 @@ class ProductAvailability extends ModelService
 
         $rules = [
             'product_id'            => ['exists:products,id'],
-            'warehouse_id'          => ['exists:warehouses,id'],
-            'location_id'           => ['nullable', 'exists:locations,id'],
-            'available_quantity'    => ['integer']
-
+            'company_id'            => ['exists:companies,id'],
+            'location_id'           => ['nullable', 'exists:locations,id']
         ];
         //create
         if (is_null($item)) {
-            $rules['product_id'][]          = 'required';
-            $rules['warehouse_id'][]        = 'required';
-            $rules['available_quantity'][]  = 'required';
+            $rules['product_id'][] = 'required';
+            $rules['company_id'][] = 'required';
         }
 
         return $rules;
@@ -41,9 +40,9 @@ class ProductAvailability extends ModelService
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-    public function warehouse()
+    public function company()
     {
-        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     public function location()

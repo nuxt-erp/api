@@ -3,15 +3,15 @@
 namespace App\Repositories;
 
 use Illuminate\Support\Arr;
-use Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\Product;
 
-class SupplierRepository extends RepositoryService
+class ProductFamilyRepository extends RepositoryService
 {
-
     public function getList(array $searchCriteria = [])
     {
         $searchCriteria['order_by'] = [
-            'field'         => 'name',
+            'field'         => 'family_id',
             'direction'     => 'asc'
         ];
 
@@ -20,12 +20,29 @@ class SupplierRepository extends RepositoryService
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
             $this->queryBuilder
-            ->where('name', 'LIKE', $name)
-            ->where('company_id', Auth::user()->company_id);
+            ->where('name', 'LIKE', $name);
         }
-        $this->queryBuilder->where('company_id', Auth::user()->company_id);
+
         return parent::getList($searchCriteria);
     }
+
+    public function getListProducts(array $searchCriteria = [])
+    {
+        $searchCriteria['order_by'] = [
+            'field'         => 'attribute_id',
+            'direction'     => 'asc'
+        ];
+
+        $searchCriteria['per_page'] = 50;
+
+        if (!empty($searchCriteria['family_id']))
+        {
+            $data = Product::where('family_id', $searchCriteria['family_id'])->get();
+        }
+
+        return $data;
+    }
+
 
     public function findBy(array $searchCriteria = [])
     {
@@ -36,13 +53,16 @@ class SupplierRepository extends RepositoryService
             $searchCriteria['name'] = $name;
         }
 
-        $this->queryBuilder->where('company_id', Auth::user()->company_id);
+        if (!empty($searchCriteria['id'])) {
+            $this->queryBuilder
+            ->where('id', Arr::pull($searchCriteria, 'id'));
+        }
+
         return parent::findBy($searchCriteria);
     }
 
     public function store($data)
     {
-        $data["company_id"] = Auth::user()->company_id;
         parent::store($data);
     }
 
@@ -50,4 +70,5 @@ class SupplierRepository extends RepositoryService
     {
         parent::update($model, $data);
     }
+
 }

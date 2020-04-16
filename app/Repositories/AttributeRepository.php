@@ -20,13 +20,10 @@ class AttributeRepository extends RepositoryService
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
             $this->queryBuilder
-            ->where('name', 'LIKE', $name)
-            ->where('company_id', Auth::user()->company_id);
-        } else {
-            $this->queryBuilder
-            ->where('company_id', Auth::user()->company_id);
+            ->where('name', 'LIKE', $name);
         }
 
+        $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::getList($searchCriteria);
     }
 
@@ -38,6 +35,7 @@ class AttributeRepository extends RepositoryService
             $searchCriteria['where']      = 'OR';
             $searchCriteria['name'] = $name;
         }
+        $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::findBy($searchCriteria);
     }
 

@@ -22,7 +22,6 @@ class ProductCategory extends ModelService
         $rules = [
             'name'          => ['string', 'max:255'],
             'dear'          => ['nullable', 'max:255']
-
         ];
 
         if (is_null($item)) {

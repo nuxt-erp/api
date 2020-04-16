@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Support\Arr;
 use Auth;
+use  App\Models\SystemParameter;
 
 class SystemParameterRepository extends RepositoryService
 {
@@ -50,5 +51,9 @@ class SystemParameterRepository extends RepositoryService
     public function update($model, array $data)
     {
         parent::update($model, $data);
+    }
+
+    public function getCountTypeList() {
+        return SystemParameter::where('param_name', 'count_type')->orderBy('param_value')->get();
     }
 }

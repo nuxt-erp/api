@@ -29,6 +29,8 @@ class ProductResource extends JsonResource
             'category_name' => optional($this->category)->name,
             'supplier_id'   => $this->supplier_id,
             'supplier_name' => optional($this->supplier)->name,
+            'location_id'   => $this->location_id,
+            'location_name' => optional($this->location)->name,
             'can_be_deleted'=> true
         ];
     }

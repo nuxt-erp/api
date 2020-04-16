@@ -4,21 +4,24 @@ namespace App\Repositories;
 
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
+use Auth;
 
 class ProductAvailabilityRepository extends RepositoryService
 {
 
     public function findBy(array $searchCriteria = [])
     {
+        $searchCriteria['order_by'] = [
+            'field'         => 'id',
+            'direction'     => 'asc'
+        ];
 
-        if(Arr::has($searchCriteria, 'product_name')){
-            $this->queryBuilder->whereHas('product', function (Builder $query) use($searchCriteria) {
-                $name = '%'.Arr::pull($searchCriteria, 'product_name').'%';
-                $query->where('name', 'LIKE', $name)
-                ->orWhere('sku', 'LIKE', $name);
-            });
+        if (!empty($searchCriteria['name'])) {
+            $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
+            $this->queryBuilder->where('product.name', 'LIKE', $name);
         }
 
+        $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::findBy($searchCriteria);
     }
 }
