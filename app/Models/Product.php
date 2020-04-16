@@ -39,12 +39,21 @@ class Product extends Model
     }*/
 
     public function attributes() {
-        return $this->hasMany('App\ProductAttribute');
+        return $this->hasMany('App\Models\ProductAttribute');
+    }
+
+    public function availability() {
+        return $this->hasMany('App\Models\ProductAvailability', 'product_id');
     }
 
     public function brand()
     {
         return $this->belongsTo(Brand::class, 'brand_id');
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id');
     }
 
     public function category()

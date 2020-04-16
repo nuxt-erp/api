@@ -15,15 +15,16 @@ class ProductAvailabilityResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'                    => $this->id,
-            'product_id'            => $this->product_id,
-            'product_name'          => $this->product->name,
-            'company_id'            => $this->company_id,
-            'company_name'          => optional($this->company)->name,
-            'location_id'           => $this->location_id,
-            'location_name'         => optional($this->location)->name,
+            'product_id'            => $this->id,
+            'name'                  => $this->name,
+            'location_name'         => $this->location_name,
             'available'             => $this->available,
-            'on_hand'               => $this->on_hand
+            'on_hand'               => $this->on_hand,
+            'sku'                   => $this->sku,
+            'brand_id'              => $this->brand_id,
+            'brand_name'            => optional($this->brand)->name,
+            'category_id'           => $this->category_id,
+            'category_name'         => optional($this->category)->name
         ];
     }
 }

@@ -22,6 +22,8 @@ use App\Models\User;
 use App\Models\ProductFamily;
 use App\Models\ProductFamilyAttribute;
 use App\Models\ProductAvailability;
+use App\Models\StockTake;
+use App\Models\StockTakeDetails;
 
 
 // REPOSITORIES
@@ -44,6 +46,8 @@ use App\Repositories\EmployeeRepository;
 use App\Repositories\ProductRepository;
 use App\Repositories\ProductFamilyRepository;
 use App\Repositories\ProductFamilyAttributeRepository;
+use App\Repositories\StockTakeRepository;
+use App\Repositories\StockTakeDetailsRepository;
 
 
 // RESOURCES
@@ -69,6 +73,8 @@ use App\Resources\ProductResource;
 use App\Resources\WarehouseResource;
 use App\Resources\ProductFamilyResource;
 use App\Resources\ProductFamilyAttributeResource;
+use App\Resources\StockTakeResource;
+use App\Resources\StockTakeDetailsResource;
 
 
 class RepositoriesServiceProvider extends ServiceProvider
@@ -247,6 +253,22 @@ class RepositoriesServiceProvider extends ServiceProvider
             return new ProductAvailabilityResource(new ProductAvailability());
         });
 
+        $this->app->bind(StockTakeRepository::class, function () {
+            return new StockTakeRepository(new StockTake());
+        });
+
+        $this->app->bind(StockTakeResource::class, function () {
+            return new StockTakeResource(new StockTake());
+        });
+
+        $this->app->bind(StockTakeDetailsRepository::class, function () {
+            return new StockTakeDetailsRepository(new StockTakeDetails());
+        });
+
+        $this->app->bind(StockTakeDetailsResource::class, function () {
+            return new StockTakeDetailsResource(new StockTakeDetails());
+        });
+
     }
 
     /**
@@ -278,6 +300,8 @@ class RepositoriesServiceProvider extends ServiceProvider
             ProductSpecificationRepository::class,
             ProductFamilyAttributeRepository::class,
             ProductAvailabilityRepository::class,
+            StockTakeRepository::class,
+            StockTakeDetailsRepository::class,
         ];
     }
 }

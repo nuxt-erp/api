@@ -33,6 +33,10 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('parameters', 'Admin\SystemParameterController');
     });
 
+    // PARAMETERS
+    Route::get('admin/getCountTypeList', 'Admin\SystemParameterController@getCountTypeList');
+
+
     // BASIC ADMIN
     Route::group(['prefix' => 'inventory'], function () {
         Route::resource('brands', 'Inventory\BrandController');
@@ -46,14 +50,18 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_family_attributes', 'Inventory\ProductFamilyAttributeController');
         Route::resource('product_specifications', 'Inventory\ProductSpecificationController');
         Route::resource('availabilities', 'Inventory\AvailabilityController');
+        Route::resource('stocktake', 'Inventory\StockTakeController');
     });
+
+    // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY
+    Route::get('inventory/product_availabilities', 'Inventory\ProductController@productAvailabilities');
 
     // PRODUCT FAMILY
     Route::get('product_families/get_products', 'Inventory\ProductFamilyController@getListProducts'); // LIST ALL PRODUCTS FROM CURRENT FAMILY
 
 
      // IMPORTS
-     Route::group(['prefix' => 'import'], function () {
+    Route::group(['prefix' => 'import'], function () {
         Route::get('brands', 'ImportController@dearSyncBrands');
         Route::get('categories', 'ImportController@dearSyncCategories');
         Route::get('locations', 'ImportController@dearSyncLocations');

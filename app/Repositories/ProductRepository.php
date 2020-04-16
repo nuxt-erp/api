@@ -17,43 +17,8 @@ class ProductRepository extends RepositoryService
     private $result = [];
     private $generate = false; // GENERATE PRODUCT FAMILY
 
-    public function getList(array $searchCriteria = [])
-    {
-
-        $searchCriteria['order_by'] = [
-            'field'         => 'name',
-            'direction'     => 'asc'
-        ];
-
-        $searchCriteria['per_page'] = 50;
-
-        if(!empty($searchCriteria['category_name'])){
-            $category = Arr::pull($searchCriteria, 'category_name');
-            $this->queryBuilder->whereHas('category', function ($query) use ($category) {
-                $query->where('product_categories.name', $category);
-            });
-        }
-
-        if (!empty($searchCriteria['name'])) {
-            $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
-            $this->queryBuilder
-            ->where('name', 'LIKE', $name)
-            ->orWhere('sku', 'LIKE', $name);
-        }
-
-        if (!empty($searchCriteria['sku'])) {
-            $this->queryBuilder
-            ->where('sku', 'LIKE', '%' . Arr::pull($searchCriteria, 'sku') . '%');
-        }
-
-        $this->queryBuilder->where('company_id', Auth::user()->company_id);
-
-        return parent::getList($searchCriteria);
-    }
-
     public function findBy(array $searchCriteria = [])
     {
-
         if (!empty($searchCriteria['sku'])) {
             $sku = '%' . Arr::pull($searchCriteria, 'sku') . '%';
             $this->queryBuilder
@@ -64,6 +29,16 @@ class ProductRepository extends RepositoryService
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
             ->where('id', $searchCriteria['id']);
+        }
+
+        if (!empty($searchCriteria['category_id'])) {
+            $this->queryBuilder
+            ->where('category_id', $searchCriteria['category_id']);
+        }
+
+        if (!empty($searchCriteria['brand_id'])) {
+            $this->queryBuilder
+            ->where('brand_id', $searchCriteria['brand_id']);
         }
 
         if (!empty($searchCriteria['name'])) {
@@ -83,6 +58,40 @@ class ProductRepository extends RepositoryService
 
         $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::findBy($searchCriteria);
+    }
+
+    public function productAvailabilities(array $searchCriteria = []) {
+
+
+        $this->queryBuilder->select('products.id', 'products.name', 'products.sku', 'locations.name as location_name', 'pa.on_hand', 'products.category_id', 'products.brand_id');
+        // EDITING STOCKTAKE
+        if (!empty($searchCriteria['stocktake_id']))
+        {
+            $this->queryBuilder->addSelect('dt.qty as available');
+            $this->queryBuilder->leftJoin('stocktake_details dt', 'dt.product_id', 'products.id');
+        }
+
+        $this->queryBuilder->leftJoin('product_availabilities as pa', 'pa.product_id', 'products.id');
+        $this->queryBuilder->join('locations', 'locations.id', 'pa.location_id');
+
+        if (!empty($searchCriteria['stocktake_id'])) {
+            $this->queryBuilder
+            ->where('stocktake_id', $searchCriteria['stocktake_id']);
+        }
+
+        if (!empty($searchCriteria['category_id'])) {
+            $this->queryBuilder
+            ->where('category_id', $searchCriteria['category_id']);
+        }
+
+        if (!empty($searchCriteria['brand_id'])) {
+            $this->queryBuilder
+            ->where('brand_id', $searchCriteria['brand_id']);
+        }
+
+        $this->queryBuilder->where('products.company_id', Auth::user()->company_id);
+        return parent::findBy($searchCriteria);
+
     }
 
     public function store($data)
