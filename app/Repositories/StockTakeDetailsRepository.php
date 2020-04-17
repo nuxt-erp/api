@@ -9,7 +9,11 @@ class StockTakeDetailsRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {
-        $this->queryBuilder->where('company_id', Auth::user()->company_id);
+        if (!empty($searchCriteria['id'])) {
+            $this->queryBuilder
+            ->where('stocktake_id', $searchCriteria['id']);
+        }
+
         return parent::findBy($searchCriteria);
     }
 }

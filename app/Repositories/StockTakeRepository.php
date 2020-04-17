@@ -5,17 +5,19 @@ namespace App\Repositories;
 use Illuminate\Support\Arr;
 use Auth;
 use App\Models\StockTakeDetails;
+use Illuminate\Support\Facades\DB;
 
 class StockTakeRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {
-        if (!empty($searchCriteria['sku'])) {
-            $sku = '%' . Arr::pull($searchCriteria, 'sku') . '%';
-            $this->queryBuilder
-            ->where('sku', 'LIKE', $sku)
-            ->orWhere('name', 'LIKE', $sku);
-        }
+
+        $this->queryBuilder->select('id', 'name', 'date' , 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'company_id', 'status', 'brand_id',  'category_id', 'location_id');
+
+        $this->queryBuilder->addSelect(\DB::raw('
+        ROUND(((SELECT SUM(if(ABS(d.variance) <= stocktake.target, 1, 0)) FROM stocktake_details d WHERE stocktake_id = stocktake.id)
+        /
+        (SELECT count(*) FROM stocktake_details d2 WHERE d2.stocktake_id = stocktake.id) * 100), 2)  as success_rate'));
 
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
@@ -32,6 +34,11 @@ class StockTakeRepository extends RepositoryService
             ->where('brand_id', $searchCriteria['brand_id']);
         }
 
+        if (!empty($searchCriteria['location_id'])) {
+            $this->queryBuilder
+            ->where('location_id', $searchCriteria['location_id']);
+        }
+
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
             $searchCriteria['query_type'] = 'LIKE';
@@ -46,20 +53,33 @@ class StockTakeRepository extends RepositoryService
 
     public function store($data)
     {
-        // SET LOGGED USER'S COMPANY
-        $data["company_id"] = Auth::user()->company_id;
-        // SAVE STOCK TAKE
-        parent::store($data);
-        // SAVE STOCK TAKE PRODUCTS
-        $this->saveStockTakeDetails($data, $this->model->id);
+        DB::transaction(function () use ($data)
+        {
+            // SET LOGGED USER'S COMPANY
+            $data["company_id"] = Auth::user()->company_id;
+            // SAVE STOCK TAKE
+            parent::store($data);
+            // SAVE STOCK TAKE PRODUCTS
+            $this->saveStockTakeDetails($data, $this->model->id);
+        });
+    }
+
+    public function update($model, array $data)
+    {
+        DB::transaction(function () use ($data)
+        {
+            parent::update($model, $data);
+            // UPDATE STOCK TAKE PRODUCTS
+            $this->saveStockTakeDetails($data, $this->model->id);
+        });
     }
 
     private function saveStockTakeDetails($data, $id)
     {
 
-        if (isset($data["prod_attributes"]))
+        if (isset($data["list_products"]))
         {
-            $object = $data["prod_attributes"];
+            $object = $data["list_products"];
             $row    = 0;
             $tot    = 0;
 
@@ -80,24 +100,30 @@ class StockTakeRepository extends RepositoryService
                             if ($attributes[$i]!=0)
                             {
                                 $qty        = 0;
+                                $notes      = "";
                                 $get_array  = $attributes[$i];
 
-                                if (array_key_exists('qty', $get_array))
-                                {
+                                if (array_key_exists('qty', $get_array)) {
                                     $qty = isset($get_array["qty"]) ? $get_array["qty"] : 0;
-                                }
-                                else
-                                {
+                                } else {
                                     $qty = 0;
+                                }
+
+                                if (array_key_exists('notes', $get_array)) {
+                                    $notes = isset($get_array["notes"]) ? $get_array["notes"] : "";
+                                } else {
+                                    $notes = "";
                                 }
 
                                 StockTakeDetails::updateOrCreate([
                                     'stocktake_id'  => $id,
-                                    'product_id'    => $get_array["product_id"]
+                                    'product_id'    => $get_array["product_id"],
+                                    'location_id'   => $data["location_id"]
                                 ],[
                                     'qty'           => $qty,
                                     'stock_on_hand' => $get_array["on_hand"],
-                                    'variance'      => ($qty - $get_array["on_hand"])
+                                    'variance'      => ($qty - $get_array["on_hand"]),
+                                    'notes'         => $notes
                                 ]);
 
                             }

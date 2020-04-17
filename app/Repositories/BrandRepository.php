@@ -14,7 +14,7 @@ class BrandRepository extends RepositoryService
             'direction'     => 'asc'
         ];
 
-        $searchCriteria['per_page'] = 150;
+        $searchCriteria['per_page'] = 300;
 
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';

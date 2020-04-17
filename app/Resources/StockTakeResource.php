@@ -10,7 +10,6 @@ class StockTakeResource extends JsonResource
     {
         return [
             'id'                        => $this->id,
-            'sku'                       => $this->sku,
             'name'                      => $this->name,
             'date'                      => $this->date,
             'target'                    => $this->target,
@@ -20,16 +19,16 @@ class StockTakeResource extends JsonResource
             'variance_last_count_id'    => $this->variance_last_count_id,
             'company_id'                => $this->company_id,
             'company_name'              => optional($this->company)->name,
-            'status'                    => $this->status,
+            'status'                    => $this->status == 1 ? "COMPLETED" : "IN PROGRESS",
             'brand_id'                  => $this->brand_id,
             'brand_name'                => optional($this->brand)->name,
             'category_id'               => $this->category_id,
             'category_name'             => optional($this->category)->name,
-            'supplier_id'               => $this->supplier_id,
-            'supplier_name'             => optional($this->supplier)->name,
-            'location_name'             => $this->location_name,
-            'on_hand'                   => $this->on_hand,
-            'qty'                       => $this->available,
+            'location_id'               => $this->location_id,
+            'location_name'             => optional($this->location)->name,
+            'net_var'                   => $this->net_var,
+            'abs_var'                   => $this->abs_var,
+            'success_rate'              => $this->success_rate,
             'can_be_deleted'            => true
         ];
     }

@@ -10,7 +10,16 @@ class StockTakeDetails extends Model
     public $table       = "stocktake_details";
 
     protected $fillable = [
-        'stocktake_id', 'product_id', 'qty', 'stock_on_hand', 'variance', 'notes'
+        'stocktake_id', 'product_id', 'qty', 'stock_on_hand', 'variance', 'notes', 'location_id'
     ];
 
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id');
+    }
 }
