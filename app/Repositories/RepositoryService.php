@@ -92,7 +92,7 @@ abstract class RepositoryService implements RepositoryInterface
         }
 
         if(!isset($searchCriteria['per_page']))
-            $this->queryBuilder->limit(15);
+            $this->queryBuilder->limit(20);
 
         $collection = $this->queryBuilder->get();
 
@@ -108,7 +108,7 @@ abstract class RepositoryService implements RepositoryInterface
             $this->queryBuilder->orderBy($searchCriteria['order_by']['field'], $searchCriteria['order_by']['direction']);
         }
 
-        $limit = !empty($searchCriteria['per_page']) ? (int) $searchCriteria['per_page'] : 15; // it's needed for pagination
+        $limit = !empty($searchCriteria['per_page']) ? (int) $searchCriteria['per_page'] : 20; // it's needed for pagination
 
         $this->queryBuilder->where(function ($query) use ($searchCriteria) {
             $this->applySearchCriteriaInQueryBuilder($query, $searchCriteria);

@@ -51,6 +51,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_specifications', 'Inventory\ProductSpecificationController');
         Route::resource('availabilities', 'Inventory\AvailabilityController');
         Route::resource('stocktake', 'Inventory\StockTakeController');
+        Route::resource('stocktake_details', 'Inventory\StockTakeDetailsController');
     });
 
     // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY

@@ -12,9 +12,11 @@ class ProductAvailabilityRepository extends RepositoryService
     public function findBy(array $searchCriteria = [])
     {
         $searchCriteria['order_by'] = [
-            'field'         => 'id',
+            'field'         => 'name',
             'direction'     => 'asc'
         ];
+
+        $searchCriteria['per_page'] = 100;
 
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';

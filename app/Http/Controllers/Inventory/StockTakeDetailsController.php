@@ -1,85 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Inventory;
 
-use App\StockTakeDetails;
-use Illuminate\Http\Request;
+use App\Http\Controllers\ControllerService;
+use App\Repositories\StockTakeDetailsRepository;
+use App\Resources\StockTakeDetailsResource;
 
-class StockTakeDetailsController extends Controller
+class StockTakeDetailsController extends ControllerService
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+    protected $repository;
+    protected $resource;
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function __construct(StockTakeDetailsRepository $repository, StockTakeDetailsResource $resource)
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\StockTakeDetails  $stockTakeDetails
-     * @return \Illuminate\Http\Response
-     */
-    public function show(StockTakeDetails $stockTakeDetails)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\StockTakeDetails  $stockTakeDetails
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(StockTakeDetails $stockTakeDetails)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\StockTakeDetails  $stockTakeDetails
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, StockTakeDetails $stockTakeDetails)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\StockTakeDetails  $stockTakeDetails
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(StockTakeDetails $stockTakeDetails)
-    {
-        //
+        $this->repository = $repository;
+        $this->resource = $resource;
     }
 }
