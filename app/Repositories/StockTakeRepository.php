@@ -9,8 +9,10 @@ use App\Models\StockTake;
 use App\Models\ProductAvailability;
 use Illuminate\Support\Facades\DB;
 
+
 class StockTakeRepository extends RepositoryService
 {
+
     public function findBy(array $searchCriteria = [])
     {
         $this->queryBuilder->select('id', 'name', 'date' , 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'company_id', 'status', 'brand_id',  'category_id', 'location_id');
@@ -70,8 +72,7 @@ class StockTakeRepository extends RepositoryService
             ]);
         }
 
-        parent::delete($id);
-
+        parent::destroy($id);
     }
 
     public function store($data)

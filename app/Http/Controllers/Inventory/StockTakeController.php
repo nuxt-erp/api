@@ -23,5 +23,4 @@ class StockTakeController extends ControllerService
         $status = $this->repository->finish($stocktake_id);
         return $this->setStatusCode(201)->respondWithObject($this->repository->model, $this->resource);
     }
-
 }

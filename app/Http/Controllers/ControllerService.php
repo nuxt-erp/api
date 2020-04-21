@@ -119,23 +119,6 @@ class ControllerService extends LaravelController implements ControllerInterface
         }
     }
 
-    public function delete($id)
-    {
-        $item = $this->repository->findOne($id);
-
-        if($this instanceof WithAllPolicies){
-            $this->authorize('destroy', $item);
-        }
-
-        $result = $this->repository->delete($item);
-
-        if ($result) {
-            return $this->deletedResponse();
-        } else {
-            return $this->notFoundResponse(['id' => $id]);
-        }
-    }
-
     public function destroy($id)
     {
         $item = $this->repository->findOne($id);
@@ -145,8 +128,6 @@ class ControllerService extends LaravelController implements ControllerInterface
         }
 
         $result = $this->repository->delete($item);
-
-        echo "destroy result " . $result . "\n";
 
         if ($result) {
             return $this->deletedResponse();

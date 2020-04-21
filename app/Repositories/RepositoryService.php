@@ -210,8 +210,9 @@ abstract class RepositoryService implements RepositoryInterface
     }
 
 
-    public function delete($model)
+    public function destroy($model)
     {
+
         // we don't need to delete NULL, right?
         if (is_null($model)) {
             $result = FALSE;
@@ -226,12 +227,10 @@ abstract class RepositoryService implements RepositoryInterface
                 throw new ConstrainException('delete', $e->errorInfo[1]);
             }
         }
-
         return $result;
-
     }
 
-    public function destroy($model)
+    public function delete($model)
     {
         // we don't need to delete NULL, right?
         if (is_null($model)) {
