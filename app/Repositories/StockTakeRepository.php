@@ -5,13 +5,14 @@ namespace App\Repositories;
 use Illuminate\Support\Arr;
 use Auth;
 use App\Models\StockTakeDetails;
+use App\Models\StockTake;
+use App\Models\ProductAvailability;
 use Illuminate\Support\Facades\DB;
 
 class StockTakeRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {
-
         $this->queryBuilder->select('id', 'name', 'date' , 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'company_id', 'status', 'brand_id',  'category_id', 'location_id');
 
         $this->queryBuilder->addSelect(\DB::raw('
@@ -51,6 +52,28 @@ class StockTakeRepository extends RepositoryService
         return parent::findBy($searchCriteria);
     }
 
+    public function delete($id)
+    {
+        // GET ALL SAVED QTY FROM COUNTING
+        $stock = StockTakeDetails::where('stocktake_id', $id->id)->get();
+
+        foreach ($stock as $value)
+        {
+            ProductAvailability::updateOrCreate([
+                'product_id'  => $value->product_id,
+                'company_id'  => Auth::user()->company_id,
+                'location_id' => $value->location_id
+            ],
+            [
+                'available' => $value->stock_on_hand, // PREVIOUS QTY
+                'on_hand'   => $value->stock_on_hand  // PREVIOUS QTY
+            ]);
+        }
+
+        parent::delete($id);
+
+    }
+
     public function store($data)
     {
         DB::transaction(function () use ($data)
@@ -73,6 +96,35 @@ class StockTakeRepository extends RepositoryService
             $this->saveStockTakeDetails($data, $this->model->id);
         });
     }
+
+    // ADJUST & FINISH STOCK COUNT
+    public function finish($stocktake_id)
+    {
+        DB::transaction(function () use ($stocktake_id)
+        {
+
+            // GET ALL SAVED QTY FROM COUNTING
+            $stock = StockTakeDetails::where('stocktake_id', $stocktake_id)->get();
+
+            foreach ($stock as $value)
+            {
+                ProductAvailability::updateOrCreate([
+                    'product_id'  => $value->product_id,
+                    'company_id'  => Auth::user()->company_id,
+                    'location_id' => $value->location_id
+                ],
+                [
+                    'available' => $value->stock_on_hand, //PREVIOUS QTY
+                    'on_hand'   => $value->qty // QTY COUNTED
+                ]);
+            }
+
+            // SAVE STATUS AS FINISHED
+            StockTake::where('id', $stocktake_id)->update(['status' => true]);
+            return true;
+        });
+    }
+
 
     private function saveStockTakeDetails($data, $id)
     {
