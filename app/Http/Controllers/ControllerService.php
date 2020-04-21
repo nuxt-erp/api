@@ -121,7 +121,6 @@ class ControllerService extends LaravelController implements ControllerInterface
 
     public function destroy($id)
     {
-
         $item = $this->repository->findOne($id);
 
         if($this instanceof WithAllPolicies){
