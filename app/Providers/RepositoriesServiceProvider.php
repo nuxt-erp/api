@@ -75,6 +75,7 @@ use App\Resources\ProductFamilyResource;
 use App\Resources\ProductFamilyAttributeResource;
 use App\Resources\StockTakeResource;
 use App\Resources\StockTakeDetailsResource;
+use App\Resources\ProductAvailabilityStockCountResource;
 
 
 class RepositoriesServiceProvider extends ServiceProvider
@@ -267,6 +268,10 @@ class RepositoriesServiceProvider extends ServiceProvider
 
         $this->app->bind(StockTakeDetailsResource::class, function () {
             return new StockTakeDetailsResource(new StockTakeDetails());
+        });
+
+        $this->app->bind(ProductAvailabilityStockCountResource::class, function () {
+            return new ProductAvailabilityStockCountResource(new ProductAvailability());
         });
 
     }

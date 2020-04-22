@@ -49,8 +49,10 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('availabilities', 'Inventory\AvailabilityController');
         Route::resource('stocktake', 'Inventory\StockTakeController');
         Route::resource('stocktake_details', 'Inventory\StockTakeDetailsController');
-        Route::get('product_availabilities', 'Inventory\AvailabilityController@productAvailabilities'); // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY
+
     });
+
+    Route::get('inventory/product_availabilities', 'Inventory\AvailabilityController@productAvailabilities')->name('product_availabilities.productAvailabilities'); // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY
 
     // ADJUST AND FINISH STOCK TAKE
     Route::get('inventory/stocktake/finish/{id?}', 'Inventory\StockTakeController@finish');

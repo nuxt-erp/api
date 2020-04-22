@@ -16,7 +16,6 @@ class ProductAvailabilityRepository extends RepositoryService
             'direction'     => 'asc'
         ];
 
-       //
 
         $searchCriteria['per_page'] = 100;
 
@@ -49,9 +48,9 @@ class ProductAvailabilityRepository extends RepositoryService
 
         $searchCriteria['per_page'] = 100;
 
-        $this->queryBuilder->select('products.id', 'products.name', 'products.sku', 'product_availabilities.location_id', 'locations.name as location_name', 'product_availabilities.on_hand', 'products.category_id', 'products.brand_id');
-        $this->queryBuilder->join('products', 'product_availabilities.product_id', 'products.id');
 
+        $this->queryBuilder->select('products.id', 'products.name', 'products.sku', 'product_availabilities.location_id', 'product_availabilities.on_hand', 'products.category_id', 'products.brand_id');
+        $this->queryBuilder->join('products', 'product_availabilities.product_id', 'products.id');
 
          // EDITING STOCKTAKE
          if (!empty($searchCriteria['stocktake_id']))
@@ -86,7 +85,9 @@ class ProductAvailabilityRepository extends RepositoryService
              ->where('brand_id', Arr::pull($searchCriteria, 'brand_id'));
          }
 
+
          $this->queryBuilder->where('products.company_id', Auth::user()->company_id);
+
          return parent::findBy($searchCriteria);
 
      }

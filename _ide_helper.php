@@ -3,7 +3,7 @@
 
 /**
  * A helper file for Laravel 5, to provide autocomplete information to your IDE
- * Generated for Laravel 6.16.0 on 2020-02-21 20:06:03.
+ * Generated for Laravel 6.16.0 on 2020-04-22 17:16:25.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -14973,6 +14973,103 @@ namespace Illuminate\Support {
  
 }
 
+namespace Lanin\Laravel\ApiDebugger\Support { 
+
+    /**
+     * 
+     *
+     */ 
+    class Facade {
+        
+        /**
+         * Inject custom collection.
+         *
+         * @param \Lanin\Laravel\ApiDebugger\Collection $collection
+         * @static 
+         */ 
+        public static function populateWith($collection)
+        {
+                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
+                        return $instance->populateWith($collection);
+        }
+        
+        /**
+         * Add vars to debug output.
+         *
+         * @static 
+         */ 
+        public static function dump()
+        {
+                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
+                        return $instance->dump();
+        }
+        
+        /**
+         * Start profiling event.
+         *
+         * @param string $name
+         * @static 
+         */ 
+        public static function startProfiling($name)
+        {
+                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
+                        return $instance->startProfiling($name);
+        }
+        
+        /**
+         * Finish profiling event.
+         *
+         * @param string $name
+         * @static 
+         */ 
+        public static function stopProfiling($name)
+        {
+                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
+                        return $instance->stopProfiling($name);
+        }
+        
+        /**
+         * Profile action.
+         *
+         * @param string $name
+         * @param \Closure $action
+         * @return mixed 
+         * @static 
+         */ 
+        public static function profileMe($name, $action)
+        {
+                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
+                        return $instance->profileMe($name, $action);
+        }
+        
+        /**
+         * Get the current response key
+         *
+         * @return string 
+         * @static 
+         */ 
+        public static function getResponseKey()
+        {
+                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
+                        return $instance->getResponseKey();
+        }
+        
+        /**
+         * Set response attribute key name.
+         *
+         * @param $key
+         * @static 
+         */ 
+        public static function setResponseKey($key)
+        {
+                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
+                        return $instance->setResponseKey($key);
+        }
+         
+    }
+ 
+}
+
 namespace Facade\Ignition\Facades { 
 
     /**
@@ -15232,103 +15329,6 @@ namespace Facade\Ignition\Facades {
         {
                         /** @var \Facade\FlareClient\Flare $instance */
                         return $instance->group($groupName, $properties);
-        }
-         
-    }
- 
-}
-
-namespace Lanin\Laravel\ApiDebugger\Support { 
-
-    /**
-     * 
-     *
-     */ 
-    class Facade {
-        
-        /**
-         * Inject custom collection.
-         *
-         * @param \Lanin\Laravel\ApiDebugger\Collection $collection
-         * @static 
-         */ 
-        public static function populateWith($collection)
-        {
-                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
-                        return $instance->populateWith($collection);
-        }
-        
-        /**
-         * Add vars to debug output.
-         *
-         * @static 
-         */ 
-        public static function dump()
-        {
-                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
-                        return $instance->dump();
-        }
-        
-        /**
-         * Start profiling event.
-         *
-         * @param string $name
-         * @static 
-         */ 
-        public static function startProfiling($name)
-        {
-                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
-                        return $instance->startProfiling($name);
-        }
-        
-        /**
-         * Finish profiling event.
-         *
-         * @param string $name
-         * @static 
-         */ 
-        public static function stopProfiling($name)
-        {
-                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
-                        return $instance->stopProfiling($name);
-        }
-        
-        /**
-         * Profile action.
-         *
-         * @param string $name
-         * @param \Closure $action
-         * @return mixed 
-         * @static 
-         */ 
-        public static function profileMe($name, $action)
-        {
-                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
-                        return $instance->profileMe($name, $action);
-        }
-        
-        /**
-         * Get the current response key
-         *
-         * @return string 
-         * @static 
-         */ 
-        public static function getResponseKey()
-        {
-                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
-                        return $instance->getResponseKey();
-        }
-        
-        /**
-         * Set response attribute key name.
-         *
-         * @param $key
-         * @static 
-         */ 
-        public static function setResponseKey($key)
-        {
-                        /** @var \Lanin\Laravel\ApiDebugger\Debugger $instance */
-                        return $instance->setResponseKey($key);
         }
          
     }
@@ -18467,9 +18467,9 @@ namespace  {
 
     class View extends \Illuminate\Support\Facades\View {}
 
-    class Flare extends \Facade\Ignition\Facades\Flare {}
-
     class Debugger extends \Lanin\Laravel\ApiDebugger\Support\Facade {}
+
+    class Flare extends \Facade\Ignition\Facades\Flare {}
 
     class Excel extends \Maatwebsite\Excel\Facades\Excel {}
  
