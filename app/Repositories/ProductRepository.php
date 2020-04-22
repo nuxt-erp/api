@@ -69,51 +69,6 @@ class ProductRepository extends RepositoryService
         return parent::findBy($searchCriteria);
     }
 
-    // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
-    /*public function productAvailabilities(array $searchCriteria = [])
-    {
-        $searchCriteria['order_by'] = [
-            'field'         => 'name',
-            'direction'     => 'asc'
-        ];
-
-        $searchCriteria['per_page'] = 100;
-
-        $this->queryBuilder->select('products.id', 'products.name', 'products.sku', 'pa.location_id', 'locations.name as location_name', 'pa.on_hand', 'products.category_id', 'products.brand_id');
-        // EDITING STOCKTAKE
-        if (!empty($searchCriteria['stocktake_id']))
-        {
-            $this->queryBuilder->addSelect('dt.qty as qty');
-            $this->queryBuilder->leftJoin('stocktake_details dt', 'dt.product_id', 'products.id');
-        }
-
-        $this->queryBuilder->leftJoin('product_availabilities as pa', 'pa.product_id', 'products.id');
-        if ($searchCriteria['location_id']) {
-            $this->queryBuilder->join('locations', 'locations.id', 'pa.location_id')->where('pa.location_id', $searchCriteria['location_id']);
-        } else {
-            $this->queryBuilder->join('locations', 'locations.id', 'pa.location_id');
-        }
-
-
-        if (!empty($searchCriteria['stocktake_id'])) {
-            $this->queryBuilder
-            ->where('stocktake_id', $searchCriteria['stocktake_id']);
-        }
-
-        if (!empty($searchCriteria['category_id'])) {
-            $this->queryBuilder
-            ->where('category_id', $searchCriteria['category_id']);
-        }
-
-        if (!empty($searchCriteria['brand_id'])) {
-            $this->queryBuilder
-            ->where('brand_id', $searchCriteria['brand_id']);
-        }
-
-        $this->queryBuilder->where('products.company_id', Auth::user()->company_id);
-        return parent::findBy($searchCriteria);
-
-    }*/
 
     public function store($data)
     {

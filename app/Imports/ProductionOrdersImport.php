@@ -26,12 +26,12 @@ class ProductionOrdersImport implements ToArray, WithHeadingRow
     {
         DB::transaction(function () use ($rows) {
             $user   = auth()->user();
-            $import = Import::create([
+            /*$import = Import::create([
                 'name'      => Import::XLS_INSERT_MO,
                 'author_id' => $user->id,
                 'rows'      => 0,
                 'status'    => ''
-            ]);
+            ]);*/
             $not_found = [];
 
             foreach ($rows as $row) {

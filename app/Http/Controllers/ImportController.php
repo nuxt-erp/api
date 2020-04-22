@@ -69,12 +69,12 @@ class ImportController extends ControllerService
         $api = resolve('Dear\API');
         $result = $api->syncBrands();
 
-        Import::create([
+        /*Import::create([
             'name' => Import::DEAR_SYNC_BRANDS,
             'author_id' => 1,
             'rows'  => $result,
             'status' => ''
-        ]);
+        ]);*/
 
         return $this->respondWithArray([
             'errors'    => [],
@@ -87,12 +87,12 @@ class ImportController extends ControllerService
         $api = resolve('Dear\API');
         $result = $api->syncProds();
 
-        Import::create([
+        /*Import::create([
             'name' => Import::DEAR_SYNC_PRODUCTS,
             'author_id' => 1,
             'rows'  => $result,
             'status' => ''
-        ]);
+        ]);*/
 
         return $this->respondWithArray([
             'errors'    => [],
@@ -180,12 +180,12 @@ class ImportController extends ControllerService
         } while ($flagLoop);
 
 
-        Import::create([
+        /*Import::create([
             'name' => Import::DEAR_SYNC_RECIPE,
             'author_id' => $this->user->id,
             'rows'  => $this->count,
             'status' => 'Errors found: ' . $this->errors_count
-        ]);
+        ]);*/
 
         return $this->respondWithArray([
             'errors'    => $this->errors,

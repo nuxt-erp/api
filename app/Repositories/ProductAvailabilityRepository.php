@@ -16,7 +16,6 @@ class ProductAvailabilityRepository extends RepositoryService
             'direction'     => 'asc'
         ];
 
-
         $searchCriteria['per_page'] = 100;
 
         $this->queryBuilder->select('product_availabilities.id', 'product_availabilities.product_id', 'product_availabilities.company_id', 'product_availabilities.available', 'product_availabilities.location_id', 'product_availabilities.on_hand');
@@ -24,12 +23,12 @@ class ProductAvailabilityRepository extends RepositoryService
 
         if (!empty($searchCriteria['category_id'])) {
             $this->queryBuilder
-            ->where('products.category_id', $searchCriteria['category_id']);
+            ->where('products.category_id', Arr::pull($searchCriteria, 'category_id'));
         }
 
         if (!empty($searchCriteria['brand_id'])) {
             $this->queryBuilder
-            ->where('products.brand_id', $searchCriteria['brand_id']);
+            ->where('products.brand_id', Arr::pull($searchCriteria, 'brand_id'));
         }
 
         $this->queryBuilder->where('product_availabilities.company_id', Auth::user()->company_id);
@@ -49,8 +48,10 @@ class ProductAvailabilityRepository extends RepositoryService
         $searchCriteria['per_page'] = 100;
 
 
-        $this->queryBuilder->select('products.id', 'products.name', 'products.sku', 'product_availabilities.location_id', 'product_availabilities.on_hand', 'products.category_id', 'products.brand_id');
-        $this->queryBuilder->join('products', 'product_availabilities.product_id', 'products.id');
+        $this->queryBuilder->select('brands.name as brand_name', 'categories.name as category_name', 'products.id', 'products.name', 'products.sku', 'product_availabilities.location_id', 'product_availabilities.on_hand', 'products.category_id', 'products.brand_id');
+        $this->queryBuilder->rightJoin('products', 'product_availabilities.product_id', 'products.id');
+        $this->queryBuilder->join('brands', 'brands.id', 'products.brand_id');
+        $this->queryBuilder->join('categories', 'categories.id', 'products.category_id');
 
          // EDITING STOCKTAKE
          if (!empty($searchCriteria['stocktake_id']))

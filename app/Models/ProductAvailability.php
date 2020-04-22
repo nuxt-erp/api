@@ -12,7 +12,7 @@ class ProductAvailability extends ModelService
      * @var array
      */
 
-     public $timestamps = false;
+     public $timestamps = true;
 
     protected $fillable = [
         'product_id', 'company_id', 'location_id', 'available', 'on_hand'

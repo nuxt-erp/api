@@ -47,6 +47,9 @@ class DearService
         $count = 0;
         $new_id = 0;
 
+        $category = $this->syncCategories();
+        $brand = $this->syncBrands();
+
         // GET STRENGTH ATTRIBUTE ID
         $strength_id  = Attribute::where('name', 'LIKE', "%Strength%")
         ->where('company_id', $this->user->company_id)
@@ -79,7 +82,7 @@ class DearService
                     //$prod
                     $formated_product = $this->formatProduct($prod);
 
-                    // CATEGORY HANDLE
+                    /*// CATEGORY HANDLE
                     if(!isset($categories_list[$formated_product->category])){
                         $category = Category::where('name', $formated_product->category)
                         ->where('company_id', $this->user->company_id)
@@ -105,7 +108,7 @@ class DearService
                     }
                     else{
                         $brand = $brands_list[$formated_product->brand];
-                    }
+                    }*/
 
                     $new_prod = Product::updateOrCreate(
                         ['dear' => $prod->ID],
