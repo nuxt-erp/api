@@ -52,10 +52,11 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('availabilities', 'Inventory\AvailabilityController');
         Route::resource('stocktake', 'Inventory\StockTakeController');
         Route::resource('stocktake_details', 'Inventory\StockTakeDetailsController');
+        // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY
+        Route::get('product_availabilities', 'Inventory\ProductController@productAvailabilities');
     });
 
-    // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY
-    Route::get('inventory/product_availabilities', 'Inventory\ProductController@productAvailabilities');
+
 
     // ADJUST AND FINISH STOCK TAKE
     Route::get('inventory/stocktake/finish/{id?}', 'Inventory\StockTakeController@finish');

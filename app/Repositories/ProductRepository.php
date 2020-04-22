@@ -88,7 +88,12 @@ class ProductRepository extends RepositoryService
         }
 
         $this->queryBuilder->leftJoin('product_availabilities as pa', 'pa.product_id', 'products.id');
-        $this->queryBuilder->join('locations', 'locations.id', 'pa.location_id')->where('pa.location_id', $searchCriteria['location_id']);
+        if ($searchCriteria['location_id']) {
+            $this->queryBuilder->join('locations', 'locations.id', 'pa.location_id')->where('pa.location_id', $searchCriteria['location_id']);
+        } else {
+            $this->queryBuilder->join('locations', 'locations.id', 'pa.location_id');
+        }
+
 
         if (!empty($searchCriteria['stocktake_id'])) {
             $this->queryBuilder
