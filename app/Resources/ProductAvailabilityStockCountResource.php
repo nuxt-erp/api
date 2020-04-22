@@ -4,7 +4,7 @@ namespace App\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProductAvailabilityResource extends JsonResource
+class ProductAvailabilityStockCountResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -28,19 +28,5 @@ class ProductAvailabilityResource extends JsonResource
             'category_name'         => optional($this->category)->name
         ];
 
-       /* return [
-            'id'                    => $this->product_id,
-            'product_id'            => $this->id,
-            'product_name'          => optional($this->product)->name,
-            'location_name'         => optional($this->location)->name,
-            'location_id'           => $this->location_id,
-            'qty'                   => $this->available,
-            'on_hand'               => $this->on_hand,
-            'sku'                   => optional($this->product)->sku,
-            'brand_id'              => $this->brand_id,
-            'brand_name'            => optional($this->brand)->name,
-            'category_id'           => $this->category_id,
-            'category_name'         => optional($this->category)->name
-        ];*/
     }
 }

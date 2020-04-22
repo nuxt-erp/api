@@ -15,7 +15,6 @@ Route::post('login', 'LoginController@issueToken');
 
 Route::middleware('auth:api')->group(function () {
 
-
     Route::get('dashboard', 'DashboardController@index');
     Route::get('shopify_orders', 'ShopifyController@getShopifyOrder');
     Route::get('me', 'Admin\UserController@findMe');
@@ -24,7 +23,6 @@ Route::middleware('auth:api')->group(function () {
     Route::group(['prefix' => 'admin'], function () {
         Route::resource('users', 'Admin\UserController');
         Route::resource('roles', 'Admin\RoleController');
-        // Route::resource('actions', 'Admin\ActionController');
         Route::resource('employees', 'Admin\EmployeeController');
         Route::resource('locations', 'Admin\LocationController');
         Route::resource('countries', 'Admin\CountryController');
@@ -35,7 +33,6 @@ Route::middleware('auth:api')->group(function () {
 
     // PARAMETERS
     Route::get('admin/getCountTypeList', 'Admin\SystemParameterController@getCountTypeList');
-
 
     // BASIC ADMIN
     Route::group(['prefix' => 'inventory'], function () {
@@ -55,8 +52,6 @@ Route::middleware('auth:api')->group(function () {
         // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY
         Route::get('product_availabilities', 'Inventory\ProductController@productAvailabilities');
     });
-
-
 
     // ADJUST AND FINISH STOCK TAKE
     Route::get('inventory/stocktake/finish/{id?}', 'Inventory\StockTakeController@finish');
