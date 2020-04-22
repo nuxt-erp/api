@@ -3,7 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\JsonMiddleware;
-use Barryvdh\Cors\HandleCors;
+use Fruitcake\Cors\HandleCors;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
