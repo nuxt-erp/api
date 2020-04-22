@@ -17,6 +17,7 @@ class StockTakeRepository extends RepositoryService
     {
         $this->queryBuilder->select('id', 'name', 'date' , 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'company_id', 'status', 'brand_id',  'category_id', 'location_id');
 
+        // SUCCESS RATE CALCULATION
         $this->queryBuilder->addSelect(\DB::raw('
         ROUND(((SELECT SUM(if(ABS(d.variance) <= stocktake.target, 1, 0)) FROM stocktake_details d WHERE stocktake_id = stocktake.id)
         /
@@ -30,6 +31,11 @@ class StockTakeRepository extends RepositoryService
         if (!empty($searchCriteria['category_id'])) {
             $this->queryBuilder
             ->where('category_id', $searchCriteria['category_id']);
+        }
+
+        if (!empty($searchCriteria['skip_today_received'])) {
+            $this->queryBuilder
+            ->whereDate('date', '<>', date("y-m-d"));
         }
 
         if (!empty($searchCriteria['brand_id'])) {

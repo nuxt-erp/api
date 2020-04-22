@@ -19,6 +19,12 @@ class ProductRepository extends RepositoryService
 
     public function findBy(array $searchCriteria = [])
     {
+
+        $searchCriteria['order_by'] = [
+            'field'         => 'name',
+            'direction'     => 'asc'
+        ];
+
         if (!empty($searchCriteria['sku'])) {
             $sku = '%' . Arr::pull($searchCriteria, 'sku') . '%';
             $this->queryBuilder
