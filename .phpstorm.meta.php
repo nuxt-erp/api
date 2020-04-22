@@ -5,7 +5,7 @@ namespace PHPSTORM_META {
 
    /**
     * PhpStorm Meta file, to provide autocomplete information for PhpStorm
-    * Generated on 2020-04-22 17:16:25.
+    * Generated on 2020-04-22 17:22:31.
     *
     * @author Barry vd. Heuvel <barryvdh@gmail.com>
     * @see https://github.com/barryvdh/laravel-ide-helper
@@ -90,6 +90,8 @@ namespace PHPSTORM_META {
         'Maatwebsite\Excel\Transactions\TransactionManager' => \Maatwebsite\Excel\Transactions\TransactionManager::class,
         'NunoMaduro\Collision\Contracts\Adapters\Phpunit\Listener' => \NunoMaduro\Collision\Adapters\Phpunit\Listener::class,
         'NunoMaduro\Collision\Contracts\Provider' => \NunoMaduro\Collision\Provider::class,
+        'Psr\Http\Message\ResponseInterface' => \Nyholm\Psr7\Response::class,
+        'Psr\Http\Message\ServerRequestInterface' => \Nyholm\Psr7\ServerRequest::class,
         'Snowfire\Beautymail\Beautymail' => \Snowfire\Beautymail\Beautymail::class,
         'Whoops\Handler\HandlerInterface' => \Facade\Ignition\ErrorPage\IgnitionWhoopsHandler::class,
         'auth' => \Illuminate\Auth\AuthManager::class,
@@ -296,6 +298,8 @@ namespace PHPSTORM_META {
         'Maatwebsite\Excel\Transactions\TransactionManager' => \Maatwebsite\Excel\Transactions\TransactionManager::class,
         'NunoMaduro\Collision\Contracts\Adapters\Phpunit\Listener' => \NunoMaduro\Collision\Adapters\Phpunit\Listener::class,
         'NunoMaduro\Collision\Contracts\Provider' => \NunoMaduro\Collision\Provider::class,
+        'Psr\Http\Message\ResponseInterface' => \Nyholm\Psr7\Response::class,
+        'Psr\Http\Message\ServerRequestInterface' => \Nyholm\Psr7\ServerRequest::class,
         'Snowfire\Beautymail\Beautymail' => \Snowfire\Beautymail\Beautymail::class,
         'Whoops\Handler\HandlerInterface' => \Facade\Ignition\ErrorPage\IgnitionWhoopsHandler::class,
         'auth' => \Illuminate\Auth\AuthManager::class,
@@ -502,6 +506,8 @@ namespace PHPSTORM_META {
         'Maatwebsite\Excel\Transactions\TransactionManager' => \Maatwebsite\Excel\Transactions\TransactionManager::class,
         'NunoMaduro\Collision\Contracts\Adapters\Phpunit\Listener' => \NunoMaduro\Collision\Adapters\Phpunit\Listener::class,
         'NunoMaduro\Collision\Contracts\Provider' => \NunoMaduro\Collision\Provider::class,
+        'Psr\Http\Message\ResponseInterface' => \Nyholm\Psr7\Response::class,
+        'Psr\Http\Message\ServerRequestInterface' => \Nyholm\Psr7\ServerRequest::class,
         'Snowfire\Beautymail\Beautymail' => \Snowfire\Beautymail\Beautymail::class,
         'Whoops\Handler\HandlerInterface' => \Facade\Ignition\ErrorPage\IgnitionWhoopsHandler::class,
         'auth' => \Illuminate\Auth\AuthManager::class,
@@ -708,6 +714,8 @@ namespace PHPSTORM_META {
         'Maatwebsite\Excel\Transactions\TransactionManager' => \Maatwebsite\Excel\Transactions\TransactionManager::class,
         'NunoMaduro\Collision\Contracts\Adapters\Phpunit\Listener' => \NunoMaduro\Collision\Adapters\Phpunit\Listener::class,
         'NunoMaduro\Collision\Contracts\Provider' => \NunoMaduro\Collision\Provider::class,
+        'Psr\Http\Message\ResponseInterface' => \Nyholm\Psr7\Response::class,
+        'Psr\Http\Message\ServerRequestInterface' => \Nyholm\Psr7\ServerRequest::class,
         'Snowfire\Beautymail\Beautymail' => \Snowfire\Beautymail\Beautymail::class,
         'Whoops\Handler\HandlerInterface' => \Facade\Ignition\ErrorPage\IgnitionWhoopsHandler::class,
         'auth' => \Illuminate\Auth\AuthManager::class,
@@ -914,6 +922,8 @@ namespace PHPSTORM_META {
         'Maatwebsite\Excel\Transactions\TransactionManager' => \Maatwebsite\Excel\Transactions\TransactionManager::class,
         'NunoMaduro\Collision\Contracts\Adapters\Phpunit\Listener' => \NunoMaduro\Collision\Adapters\Phpunit\Listener::class,
         'NunoMaduro\Collision\Contracts\Provider' => \NunoMaduro\Collision\Provider::class,
+        'Psr\Http\Message\ResponseInterface' => \Nyholm\Psr7\Response::class,
+        'Psr\Http\Message\ServerRequestInterface' => \Nyholm\Psr7\ServerRequest::class,
         'Snowfire\Beautymail\Beautymail' => \Snowfire\Beautymail\Beautymail::class,
         'Whoops\Handler\HandlerInterface' => \Facade\Ignition\ErrorPage\IgnitionWhoopsHandler::class,
         'auth' => \Illuminate\Auth\AuthManager::class,
@@ -1120,6 +1130,8 @@ namespace PHPSTORM_META {
         'Maatwebsite\Excel\Transactions\TransactionManager' => \Maatwebsite\Excel\Transactions\TransactionManager::class,
         'NunoMaduro\Collision\Contracts\Adapters\Phpunit\Listener' => \NunoMaduro\Collision\Adapters\Phpunit\Listener::class,
         'NunoMaduro\Collision\Contracts\Provider' => \NunoMaduro\Collision\Provider::class,
+        'Psr\Http\Message\ResponseInterface' => \Nyholm\Psr7\Response::class,
+        'Psr\Http\Message\ServerRequestInterface' => \Nyholm\Psr7\ServerRequest::class,
         'Snowfire\Beautymail\Beautymail' => \Snowfire\Beautymail\Beautymail::class,
         'Whoops\Handler\HandlerInterface' => \Facade\Ignition\ErrorPage\IgnitionWhoopsHandler::class,
         'auth' => \Illuminate\Auth\AuthManager::class,
@@ -1326,6 +1338,8 @@ namespace PHPSTORM_META {
         'Maatwebsite\Excel\Transactions\TransactionManager' => \Maatwebsite\Excel\Transactions\TransactionManager::class,
         'NunoMaduro\Collision\Contracts\Adapters\Phpunit\Listener' => \NunoMaduro\Collision\Adapters\Phpunit\Listener::class,
         'NunoMaduro\Collision\Contracts\Provider' => \NunoMaduro\Collision\Provider::class,
+        'Psr\Http\Message\ResponseInterface' => \Nyholm\Psr7\Response::class,
+        'Psr\Http\Message\ServerRequestInterface' => \Nyholm\Psr7\ServerRequest::class,
         'Snowfire\Beautymail\Beautymail' => \Snowfire\Beautymail\Beautymail::class,
         'Whoops\Handler\HandlerInterface' => \Facade\Ignition\ErrorPage\IgnitionWhoopsHandler::class,
         'auth' => \Illuminate\Auth\AuthManager::class,
@@ -1532,6 +1546,8 @@ namespace PHPSTORM_META {
         'Maatwebsite\Excel\Transactions\TransactionManager' => \Maatwebsite\Excel\Transactions\TransactionManager::class,
         'NunoMaduro\Collision\Contracts\Adapters\Phpunit\Listener' => \NunoMaduro\Collision\Adapters\Phpunit\Listener::class,
         'NunoMaduro\Collision\Contracts\Provider' => \NunoMaduro\Collision\Provider::class,
+        'Psr\Http\Message\ResponseInterface' => \Nyholm\Psr7\Response::class,
+        'Psr\Http\Message\ServerRequestInterface' => \Nyholm\Psr7\ServerRequest::class,
         'Snowfire\Beautymail\Beautymail' => \Snowfire\Beautymail\Beautymail::class,
         'Whoops\Handler\HandlerInterface' => \Facade\Ignition\ErrorPage\IgnitionWhoopsHandler::class,
         'auth' => \Illuminate\Auth\AuthManager::class,
