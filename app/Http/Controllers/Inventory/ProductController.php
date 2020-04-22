@@ -6,6 +6,7 @@ use App\Http\Controllers\ControllerService;
 use App\Repositories\ProductRepository;
 use App\Resources\ProductResource;
 use App\Resources\ProductAvailabilityResource;
+use App\Resources\ProductAvailabilityStockCountResource;
 use Illuminate\Http\Request;
 
 class ProductController extends ControllerService
@@ -23,7 +24,7 @@ class ProductController extends ControllerService
     public function productAvailabilities(Request $request)
     {
         $itens = $this->repository->productAvailabilities($request->all());
-        return $this->respondWithNativeCollection($itens, ProductAvailabilityResource::class);
+        return $this->respondWithNativeCollection($itens, ProductAvailabilityStockCountResource::class);
     }
 
 }

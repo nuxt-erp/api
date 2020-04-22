@@ -14,7 +14,7 @@ class ProductAvailabilityResource extends JsonResource
      */
     public function toArray($request)
     {
-       /* return [
+        return [
             'product_id'            => $this->id,
             'name'                  => $this->name,
             'location_name'         => $this->location_name,
@@ -26,9 +26,9 @@ class ProductAvailabilityResource extends JsonResource
             'brand_name'            => optional($this->brand)->name,
             'category_id'           => $this->category_id,
             'category_name'         => optional($this->category)->name
-        ];*/
+        ];
 
-        return [
+       /* return [
             'id'                    => $this->product_id,
             'product_id'            => $this->id,
             'product_name'          => optional($this->product)->name,
@@ -41,6 +41,6 @@ class ProductAvailabilityResource extends JsonResource
             'brand_name'            => optional($this->brand)->name,
             'category_id'           => $this->category_id,
             'category_name'         => optional($this->category)->name
-        ];
+        ];*/
     }
 }
