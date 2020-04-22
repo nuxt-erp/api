@@ -70,7 +70,7 @@ class ProductRepository extends RepositoryService
     }
 
     // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
-    public function productAvailabilities(array $searchCriteria = [])
+    /*public function productAvailabilities(array $searchCriteria = [])
     {
         $searchCriteria['order_by'] = [
             'field'         => 'name',
@@ -113,7 +113,7 @@ class ProductRepository extends RepositoryService
         $this->queryBuilder->where('products.company_id', Auth::user()->company_id);
         return parent::findBy($searchCriteria);
 
-    }
+    }*/
 
     public function store($data)
     {
