@@ -13,13 +13,11 @@ use Illuminate\Support\Facades\DB;
 
 class ProductRepository extends RepositoryService
 {
-
     private $result = [];
     private $generate = false; // GENERATE PRODUCT FAMILY
 
     public function findBy(array $searchCriteria = [])
     {
-
         $searchCriteria['order_by'] = [
             'field'         => 'name',
             'direction'     => 'asc'
