@@ -26,8 +26,8 @@ class StockTakeResource extends JsonResource
             'category_name'             => optional($this->category)->name,
             'location_id'               => $this->location_id,
             'location_name'             => optional($this->location)->name,
-            'net_var'                   => $this->net_var,
-            'abs_var'                   => $this->abs_var,
+            'net_variance'              => $this->net_variance,
+            'abs_variance'              => $this->abs_variance,
             'success_rate'              => $this->success_rate,
             'can_be_deleted'            => true
         ];

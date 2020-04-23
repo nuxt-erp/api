@@ -10,7 +10,7 @@ class StockTakeDetails extends Model
     public $table       = "stocktake_details";
 
     protected $fillable = [
-        'stocktake_id', 'product_id', 'qty', 'stock_on_hand', 'variance', 'notes', 'location_id'
+        'stocktake_id', 'product_id', 'qty', 'stock_on_hand', 'variance', 'notes', 'location_id', 'abs_variance'
     ];
 
     public function product()

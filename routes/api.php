@@ -69,6 +69,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('products', 'ImportController@dearSyncProducts');
         Route::get('availabilities', 'ImportController@dearSyncAvailabilities');
         Route::get('products/{sku}', 'ImportController@syncProduct'); // sync in DEAR only one product
+        Route::post('xls/stock_count', 'ImportController@xlsInsertStock');
     });
 
 

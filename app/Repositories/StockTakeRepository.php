@@ -23,6 +23,12 @@ class StockTakeRepository extends RepositoryService
         /
         (SELECT count(*) FROM stocktake_details d2 WHERE d2.stocktake_id = stocktake.id) * 100), 2)  as success_rate'));
 
+        // SUM OF VARIANCE
+        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(variance) FROM stocktake_details sd WHERE sd.stocktake_id = stocktake_id) as net_variance'));
+
+        // SUM OF ABS VARIANCE
+        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(abs_variance) FROM stocktake_details sd WHERE sd.stocktake_id = stocktake_id) as abs_variance'));
+
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
             ->where('id', $searchCriteria['id']);
@@ -96,8 +102,9 @@ class StockTakeRepository extends RepositoryService
 
     public function update($model, array $data)
     {
-        DB::transaction(function () use ($data)
+        DB::transaction(function () use ($data, $model)
         {
+            $data["status"] = ($data["status"] == "IN PROGRESS" ? 1 : 0);
             parent::update($model, $data);
             // UPDATE STOCK TAKE PRODUCTS
             $this->saveStockTakeDetails($data, $this->model->id);
@@ -182,6 +189,7 @@ class StockTakeRepository extends RepositoryService
                                     'qty'           => $qty,
                                     'stock_on_hand' => $get_array["on_hand"],
                                     'variance'      => ($qty - $get_array["on_hand"]),
+                                    'abs_variance'  => abs($qty - $get_array["on_hand"]),
                                     'notes'         => $notes
                                 ]);
 

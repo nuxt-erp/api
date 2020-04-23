@@ -16,9 +16,29 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use stdClass;
+use App\Imports\StockCountImport;
+
 
 class ImportController extends ControllerService
 {
+
+    public function xlsInsertStock(Request $request)
+    {
+
+        $import = new stdClass;
+        if ($request->hasFile('excel') && $request->file('excel')->isValid()) {
+            $path = $request->excel->store('imports');
+            $import = new StockCountImport;
+            $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
+        }
+        if(!isset($import->rows) || $import->rows < 1){
+            $this->setStatus(FALSE);
+            $this->setMessage('No rows processed');
+        }
+        return $this->respondWithNativeObject($import);
+    }
+
+
     public function syncProduct($sku)
     {
         $api = resolve('Dear\API');
