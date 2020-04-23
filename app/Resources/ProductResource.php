@@ -38,7 +38,10 @@ class ProductResource extends JsonResource
             'location_id'   => $this->location_id,
             'location_name' => optional($this->location)->name,
             'can_be_deleted'=> true,
-            'product_attributes' => ProductAttributeResource::collection($this->whenLoaded('attributes'))
+            //'product_attributes' => ProductAttributeResource::collection($this->whenLoaded('attributes'))
+            //'product_attributes' => $this->getFirstAttribute()
+            'product_attributes' => $this->getOnlyAttribute()
+
         ];
 
 

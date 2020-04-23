@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Attribute;
 
 class Product extends Model
 {
@@ -69,6 +70,35 @@ class Product extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function getNameAttribute($value)
+    {
+        return $value . ' ' . $this->getFirstAttribute();
+    }
+
+    public function getOnlyAttribute()
+    {
+        return $this->getFirstAttribute();
+    }
+
+    public function getFirstAttribute()
+    {
+        $string = '';
+        $attributes = $this->attributes()->get();
+        if ($attributes)
+        {
+            foreach ($attributes as $key => $value)
+            {
+                if ($string == '') {
+                    $string = Attribute::where('id', $value->attribute_id)->pluck('name')->first() . ': ' . $value->value;
+                } else {
+                    $string .= ', ' . Attribute::where('id', $value->attribute_id)->pluck('name')->first() . ': ' . $value->value;
+                }
+
+            }
+        }
+        return $string;
     }
 
 }
