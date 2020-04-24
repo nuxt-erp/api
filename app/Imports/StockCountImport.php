@@ -5,6 +5,8 @@ namespace App\Imports;
 use App\Models\Import;
 use App\Models\StockTakeDetail;
 use App\Models\Product;
+use App\Models\Location;
+use App\Models\ProductAvailability;
 
 use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -23,9 +25,10 @@ class StockCountImport implements ToArray, WithHeadingRow
 
     public function array(array $rows)
     {
-        DB::transaction(function () use ($rows) {
-
+        DB::transaction(function () use ($rows)
+        {
             $not_found  = [];
+            $on_hand    = 0;
 
             foreach ($rows as $row)
             {
@@ -37,6 +40,10 @@ class StockCountImport implements ToArray, WithHeadingRow
 
                 if ($product)
                 {
+                    if ($row['warehouse'] != "") {
+                        $on_hand = ProductAvailability::where(['product_id' => $product->id, 'location_id' => Location::where('short_name', $row['warehouse'])->pluck('id')->first()])->pluck('on_hand')->first();
+                    }
+
                     $array = [
                         'brand_id'      => $product->brand_id,
                         'brand_name'    => optional($product->brand)->name,
@@ -45,11 +52,11 @@ class StockCountImport implements ToArray, WithHeadingRow
                         'location_id'   => $product->location_id,
                         'location_name' => optional($product->location)->name,
                         'name'          => $product->name,
-                        'on_hand'       => 100,
+                        'on_hand'       => $on_hand,
                         'product_id'    => $product->id,
                         'qty'           => $row['qty'],
                         'sku'           => $row['sku'],
-                        'variance'      => 100 - $row['qty']
+                        'variance'      => $on_hand - $row['qty']
                     ];
 
                     array_push($this->products, $array);
