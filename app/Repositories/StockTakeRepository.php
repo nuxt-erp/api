@@ -24,10 +24,10 @@ class StockTakeRepository extends RepositoryService
         (SELECT count(*) FROM stocktake_details d2 WHERE d2.stocktake_id = stocktake.id) * 100), 2)  as success_rate'));
 
         // SUM OF VARIANCE
-        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(variance) FROM stocktake_details sd WHERE sd.stocktake_id = stocktake_id) as net_variance'));
+        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(variance) FROM stocktake_details sd WHERE sd.stocktake_id = stocktake.id) as net_variance'));
 
         // SUM OF ABS VARIANCE
-        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(abs_variance) FROM stocktake_details sd WHERE sd.stocktake_id = stocktake_id) as abs_variance'));
+        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(abs_variance) FROM stocktake_details sd2 WHERE sd2.stocktake_id = stocktake.id) as abs_variance'));
 
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder

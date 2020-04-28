@@ -9,7 +9,7 @@ class Location extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'name', 'company_id'
+        'name', 'company_id', 'short_name'
     ];
 
     public function getRules($request, $item = null)

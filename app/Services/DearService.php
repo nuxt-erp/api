@@ -82,14 +82,14 @@ class DearService
                     //$prod
                     $formated_product = $this->formatProduct($prod);
 
-                    /*// CATEGORY HANDLE
+                   // CATEGORY HANDLE
                     if(!isset($categories_list[$formated_product->category])){
                         $category = Category::where('name', $formated_product->category)
                         ->where('company_id', $this->user->company_id)
                         ->first();
-                        if(!$category) {
+                        /*if(!$category) {
                             $category = $this->syncCategories($formated_product->category);
-                        }
+                        }*/
                         $categories_list[$formated_product->category] = $category;
                     }
                     else{
@@ -101,14 +101,14 @@ class DearService
                         $brand = Brand::where('name', $formated_product->brand)
                         ->where('company_id', $this->user->company_id)
                         ->first();
-                        if(!$brand) {
+                        /*if(!$brand) {
                             $brand = $this->syncBrands($formated_product->brand);
-                        }
+                        }*/
                         $brands_list[$formated_product->brand] = $brand;
                     }
                     else{
                         $brand = $brands_list[$formated_product->brand];
-                    }*/
+                    }
 
                     $new_prod = Product::updateOrCreate(
                         ['dear' => $prod->ID],

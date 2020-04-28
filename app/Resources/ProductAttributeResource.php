@@ -20,7 +20,6 @@ class ProductAttributeResource extends JsonResource
             'product_id'      => $this->product_id,
             'attribute_id'    => $this->attribute_id,
             'attribute_name'  => optional($this->attribute)->name,
-            //'product_name'    => optional($this->product)->name
         ];
     }
 }

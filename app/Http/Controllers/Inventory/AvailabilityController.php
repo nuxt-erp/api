@@ -24,6 +24,6 @@ class AvailabilityController extends ControllerService implements WithAllPolicie
     public function productAvailabilities(Request $request)
     {
         $itens = $this->repository->productAvailabilities($request->all());
-        return $this->respondWithNativeCollection($itens, ProductAvailabilityStockCountResource::class);
+        return $this->respondWithCollection($itens, ProductAvailabilityStockCountResource::class);
     }
 }

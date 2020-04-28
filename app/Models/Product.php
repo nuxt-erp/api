@@ -95,7 +95,6 @@ class Product extends Model
                 } else {
                     $string .= ', ' . Attribute::where('id', $value->attribute_id)->pluck('name')->first() . ': ' . $value->value;
                 }
-
             }
         }
         return $string;

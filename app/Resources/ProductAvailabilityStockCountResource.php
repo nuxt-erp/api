@@ -25,7 +25,8 @@ class ProductAvailabilityStockCountResource extends JsonResource
             'brand_id'              => $this->brand_id,
             'brand_name'            => $this->brand_name,
             'category_id'           => $this->category_id,
-            'category_name'         => $this->category_name
+            'category_name'         => $this->category_name,
+            'total'                 => $this->count()
         ];
 
     }

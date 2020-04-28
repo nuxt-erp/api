@@ -11,12 +11,12 @@ class ProductAvailabilityRepository extends RepositoryService
 
     public function findBy(array $searchCriteria = [])
     {
-        $searchCriteria['order_by'] = [
+        /*$searchCriteria['order_by'] = [
             'field'         => 'products.name',
             'direction'     => 'asc'
         ];
 
-        $searchCriteria['per_page'] = 100;
+        $searchCriteria['per_page'] = 100;*/
 
         $this->queryBuilder->select('product_availabilities.id', 'product_availabilities.product_id', 'product_availabilities.company_id', 'product_availabilities.available', 'product_availabilities.location_id', 'product_availabilities.on_hand');
         $this->queryBuilder->join('products', 'product_availabilities.product_id', 'products.id');
@@ -40,13 +40,12 @@ class ProductAvailabilityRepository extends RepositoryService
      // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
      public function productAvailabilities(array $searchCriteria = [])
      {
-        $searchCriteria['order_by'] = [
+       /* $searchCriteria['order_by'] = [
              'field'         => 'name',
              'direction'     => 'asc'
         ];
 
-        $searchCriteria['per_page'] = 100;
-
+        $searchCriteria['per_page'] = 100;*/
 
         $this->queryBuilder->select('brands.name as brand_name', 'categories.name as category_name', 'products.id', 'products.name', 'products.sku', 'product_availabilities.location_id', 'product_availabilities.on_hand', 'products.category_id', 'products.brand_id');
         $this->queryBuilder->rightJoin('products', 'product_availabilities.product_id', 'products.id');
@@ -85,7 +84,6 @@ class ProductAvailabilityRepository extends RepositoryService
              $this->queryBuilder
              ->where('brand_id', Arr::pull($searchCriteria, 'brand_id'));
          }
-
 
          $this->queryBuilder->where('products.company_id', Auth::user()->company_id);
 

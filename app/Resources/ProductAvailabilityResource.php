@@ -26,7 +26,8 @@ class ProductAvailabilityResource extends JsonResource
             'brand_id'              => $this->brand_id,
             'brand_name'            => optional($this->brand)->name,
             'category_id'           => $this->category_id,
-            'category_name'         => optional($this->category)->name
+            'category_name'         => optional($this->category)->name,
+            'total'                 => $this->count()
         ];
     }
 }
