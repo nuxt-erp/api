@@ -40,12 +40,12 @@ class ProductAvailabilityRepository extends RepositoryService
      // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
      public function productAvailabilities(array $searchCriteria = [])
      {
-       /* $searchCriteria['order_by'] = [
+        $searchCriteria['order_by'] = [
              'field'         => 'name',
              'direction'     => 'asc'
         ];
 
-        $searchCriteria['per_page'] = 100;*/
+        $searchCriteria['per_page'] = 20;
 
         $this->queryBuilder->select('brands.name as brand_name', 'categories.name as category_name', 'products.id', 'products.name', 'products.sku', 'product_availabilities.location_id', 'product_availabilities.on_hand', 'products.category_id', 'products.brand_id');
         $this->queryBuilder->rightJoin('products', 'product_availabilities.product_id', 'products.id');
@@ -68,6 +68,11 @@ class ProductAvailabilityRepository extends RepositoryService
          if (!empty($searchCriteria['location_id'])) {
             $this->queryBuilder
             ->where('product_availabilities.location_id', Arr::pull($searchCriteria, 'location_id'));
+         }
+
+         if (!empty($searchCriteria['add_discontinued'])) {
+            $this->queryBuilder
+            ->where('products.status', Arr::pull($searchCriteria, 'add_discontinued'));
          }
 
          if (!empty($searchCriteria['stocktake_id'])) {
