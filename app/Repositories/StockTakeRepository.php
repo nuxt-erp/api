@@ -36,7 +36,7 @@ class StockTakeRepository extends RepositoryService
 
         if (!empty($searchCriteria['category_id'])) {
             $this->queryBuilder
-            ->where('category_id', $searchCriteria['category_id']);
+            ->where('category_id', Arr::pull($searchCriteria, 'category_id'));
         }
 
         if (!empty($searchCriteria['skip_today_received'])) {
@@ -46,12 +46,12 @@ class StockTakeRepository extends RepositoryService
 
         if (!empty($searchCriteria['brand_id'])) {
             $this->queryBuilder
-            ->where('brand_id', $searchCriteria['brand_id']);
+            ->where('brand_id', Arr::pull($searchCriteria, 'brand_id'));
         }
 
         if (!empty($searchCriteria['location_id'])) {
             $this->queryBuilder
-            ->where('location_id', $searchCriteria['location_id']);
+            ->where('location_id', Arr::pull($searchCriteria, 'location_id'));
         }
 
         if (!empty($searchCriteria['name'])) {

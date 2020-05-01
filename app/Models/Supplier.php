@@ -9,7 +9,7 @@ class Supplier extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'name', 'company_id'
+        'name', 'company_id', 'lead_time', 'ordering_cycle', 'brand_id', 'supplier_type_id', 'date_last_order'
     ];
 
     public function getRules($request, $item = null)
@@ -22,9 +22,18 @@ class Supplier extends Model
         if (is_null($item))
         {
             $rules['name'][]        = 'required';
-            //$rules['company_id'][]  = 'required';
         }
 
         return $rules;
+    }
+
+    public function supplier_type()
+    {
+        return $this->belongsTo(SystemParameter::class, 'supplier_type_id');
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'brand_id');
     }
 }

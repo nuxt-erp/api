@@ -18,7 +18,7 @@ class SystemParameterController extends ControllerService
         $this->resource = $resource;
     }
 
-    public function getCountTypeList(Request $request){
+    public function getCountTypeList(Request $request) {
 
         // TO POPULATE DROPDOWN WITH COUNT TYPES
         $itens = $this->repository->getCountTypeList($request->all());

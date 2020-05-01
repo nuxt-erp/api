@@ -1,16 +1,5 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
 Route::post('login', 'LoginController@issueToken');
 
 Route::middleware('auth:api')->group(function () {
@@ -27,7 +16,6 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('locations', 'Admin\LocationController');
         Route::resource('countries', 'Admin\CountryController');
         Route::resource('provinces', 'Admin\ProvinceController');
-        Route::resource('suppliers', 'Admin\SupplierController');
         Route::resource('parameters', 'Admin\SystemParameterController');
     });
 
@@ -49,19 +37,21 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('availabilities', 'Inventory\AvailabilityController');
         Route::resource('stocktake', 'Inventory\StockTakeController');
         Route::resource('stocktake_details', 'Inventory\StockTakeDetailsController');
-
+        Route::get('product_availabilities', 'Inventory\AvailabilityController@productAvailabilities'); // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY
+        Route::get('stocktake/finish/{id?}', 'Inventory\StockTakeController@finish'); // ADJUST AND FINISH STOCK TAKE
     });
 
-    Route::get('inventory/product_availabilities', 'Inventory\AvailabilityController@productAvailabilities')->name('product_availabilities.productAvailabilities'); // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY
-
-    // ADJUST AND FINISH STOCK TAKE
-    Route::get('inventory/stocktake/finish/{id?}', 'Inventory\StockTakeController@finish');
+    // PURCHASES
+    Route::group(['prefix' => 'purchases'], function () {
+        Route::resource('suppliers', 'Purchases\SupplierController');
+        Route::resource('purchases', 'Purchases\PurchaseController');
+        Route::resource('purchases_details', 'Purchases\PurchaseDetailsController');
+    });
 
     // PRODUCT FAMILY
     Route::get('product_families/get_products', 'Inventory\ProductFamilyController@getListProducts'); // LIST ALL PRODUCTS FROM CURRENT FAMILY
 
-
-     // IMPORTS
+    // IMPORTS
     Route::group(['prefix' => 'import'], function () {
         Route::get('brands', 'ImportController@dearSyncBrands');
         Route::get('categories', 'ImportController@dearSyncCategories');
@@ -71,6 +61,5 @@ Route::middleware('auth:api')->group(function () {
         Route::get('products/{sku}', 'ImportController@syncProduct'); // sync in DEAR only one product
         Route::post('xls/stock_count', 'ImportController@xlsInsertStock');
     });
-
 
 });

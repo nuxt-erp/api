@@ -8,29 +8,6 @@ use  App\Models\SystemParameter;
 
 class SystemParameterRepository extends RepositoryService
 {
-
-    public function getList(array $searchCriteria = [])
-    {
-        $searchCriteria['order_by'] = [
-            'field'         => 'param_name',
-            'direction'     => 'asc'
-        ];
-
-        $searchCriteria['per_page'] = 50;
-
-        if (!empty($searchCriteria['param_name'])) {
-            $name = '%' . Arr::pull($searchCriteria, 'param_name') . '%';
-            $this->queryBuilder
-            ->where('param_name', 'LIKE', $name)
-            ->where('company_id', Auth::user()->company_id);
-        } else {
-            $this->queryBuilder
-            ->where('company_id', Auth::user()->company_id);
-        }
-
-        return parent::getList($searchCriteria);
-    }
-
     public function findBy(array $searchCriteria = [])
     {
         if (!empty($searchCriteria['param_name'])) {

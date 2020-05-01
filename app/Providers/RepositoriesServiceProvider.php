@@ -24,6 +24,8 @@ use App\Models\ProductFamilyAttribute;
 use App\Models\ProductAvailability;
 use App\Models\StockTake;
 use App\Models\StockTakeDetails;
+use App\Models\Purchase;
+use App\Models\PurchaseDetails;
 
 
 // REPOSITORIES
@@ -48,6 +50,8 @@ use App\Repositories\ProductFamilyRepository;
 use App\Repositories\ProductFamilyAttributeRepository;
 use App\Repositories\StockTakeRepository;
 use App\Repositories\StockTakeDetailsRepository;
+use App\Repositories\PurchaseRepository;
+use App\Repositories\PurchaseDetailsRepository;
 
 
 // RESOURCES
@@ -76,6 +80,8 @@ use App\Resources\ProductFamilyAttributeResource;
 use App\Resources\StockTakeResource;
 use App\Resources\StockTakeDetailsResource;
 use App\Resources\ProductAvailabilityStockCountResource;
+use App\Resources\PurchaseResource;
+use App\Resources\PurchaseDetailResource;
 
 
 class RepositoriesServiceProvider extends ServiceProvider
@@ -274,6 +280,22 @@ class RepositoriesServiceProvider extends ServiceProvider
             return new ProductAvailabilityStockCountResource(new ProductAvailability());
         });
 
+        $this->app->bind(PurchaseResource::class, function () {
+            return new PurchaseResource(new Purchase());
+        });
+
+        $this->app->bind(PurchaseRepository::class, function () {
+            return new PurchaseRepository(new Purchase());
+        });
+
+        $this->app->bind(PurchaseDetailsRepository::class, function () {
+            return new PurchaseDetailsRepository(new PurchaseDetails());
+        });
+
+        $this->app->bind(PurchaseDetailsResource::class, function () {
+            return new PurchaseDetailsResource(new PurchaseDetails());
+        });
+
     }
 
     /**
@@ -307,6 +329,8 @@ class RepositoriesServiceProvider extends ServiceProvider
             ProductAvailabilityRepository::class,
             StockTakeRepository::class,
             StockTakeDetailsRepository::class,
+            PurchaseRepository::class,
+            PurchaseDetailsRepository::class,
         ];
     }
 }
