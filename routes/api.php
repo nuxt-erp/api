@@ -45,7 +45,7 @@ Route::middleware('auth:api')->group(function () {
     Route::group(['prefix' => 'purchases'], function () {
         Route::resource('suppliers', 'Purchases\SupplierController');
         Route::resource('purchases', 'Purchases\PurchaseController');
-        Route::resource('purchases_details', 'Purchases\PurchaseDetailsController');
+        Route::resource('purchase_details', 'Purchases\PurchaseDetailsController');
     });
 
     // PRODUCT FAMILY
