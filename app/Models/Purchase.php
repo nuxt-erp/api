@@ -10,7 +10,7 @@ class Purchase extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'purchase_date', 'company_id', 'supplier_id', 'status', 'tracking_number', 'invoice_number', 'notes', 'location_id', 'ref_code'
+        'purchase_date', 'company_id', 'supplier_id', 'status', 'tracking_number', 'invoice_number', 'notes', 'location_id', 'ref_code', 'total', 'subtotal', 'taxes', 'discount'
     ];
 
     public function getRules($request, $item = null)

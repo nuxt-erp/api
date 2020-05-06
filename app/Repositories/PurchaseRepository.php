@@ -5,6 +5,7 @@ namespace App\Repositories;
 use Illuminate\Support\Arr;
 use Auth;
 use App\Models\PurchaseDetails;
+use App\Models\Purchase;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
@@ -41,11 +42,14 @@ class PurchaseRepository extends RepositoryService
     {
         DB::transaction(function () use ($data, $model)
         {
-            $data["status"] = ($data["status"] == "IN PROGRESS" ? 1 : 0);
             parent::update($model, $data);
             // UPDATE STOCK TAKE PRODUCTS
             $this->savePurchaseDetails($data, $this->model->id);
         });
+    }
+
+    private function updateStockReceived() {
+        // id, product_id, company_id, available, location_id, on_hand, created_at, updated_at
     }
 
     private function savePurchaseDetails($data, $id)
@@ -74,6 +78,8 @@ class PurchaseRepository extends RepositoryService
                             if ($attributes[$i]!=0)
                             {
                                 $qty            = 0;
+                                $total          = 0;
+                                $total_item     = 0;
                                 $received_date  = null;
                                 $estimated_date = null;
                                 $qty_received   = 0;
@@ -124,6 +130,8 @@ class PurchaseRepository extends RepositoryService
                                 }
 
                                 if ($product_id) {
+                                    $total_item = ($price * $qty);
+
                                     PurchaseDetails::updateOrCreate([
                                         'purchase_id'    => $id,
                                         'product_id'     => $product_id],
@@ -134,11 +142,15 @@ class PurchaseRepository extends RepositoryService
                                         'received_date'  => $received_date,
                                         'estimated_date' => $estimated_date,
                                         'price'          => $price,
-                                        'gross_total'    => ($price * $qty),
-                                        'total'          => ($price * $qty),
+                                        'gross_total'    => $total_item,
+                                        'total'          => $total_item,
                                     ]);
+
+                                    $total += $total_item;
                                 }
 
+                                // UPDATE TOTAL PURCHASE
+                                Purchase::where('id', $id)->update(['total' => $total]);
                             }
                         }
                     }
