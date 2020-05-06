@@ -46,6 +46,16 @@ class ImportController extends ControllerService
         return $this->respondWithObject($product, ProductResource::class);
     }
 
+    public function dearSyncSuppliers()
+    {
+        $api = resolve('Dear\API');
+        $result = $api->syncSuppliers();
+
+        return $this->respondWithArray([
+            'errors'    => [],
+            'rows'      => $result
+        ]);
+    }
 
     public function dearSyncCategories()
     {

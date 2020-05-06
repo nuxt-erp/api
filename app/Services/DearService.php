@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\ProductAttribute;
 use App\Models\ProductAvailability;
 use App\Models\Attribute;
+use App\Models\Supplier;
 use App\Models\User;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Client;
@@ -160,6 +161,29 @@ class DearService
         } while ($flagLoop);
 
         return $result;
+    }
+
+    public function syncSuppliers($name = NULL)
+    {
+        $page = 1;
+        $final_item = FALSE;
+        $filters = [
+            'Page'              => $page,
+            'Limit'             => !empty($name) ? 1 : $this->limit
+        ];
+        if(!empty($name)){
+            $filters['Name'] = $name;
+        }
+
+        $dear_result = $this->makeRequest('supplier', $filters);
+
+        if ($dear_result->status) {
+            foreach ($dear_result->SupplierList as $item) {
+                $final_item = Supplier::updateOrCreate(['company_id' => $this->user->company_id, 'name' => formatName($item->Name)]);
+            }
+        }
+
+        return $final_item;
     }
 
     public function syncCategories($name = NULL)
