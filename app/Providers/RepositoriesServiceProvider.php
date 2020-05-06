@@ -81,7 +81,7 @@ use App\Resources\StockTakeResource;
 use App\Resources\StockTakeDetailsResource;
 use App\Resources\ProductAvailabilityStockCountResource;
 use App\Resources\PurchaseResource;
-use App\Resources\PurchaseDetailResource;
+use App\Resources\PurchaseDetailsResource;
 
 
 class RepositoriesServiceProvider extends ServiceProvider

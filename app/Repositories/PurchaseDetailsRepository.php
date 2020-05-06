@@ -14,15 +14,17 @@ class PurchaseDetailsRepository extends RepositoryService
             'direction'     => 'asc'
         ];
 
-        $searchCriteria['per_page'] = 100;
+        if (!empty($searchCriteria['id'])) {
+            $this->queryBuilder
+            ->where('purchase_id', Arr::pull($searchCriteria, 'id'));
+        }
 
-        $this->queryBuilder->where('company_id', Auth::user()->company_id);
+        $searchCriteria['per_page'] = 100;
         return parent::findBy($searchCriteria);
     }
 
     public function store($data)
     {
-        $data["company_id"] = Auth::user()->company_id;
         parent::store($data);
     }
 

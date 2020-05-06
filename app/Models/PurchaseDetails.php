@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Attribute;
 
-class Purchase extends Model
+class PurchaseDetails extends Model
 {
     public $timestamps = false;
 

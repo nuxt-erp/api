@@ -13,6 +13,7 @@ class PurchaseDetailsResource extends JsonResource
             'purchase_id'       => $this->purchase_id,
             'product_id'        => $this->product_id,
             'product_name'      => optional($this->product)->name,
+            'name'              => optional($this->product)->sku . ' - ' . optional($this->product)->name,
             'qty'               => $this->qty,
             'price'             => $this->price,
             'gross_total'       => $this->gross_total,

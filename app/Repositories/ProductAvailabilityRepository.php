@@ -36,6 +36,12 @@ class ProductAvailabilityRepository extends RepositoryService
         return parent::findBy($searchCriteria);
     }
 
+    public function store($data)
+    {
+        $data["company_id"] = Auth::user()->company_id; // COMPANY ID FROM THE CURRENT USER LOGGED
+        parent::store($data);
+    }
+
 
      // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
      public function productAvailabilities(array $searchCriteria = [])
