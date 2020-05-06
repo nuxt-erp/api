@@ -15,7 +15,7 @@ class SupplierRepository extends RepositoryService
             'direction'     => 'asc'
         ];
 
-        $searchCriteria['per_page'] = 50;
+        $searchCriteria['per_page'] = 150;
 
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';

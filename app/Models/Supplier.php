@@ -15,13 +15,13 @@ class Supplier extends Model
     public function getRules($request, $item = null)
     {
         $rules = [
-            'name' => ['string', 'max:255'],
+            'name' => ['string', 'max:60'],
         ];
 
         // CREATE
         if (is_null($item))
         {
-            $rules['name'][]        = 'required';
+            $rules['name'][] = 'required';
         }
 
         return $rules;

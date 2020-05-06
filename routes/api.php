@@ -55,6 +55,7 @@ Route::middleware('auth:api')->group(function () {
     Route::group(['prefix' => 'import'], function () {
         Route::get('brands', 'ImportController@dearSyncBrands');
         Route::get('categories', 'ImportController@dearSyncCategories');
+        Route::get('suppliers', 'ImportController@dearSyncSuppliers');
         Route::get('locations', 'ImportController@dearSyncLocations');
         Route::get('products', 'ImportController@dearSyncProducts');
         Route::get('availabilities', 'ImportController@dearSyncAvailabilities');
