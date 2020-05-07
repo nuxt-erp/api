@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\ProductAvailability;
 use Auth;
 
 class ProductAvailabilityRepository extends RepositoryService
@@ -11,12 +12,17 @@ class ProductAvailabilityRepository extends RepositoryService
 
     public function findBy(array $searchCriteria = [])
     {
-        /*$searchCriteria['order_by'] = [
+        $searchCriteria['order_by'] = [
             'field'         => 'products.name',
             'direction'     => 'asc'
         ];
 
-        $searchCriteria['per_page'] = 100;*/
+        if (!empty($searchCriteria['product_name'])) {
+            $name = '%' . Arr::pull($searchCriteria, 'product_name') . '%';
+            $this->queryBuilder
+            ->where('products.name', 'LIKE', $name)
+            ->orWhere('products.sku', 'LIKE', $name);
+        }
 
         $this->queryBuilder->select('product_availabilities.id', 'product_availabilities.product_id', 'product_availabilities.company_id', 'product_availabilities.available', 'product_availabilities.location_id', 'product_availabilities.on_hand');
         $this->queryBuilder->join('products', 'product_availabilities.product_id', 'products.id');
@@ -36,12 +42,21 @@ class ProductAvailabilityRepository extends RepositoryService
         return parent::findBy($searchCriteria);
     }
 
+
     public function store($data)
     {
         $data["company_id"] = Auth::user()->company_id; // COMPANY ID FROM THE CURRENT USER LOGGED
         parent::store($data);
     }
 
+    public function updateStock($product_id, $qty, $location_id, $operator)
+    {
+        if ($operator == "+") {
+            ProductAvailability::where(['company_id' => Auth::user()->company_id, 'product_id' => $product_id, 'location_id' => $location_id])->increment('on_hand', $qty);
+        } elseif ($operator == "-") {
+            ProductAvailability::where(['company_id' => Auth::user()->company_id, 'product_id' => $product_id, 'location_id' => $location_id])->decrement('on_hand', $qty);
+        }
+    }
 
      // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
      public function productAvailabilities(array $searchCriteria = [])

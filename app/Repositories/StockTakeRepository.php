@@ -8,10 +8,11 @@ use App\Models\StockTakeDetails;
 use App\Models\StockTake;
 use App\Models\ProductAvailability;
 use Illuminate\Support\Facades\DB;
-
+use App\Traits\StockTrait;
 
 class StockTakeRepository extends RepositoryService
 {
+    use StockTrait;
 
     public function findBy(array $searchCriteria = [])
     {
@@ -73,6 +74,7 @@ class StockTakeRepository extends RepositoryService
 
         foreach ($stock as $value)
         {
+            /*
             ProductAvailability::updateOrCreate([
                 'product_id'  => $value->product_id,
                 'company_id'  => Auth::user()->company_id,
@@ -81,7 +83,10 @@ class StockTakeRepository extends RepositoryService
             [
                 'available' => $value->stock_on_hand, // PREVIOUS QTY
                 'on_hand'   => $value->stock_on_hand  // PREVIOUS QTY
-            ]);
+            ]);*/
+
+            // DECREMENT STOCK
+            $this->updateStock($value->product_id, $value->stock_on_hand, $value->location_id, "-");
         }
 
         parent::destroy($id);

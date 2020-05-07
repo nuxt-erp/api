@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Attribute;
+use App\Models\PurchaseDetails;
 
 class Product extends Model
 {
@@ -72,6 +73,7 @@ class Product extends Model
         return $this->belongsTo(Company::class);
     }
 
+    // CONCAT PRODUCT NAME WITH ALL ATTRIBUTES
     public function getNameAttribute($value)
     {
         return $value . ' ' . $this->getFirstAttribute();
@@ -82,6 +84,7 @@ class Product extends Model
         return $this->getFirstAttribute();
     }
 
+    // GET ALL ATTRIBUTES FROM PRODUCT
     public function getFirstAttribute()
     {
         $string = '';
@@ -98,6 +101,21 @@ class Product extends Model
             }
         }
         return $string;
+    }
+
+    // GET TOTAL QTY IN TRANSIT (COMING FROM SUPPLIER - PURCHASE)
+    public function getInTransitAttribute($product_id)
+    {
+        $data = PurchaseDetails::where('product_id', $product_id)
+        ->selectRaw('SUM(qty) as tot')
+        ->with('purchase')
+        ->whereHas('purchase', function ($query) {
+            $query->where('status', '=', 0); // NOT RECEIVED YET
+        })->get();
+
+        if($data) {
+            return ($data[0]->tot);
+        }
     }
 
 }

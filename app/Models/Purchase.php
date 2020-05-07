@@ -23,6 +23,11 @@ class Purchase extends Model
         return $rules;
     }
 
+    public function details()
+    {
+        return $this->hasMany(PurchaseDetails::class, 'purchase_id');
+    }
+
     public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');

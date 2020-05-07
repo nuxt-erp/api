@@ -8,9 +8,14 @@ use App\Models\PurchaseDetails;
 use App\Models\Purchase;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
+use App\Traits\StockTrait;
 
 class PurchaseRepository extends RepositoryService
 {
+
+    use StockTrait;
+
+    protected $availabilityRepository;
     public function findBy(array $searchCriteria = [])
     {
         $searchCriteria['order_by'] = [
@@ -46,10 +51,6 @@ class PurchaseRepository extends RepositoryService
             // UPDATE STOCK TAKE PRODUCTS
             $this->savePurchaseDetails($data, $this->model->id);
         });
-    }
-
-    private function updateStockReceived() {
-        // id, product_id, company_id, available, location_id, on_hand, created_at, updated_at
     }
 
     private function savePurchaseDetails($data, $id)
@@ -144,9 +145,15 @@ class PurchaseRepository extends RepositoryService
                                         'price'          => $price,
                                         'gross_total'    => $total_item,
                                         'total'          => $total_item,
+                                        'item_status'    => ($qty == $qty_received), // WHEN FULFILLED SET TRUE FOR ITEM
                                     ]);
 
                                     $total += $total_item;
+
+                                    if ($qty == $qty_received) { // WHEN FULFILLED PRODUCT, UPDATE STOCK AVAILABILITY
+                                        $this->updateStock($product_id, $qty, $data["location_id"], "+"); // INCREMENT STOCK RECEIVED
+                                    }
+
                                 }
 
                                 // UPDATE TOTAL PURCHASE
@@ -159,4 +166,21 @@ class PurchaseRepository extends RepositoryService
         }
     }
 
+    public function delete($id)
+    {
+        DB::transaction(function () use ($id)
+        {
+            $parseId = $id["id"];
+            $getItem = Purchase::where('id', $parseId)->with('details')->get();
+
+            foreach ($getItem[0]->details as $value)
+            {
+                // DECREMENT STOCK
+                $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_id, "-");
+            }
+
+            parent::delete($id);
+
+        });
+    }
 }
