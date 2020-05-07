@@ -210,25 +210,19 @@ abstract class RepositoryService implements RepositoryInterface
     }
 
 
-    public function destroy($model)
+    public function destroy($id)
     {
-
-        // we don't need to delete NULL, right?
-        if (is_null($model)) {
-            $result = FALSE;
-        }
-        else{
-            try {
-                $result = $model->delete();
-            } catch (QueryException $e) {
-                if($e->errorInfo[1] !== 1451){
-                    Log::channel('debug')->info($e->errorInfo);
-                }
-                throw new ConstrainException('delete', $e->errorInfo[1]);
+        try {
+            $result = $model->where('id', $id)->delete();
+        } catch (QueryException $e) {
+            if($e->errorInfo[1] !== 1451){
+                Log::channel('debug')->info($e->errorInfo);
             }
+            throw new ConstrainException('delete', $e->errorInfo[1]);
         }
         return $result;
     }
+
 
     public function delete($model)
     {

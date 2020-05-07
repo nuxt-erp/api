@@ -18,6 +18,7 @@ class ProductAvailabilityResource extends JsonResource
             'id'                    => $this->product_id,
             'product_id'            => $this->id,
             'product_name'          => optional($this->product)->name,
+            'in_transit_suppliers'  => optional($this->product)->getInTransitAttribute($this->product_id),
             'location_name'         => optional($this->location)->name,
             'location_id'           => $this->location_id,
             'qty'                   => $this->available,
