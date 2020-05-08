@@ -26,6 +26,8 @@ use App\Models\StockTake;
 use App\Models\StockTakeDetails;
 use App\Models\Purchase;
 use App\Models\PurchaseDetails;
+use App\Models\Transfer;
+use App\Models\TransferDetails;
 
 
 // REPOSITORIES
@@ -52,6 +54,8 @@ use App\Repositories\StockTakeRepository;
 use App\Repositories\StockTakeDetailsRepository;
 use App\Repositories\PurchaseRepository;
 use App\Repositories\PurchaseDetailsRepository;
+use App\Repositories\TransferRepository;
+use App\Repositories\TransferDetailsRepository;
 
 
 // RESOURCES
@@ -82,6 +86,8 @@ use App\Resources\StockTakeDetailsResource;
 use App\Resources\ProductAvailabilityStockCountResource;
 use App\Resources\PurchaseResource;
 use App\Resources\PurchaseDetailsResource;
+use App\Resources\TransferResource;
+use App\Resources\TransferDetailsResource;
 
 
 class RepositoriesServiceProvider extends ServiceProvider
@@ -296,6 +302,22 @@ class RepositoriesServiceProvider extends ServiceProvider
             return new PurchaseDetailsResource(new PurchaseDetails());
         });
 
+        $this->app->bind(TransferResource::class, function () {
+            return new TransferResource(new Transfer());
+        });
+
+        $this->app->bind(TransferRepository::class, function () {
+            return new TransferRepository(new Transfer());
+        });
+
+        $this->app->bind(TransferDetailsRepository::class, function () {
+            return new TransferDetailsRepository(new TransferDetails());
+        });
+
+        $this->app->bind(TransferDetailsResource::class, function () {
+            return new TransferDetailsResource(new TransferDetails());
+        });
+
     }
 
     /**
@@ -331,6 +353,8 @@ class RepositoriesServiceProvider extends ServiceProvider
             StockTakeDetailsRepository::class,
             PurchaseRepository::class,
             PurchaseDetailsRepository::class,
+            TransferRepository::class,
+            TransferDetailsRepository::class,
         ];
     }
 }

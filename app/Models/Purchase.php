@@ -42,4 +42,11 @@ class Purchase extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    // GET MIN DATE FROM THE ETA ON PURCHASE DETAILS
+    public function getEarliestEtaAttribute()
+    {
+        $data = $this->details->sortBy('estimated_date')->all();
+        return $data[0]->estimated_date;
+    }
 }
