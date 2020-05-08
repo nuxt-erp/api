@@ -37,6 +37,8 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('availabilities', 'Inventory\AvailabilityController');
         Route::resource('stocktake', 'Inventory\StockTakeController');
         Route::resource('stocktake_details', 'Inventory\StockTakeDetailsController');
+        Route::resource('tranfers', 'Inventory\TransferController');
+        Route::resource('transfer_details', 'Inventory\TransferDetailsController');
         Route::get('product_availabilities', 'Inventory\AvailabilityController@productAvailabilities'); // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY
         Route::get('stocktake/finish/{id?}', 'Inventory\StockTakeController@finish'); // ADJUST AND FINISH STOCK TAKE
     });
