@@ -9,7 +9,7 @@ class Transfer extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'pu_date', 'company_id', 'created_at', 'updated_at', 'carrier_id', 'eta', 'type_transfer_id', 'tracking_number', 'location_from_id', 'location_to_id', 'package_type_id', 'total_qty', 'transfer_status_id'
+        'pu_date', 'company_id', 'created_at', 'updated_at', 'carrier_id', 'eta', 'shipment_type_id', 'tracking_number', 'location_from_id', 'location_to_id', 'package_type_id', 'total_qty', 'status'
     ];
 
     public function getRules($request, $item = null)
@@ -46,19 +46,13 @@ class Transfer extends Model
         return $this->belongsTo(SystemParameter::class, 'carrier_id');
     }
 
-    public function transfer_type()
+    public function shipment_type()
     {
-        return $this->belongsTo(SystemParameter::class, 'type_transfer_id');
+        return $this->belongsTo(SystemParameter::class, 'shipment_type_id');
     }
 
     public function package_type()
     {
         return $this->belongsTo(SystemParameter::class, 'package_type_id');
     }
-
-    public function transfer_status()
-    {
-        return $this->belongsTo(SystemParameter::class, 'transfer_status_id');
-    }
-
 }

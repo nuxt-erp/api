@@ -22,13 +22,14 @@ class TransferResource extends JsonResource
             'total_qty'             => $this->total_qty,
             'transfer_status_id'    => $this->transfer_status_id,
             'transfer_status_name'  => optional($this->transfer_status)->param_value,
-            'type_transfer_id'      => $this->type_transfer_id,
-            'type_transfer_name'    => optional($this->transfer_type)->param_value,
+            'shipment_type_id'      => $this->shipment_type_id,
+            'shipment_type_name'    => optional($this->shipment_type)->param_value,
             'location_from_id'      => $this->location_from_id,
             'location_from_name'    => optional($this->location_from)->param_value,
             'location_to_id'        => $this->location_to_id,
             'location_to_name'      => optional($this->location_to)->param_value,
             'eta'                   => $this->eta,
+            'status'                => $this->status,
             'can_be_deleted'        => true
         ];
     }
