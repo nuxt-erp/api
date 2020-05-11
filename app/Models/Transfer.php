@@ -28,7 +28,7 @@ class Transfer extends Model
 
     public function location_from()
     {
-        return $this->belongsTo(Location::class, 'location_from_id');
+        return $this->belongsTo(Location::class, 'location_from_id', 'id');
     }
 
     public function location_to()

@@ -20,16 +20,15 @@ class TransferResource extends JsonResource
             'package_type_id'       => $this->package_type_id,
             'package_type_name'     => optional($this->package_type)->param_value,
             'total_qty'             => $this->total_qty,
-            'transfer_status_id'    => $this->transfer_status_id,
-            'transfer_status_name'  => optional($this->transfer_status)->param_value,
             'shipment_type_id'      => $this->shipment_type_id,
             'shipment_type_name'    => optional($this->shipment_type)->param_value,
             'location_from_id'      => $this->location_from_id,
-            'location_from_name'    => optional($this->location_from)->param_value,
+            'location_from_name'    => optional($this->location_from)->name,
             'location_to_id'        => $this->location_to_id,
-            'location_to_name'      => optional($this->location_to)->param_value,
+            'location_to_name'      => optional($this->location_to)->name,
             'eta'                   => $this->eta,
             'status'                => $this->status,
+            'status_label'          => ($this->status == 1 ? "DELIVERED" : "IN-TRANSIT"),
             'can_be_deleted'        => true
         ];
     }
