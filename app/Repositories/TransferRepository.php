@@ -120,10 +120,8 @@ class TransferRepository extends RepositoryService
                                         'variance'       => ($qty_sent - $qty_received),
                                     ]);
 
-                                    $total += $total_item;
-
                                     if ($qty_received > 0) { // WHEN FULFILLED PRODUCT, UPDATE STOCK AVAILABILITY
-                                        $this->updateStock($product_id, $qty_received, $data["location_to"], "+"); // INCREMENT STOCK RECEIVED
+                                        $this->updateStock($product_id, $qty_received, $data["location_to_id"], "+"); // INCREMENT STOCK RECEIVED
                                         Transfer::where('id', $id)->update(['status' => 1]); // UPDATE Transfer status
                                     }
                                 }
