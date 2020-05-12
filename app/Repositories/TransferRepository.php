@@ -9,6 +9,7 @@ use App\Models\Transfer;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use App\Traits\StockTrait;
+use Illuminate\Support\Collection;
 
 class TransferRepository extends RepositoryService
 {
@@ -146,7 +147,6 @@ class TransferRepository extends RepositoryService
                     $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_to, "-");    // DECREMENT STOCK FROM RECEIVER LOCATION
                     $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_from, "+");  // INCREMENT STOCK FROM SENDER LOCATION
                 }
-
             }
 
             parent::delete($id);

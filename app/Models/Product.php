@@ -35,10 +35,6 @@ class Product extends Model
         return $rules;
     }
 
-    /*public function setNameAttribute($value)
-    {
-        // $this->attributes['name'] =
-    }*/
 
     public function attributes() {
         return $this->hasMany('App\Models\ProductAttribute', 'product_id');
@@ -82,6 +78,10 @@ class Product extends Model
     public function getOnlyAttribute()
     {
         return $this->getFirstAttribute();
+    }
+
+    public function getConcatNameAttribute() {
+        return $this->name;
     }
 
     // GET ALL ATTRIBUTES FROM PRODUCT
