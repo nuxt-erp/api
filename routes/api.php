@@ -41,7 +41,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('transfer_details', 'Inventory\TransferDetailsController');
         Route::get('product_availabilities', 'Inventory\AvailabilityController@productAvailabilities'); // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY
         Route::get('stocktake/finish/{id?}', 'Inventory\StockTakeController@finish'); // ADJUST AND FINISH STOCK TAKE
-        Route::get('transfer/packingSlip/{id?}', 'Inventory\TransferController@exportPackingSlip');
+        Route::get('transfer/packingSlip/{id?}', 'Inventory\TransferController@exportPackingSlip'); // EXPORT PACKING SLIP
     });
 
     // PURCHASES
