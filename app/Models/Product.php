@@ -118,4 +118,19 @@ class Product extends Model
         }
     }
 
+    // GET TOTAL QTY IN TRANSIT (TRANSFERS)
+    public function getInTransitTransferAttribute($product_id)
+    {
+        $data = TransferDetails::where('product_id', $product_id)
+        ->selectRaw('SUM(qty_sent) as tot')
+        ->with('transfer')
+        ->whereHas('transfer', function ($query) {
+            $query->where('status', '=', 0); // NOT RECEIVED YET
+        })->get();
+
+        if($data) {
+            return ($data[0]->tot);
+        }
+    }
+
 }
