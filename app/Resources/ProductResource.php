@@ -38,7 +38,9 @@ class ProductResource extends JsonResource
             'location_name'         => optional($this->location)->name,
             'can_be_deleted'        => true,
             'product_attributes'    => $this->getOnlyAttribute(),
-            'in_transit_suppliers'  => $this->getInTransitAttribute($this->id)
+            'in_transit_suppliers'  => $this->getInTransitAttribute($this->id),
+            'in_transit_transfers'  => $this->getInTransitTransferAttribute($this->id)
+
         ];
     }
 }

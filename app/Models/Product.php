@@ -35,10 +35,6 @@ class Product extends Model
         return $rules;
     }
 
-    /*public function setNameAttribute($value)
-    {
-        // $this->attributes['name'] =
-    }*/
 
     public function attributes() {
         return $this->hasMany('App\Models\ProductAttribute', 'product_id');
@@ -84,6 +80,10 @@ class Product extends Model
         return $this->getFirstAttribute();
     }
 
+    public function getConcatNameAttribute() {
+        return $this->name;
+    }
+
     // GET ALL ATTRIBUTES FROM PRODUCT
     public function getFirstAttribute()
     {
@@ -110,6 +110,21 @@ class Product extends Model
         ->selectRaw('SUM(qty) as tot')
         ->with('purchase')
         ->whereHas('purchase', function ($query) {
+            $query->where('status', '=', 0); // NOT RECEIVED YET
+        })->get();
+
+        if($data) {
+            return ($data[0]->tot);
+        }
+    }
+
+    // GET TOTAL QTY IN TRANSIT (TRANSFERS)
+    public function getInTransitTransferAttribute($product_id)
+    {
+        $data = TransferDetails::where('product_id', $product_id)
+        ->selectRaw('SUM(qty_sent) as tot')
+        ->with('transfer')
+        ->whereHas('transfer', function ($query) {
             $query->where('status', '=', 0); // NOT RECEIVED YET
         })->get();
 
