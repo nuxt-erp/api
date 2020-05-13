@@ -20,9 +20,9 @@ class SaleController extends ControllerService
         $this->resource = $resource;
     }
 
-    public function importShopifyOrders()
+    public function importShopify()
     {
-        $data = $this->repository->importShopifyOrders();
+        $data = $this->repository->importShopify();
         return $this->setStatusCode(201)->respondWithArray($data);
     }
 

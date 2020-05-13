@@ -56,7 +56,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('customers', 'Sales\CustomerController');
         Route::resource('sales', 'Sales\SaleController');
         Route::resource('sale_details', 'Sales\SaleDetailsController');
-        Route::get('shopify_orders', 'Sales\SaleController@importShopifyOrders');
+        Route::get('shopify_orders', 'Sales\SaleController@importShopify');
     });
 
     // PRODUCT FAMILY

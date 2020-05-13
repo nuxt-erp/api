@@ -34,9 +34,9 @@ class SaleRepository extends RepositoryService
         return parent::findBy($searchCriteria);
     }
 
-    public function importShopifyOrders()
+    public function importShopify()
     {
-        $data = $this->importShopifyOrders();
+        return $this->importShopifyOrders();
     }
 
     public function store($data)
