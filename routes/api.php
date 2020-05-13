@@ -51,6 +51,14 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('purchase_details', 'Purchases\PurchaseDetailsController');
     });
 
+    // SALES
+    Route::group(['prefix' => 'sales'], function () {
+        Route::resource('customers', 'Sales\CustomerController');
+        Route::resource('sales', 'Sales\SaleController');
+        Route::resource('sale_details', 'Sales\SaleDetailsController');
+        Route::get('shopify_orders', 'Sales\SaleController@importShopifyOrders');
+    });
+
     // PRODUCT FAMILY
     Route::get('product_families/get_products', 'Inventory\ProductFamilyController@getListProducts'); // LIST ALL PRODUCTS FROM CURRENT FAMILY
 

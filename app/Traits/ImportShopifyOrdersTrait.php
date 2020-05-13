@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Traits;
 
-class ShopifyController extends ControllerService
+use Illuminate\Database\Eloquent\Model;
+use App\Traits\Response;
+
+trait ImportShopifyOrdersTrait
 {
-    private $config;
-    private $shopify;
-    private $shopify_collection;
-
     public function __construct()
     {
         $this->config = array(

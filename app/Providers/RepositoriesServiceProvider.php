@@ -28,6 +28,9 @@ use App\Models\Purchase;
 use App\Models\PurchaseDetails;
 use App\Models\Transfer;
 use App\Models\TransferDetails;
+use App\Models\Sale;
+use App\Models\SaleDetails;
+use App\Models\Customer;
 
 
 // REPOSITORIES
@@ -56,6 +59,9 @@ use App\Repositories\PurchaseRepository;
 use App\Repositories\PurchaseDetailsRepository;
 use App\Repositories\TransferRepository;
 use App\Repositories\TransferDetailsRepository;
+use App\Repositories\SaleRepository;
+use App\Repositories\SaleDetailsRepository;
+use App\Repositories\CustomerRepository;
 
 
 // RESOURCES
@@ -88,6 +94,9 @@ use App\Resources\PurchaseResource;
 use App\Resources\PurchaseDetailsResource;
 use App\Resources\TransferResource;
 use App\Resources\TransferDetailsResource;
+use App\Resources\SaleResource;
+use App\Resources\SaleDetailsResource;
+use App\Resources\CustomerResource;
 
 
 class RepositoriesServiceProvider extends ServiceProvider
@@ -318,6 +327,30 @@ class RepositoriesServiceProvider extends ServiceProvider
             return new TransferDetailsResource(new TransferDetails());
         });
 
+        $this->app->bind(SaleDetailsRepository::class, function () {
+            return new SaleDetailsRepository(new SaleDetails());
+        });
+
+        $this->app->bind(SaleDetailsResource::class, function () {
+            return new SaleDetailsResource(new SaleDetails());
+        });
+
+        $this->app->bind(SaleResource::class, function () {
+            return new SaleResource(new Sale());
+        });
+
+        $this->app->bind(SaleRepository::class, function () {
+            return new SaleRepository(new Sale());
+        });
+
+        $this->app->bind(CustomerResource::class, function () {
+            return new CustomerResource(new Customer());
+        });
+
+        $this->app->bind(CustomerRepository::class, function () {
+            return new CustomerRepository(new Customer());
+        });
+
     }
 
     /**
@@ -355,6 +388,9 @@ class RepositoriesServiceProvider extends ServiceProvider
             PurchaseDetailsRepository::class,
             TransferRepository::class,
             TransferDetailsRepository::class,
+            SaleDetailsRepository::class,
+            CustomerRepository::class,
+            SaleDetailsRepository::class,
         ];
     }
 }
