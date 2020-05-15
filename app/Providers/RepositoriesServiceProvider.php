@@ -390,7 +390,7 @@ class RepositoriesServiceProvider extends ServiceProvider
             TransferDetailsRepository::class,
             SaleDetailsRepository::class,
             CustomerRepository::class,
-            SaleDetailsRepository::class,
+            SaleRepository::class,
         ];
     }
 }

@@ -22,13 +22,27 @@ trait ImportShopifyOrdersTrait
     public function importShopifyOrders()
     {
         $date = date('Y-m-d');  // CURRENT DATE
-        $params = ['processed_at_min' => $date, 'processed_at_max' => date('Y-m-d', strtotime($date. ' + 1 days'))]; // ORDER 1 DAY PERIOD
+        $params = [
+            'processed_at_min' => $date,
+            'processed_at_max' => date('Y-m-d', strtotime($date. ' + 1 days'))
+        ];
 
-        $this->shopify_collection = $this->shopify->Order->get($params);
+        $tot        = $this->shopify->Order()->count($params);
+        $limit      = 100;
+        $totalpage  = ceil($tot/$limit);
+        $orders     = [];
 
-        if ($this->shopify_collection) {
-            return $this->shopify_collection;
+        for($i=1; $i<=$totalpage; $i++)
+        {
+            $params = [
+                'created_at_min' => $date,
+                'created_at_max' => date('Y-m-d', strtotime($date. ' + 1 days')),
+                'limit'          => 100
+            ];
+            $orders[$i] = $this->shopify->Order->get($params);
         }
+
+        return $orders;
     }
 
 }

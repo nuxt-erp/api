@@ -166,12 +166,11 @@ class PurchaseRepository extends RepositoryService
         }
     }
 
-    public function delete($id)
+    public function remove($id)
     {
         DB::transaction(function () use ($id)
         {
-            $parseId = $id["id"];
-            $getItem = Purchase::where('id', $parseId)->with('details')->get();
+            $getItem = Purchase::where('id', $id)->with('details')->get();
 
             foreach ($getItem[0]->details as $value)
             {
@@ -179,7 +178,8 @@ class PurchaseRepository extends RepositoryService
                 $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_id, "-");
             }
 
-            parent::delete($id);
+            // parent::delete($id);
+            Purchase::where('id', $id)->delete();
 
         });
     }

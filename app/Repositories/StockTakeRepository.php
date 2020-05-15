@@ -67,7 +67,7 @@ class StockTakeRepository extends RepositoryService
         return parent::findBy($searchCriteria);
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         // GET ALL SAVED QTY FROM COUNTING
         $stock = StockTakeDetails::where('stocktake_id', $id->id)->get();
@@ -89,7 +89,8 @@ class StockTakeRepository extends RepositoryService
             $this->updateStock($value->product_id, $value->stock_on_hand, $value->location_id, "-");
         }
 
-        parent::destroy($id);
+        // parent::delete($id);
+        StockTake::where('id', $id->id)->delete();
     }
 
     public function store($data)

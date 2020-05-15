@@ -5,14 +5,11 @@ namespace App\Http\Controllers\Sales;
 use App\Http\Controllers\ControllerService;
 use App\Repositories\SaleRepository;
 use App\Resources\SaleResource;
-use App\Http\Controllers\ResponseTrait;
 
 class SaleController extends ControllerService
 {
     protected $repository;
     protected $resource;
-
-    use ResponseTrait;
 
     public function __construct(SaleRepository $repository, SaleResource $resource)
     {
@@ -23,7 +20,9 @@ class SaleController extends ControllerService
     public function importShopify()
     {
         $data = $this->repository->importShopify();
-        return $this->setStatusCode(201)->respondWithArray($data);
+        return $this->setStatusCode(201)->respondWithArray(['total' => $data]);
+        //return $this->setStatusCode(201)->respond();
+
     }
 
 }
