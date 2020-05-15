@@ -50,4 +50,9 @@ class TransferController extends ControllerService
         return $this->setStatusCode(201)->respondWithArray($collection);
     }
 
+    public function remove(Request $request) {
+        $this->repository->remove($request->id);
+        return $this->respond(['ok' => true]);
+    }
+
 }

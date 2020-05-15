@@ -8,10 +8,8 @@ use App\Resources\ProductFamilyResource;
 use App\Resources\ProductResource;
 use Illuminate\Http\Request;
 
-
 class ProductFamilyController extends ControllerService
 {
-
     protected $repository;
     protected $resource;
 
@@ -25,5 +23,10 @@ class ProductFamilyController extends ControllerService
     {
         $itens = $this->repository->getListProducts($request->all());
         return $this->respondWithNativeCollection($itens, ProductResource::class);
+    }
+
+    public function remove(Request $request) {
+        $this->repository->remove($request->id);
+        return $this->respond(['ok' => true]);
     }
 }

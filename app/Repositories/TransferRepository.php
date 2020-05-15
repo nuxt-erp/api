@@ -134,23 +134,21 @@ class TransferRepository extends RepositoryService
         }
     }
 
-    public function delete($id)
+    public function remove($id)
     {
         DB::transaction(function () use ($id)
         {
-            $parseId = $id["id"];
-            $getItem = Transfer::where('id', $parseId)->with('details')->get();
+            $getItem = Transfer::where('id', $id)->with('details')->get();
 
             foreach ($getItem[0]->details as $value)
             {
                 if ($value->qty_received > 0) { // IF ALREADY RECEIVED
-                    $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_to, "-");    // DECREMENT STOCK FROM RECEIVER LOCATION
-                    $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_from, "+");  // INCREMENT STOCK FROM SENDER LOCATION
+                    $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_to->id, "-");    // DECREMENT STOCK FROM RECEIVER LOCATION
+                    $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_from->id, "+");  // INCREMENT STOCK FROM SENDER LOCATION
                 }
             }
-
-            parent::delete($id);
-
+            // parent::delete($id);
+            Transfer::where('id', $id)->delete();
         });
     }
 }

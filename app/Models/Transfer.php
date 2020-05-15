@@ -23,7 +23,7 @@ class Transfer extends Model
 
     public function details()
     {
-        return $this->hasMany(TransferDetails::class, 'purchase_id');
+        return $this->hasMany(TransferDetails::class, 'transfer_id');
     }
 
     public function location_from()

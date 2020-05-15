@@ -42,6 +42,8 @@ Route::middleware('auth:api')->group(function () {
         Route::get('product_availabilities', 'Inventory\AvailabilityController@productAvailabilities'); // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY
         Route::get('stocktake/finish/{id?}', 'Inventory\StockTakeController@finish'); // ADJUST AND FINISH STOCK TAKE
         Route::get('transfer/packingSlip/{id?}', 'Inventory\TransferController@exportPackingSlip'); // EXPORT PACKING SLIP
+        Route::get('product_families/remove/{id?}', 'Inventory\ProductFamilyController@remove');
+        Route::get('transfer/remove/{id?}', 'Inventory\TransferController@remove');
     });
 
     // PURCHASES
@@ -49,6 +51,15 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('suppliers', 'Purchases\SupplierController');
         Route::resource('purchases', 'Purchases\PurchaseController');
         Route::resource('purchase_details', 'Purchases\PurchaseDetailsController');
+        Route::get('purchase/remove/{id?}', 'Purchases\PurchaseController@remove');
+    });
+
+    // SALES
+    Route::group(['prefix' => 'sales'], function () {
+        Route::resource('customers', 'Sales\CustomerController');
+        Route::resource('sales', 'Sales\SaleController');
+        Route::resource('sale_details', 'Sales\SaleDetailsController');
+        Route::get('shopify_orders', 'Sales\SaleController@importShopify');
     });
 
     // PRODUCT FAMILY

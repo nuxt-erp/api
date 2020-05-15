@@ -5,6 +5,7 @@ namespace App\Repositories;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use App\Models\Product;
+use App\Models\ProductFamily;
 
 class ProductFamilyRepository extends RepositoryService
 {
@@ -71,4 +72,10 @@ class ProductFamilyRepository extends RepositoryService
         parent::update($model, $data);
     }
 
+    public function remove($id)
+    {
+        Product::where('family_id', $id)->delete();
+        // parent::delete($id);
+        ProductFamily::where('id', $id)->delete();
+    }
 }
