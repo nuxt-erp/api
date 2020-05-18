@@ -15,8 +15,6 @@ class CustomerRepository extends RepositoryService
             'direction'     => 'asc'
         ];
 
-        $searchCriteria['per_page'] = 150;
-
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
             $this->queryBuilder
@@ -29,6 +27,13 @@ class CustomerRepository extends RepositoryService
 
     public function findBy(array $searchCriteria = [])
     {
+        $searchCriteria['order_by'] = [
+            'field'         => 'name',
+            'direction'     => 'asc'
+        ];
+
+        $searchCriteria['per_page'] = 150;
+
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
             $searchCriteria['query_type'] = 'LIKE';

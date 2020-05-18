@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Sales;
 use App\Http\Controllers\ControllerService;
 use App\Repositories\SaleRepository;
 use App\Resources\SaleResource;
+use Illuminate\Http\Request;
 
 class SaleController extends ControllerService
 {
@@ -21,8 +22,11 @@ class SaleController extends ControllerService
     {
         $data = $this->repository->importShopify();
         return $this->setStatusCode(201)->respondWithArray(['total' => $data]);
-        //return $this->setStatusCode(201)->respond();
+    }
 
+    public function remove(Request $request) {
+        $this->repository->remove($request->id);
+        return $this->respond(['ok' => true]);
     }
 
 }

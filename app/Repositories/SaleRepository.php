@@ -7,9 +7,11 @@ use Auth;
 use App\Models\SaleDetails;
 use App\Models\Sale;
 use App\Models\Product;
+use App\Models\Customer;
+use App\Models\Province;
+use App\Models\Country;
 use Illuminate\Support\Facades\DB;
 use App\Traits\StockTrait;
-// use App\Traits\ImportShopifyOrdersTrait;
 
 class SaleRepository extends RepositoryService
 {
@@ -19,8 +21,8 @@ class SaleRepository extends RepositoryService
     public function findBy(array $searchCriteria = [])
     {
         $searchCriteria['order_by'] = [
-            'field'         => 'id',
-            'direction'     => 'asc'
+            'field'         => 'order_number',
+            'direction'     => 'desc'
         ];
 
         if (!empty($searchCriteria['id'])) {
@@ -44,18 +46,21 @@ class SaleRepository extends RepositoryService
 
         $shopify = new \PHPShopify\ShopifySDK($config);
 
-        // date_default_timezone_set('America/Toronto');
-        $time_zone = '+4:00';
+        //date_default_timezone_set('America/Toronto');
+        $time_zone = '-4:00';
 
         // CURRENT DATE TIME
-        $date = date('Y-m-d\TH:i:s');
+        //$date = date('Y-m-d\TH:i:s');
+        $date = date('Y-m-d\TH:i:s', strtotime(date('Y-m-d'). ' - 10 minutes'));
+
         // -1 MINUTE BEFORE
-        $minutes_before = date('Y-m-d\TH:i:s', strtotime($date. ' - 40 minutes'));
+        //$minutes_before = date('Y-m-d\TH:i:s');
         // SHOPIFY QUERY PARAM
         $params = [
-            'processed_at_min' => $minutes_before . $time_zone,
+            'processed_at_min' => $date . $time_zone,
             'processed_at_max' => date('Y-m-d\TH:i:s')  . $time_zone
         ];
+
         // TOTAL ORDERS FOUND
         $tot        = $shopify->Order()->count($params);
         // PAGE LIMIT
@@ -68,14 +73,52 @@ class SaleRepository extends RepositoryService
         for($i=1; $i<=$totalpage; $i++)
         {
             $params = [
-                'created_at_min' => $minutes_before  . $time_zone,
-                'created_at_max' => date('Y-m-d\TH:i:s')  . $time_zone,
+                'processed_at_min' => $date  . $time_zone,
+                'processed_at_max' => date('Y-m-d\TH:i:s')  . $time_zone,
                 'limit'          => 100
             ];
             $orders[$i] = $shopify->Order->get($params);
         }
         // RETURN ARRAY WITH ALL ORDERS
         return $orders;
+    }
+
+    private function checkProvince($country_id, $short, $name)
+    {
+        $province = Province::firstOrCreate(['country_id' => $country_id, 'short_name' => $short, 'name' => $name]);
+        return $province->id;
+    }
+
+    private function checkCountry($name)
+    {
+        $country = Country::firstOrCreate(['name' => $name]);
+        return $country->id;
+    }
+
+    private function checkCustomer($data)
+    {
+        $customer_id = Customer::where('customer_shopify_id', $data["customer"]["id"])->pluck('id')->first();
+
+        // NOT FOUND. CREATE A NEW ONE
+        if (!$customer_id)
+        {
+            $new                        = new Customer;
+            $new->company_id            = Auth::user()->company_id;
+            $new->customer_shopify_id   = $data["customer"]["id"];
+            $new->name                  = $data["customer"]["default_address"]["first_name"] . ' ' . $data["customer"]["default_address"]["last_name"];
+            $new->address1              = $data["customer"]["default_address"]["address1"];
+            $new->address2              = $data["customer"]["default_address"]["address2"];
+            $new->email                 = $data["customer"]["email"];
+            $new->notes                 = $data["customer"]["note"];
+            $new->country_id            = $this->checkCountry($data["customer"]["default_address"]["country"]);
+            $new->province_id           = $this->checkProvince($new->country_id, $data["customer"]["default_address"]["province_code"], $data["customer"]["default_address"]["province"]);
+            $new->city                  = $data["customer"]["default_address"]["city"];
+            $new->postal_code           = $data["customer"]["default_address"]["zip"];
+            $new->phone_number          = $data["customer"]["default_address"]["phone"];
+            $new->save();
+            $customer_id                = $new->id;
+        }
+        return $customer_id;
     }
 
     public function importShopify()
@@ -94,9 +137,12 @@ class SaleRepository extends RepositoryService
                 {
                     $qty_created++;
 
+                    // CHECK IF CUSTOMER EXIST
+                    $customer_id = $this->checkCustomer($level1);
+
                     // GET ORDER HEADER
                     $data["order_number"]       = $level1["name"];
-                    $data["customer_id"]        = 1; //$level1["customer"]["id"];
+                    $data["customer_id"]        = $customer_id;
                     $data["sales_date"]         = $level1["processed_at"];
                     $data["financial_status"]   = ($level1["financial_status"] == "pending" ? 0 : 1);
                     $data["user_id"]            = Auth::user()->id;
@@ -152,6 +198,7 @@ class SaleRepository extends RepositoryService
                     $data["list_products"] = $parse_items;
                     // SAVE SALE PRODUCTS
                     $this->saveSaleDetails($data, $sale_id);
+                    $parse_items = [];
                 }
             }
         });
@@ -263,20 +310,20 @@ class SaleRepository extends RepositoryService
         return $total;
     }
 
-    public function delete($id)
+    public function remove($id)
     {
         DB::transaction(function () use ($id)
         {
-            $parseId = $id["id"];
-            $getItem = Sale::where('id', $parseId)->with('details')->get();
+            $getItem = Sale::where('id', $id)->with('details')->get();
 
             foreach ($getItem[0]->details as $value)
             {
                 // DECREMENT STOCK
-                $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_id, "-");
+                $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_id, "+");
             }
 
-            parent::delete($id);
+            // parent::delete($id);
+            Sale::where('id', $id)->delete();
 
         });
     }
