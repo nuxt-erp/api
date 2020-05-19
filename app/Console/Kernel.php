@@ -16,27 +16,23 @@ class Kernel extends ConsoleKernel
         //
     ];
 
-    /**
-     * Define the application's command schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
-     */
+    protected function getTimeZoneDifference()
+    {
+        $firstTime  = \DB::select("SELECT current_timestamp() as mysql_date");
+        $firstTime  = strtotime($firstTime[0]->mysql_date);
+        $lastTime   = strtotime(now());
+        $timeDiff   = (($lastTime-$firstTime) /60/60);
+        return abs($timeDiff);
+
+    }
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->call('App\Http\Controllers\Sales\SaleController@importShopify')->everyMinute();
     }
 
-    /**
-     * Register the commands for the application.
-     *
-     * @return void
-     */
     protected function commands()
     {
         $this->load(__DIR__.'/Commands');
-
         require base_path('routes/console.php');
     }
 }
