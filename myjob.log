@@ -151,4 +151,7 @@ Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopi
 Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
 2020-05-19T20:22:01 2020-05-19T20:24:01Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
 2020-05-19T20:23:02 2020-05-19T20:25:02Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
-2020-05-19T20:24:01 2020-05-19T20:26:01
+2020-05-19T20:24:01 2020-05-19T20:26:01Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+2020-05-19T20:25:02 2020-05-19T20:27:02Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+2020-05-19T20:26:01 2020-05-19T20:28:01Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+2020-05-19T20:27:01 2020-05-19T20:29:01
