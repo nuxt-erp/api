@@ -97,3 +97,58 @@ Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopi
 Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
 Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
 Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+
+   ErrorException  : Undefined index: customer
+
+  at /var/www/html/cvlapi/app/Repositories/SaleRepository.php:94
+    90|     }
+    91| 
+    92|     private function checkCustomer($data)
+    93|     {
+  > 94|         $customer_id = Customer::where('customer_shopify_id', $data["customer"]["id"])->pluck('id')->first();
+    95| 
+    96|         // NOT FOUND. CREATE A NEW ONE
+    97|         if (!$customer_id)
+    98|         {
+
+  Exception trace:
+
+  1   Illuminate\Foundation\Bootstrap\HandleExceptions::handleError("Undefined index: customer", "/var/www/html/cvlapi/app/Repositories/SaleRepository.php", [])
+      /var/www/html/cvlapi/app/Repositories/SaleRepository.php:94
+
+  2   App\Repositories\SaleRepository::checkCustomer()
+      /var/www/html/cvlapi/app/Repositories/SaleRepository.php:147
+
+  Please use the argument -v to see more details.
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+2020-05-19T20:22:01 2020-05-19T20:24:01Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+2020-05-19T20:23:02 2020-05-19T20:25:02Running scheduled command: App\Http\Controllers\Sales\SaleController@importShopify
+2020-05-19T20:24:01 2020-05-19T20:26:01
