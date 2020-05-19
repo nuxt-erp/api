@@ -11,6 +11,11 @@ class ProvinceRepository extends RepositoryService
 
     public function findBy(array $searchCriteria = [])
     {
+        $searchCriteria['order_by'] = [
+            'field'         => 'name',
+            'direction'     => 'asc'
+        ];
+
         if (!empty($searchCriteria['name']))
         {
             $searchCriteria['query_type'] = 'LIKE';

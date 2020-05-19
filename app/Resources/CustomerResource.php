@@ -12,11 +12,17 @@ class CustomerResource extends JsonResource
             'id'                 => $this->id,
             'name'               => $this->name,
             'company_id'         => $this->company_id,
-            'lead_time'          => $this->lead_time,
-            'ordering_cycle'     => $this->ordering_cycle,
-            'brand_id'           => $this->brand_id,
-            'brand_name'         => optional($this->brand)->name,
-            'date_last_order'    => $this->date_last_order,
+            'email'              => $this->email,
+            'address1'           => $this->address1,
+            'address2'           => $this->address2,
+            'city'               => $this->city,
+            'country_id'         => $this->country_id,
+            'country_name'       => optional($this->country)->name,
+            'province_id'        => $this->province_id,
+            'province_name'      => optional($this->province)->name,
+            'postal_code'        => $this->postal_code,
+            'notes'              => $this->notes,
+            'phone_number'       => $this->phone_number,
             'can_be_deleted'     => true
         ];
     }
