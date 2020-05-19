@@ -71,6 +71,8 @@ class SaleRepository extends RepositoryService
             'limit'            => 250
         ];
 
+        echo $date . ' ' . date('Y-m-d\TH:i:s');
+
         $orders[0] = $this->shopify->Order->get($params);
 
         // RETURN ARRAY WITH ALL ORDERS
