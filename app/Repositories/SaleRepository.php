@@ -151,7 +151,7 @@ class SaleRepository extends RepositoryService
                         // GET ORDER HEADER
                         $data["order_number"]       = str_replace('#', '', $level1["name"]);
                         $data["customer_id"]        = $customer_id;
-                        $data["sales_date"]         = $level1["processed_at"];
+                        $data["sales_date"]         = date('Y-m-d H:i:s', strtotime($level1["processed_at"]));
                         $data["financial_status"]   = ($level1["financial_status"] == "pending" ? 0 : 1);
                         $data["user_id"]            = $this->sync_user_id;
                         $data["company_id"]         = $this->company_id;
