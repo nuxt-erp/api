@@ -65,13 +65,14 @@ class SaleRepository extends RepositoryService
 
         $orders     = [];
 
+        // processed_at_min
         $params = [
-            'processed_at_min' => $date  . $time_zone,
-            'processed_at_max' => date('Y-m-d\TH:i:s')  . $time_zone,
+            'updated_at_min' => $date  . $time_zone,
+            'updated_at_max' => date('Y-m-d\TH:i:s')  . $time_zone,
             'limit'            => 250
         ];
 
-        echo $date . ' ' . date('Y-m-d\TH:i:s');
+        // echo $date . ' ' . date('Y-m-d\TH:i:s');
 
         $orders[0] = $this->shopify->Order->get($params);
 

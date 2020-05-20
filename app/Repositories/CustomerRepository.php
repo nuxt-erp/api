@@ -18,9 +18,9 @@ class CustomerRepository extends RepositoryService
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
             $this->queryBuilder
-            ->where('name', 'LIKE', $name)
-            ->where('company_id', Auth::user()->company_id);
+            ->where('name', 'LIKE', $name);
         }
+
         $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::getList($searchCriteria);
     }
