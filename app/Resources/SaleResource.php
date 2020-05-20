@@ -26,7 +26,7 @@ class SaleResource extends JsonResource
             'discount'              => $this->discount,
             'shipping'              => $this->shipping,
             'order_status_label'    => $this->order_status_label,
-            'can_be_deleted'        => true
+            'can_be_deleted'        => false
         ];
     }
 }
