@@ -25,7 +25,7 @@ class SaleResource extends JsonResource
             'taxes'                 => $this->taxes,
             'discount'              => $this->discount,
             'shipping'              => $this->shipping,
-            'order_status_label'    => $this->order_status_label,
+            'order_status_label'    => $this->fulfillment_status == 1 ? 'Fulfilled' : 'Unfulfilled',
             'can_be_deleted'        => false
         ];
     }

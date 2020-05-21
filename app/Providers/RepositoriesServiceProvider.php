@@ -31,6 +31,7 @@ use App\Models\TransferDetails;
 use App\Models\Sale;
 use App\Models\SaleDetails;
 use App\Models\Customer;
+use App\Models\ProductLog;
 
 
 // REPOSITORIES
@@ -62,6 +63,7 @@ use App\Repositories\TransferDetailsRepository;
 use App\Repositories\SaleRepository;
 use App\Repositories\SaleDetailsRepository;
 use App\Repositories\CustomerRepository;
+use App\Repositories\ProductLogRepository;
 
 
 // RESOURCES
@@ -97,7 +99,7 @@ use App\Resources\TransferDetailsResource;
 use App\Resources\SaleResource;
 use App\Resources\SaleDetailsResource;
 use App\Resources\CustomerResource;
-
+use App\Resources\ProductLogResource;
 
 class RepositoriesServiceProvider extends ServiceProvider
 {
@@ -351,6 +353,14 @@ class RepositoriesServiceProvider extends ServiceProvider
             return new CustomerRepository(new Customer());
         });
 
+        $this->app->bind(ProductLogResource::class, function () {
+            return new ProductLogResource(new ProductLog());
+        });
+
+        $this->app->bind(ProductLogRepository::class, function () {
+            return new ProductLogRepository(new ProductLog());
+        });
+
     }
 
     /**
@@ -391,6 +401,7 @@ class RepositoriesServiceProvider extends ServiceProvider
             SaleDetailsRepository::class,
             CustomerRepository::class,
             SaleRepository::class,
+            ProductLogRepository::class,
         ];
     }
 }

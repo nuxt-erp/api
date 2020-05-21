@@ -69,6 +69,9 @@ class StockTakeRepository extends RepositoryService
 
     public function destroy($id)
     {
+
+        $stocktake = StockTake::where('id', $id->id)->select('company_id', 'status')->get();
+
         // GET ALL SAVED QTY FROM COUNTING
         $stock = StockTakeDetails::where('stocktake_id', $id->id)->get();
 
@@ -85,8 +88,12 @@ class StockTakeRepository extends RepositoryService
                 'on_hand'   => $value->stock_on_hand  // PREVIOUS QTY
             ]);*/
 
-            // DECREMENT STOCK
-            $this->updateStock($value->product_id, $value->stock_on_hand, $value->location_id, "-");
+            // Undo stock when stock take is finished
+            if ($stocktake->status == 1) {
+                // Decrement
+                $this->updateStock($stocktake->company_id, $value->product_id, $value->stock_on_hand, $value->location_id, "-", "Stock Count", $id);
+            }
+
         }
 
         // parent::delete($id);
@@ -123,12 +130,14 @@ class StockTakeRepository extends RepositoryService
         DB::transaction(function () use ($stocktake_id)
         {
 
+            $company_id = StockTake::where('id', $stocktake_id)->pluck('company_id')->first();
+
             // GET ALL SAVED QTY FROM COUNTING
             $stock = StockTakeDetails::where('stocktake_id', $stocktake_id)->get();
 
             foreach ($stock as $value)
             {
-                ProductAvailability::updateOrCreate([
+               /* ProductAvailability::updateOrCreate([
                     'product_id'  => $value->product_id,
                     'company_id'  => Auth::user()->company_id,
                     'location_id' => $value->location_id
@@ -136,7 +145,8 @@ class StockTakeRepository extends RepositoryService
                 [
                     'available' => $value->stock_on_hand, //PREVIOUS QTY
                     'on_hand'   => $value->qty // QTY COUNTED
-                ]);
+                ]);*/
+                $this->updateStock($company_id, $value->product_id, $value->qty, $value->location_id, "+", "Stock Count", $stocktake_id);
             }
 
             // SAVE STATUS AS FINISHED

@@ -42,8 +42,14 @@ class SaleDetailsRepository extends RepositoryService
             ->first();
 
             if ($getItem) {
-                // DECREMENT STOCK
-                $this->updateStock($getItem->product_id, $getItem->qty, $getItem->location_id, "+");
+
+                if ($getItem->fulfillment_status == 1) {
+                    // Decrement on hand qty
+                    $this->updateStock($getItem->company_id, $getItem->product_id, $getItem->qty, $getItem->location_id, "+", "Sale", $id);
+                } else {
+                    // Decrement allocated qty
+                    $this->updateStock($getItem->company_id, $getItem->product_id, 0, $getItem->location_id, "+", "Sale", $id, 0, $getItem->qty);
+                }
             }
 
             parent::delete($id);

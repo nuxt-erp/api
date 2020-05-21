@@ -5,6 +5,7 @@ namespace App\Repositories;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\ProductAvailability;
+use App\Models\ProductLog;
 use Auth;
 
 class ProductAvailabilityRepository extends RepositoryService
@@ -49,13 +50,56 @@ class ProductAvailabilityRepository extends RepositoryService
         parent::store($data);
     }
 
-    public function updateStock($product_id, $qty, $location_id, $operator)
+    /*
+    *
+    * Update stock availability when:
+    *
+    *    - Transfer between locations, Adjustment, Purchase, Sales, Stock count
+    *
+    *    params:
+    *        $company_id  = Company ID
+    *        $product_id  = Product ID
+    *        $qty         = Quantity - can be null when we are intent to update on_order or allocated quantities
+    *        $location_id = Location updated
+    *        $operator    = (+)  Increase stock level, (-) decrease stock level
+    *        $type        = Source of changes (Sale, Purchase, Transfer, Adjustment, Stock Count)
+    *        $ref_code    = Supplier ID when purchase or Customer ID when sales
+    *        $on_order    = When purchase not completed yet - Quantity In transit
+    *        $allocated   = When sale not fulfilled yet - Reserved quantity
+    *
+    */
+    public function updateStock($company_id, $product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0)
     {
-        if ($operator == "+") {
-            ProductAvailability::where(['company_id' => Auth::user()->company_id, 'product_id' => $product_id, 'location_id' => $location_id])->increment('on_hand', $qty);
-        } elseif ($operator == "-") {
-            ProductAvailability::where(['company_id' => Auth::user()->company_id, 'product_id' => $product_id, 'location_id' => $location_id])->decrement('on_hand', $qty);
+        $field_to_update = 'on_hand'; // Default option
+
+        // Check type of operation
+        if ($type == "Purchase" && $qty == 0 && $on_order_qty != 0) {  // Updating purchase (in transit quantity)
+            $field_to_update = 'on_order';
+            $qty = $on_order_qty;
+        }elseif ($type == "Sale" && $qty == 0 && $allocated_qty != 0) { // Updating Sale (reserved quantity)
+            $field_to_update = 'allocated';
+            $qty = $allocated_qty;
         }
+
+        // Update stock
+        if ($operator == "+") {
+           ProductAvailability::where(['company_id' => $company_id, 'product_id' => $product_id, 'location_id' => $location_id])->increment($field_to_update, $qty);
+        } elseif ($operator == "-") {
+            ProductAvailability::where(['company_id' => $company_id, 'product_id' => $product_id, 'location_id' => $location_id])->decrement($field_to_update, $qty);
+        }
+
+        // Create product movimentation log
+        if ($on_order_qty == 0 && $allocated_qty == 0) { // Log just for finished tasks
+            $log = new ProductLog;
+            $log->product_id    = $product_id;
+            $log->location_id   = $location_id;
+            $log->date          = date('Y-m-d H:s:i');
+            $log->quantity      = ($operator == "-" ? -$qty : $qty);
+            $log->ref_code_id   = $ref_code;
+            $log->type          = $type;
+            $log->save();
+        }
+
     }
 
      // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS

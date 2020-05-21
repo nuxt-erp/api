@@ -22,7 +22,7 @@ Route::middleware('auth:api')->group(function () {
     // PARAMETERS
     Route::get('admin/getCountTypeList', 'Admin\SystemParameterController@getCountTypeList');
 
-    // BASIC ADMIN
+    // INVENTORY
     Route::group(['prefix' => 'inventory'], function () {
         Route::resource('brands', 'Inventory\BrandController');
         Route::resource('attributes', 'Inventory\AttributeController');
@@ -38,6 +38,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('stocktake', 'Inventory\StockTakeController');
         Route::resource('stocktake_details', 'Inventory\StockTakeDetailsController');
         Route::resource('transfers', 'Inventory\TransferController');
+        Route::resource('product_logs', 'Inventory\ProductLogController');
         Route::resource('transfer_details', 'Inventory\TransferDetailsController');
         Route::get('product_availabilities', 'Inventory\AvailabilityController@productAvailabilities'); // STOCK TAKE COUNT - USE TO BRING PRODUCTS AND STOCK AVAILABILITY
         Route::get('stocktake/finish/{id?}', 'Inventory\StockTakeController@finish'); // ADJUST AND FINISH STOCK TAKE
