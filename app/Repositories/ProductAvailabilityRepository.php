@@ -68,24 +68,35 @@ class ProductAvailabilityRepository extends RepositoryService
     *        $allocated   = When sale not fulfilled yet - Reserved quantity
     *
     */
-    public function updateStock($company_id, $product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0)
+    public function updateStock($company_id, $product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
     {
+
+        if ($location_id == 0) return;
+
         $field_to_update = 'on_hand'; // Default option
 
         // Check type of operation
         if ($type == "Purchase" && $qty == 0 && $on_order_qty != 0) {  // Updating purchase (in transit quantity)
             $field_to_update = 'on_order';
             $qty = $on_order_qty;
-        }elseif ($type == "Sale" && $qty == 0 && $allocated_qty != 0) { // Updating Sale (reserved quantity)
+        } elseif ($type == "Sale" && $qty == 0 && $allocated_qty != 0) { // Updating Sale (reserved quantity)
             $field_to_update = 'allocated';
             $qty = $allocated_qty;
         }
 
         // Update stock
         if ($operator == "+") {
-           ProductAvailability::where(['company_id' => $company_id, 'product_id' => $product_id, 'location_id' => $location_id])->increment($field_to_update, $qty);
+            if ($location_id == null) {
+                ProductAvailability::where(['company_id' => $company_id, 'product_id' => $product_id])->increment($field_to_update, $qty);
+            } else {
+                ProductAvailability::where(['company_id' => $company_id, 'product_id' => $product_id, 'location_id' => $location_id])->increment($field_to_update, $qty);
+            }
         } elseif ($operator == "-") {
-            ProductAvailability::where(['company_id' => $company_id, 'product_id' => $product_id, 'location_id' => $location_id])->decrement($field_to_update, $qty);
+            if ($location_id == null) {
+                ProductAvailability::where(['company_id' => $company_id, 'product_id' => $product_id])->decrement($field_to_update, $qty);
+            } else {
+                ProductAvailability::where(['company_id' => $company_id, 'product_id' => $product_id, 'location_id' => $location_id])->decrement($field_to_update, $qty);
+            }
         }
 
         // Create product movimentation log
@@ -97,6 +108,7 @@ class ProductAvailabilityRepository extends RepositoryService
             $log->quantity      = ($operator == "-" ? -$qty : $qty);
             $log->ref_code_id   = $ref_code;
             $log->type          = $type;
+            $log->description   = $description;
             $log->save();
         }
 

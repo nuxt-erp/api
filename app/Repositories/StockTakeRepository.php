@@ -91,7 +91,7 @@ class StockTakeRepository extends RepositoryService
             // Undo stock when stock take is finished
             if ($stocktake->status == 1) {
                 // Decrement
-                $this->updateStock($stocktake->company_id, $value->product_id, $value->stock_on_hand, $value->location_id, "-", "Stock Count", $id);
+                $this->updateStock($stocktake->company_id, $value->product_id, $value->stock_on_hand, $value->location_id, "-", "Stock Count", $id, 0 , 0, "Remove item");
             }
 
         }
@@ -146,7 +146,7 @@ class StockTakeRepository extends RepositoryService
                     'available' => $value->stock_on_hand, //PREVIOUS QTY
                     'on_hand'   => $value->qty // QTY COUNTED
                 ]);*/
-                $this->updateStock($company_id, $value->product_id, $value->qty, $value->location_id, "+", "Stock Count", $stocktake_id);
+                $this->updateStock($company_id, $value->product_id, $value->qty, $value->location_id, "+", "Stock Count", $stocktake_id, 0, 0, "Finished stock count - adding quantity");
             }
 
             // SAVE STATUS AS FINISHED

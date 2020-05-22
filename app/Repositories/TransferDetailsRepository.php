@@ -38,7 +38,7 @@ class TransferDetailsRepository extends RepositoryService
             ->first();
 
             if ($getItem) {
-                $this->updateStock($getItem->company_id, $getItem->product_id, $getItem->qty, $getItem->location_id, "-", "Transfer", $id);
+                $this->updateStock($getItem->company_id, $getItem->product_id, $getItem->qty, $getItem->location_id, "-", "Transfer", $id, 0, 0, "Renove item");
             }
 
             parent::delete($id);

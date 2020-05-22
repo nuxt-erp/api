@@ -153,14 +153,14 @@ class PurchaseRepository extends RepositoryService
                                     if ($qty == $qty_received) { // Update on hand qty when fulfilled (qty = qty received)
 
                                         // Increase stock quantity
-                                        $this->updateStock(Auth::user()->company_id, $product_id, $qty, $data["location_id"], "+", "Purchase", $id);
+                                        $this->updateStock(Auth::user()->company_id, $product_id, $qty, $data["location_id"], "+", "Purchase", $id, 0, 0, "Add item");
 
                                         // Decrease on order quantity
-                                        $this->updateStock(Auth::user()->company_id, $product_id, 0, $data["location_id"], "-", "Purchase", $id, $qty);
+                                        $this->updateStock(Auth::user()->company_id, $product_id, 0, $data["location_id"], "-", "Purchase", $id, $qty, 0, "Add item");
 
                                     } else { // Not fulfilled, update on order quantity
 
-                                        $this->updateStock(Auth::user()->company_id, $product_id, 0, $data["location_id"], "+", "Purchase", $id, $qty);
+                                        $this->updateStock(Auth::user()->company_id, $product_id, 0, $data["location_id"], "+", "Purchase", $id, $qty, 0, "Add item");
                                     }
 
                                 }
@@ -188,10 +188,10 @@ class PurchaseRepository extends RepositoryService
             {
                 if ($status == 1) { // Finished. Update stock available
                     // Decrement on hand qty
-                    $this->updateStock(Auth::user()->company_id, $value->product_id, $value->qty_received, $getItem[0]->location_id, "-", "Purchase", $id);
+                    $this->updateStock(Auth::user()->company_id, $value->product_id, $value->qty_received, $getItem[0]->location_id, "-", "Purchase", $id, 0, 0, "Remove item");
                 } else { // Not finished, just update on order quantity
                     // Decrement on order qty
-                    $this->updateStock(Auth::user()->company_id, $value->product_id, 0, $getItem[0]->location_id, "-", "Purchase", $id, $value->qty);
+                    $this->updateStock(Auth::user()->company_id, $value->product_id, 0, $getItem[0]->location_id, "-", "Purchase", $id, $value->qty, 0, "Remove item");
                 }
             }
 
