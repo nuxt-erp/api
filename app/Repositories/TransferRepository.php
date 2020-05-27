@@ -121,9 +121,15 @@ class TransferRepository extends RepositoryService
                                         'variance'       => ($qty_sent - $qty_received),
                                     ]);
 
-                                    if ($qty_received > 0) { // WHEN FULFILLED PRODUCT, UPDATE STOCK AVAILABILITY
-                                        $this->updateStock($product_id, $qty_received, $data["location_to_id"], "+"); // INCREMENT STOCK RECEIVED
-                                        Transfer::where('id', $id)->update(['status' => 1]); // UPDATE Transfer status
+                                    // Transfer received, update stock levels on both locations
+                                    if ($qty_received > 0) {
+                                         // Increment stock from receiver location
+                                        $this->updateStock(Auth::user()->company_id, $product_id, $qty_received, $data["location_to_id"], "+", "Transfer", $id,0,0, "Receiving quantity");
+
+                                        // Decrement stock from sender
+                                        $this->updateStock(Auth::user()->company_id, $product_id, $qty_received, $data["location_from_id"], "-", "Transfer", $id, 0,0, "Sending quantity");
+
+                                        Transfer::where('id', $id)->update(['status' => 1]); // Transfer status
                                     }
                                 }
                             }
@@ -143,8 +149,8 @@ class TransferRepository extends RepositoryService
             foreach ($getItem[0]->details as $value)
             {
                 if ($value->qty_received > 0) { // IF ALREADY RECEIVED
-                    $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_to->id, "-");    // DECREMENT STOCK FROM RECEIVER LOCATION
-                    $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_from->id, "+");  // INCREMENT STOCK FROM SENDER LOCATION
+                    $this->updateStock(Auth::user()->company_id, $value->product_id, $value->qty_received, $getItem[0]->location_to->id, "-", "Transfer", $id, 0,0, "Undo transfer item - receiver");    // DECREMENT STOCK FROM RECEIVER LOCATION
+                    $this->updateStock(Auth::user()->company_id, $value->product_id, $value->qty_received, $getItem[0]->location_from->id, "+", "Transfer", $id, 0,0, "Undo transfer item - sender");  // INCREMENT STOCK FROM SENDER LOCATION
                 }
             }
             // parent::delete($id);

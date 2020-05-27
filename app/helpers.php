@@ -53,3 +53,15 @@ if (!function_exists('removeFromString')) {
 
     }
 }
+
+if (!function_exists('left')) {
+    function left($str, $length) {
+        return substr($str, 0, $length);
+    }
+}
+
+if (!function_exists('right')) {
+    function right($str, $length) {
+        return substr($str, -$length);
+    }
+}

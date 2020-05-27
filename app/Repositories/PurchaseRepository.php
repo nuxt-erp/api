@@ -145,13 +145,24 @@ class PurchaseRepository extends RepositoryService
                                         'price'          => $price,
                                         'gross_total'    => $total_item,
                                         'total'          => $total_item,
-                                        'item_status'    => ($qty == $qty_received), // WHEN FULFILLED SET TRUE FOR ITEM
+                                        'item_status'    => ($qty == $qty_received), // Fulfillment status for item
                                     ]);
 
                                     $total += $total_item;
 
-                                    if ($qty == $qty_received) { // WHEN FULFILLED PRODUCT, UPDATE STOCK AVAILABILITY
-                                        $this->updateStock($product_id, $qty, $data["location_id"], "+"); // INCREMENT STOCK RECEIVED
+                                    if ($qty == $qty_received) { // Update on hand qty when fulfilled (qty = qty received)
+
+                                        if ($data["status"] == 0) { // Do not update when the stock is already received
+                                            // Increase stock quantity
+                                            $this->updateStock(Auth::user()->company_id, $product_id, $qty, $data["location_id"], "+", "Purchase", $id, 0, 0, "Add item");
+
+                                            // Decrease on order quantity
+                                            $this->updateStock(Auth::user()->company_id, $product_id, 0, $data["location_id"], "-", "Purchase", $id, $qty, 0, "Add item");
+                                        }
+
+                                    } else { // Not fulfilled, update on order quantity
+
+                                        $this->updateStock(Auth::user()->company_id, $product_id, 0, $data["location_id"], "+", "Purchase", $id, $qty, 0, "Add item");
                                     }
 
                                 }
@@ -172,10 +183,18 @@ class PurchaseRepository extends RepositoryService
         {
             $getItem = Purchase::where('id', $id)->with('details')->get();
 
+            // Purchase status (Completed or not)
+            $status = $getItem[0]->status;
+
             foreach ($getItem[0]->details as $value)
             {
-                // DECREMENT STOCK
-                $this->updateStock($value->product_id, $value->qty_received, $getItem[0]->location_id, "-");
+                if ($status == 1) { // Finished. Update stock available
+                    // Decrement on hand qty
+                    $this->updateStock(Auth::user()->company_id, $value->product_id, $value->qty_received, $getItem[0]->location_id, "-", "Purchase", $id, 0, 0, "Remove item");
+                } else { // Not finished, just update on order quantity
+                    // Decrement on order qty
+                    $this->updateStock(Auth::user()->company_id, $value->product_id, 0, $getItem[0]->location_id, "-", "Purchase", $id, $value->qty, 0, "Remove item");
+                }
             }
 
             // parent::delete($id);

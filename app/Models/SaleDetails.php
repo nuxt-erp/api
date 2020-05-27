@@ -9,7 +9,7 @@ class SaleDetails extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'sale_id', 'product_id', 'qty', 'price', 'discount_value', 'discount_percent', 'total_item', 'shopify_lineitem', 'qty_fulfilled', 'fulfillment_status', 'fulfillment_date'
+        'sale_id', 'product_id', 'qty', 'price', 'discount_value', 'discount_percent', 'total_item', 'shopify_lineitem', 'qty_fulfilled', 'fulfillment_status', 'fulfillment_date', 'location_id'
     ];
 
     public function getRules($request, $item = null)

@@ -23,7 +23,7 @@ class Sale extends Model
 
     public function details()
     {
-        return $this->hasMany(SaleDetails::class, 'purchase_id');
+        return $this->hasMany(SaleDetails::class, 'sale_id');
     }
 
     public function customer()

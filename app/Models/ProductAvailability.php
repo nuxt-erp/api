@@ -15,7 +15,7 @@ class ProductAvailability extends ModelService
      public $timestamps = true;
 
     protected $fillable = [
-        'product_id', 'company_id', 'location_id', 'available', 'on_hand'
+        'product_id', 'company_id', 'location_id', 'available', 'on_hand', 'on_order', 'allocated'
     ];
 
     public function getRules($request, $item = null)
