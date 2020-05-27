@@ -16,4 +16,5 @@ class ProductController extends ControllerService
         $this->repository = $repository;
         $this->resource = $resource;
     }
+
 }

@@ -21,9 +21,10 @@ class ProductLogResource extends JsonResource
             'date'          => $this->date,
             'ref_code_id'   => $this->ref_code_id,
             'type'          => $this->type,
+            'description'   => $this->description,
             'location_id'   => $this->location_id,
             'location_name' => optional($this->location)->name,
-            'source'        => optional($this->source),
+            'source'        => $this->getSourceAttribute(),
         ];
     }
 }

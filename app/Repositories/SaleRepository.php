@@ -34,7 +34,7 @@ class SaleRepository extends RepositoryService
 
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
-            ->where('id', Arr::pull($searchCriteria, 'id'));
+            ->where('id', $searchCriteria['id']);
         }
 
         $this->queryBuilder->where('company_id', Auth::user()->company_id);
@@ -60,9 +60,9 @@ class SaleRepository extends RepositoryService
         $time_zone = '-4:00';
 
         // -2 minutes
-        $date = date('Y-m-d\TH:i:s',strtotime('-2 minutes',strtotime(date('Y-m-d\TH:i:s'))));
+        $date = date('Y-m-d\TH:i:s',strtotime('-1 minutes',strtotime(date('Y-m-d\TH:i:s'))));
 
-        $orders     = [];
+        $orders = [];
 
         $params = [
             'updated_at_min' => $date  . $time_zone,
@@ -228,10 +228,10 @@ class SaleRepository extends RepositoryService
                                         'shopify_lineitem'      => $items["id"],
                                         'fulfillment_status'    => $items["fulfillment_status"]
                                     ]);
-                                }
 
-                                // Allocated quantity
-                                $this->updateStock($this->company_id, $product_id, 0, null, "+", "Sale", $sale_id, 0, $items["quantity"], 'Allocated quantity');
+                                    // Allocated quantity
+                                    $this->updateStock($this->company_id, $product_id, 0, null, "+", "Sale", $sale_id, 0, $items["quantity"], 'Allocated quantity');
+                                }
 
                             }
 
@@ -254,10 +254,9 @@ class SaleRepository extends RepositoryService
                                 if (isset($level1["fulfillments"][0]["location_id"])) {
                                     $location = Location::where('shopify_location_id', $level1["fulfillments"][0]["location_id"])->pluck('id')->first();
                                 } else {
-                                    echo " Location NOT FOUND";
+                                    // echo " Location NOT FOUND";
                                     $location = 1; // Problem
                                 }
-
 
                                 foreach ($level1["fulfillments"][0]["line_items"] as $items) {
 
@@ -280,6 +279,7 @@ class SaleRepository extends RepositoryService
 
                                 // Set fulfillments
                                 $this->checkFulfillments($data, $sale_id);
+                                $data["fulfillments"] = array();
                             }
                         }
 
@@ -335,7 +335,7 @@ class SaleRepository extends RepositoryService
         // Update Sale Details
         SaleDetails::where(['product_id' => $product_id, 'sale_id' => $sale_id])->update([
             'fulfillment_status'    => ($fulfillment_status == "success" ? 1 : 0),
-            'fulfillment_date'      => date('Y-m-d', strtotime($fulfillment_date)),
+            'fulfillment_date'      => date('Y-m-d H:s:i', strtotime($fulfillment_date)),
             'qty_fulfilled'         => $quantity,
             'location_id'           => $location // When fulfilled we can get the location ID. It will be usefull in case we remove any item allowing undo the stock updated
         ]);
@@ -414,6 +414,7 @@ class SaleRepository extends RepositoryService
             // Foreach row
             foreach ($object as $k => $v) {
 
+                print_r($v);
                 $location           = 0;
                 $quantity           = 0;
                 $fulfillment_status = "";
@@ -444,7 +445,7 @@ class SaleRepository extends RepositoryService
                     }
                 }
 
-                if ($product_id) {
+                if ($product_id != 0) {
                     $operation = ($fulfillment_status == "success" ? '-' : ($fulfillment_status == "cancelled" ? '+' : '-') );
                     $this->setItemFulfilled($data["company_id"], $product_id, $quantity, $location, $operation, $fulfillment_status, $fulfillment_date, $sale_id);
                 }

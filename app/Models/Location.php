@@ -9,7 +9,7 @@ class Location extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'name', 'company_id', 'short_name'
+        'name', 'company_id', 'short_name', 'shopify_location_id'
     ];
 
     public function getRules($request, $item = null)

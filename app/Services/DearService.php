@@ -389,6 +389,7 @@ class DearService
         {
             foreach ($dear_result->LocationList as $item)
             {
+                echo formatName($item->Name);
                 $final_item = Location::updateOrCreate(['company_id' => $this->user->company_id, 'name' => formatName($item->Name)]);
             }
         }

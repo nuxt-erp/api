@@ -64,6 +64,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('shopify_orders', 'Sales\SaleController@importShopify');
     });
 
+    // PRODUCT LOG
+    Route::get('product_logs/get_log', 'Inventory\ProductLogController@getLog');
+
     // PRODUCT FAMILY
     Route::get('product_families/get_products', 'Inventory\ProductFamilyController@getListProducts'); // LIST ALL PRODUCTS FROM CURRENT FAMILY
 

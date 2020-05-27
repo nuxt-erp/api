@@ -25,7 +25,7 @@ class ProductAvailabilityRepository extends RepositoryService
             ->orWhere('products.sku', 'LIKE', $name);
         }
 
-        $this->queryBuilder->select('product_availabilities.id', 'product_availabilities.product_id', 'product_availabilities.company_id', 'product_availabilities.available', 'product_availabilities.location_id', 'product_availabilities.on_hand');
+        $this->queryBuilder->select('product_availabilities.id', 'product_availabilities.product_id', 'product_availabilities.company_id', 'product_availabilities.available', 'product_availabilities.location_id', 'product_availabilities.on_hand', 'product_availabilities.on_order', 'product_availabilities.allocated');
         $this->queryBuilder->join('products', 'product_availabilities.product_id', 'products.id');
 
         if (!empty($searchCriteria['category_id'])) {
@@ -68,10 +68,9 @@ class ProductAvailabilityRepository extends RepositoryService
     *        $allocated   = When sale not fulfilled yet - Reserved quantity
     *
     */
+
     public function updateStock($company_id, $product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
     {
-
-        if ($location_id == 0) return;
 
         $field_to_update = 'on_hand'; // Default option
 
@@ -100,7 +99,7 @@ class ProductAvailabilityRepository extends RepositoryService
         }
 
         // Create product movimentation log
-        if ($on_order_qty == 0 && $allocated_qty == 0) { // Log just for finished tasks
+        //if ($on_order_qty == 0 && $allocated_qty == 0) { // Log just for finished tasks
             $log = new ProductLog;
             $log->product_id    = $product_id;
             $log->location_id   = $location_id;
@@ -110,7 +109,7 @@ class ProductAvailabilityRepository extends RepositoryService
             $log->type          = $type;
             $log->description   = $description;
             $log->save();
-        }
+        //}
 
     }
 
@@ -124,7 +123,8 @@ class ProductAvailabilityRepository extends RepositoryService
 
         $searchCriteria['per_page'] = 20;
 
-        $this->queryBuilder->select('brands.name as brand_name', 'categories.name as category_name', 'products.id', 'products.name', 'products.sku', 'product_availabilities.location_id', 'product_availabilities.on_hand', 'products.category_id', 'products.brand_id');
+        $this->queryBuilder->select('brands.name as brand_name', 'categories.name as category_name', 'products.id', 'products.name', 'products.sku',
+         'product_availabilities.location_id', 'product_availabilities.on_hand', 'products.category_id', 'products.brand_id');
         $this->queryBuilder->rightJoin('products', 'product_availabilities.product_id', 'products.id');
         $this->queryBuilder->join('brands', 'brands.id', 'products.brand_id');
         $this->queryBuilder->join('categories', 'categories.id', 'products.category_id');
