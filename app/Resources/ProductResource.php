@@ -17,6 +17,7 @@ class ProductResource extends JsonResource
             'sku'                   => $this->sku,
             'launch_date'           => $this->launch_date,
             'name'                  => $this->name,
+            'name_full'             => $this->getConcatNameAttribute(),
             'company_id'            => $this->company_id,
             'company_name'          => optional($this->company)->name,
             'description'           => $this->description,

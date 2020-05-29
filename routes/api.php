@@ -52,6 +52,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('suppliers', 'Purchases\SupplierController');
         Route::resource('purchases', 'Purchases\PurchaseController');
         Route::resource('purchase_details', 'Purchases\PurchaseDetailsController');
+        Route::get('remove_item/{id?}', 'Purchases\PurchaseDetailsController@remove');
         Route::get('purchase/remove/{id?}', 'Purchases\PurchaseController@remove');
     });
 

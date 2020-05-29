@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use Auth;
 use App\Models\PurchaseDetails;
 use App\Models\Purchase;
+use App\Models\Supplier;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use App\Traits\StockTrait;
@@ -38,7 +39,11 @@ class PurchaseRepository extends RepositoryService
         {
             $data["company_id"] = Auth::user()->company_id;
             parent::store($data);
-            // SAVE PURCHASE DETAILS
+
+            // Update supplier date last purchase
+            Supplier::where('id', $data["supplier_id"])->update(['date_last_order' => date('Y-m-d')]);
+
+            // Save purchase details
             $this->savePurchaseDetails($data, $this->model->id);
         });
     }
@@ -58,9 +63,11 @@ class PurchaseRepository extends RepositoryService
 
         if (isset($data["list_products"]))
         {
-            $object = $data["list_products"];
-            $row    = 0;
-            $tot    = 0;
+            $object     = $data["list_products"];
+            $row        = 0;
+            $tot        = 0;
+            $total      = 0;
+            $total_item = 0;
 
             // DELETE ITEMS TO INSERT THEM AGAIN
             PurchaseDetails::where('purchase_id', $id)->delete();
@@ -79,8 +86,6 @@ class PurchaseRepository extends RepositoryService
                             if ($attributes[$i]!=0)
                             {
                                 $qty            = 0;
-                                $total          = 0;
-                                $total_item     = 0;
                                 $received_date  = null;
                                 $estimated_date = null;
                                 $qty_received   = 0;
@@ -166,14 +171,14 @@ class PurchaseRepository extends RepositoryService
                                     }
 
                                 }
-
-                                // UPDATE TOTAL PURCHASE
-                                Purchase::where('id', $id)->update(['total' => $total]);
                             }
                         }
                     }
+
                 }
             }
+            // Total purchase
+            Purchase::where('id', $id)->update(['total' => $total]);
         }
     }
 

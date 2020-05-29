@@ -69,10 +69,14 @@ class Product extends Model
         return $this->belongsTo(Company::class);
     }
 
-    // CONCAT PRODUCT NAME WITH ALL ATTRIBUTES
     public function getNameAttribute($value)
     {
-        return $value . ' ' . $this->getFirstAttribute();
+        return $value;
+    }
+
+    public function getNameFullAttribute()
+    {
+        return $this->name . ' ' . $this->getFirstAttribute();
     }
 
     public function getOnlyAttribute()
@@ -81,7 +85,7 @@ class Product extends Model
     }
 
     public function getConcatNameAttribute() {
-        return $this->name;
+        return $this->name . ' ' . $this->getFirstAttribute();
     }
 
     // GET ALL ATTRIBUTES FROM PRODUCT

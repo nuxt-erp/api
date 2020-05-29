@@ -28,8 +28,8 @@ class TransferResource extends JsonResource
             'location_to_name'      => optional($this->location_to)->name,
             'eta'                   => $this->eta,
             'status'                => $this->status,
-            'status_label'          => ($this->status == 1 ? "DELIVERED" : "IN-TRANSIT"),
-            'can_be_deleted'        => true
+            'status_label'          => ($this->status == 1 ? "Delivered" : "In-Transit"),
+            'can_be_deleted'        => false
         ];
     }
 }

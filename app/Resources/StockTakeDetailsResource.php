@@ -12,7 +12,7 @@ class StockTakeDetailsResource extends JsonResource
             'id'              => $this->id,
             'stocktake_id'    => $this->stocktake_id,
             'product_id'      => $this->product_id,
-            'name'            => optional($this->product)->name,
+            'name'            => optional($this->product)->getConcatNameAttribute(),
             'sku'             => optional($this->product)->sku,
             'qty'             => $this->qty,
             'on_hand'         => $this->stock_on_hand,

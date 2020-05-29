@@ -15,11 +15,12 @@ class LocationResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'             => $this->id,
-            'name'           => $this->name,
-            'short_name'     => $this->short_name,
-            'company_id'     => $this->company_id,
-            'can_be_deleted' => true
+            'id'                    => $this->id,
+            'name'                  => $this->name,
+            'short_name'            => $this->short_name,
+            'company_id'            => $this->company_id,
+            'shopify_location_id'   => $this->shopify_location_id,
+            'can_be_deleted'        => true
         ];
     }
 }
