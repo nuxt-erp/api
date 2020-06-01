@@ -41,7 +41,6 @@ class ProductResource extends JsonResource
             'product_attributes'    => $this->getOnlyAttribute(),
             'in_transit_suppliers'  => $this->getInTransitAttribute($this->id),
             'in_transit_transfers'  => $this->getInTransitTransferAttribute($this->id)
-
         ];
     }
 }
