@@ -18,7 +18,7 @@ class SupplierResource extends JsonResource
             'brand_name'         => optional($this->brand)->name,
             'supplier_type_id'   => $this->supplier_type_id,
             'supplier_type_name' => optional($this->supplier_type)->param_value,
-            'date_last_order'    => $this->date_last_order,
+            'date_last_order'    => isset($this->date_last_order) ? date('Y-m-d', strtotime($this->date_last_order)) : '',
             'can_be_deleted'     => true
         ];
     }

@@ -8,27 +8,13 @@ use Auth;
 class SupplierRepository extends RepositoryService
 {
 
-    public function getList(array $searchCriteria = [])
-    {
-        $searchCriteria['order_by'] = [
-            'field'         => 'name',
-            'direction'     => 'asc'
-        ];
-
-        $searchCriteria['per_page'] = 150;
-
-        if (!empty($searchCriteria['name'])) {
-            $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
-            $this->queryBuilder
-            ->where('name', 'LIKE', $name)
-            ->where('company_id', Auth::user()->company_id);
-        }
-        $this->queryBuilder->where('company_id', Auth::user()->company_id);
-        return parent::getList($searchCriteria);
-    }
-
     public function findBy(array $searchCriteria = [])
     {
+        if (!empty($searchCriteria['id'])) {
+            $this->queryBuilder
+            ->where('id', $searchCriteria['id']);
+        }
+
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
             $searchCriteria['query_type'] = 'LIKE';

@@ -16,7 +16,7 @@ class PurchaseResource extends JsonResource
             'supplier_id'       => $this->supplier_id,
             'supplier_name'     => optional($this->supplier)->name,
             'status'            => $this->status,
-            'status_label'      => ($this->status == 1 ? "RECEIVED" : "IN PROGRESS"),
+            'status_label'      => ($this->status == 1 ? "Received" : "In progress"),
             'tracking_number'   => $this->tracking_number,
             'invoice_number'    => $this->invoice_number,
             'notes'             => $this->notes,

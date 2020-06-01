@@ -18,7 +18,7 @@ class ListResource extends JsonResource
             'id'            => $this->id,
             'sku'           => isset($this->sku) ? $this->sku : '',
             'value'         => isset($this->parameter_value) ? $this->parameter_value : $this->id,
-            'name'          => $this->name,
+            'name'          => isset($this->name_full) ? $this->name_full : $this->name,
             // 'name'          => !empty($this->description) ? $this->description : $this->name,
             'is_default'    => isset($this->is_default) ? $this->is_default : 0
         ];

@@ -60,7 +60,7 @@ class SaleRepository extends RepositoryService
         $time_zone = '-4:00';
 
         // -2 minutes
-        $date = date('Y-m-d\TH:i:s',strtotime('-1 minutes',strtotime(date('Y-m-d\TH:i:s'))));
+        $date = date('Y-m-d\TH:i:s',strtotime('-2 minutes',strtotime(date('Y-m-d\TH:i:s'))));
 
         $orders = [];
 
@@ -71,7 +71,9 @@ class SaleRepository extends RepositoryService
             'limit'          => 250
         ];
 
+        echo 'before order  [0]';
         $orders[0] = $this->shopify->Order->get($params);
+        echo 'after company  [0]';
 
         return $orders;
     }
@@ -165,9 +167,21 @@ class SaleRepository extends RepositoryService
                                 ->where('order_number', '<>', $order_number) // Do not remove itself
                                 ->select('id')->get();
 
-                                if ($sales) {
-                                    foreach ($sales as $sale) {
-                                        $this->remove($sale->id); // Remove previous order
+                                foreach ($sales as $sale) {
+                                    // echo 'removing ' . $sale->id;
+                                    $this->remove($sale->id); // Remove previous order
+                                }
+
+                            } else {
+
+                                // Search for another other with same number but with letter at the final (updated order - more recent).
+                                $sales = Sale::where('order_number', 'LIKE', '%' . $order_number . '%')
+                                ->where('order_number', '<>', $order_number) // Do not remove itself
+                                ->select('id')->get();
+
+                                foreach ($sales as $sale) {
+                                    if (!is_numeric($sale->order_number)) { // Found updated order. Remove the current order with no letter
+                                        $this->remove(Sale::where('order_number', $order_number)->pluck('id')->first()); // Remove previous order
                                     }
                                 }
                             }
@@ -186,13 +200,16 @@ class SaleRepository extends RepositoryService
                             $data["subtotal"]           = $level1["subtotal_price"];
                             $data["discount"]           = $level1["total_discounts"];
                             $data["taxes"]              = $level1["total_tax"];
+                            echo 'before shippinglines  [0]';
                             $data["shipping"]           = isset($level1["shipping_lines"][0]["price"]) ? $level1["shipping_lines"][0]["price"] : 0;
+                            echo 'after shipping lines [0]';
                             $data["total"]              = $level1["total_price"];
                             $data["order_status_label"] = "";
 
                             $sale_id = Sale::where('order_number', $order_number)->pluck('id')->first();
 
                             if ($sale_id) { // Update
+                                echo 'before shiplines  [0]';
                                 Sale::where(['id' => $sale_id, 'company_id' => $this->company_id])->update([
                                     'financial_status'      => ($level1["financial_status"] == "pending" ? 0 : 1),
                                     'fulfillment_status'    => ($level1["fulfillment_status"] == "fulfilled" ? 1 : 0),
@@ -203,6 +220,7 @@ class SaleRepository extends RepositoryService
                                     'shipping'              => isset($level1["shipping_lines"][0]["price"]) ? $level1["shipping_lines"][0]["price"] : 0,
                                     'total'                 => isset($level1["current_total_price"]) ? $level1["current_total_price"] : $level1["total_price"],
                                 ]);
+                                echo 'after shiplines  [0]';
                             } else { // New
                                 parent::store($data);
                                 $sale_id = $this->model->id; // Get ID
@@ -247,17 +265,22 @@ class SaleRepository extends RepositoryService
                             // Fulfillments
                             if (isset($level1["fulfillments"]) && count($level1["fulfillments"]) >0 ) {
 
+                                echo 'before status [0]';
                                 $fulfillment_status = isset($level1["fulfillments"][0]["status"]) ? $level1["fulfillments"][0]["status"] : 0;
                                 $fulfillment_date   = isset($level1["fulfillments"][0]["updated_at"]) ? $level1["fulfillments"][0]["updated_at"] : null;
+                                echo 'after status  [0]';
 
                                 // Search location based on Shopify location ID
+                                echo 'before fulfillments location  [0]';
                                 if (isset($level1["fulfillments"][0]["location_id"])) {
                                     $location = Location::where('shopify_location_id', $level1["fulfillments"][0]["location_id"])->pluck('id')->first();
                                 } else {
                                     // echo " Location NOT FOUND";
                                     $location = 1; // Problem
                                 }
+                                echo 'after fulfillments loc  [0]';
 
+                                echo 'before fulfill line [0]';
                                 foreach ($level1["fulfillments"][0]["line_items"] as $items) {
 
                                     $product_id = Product::where('sku', $items["sku"])->pluck('id')->first();
@@ -273,6 +296,7 @@ class SaleRepository extends RepositoryService
                                         ]);
                                     }
                                 }
+                                echo 'after filfil lines  [0]';
 
                                 // Create an array with products
                                 $data["fulfillments"] = $parse_fulfillments;
@@ -414,7 +438,6 @@ class SaleRepository extends RepositoryService
             // Foreach row
             foreach ($object as $k => $v) {
 
-                print_r($v);
                 $location           = 0;
                 $quantity           = 0;
                 $fulfillment_status = "";
@@ -460,15 +483,21 @@ class SaleRepository extends RepositoryService
         //{
             $getItem = Sale::where('id', $id)->with('details')->get();
 
-            $fulfillment_status = $getItem[0]->fulfillment_status;
+            if ($getItem) {
+                echo 'before remove [0]';
+                $fulfillment_status = $getItem[0]->fulfillment_status;
+                echo 'after remove [0]';
 
-            if (isset($getItem[0]->details)) {
-                foreach ($getItem[0]->details as $value) {
-                    // Undo stock on hand just when fulfilled
-                    if ($fulfillment_status == 1) {
-                        $this->updateStock($getItem[0]->company_id, $value->product_id, $value->qty_fulfilled, $value->location_id, "+", "Sale", $id, 0, 0, "Returning stock - item deleted");
-                    } else { // Update allocated qty
-                        $this->updateStock($getItem[0]->company_id, $value->product_id, 0, $value->location_id, "-", "Sale", $id, 0, $value->qty, "Remove allocated qtd - item deleted");
+                if (isset($getItem[0]->details)) {
+                    foreach ($getItem[0]->details as $value) {
+                        // Undo stock on hand just when fulfilled
+                        echo 'before company  [0]';
+                        if ($fulfillment_status == 1) {
+                            $this->updateStock($getItem[0]->company_id, $value->product_id, $value->qty_fulfilled, $value->location_id, "+", "Sale", $id, 0, 0, "Returning stock - item deleted");
+                        } else { // Update allocated qty
+                            $this->updateStock($getItem[0]->company_id, $value->product_id, 0, $value->location_id, "-", "Sale", $id, 0, $value->qty, "Remove allocated qtd - item deleted");
+                        }
+                        echo 'after company  [0]';
                     }
                 }
             }

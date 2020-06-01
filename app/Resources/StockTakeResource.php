@@ -19,7 +19,7 @@ class StockTakeResource extends JsonResource
             'variance_last_count_id'    => $this->variance_last_count_id,
             'company_id'                => $this->company_id,
             'company_name'              => optional($this->company)->name,
-            'status'                    => $this->status == 1 ? "COMPLETED" : "IN PROGRESS",
+            'status'                    => $this->status == 1 ? "Completed" : "In progress",
             'brand_id'                  => $this->brand_id,
             'brand_name'                => optional($this->brand)->name,
             'category_id'               => $this->category_id,

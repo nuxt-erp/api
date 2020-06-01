@@ -117,7 +117,7 @@ class StockTakeRepository extends RepositoryService
     {
         DB::transaction(function () use ($data, $model)
         {
-            $data["status"] = ($data["status"] == "IN PROGRESS" ? 1 : 0);
+            $data["status"] = ($data["status"] == "In progress" ? 1 : 0);
             parent::update($model, $data);
             // UPDATE STOCK TAKE PRODUCTS
             $this->saveStockTakeDetails($data, $this->model->id);
