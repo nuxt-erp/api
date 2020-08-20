@@ -16,23 +16,48 @@ class Kernel extends ConsoleKernel
         //
     ];
 
-    protected function getTimeZoneDifference()
-    {
-        $firstTime  = \DB::select("SELECT current_timestamp() as mysql_date");
-        $firstTime  = strtotime($firstTime[0]->mysql_date);
-        $lastTime   = strtotime(now());
-        $timeDiff   = (($lastTime-$firstTime) /60/60);
-        return abs($timeDiff);
-
-    }
+    /**
+     * Define the application's command schedule.
+     *
+     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @return void
+     */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call('App\Http\Controllers\Sales\SaleController@importShopify')->everyMinute();
+        // $schedule->command('inspire')->hourly();
+
+        // $schedule->call(function () {
+        //     $api    = resolve('Dear\API');
+        //     $user = User::where('email', 'like', '%dear%')->first();
+
+        //     $result = $api->syncProds();
+        //     Import::create([
+        //         'name'      => Import::DEAR_SYNC_PRODUCTS,
+        //         'author_id' => $user->id,
+        //         'rows'      => $result,
+        //         'status'    => 'cron_update'
+        //     ]);
+
+        //     $result = $api->syncRecipes();
+        //     Import::create([
+        //         'name'      => Import::DEAR_SYNC_RECIPE,
+        //         'author_id' => $user->id,
+        //         'rows'      => $result,
+        //         'status'    => 'cron_update'
+        //     ]);
+
+        // })->dailyAt('00:00');
     }
 
+    /**
+     * Register the commands for the application.
+     *
+     * @return void
+     */
     protected function commands()
     {
         $this->load(__DIR__.'/Commands');
+
         require base_path('routes/console.php');
     }
 }

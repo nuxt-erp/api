@@ -19,26 +19,26 @@ class ProductionOrderPolicy
 
     public function index(User $currentUser)
     {
-        return $currentUser->hasRole('production');
+        return $currentUser->hasRole('supervisor');
     }
 
     public function show(User $currentUser, ProductionOrder $target)
     {
-        return $currentUser->hasRole('production');
+        return $currentUser->hasRole('supervisor');
     }
 
     public function store(User $currentUser)
     {
-        return $currentUser->hasRole('production');
+        return $currentUser->isAdmin();
     }
 
     public function update(User $currentUser, ProductionOrder $target)
     {
-        return $currentUser->hasRole('production');
+        return $currentUser->isAdmin();
     }
 
     public function destroy(User $currentUser, ProductionOrder $target)
     {
-        return FALSE;
+        return $currentUser->isAdmin();
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,9 +12,5 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return 'API';
-});
-
+Route::get('/', 'DashboardController@welcome');
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');

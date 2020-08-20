@@ -2,9 +2,7 @@
 
 namespace App\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
-
-class LocationResource extends JsonResource
+class LocationResource extends ResourceService
 {
     /**
      * Transform the resource into an array.
@@ -15,12 +13,15 @@ class LocationResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'                    => $this->id,
-            'name'                  => $this->name,
-            'short_name'            => $this->short_name,
-            'company_id'            => $this->company_id,
-            'shopify_location_id'   => $this->shopify_location_id,
-            'can_be_deleted'        => true
+            'id'            => $this->id,
+            'dear_id'       => $this->dear_id,
+            'shopify_id'    => $this->shopify_id,
+            'name'          => $this->name,
+            'short_name'    => $this->short_name,
+            'is_enabled'    => $this->is_enabled,
+            'disabled_at'   => optional($this->disabled_at)->format('Y-m-d H:i:s'),
+            'created_at'    => optional($this->created_at)->format('Y-m-d H:i:s'),
+            'updated_at'    => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];
     }
 }

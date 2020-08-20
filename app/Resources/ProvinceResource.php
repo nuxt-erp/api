@@ -2,9 +2,7 @@
 
 namespace App\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
-
-class ProvinceResource extends JsonResource
+class ProvinceResource extends ResourceService
 {
     public function toArray($request)
     {

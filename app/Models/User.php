@@ -6,15 +6,18 @@ use Illuminate\Validation\Rule;
 
 class User extends LoginModel implements ModelInterface
 {
-    const USER_ROLE     = 'user';
-    const ADMIN_ROLE    = 'admin';
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password'
+        'name', 'email', 'password',
+        'is_enabled', 'disabled_at'
+    ];
+
+    protected $dates = [
+        'disabled_at',
     ];
 
     /**
@@ -40,7 +43,9 @@ class User extends LoginModel implements ModelInterface
             'name'          => ['string', 'max:255'],
             'email'         => ['max:255', 'email'],
             'password'      => ['between:4,32'],
-            'roles'         => ['array']
+            'roles'         => ['array'],
+            'is_enabled'    => ['boolean'],
+            'disabled_at'   => ['nullable', 'date']
 
         ];
         //create
@@ -49,7 +54,6 @@ class User extends LoginModel implements ModelInterface
             $rules['email'][]       = 'required';
             $rules['email'][]       = 'unique:users';
             $rules['password'][]    = 'required';
-            $rules['roles'][]       = 'required';
         } else {
             //update
             $rules['email'][]       = Rule::unique('users')->ignore($item->id);
@@ -58,30 +62,23 @@ class User extends LoginModel implements ModelInterface
         return $rules;
     }
 
-    public function getClientIdAttribute()
+    public function findForPassport($login)
     {
-        return $this->token()->client_id;
+        return $this->where('email', $login)->first();
     }
 
-    public function setAsAdmin()
+    public function setRole($role)
     {
-        $admin_role = Role::where('name', self::ADMIN_ROLE)->first();
+        $set_role = Role::where('name', $role)
+        ->orWhere('code', $role)
+        ->first();
+        if(!$set_role){
+            $set_role = Role::create(['name' => $role, 'code' => $role]);
+        }
 
-        $instance = $admin_role ? UserRole::create([
+        $instance = $set_role ? UserRoles::create([
             'user_id' => $this->id,
-            'role_id' => $admin_role->id
-        ]) : null;
-
-        return $instance;
-    }
-
-    public function setAsUser()
-    {
-        $user_role = Role::where('name', self::USER_ROLE)->first();
-
-        $instance = $user_role ? UserRole::create([
-            'user_id' => $this->id,
-            'role_id' => $user_role->id
+            'role_id' => $set_role->id
         ]) : null;
 
         return $instance;
@@ -94,39 +91,15 @@ class User extends LoginModel implements ModelInterface
 
     public function hasRole(... $roles){
         foreach ($roles as $role) {
-            if ($this->roles->contains('name', $role)) {
+            if ($this->roles->contains('name', $role) || $this->roles->contains('code', $role)) {
                 return true;
             }
         }
         return false;
     }
 
-    public function findForPassport($login)
-    {
-        return $this->where('email', $login)->first();
-    }
-
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'user_roles')->withTimestamps();
     }
-
-    public function getAuthorizedPhases(){
-        $phases = [];
-        foreach ($this->roles as $role) {
-            foreach ($role->operations as $operation) {
-                foreach ($operation->phases as $phase) {
-                    $phases[$phase->id] = $phase;
-                }
-            }
-        }
-        return $phases;
-    }
-    /*
-    public function employee()
-    {
-        return $this->hasOne(Employee::class);
-    }
-    */
-
 }

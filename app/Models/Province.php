@@ -2,28 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 
-class Province extends Model
+class Province extends ModelService
 {
-    public $timestamps = false;
-
     protected $fillable = [
-        'name', 'short_name', 'country_id'
+        'name', 'code', 'country_id'
     ];
 
     public function getRules($request, $item = null)
     {
         $rules = [
             'name'          => ['string', 'max:255'],
-            'short_name'    => ['string', 'max:2']
+            'code'          => ['string', 'max:2'],
+            'country_id'    => ['exists:countries,id'],
         ];
 
         // CREATE
         if (is_null($item))
         {
             $rules['name'][]        = 'required';
+            $rules['code'][]        = 'required';
+            $rules['name'][]        = 'unique:provinces';
+            $rules['code'][]        = 'unique:provinces';
             $rules['country_id'][]  = 'required';
+        }
+        else{
+            $rules['name'][]    = Rule::unique('provinces')->ignore($item->id);
+            $rules['code'][]    = Rule::unique('provinces')->ignore($item->id);
         }
 
         return $rules;

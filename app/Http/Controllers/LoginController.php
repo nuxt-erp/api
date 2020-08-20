@@ -26,7 +26,7 @@ class LoginController extends AccessTokenController
             return $this->setStatus(FALSE)
                 ->setStatusCode(400)
                 ->setMessage('validation_error')
-                ->respondWithArray($validatorResponse);
+                ->sendArray($validatorResponse);
         }
 
         $data = [];
@@ -41,7 +41,8 @@ class LoginController extends AccessTokenController
                 $this->setStatusCode(401);
             } else {
                 $email = $request->getParsedBody()['username'];
-                $user = User::where('email', $email)->select('company_id')
+                $user = User::where('email', $email)
+                    ->where('is_enabled', 1)
                     ->first();
 
                 foreach ($user->tokens as $key => $token) {
@@ -51,7 +52,6 @@ class LoginController extends AccessTokenController
                 }
 
                 $data = $tokenData;
-                $data["company_id"] = $user->company_id;
                 $this->setStatus(true);
                 $this->setStatusCode(200);
             }
@@ -62,9 +62,7 @@ class LoginController extends AccessTokenController
             $this->setMessage($payload['message']);
         }
 
-        // GET COMPANY_ID FROM USER
-
-        return $this->respondWithArray($data);
+        return $this->sendArray($data);
     }
 
     public function logout()
@@ -77,7 +75,7 @@ class LoginController extends AccessTokenController
         $this->setStatusCode(200);
         $this->setMessage('logged_out');
 
-        return $this->respond();
+        return $this->send();
     }
 
     protected function validateRequest($request, $rules)

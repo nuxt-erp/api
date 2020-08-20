@@ -2,17 +2,15 @@
 
 namespace App\Exceptions;
 
-use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-//use Laravel\Passport\Exceptions\OAuthServerException;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Laravel\Passport\Exceptions\OAuthServerException as OAuthServerException2;
-use Illuminate\Auth\AuthenticationException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Illuminate\Auth\Access\AuthorizationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Database\QueryException;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -41,10 +39,12 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param  \Exception  $exception
+     * @param  \Throwable  $exception
      * @return void
+     *
+     * @throws \Exception
      */
-    public function report(Exception $exception)
+    public function report(Throwable $exception)
     {
         parent::report($exception);
     }
@@ -53,13 +53,13 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
-     * @return \Illuminate\Http\Response
+     * @param  \Throwable  $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Throwable
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
-
-
         if ($exception instanceof AuthorizationException) {
             return response()->json((['status' => false, 'message' => 'no_privileges']), Response::HTTP_FORBIDDEN);
         }
@@ -92,7 +92,5 @@ class Handler extends ExceptionHandler
         else{
             return response()->json((['status' => false, 'message' => 'unexpected_error']), 500);
         }
-
-
     }
 }

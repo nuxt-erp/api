@@ -10,6 +10,16 @@ class ParameterPolicy
 {
     use HandlesAuthorization;
 
+    public function list(User $currentUser)
+    {
+        return TRUE;
+    }
+
+    public function index(User $currentUser)
+    {
+        return $currentUser->isAdmin();
+    }
+
     public function show(User $currentUser, Parameter $target)
     {
         return $currentUser->isAdmin();

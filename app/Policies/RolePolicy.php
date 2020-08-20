@@ -10,6 +10,16 @@ class RolePolicy
 {
     use HandlesAuthorization;
 
+    public function list(User $currentUser)
+    {
+        return TRUE;
+    }
+
+    public function index(User $currentUser)
+    {
+        return $currentUser->isAdmin();
+    }
+
     public function show(User $currentUser, Role $target)
     {
         return $currentUser->isAdmin();

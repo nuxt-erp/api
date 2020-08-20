@@ -42,18 +42,17 @@ interface RepositoryInterface
     /**
      * Update a resource
      *
-     * @param integer $id
+     * @param Model $model
      * @param array $data
      * @return Model
      */
-    public function update($id, array $data);
+    public function update($model, array $data);
 
     /**
      * Delete a resource
      *
-     * @param integer $id
+     * @param Model $model
      * @return mixed
      */
-    public function delete($id);
-
+    public function delete($model);
 }

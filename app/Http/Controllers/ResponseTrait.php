@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
 trait ResponseTrait
@@ -81,7 +80,7 @@ trait ResponseTrait
         return $this;
     }
 
-    public function respond()
+    public function send()
     {
 
         return response()->json([
@@ -91,7 +90,7 @@ trait ResponseTrait
         ], $this->statusCode);
     }
 
-    public function respondWithArray($data)
+    public function sendArray($data)
     {
 
         return response()->json([
@@ -101,7 +100,7 @@ trait ResponseTrait
         ], $this->statusCode, [], JSON_NUMERIC_CHECK);
     }
 
-    protected function respondWithObject($item, $callback)
+    protected function sendObjectResource($item, $callback)
     {
         return response()->json([
             'status'    => $this->status,
@@ -110,7 +109,7 @@ trait ResponseTrait
         ], $this->statusCode, [], JSON_NUMERIC_CHECK);
     }
 
-    protected function respondWithNativeObject($item)
+    protected function sendObject($item)
     {
         return response()->json([
             'status'    => $this->status,
@@ -126,7 +125,7 @@ trait ResponseTrait
      * @param \Closure|TransformerAbstract $callback
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function respondWithCollection($collection, $callback)
+    protected function sendFullCollectionResponse($collection, $callback)
     {
         $resource = ['data' => []];
         if($collection){
@@ -141,7 +140,7 @@ trait ResponseTrait
         ], $this->statusCode, [], JSON_NUMERIC_CHECK);
     }
 
-    protected function respondWithNativeCollection($collection, $callback)
+    protected function sendCollectionResponse($collection, $callback)
     {
         $resource = [];
         if($collection){
@@ -160,7 +159,7 @@ trait ResponseTrait
         return $this->setStatus(FALSE)
             ->setStatusCode(400)
             ->setMessage('validation_error')
-            ->respondWithArray($validatorResponse);
+            ->sendArray($validatorResponse);
     }
 
     protected function emptyResponse()
@@ -168,7 +167,7 @@ trait ResponseTrait
         return $this->setStatus(FALSE)
             ->setStatusCode(400)
             ->setMessage('empty_request')
-            ->respond();
+            ->send();
     }
 
     protected function notFoundResponse($data)
@@ -176,7 +175,7 @@ trait ResponseTrait
         return $this->setStatus(FALSE)
             ->setStatusCode(404)
             ->setMessage('not_found')
-            ->respondWithArray($data);
+            ->sendArray($data);
     }
 
     protected function deletedResponse()
@@ -184,6 +183,6 @@ trait ResponseTrait
         return $this->setStatus(TRUE)
             ->setStatusCode(200)
             ->setMessage('deleted')
-            ->respond();
+            ->send();
     }
 }

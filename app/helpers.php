@@ -4,41 +4,41 @@ use Carbon\Carbon;
 if (!function_exists('formatName')) {
     function formatName($value, $key = null) {
 
-        $formatedValue = $key ? ($value[$key] ?? null) : $value;
+        $formattedValue = $key ? ($value[$key] ?? null) : $value;
 
-        if(empty($formatedValue) || $formatedValue === '--'){
-            $formatedValue = null;
+        if(empty($formattedValue) || $formattedValue === '--'){
+            $formattedValue = null;
         }
         else{
-            $formatedValue = strlen($formatedValue) <= 2 ? strtoupper($formatedValue) : ucwords(strtolower(trim($formatedValue)));
+            $formattedValue = strlen($formattedValue) <= 2 ? strtoupper($formattedValue) : ucwords(strtolower(trim($formattedValue)));
         }
 
-        return $formatedValue;
+        return $formattedValue;
     }
 }
 
 if (!function_exists('formatString')) {
     function formatString($value, $key = null) {
 
-        $formatedValue = $key ? ($value[$key] ?? null) : $value;
+        $formattedValue = $key ? ($value[$key] ?? null) : $value;
 
-        if(empty($formatedValue) || $formatedValue === '--'){
-            $formatedValue = null;
+        if(empty($formattedValue) || $formattedValue === '--'){
+            $formattedValue = null;
         }
         else{
-            $formatedValue = strtoupper(trim($formatedValue));
+            $formattedValue = strtoupper(trim($formattedValue));
         }
 
-        return $formatedValue;
+        return $formattedValue;
     }
 }
 
 if (!function_exists('formatInt')) {
     function formatInt($value, $key = null)
     {
-        $formatedValue = $key ? ($value[$key] ?? 0) : $value;
-        $formatedValue = !empty($formatedValue) ? (int) filter_var($formatedValue, FILTER_SANITIZE_NUMBER_INT) : 0;
-        return $formatedValue;
+        $formattedValue = $key ? ($value[$key] ?? 0) : $value;
+        $formattedValue = !empty($formattedValue) ? (int) filter_var($formattedValue, FILTER_SANITIZE_NUMBER_INT) : 0;
+        return $formattedValue;
     }
 }
 if (!function_exists('removeFromString')) {

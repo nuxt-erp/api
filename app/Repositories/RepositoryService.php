@@ -3,40 +3,23 @@
 namespace App\Repositories;
 
 use App\Exceptions\ConstrainException;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 abstract class RepositoryService implements RepositoryInterface
 {
 
-    /**
-     * Instance that extends Illuminate\Database\Eloquent\Model
-     *
-     * @var Model
-     */
     public $model;
     public $queryBuilder;
 
     /**
      * Constructor
      */
-    public function __construct(Model $model)
+    public function __construct($model)
     {
         $this->model = $model;
         $this->queryBuilder = $model::query();
-        //@todo add all joins if is needed by default
-        /*
-            eager loading -> $this->queryBuilder::with('last_item')
-            latest example ->
-            public function last_item(){
-                return $this->hasOne(Item::class)->where('some_id', $this->some_id)->latest();
-            }
-        */
     }
 
     /**
@@ -61,60 +44,41 @@ abstract class RepositoryService implements RepositoryInterface
     }
 
     /**
-     * return a list to populate html options
-     */
-    public function getList(array $searchCriteria = [])
-    {
-
-        foreach ($searchCriteria as $key => $value) {
-            switch ($key) {
-                case 'order_by':
-                    $this->queryBuilder->orderBy($searchCriteria['order_by']['field'], $searchCriteria['order_by']['direction']);
-                    break;
-                case 'per_page':
-                    $this->queryBuilder->limit($searchCriteria['per_page']);
-                    break;
-                case 'filter':
-                    foreach ($searchCriteria['filter'] as $filter) {
-                        $this->queryBuilder->where($filter['field'], $filter['operator'], $filter['value']);
-                    }
-                    break;
-                    //INCLUDE THE CRITERIA ID IN THE QUERY
-                case 'id':
-                    $find = $this->model->where('id', $searchCriteria['id']);
-                    $this->queryBuilder->union($find);
-                    break;
-                default:
-                    if (trim($value) != '')
-                        $this->queryBuilder->where($key, $value);
-                    break;
-            }
-        }
-
-        if(!isset($searchCriteria['per_page']))
-            $this->queryBuilder->limit(20);
-
-        $collection = $this->queryBuilder->get();
-
-        return $collection;
-    }
-
-    /**
      * apply filters and return a paginated list
      */
     public function findBy(array $searchCriteria = [])
     {
-        if (isset($searchCriteria['order_by'])) {
-            $this->queryBuilder->orderBy($searchCriteria['order_by']['field'], $searchCriteria['order_by']['direction']);
+        $isList = !empty($searchCriteria['list']) && $searchCriteria['list'];
+
+        //@todo if is to fill a list, probably we must filter when is_enabled = 0
+
+        if (isset($searchCriteria['order_by']) && !empty($searchCriteria['order_by']['field'])) {
+            if(!empty($searchCriteria['order_by']['table'])){
+                $this->queryBuilder->with([$searchCriteria['order_by']['table'] => function ($q) use($searchCriteria){
+                    $q->orderBy($searchCriteria['order_by']['field'], $searchCriteria['order_by']['direction']);
+                }]);
+            }
+            else{
+                $this->queryBuilder->orderBy($searchCriteria['order_by']['field'], $searchCriteria['order_by']['direction']);
+            }
         }
 
-        $limit = !empty($searchCriteria['per_page']) ? (int) $searchCriteria['per_page'] : 20; // it's needed for pagination
+        if(!empty($searchCriteria['include'])){
+            $find = $this->model->where($searchCriteria['include']['field'], $searchCriteria['include']['value']);
+            $this->queryBuilder->union($find);
+        }
+
+        if(!empty($searchCriteria['exclude'])){
+            $this->queryBuilder->where($searchCriteria['exclude']['field'], '!=', $searchCriteria['exclude']['value']);
+        }
+
+        $limit = !empty($searchCriteria['per_page']) ? (int) $searchCriteria['per_page'] : ($isList ? 300 : 20); // it's needed for pagination
 
         $this->queryBuilder->where(function ($query) use ($searchCriteria) {
             $this->applySearchCriteriaInQueryBuilder($query, $searchCriteria);
         });
 
-        return $this->queryBuilder->paginate($limit);
+        return $isList ? $this->queryBuilder->get() : $this->queryBuilder->paginate($limit);
     }
 
     /**
@@ -128,14 +92,18 @@ abstract class RepositoryService implements RepositoryInterface
     {
         foreach ($searchCriteria as $key => $value) {
 
-
             $doCriteria = $this->model->isFillable($key) && // only apply criteria if field is present in fillable array
-                !in_array($key, ['page', 'per_page', 'order_by', 'with', 'query_type', 'where']) && //reserved keys
-                trim($value) != ''; // if is empty, we dont need to filter
+                !in_array($key, ['page', 'total', 'per_page', 'order_by', 'with', 'query_type', 'where']) && //reserved keys
+                (is_array($value) || trim($value) != ''); // if is empty, we don't need to filter
 
             if ($doCriteria) {
                 //we can pass multiple params for a filter with commas
-                $allValues = explode(',', $value);
+                if(is_array($value)){
+                    $allValues = $value;
+                }
+                else{
+                    $allValues = explode(',', $value);
+                }
 
                 if (count($allValues) > 1) {
                     $queryBuilder->whereIn($key, $allValues);
@@ -143,6 +111,7 @@ abstract class RepositoryService implements RepositoryInterface
                     $operator = isset($searchCriteria['query_type']) ? $searchCriteria['query_type'] : '=';
                     $join = explode('.', $key);
                     if (isset($join[1])) {
+
                         if (isset($searchCriteria['where']) && strtoupper($searchCriteria['where']) == 'AND') {
                             $queryBuilder->whereHas($join[0], function ($query) use ($join, $operator, $value) {
                                 $query->where(Str::plural($join[0]) . '.' . $join[1], $operator, $value);
@@ -175,6 +144,11 @@ abstract class RepositoryService implements RepositoryInterface
         //ignore id to store a new row
         unset($data['id']);
 
+        //logic to disabled entities
+        if(isset($data['is_enabled']) && !$data['is_enabled']){
+            $data['disabled_at'] = now();
+        }
+
         foreach ($data as $key => $value) {
             // WHEN ID IS 0 -> SET NULL ON DB
             if (strpos($key, '_id') !== FALSE && $value == 0) {
@@ -192,6 +166,10 @@ abstract class RepositoryService implements RepositoryInterface
      */
     public function update($model, array $data)
     {
+        //logic to disabled entities
+        if(isset($model->is_enabled) && $model->is_enabled && isset($data['is_enabled']) && !$data['is_enabled']){
+            $data['disabled_at'] = now();
+        }
         if (!is_null($model)) {
             $this->model = $model;
             foreach ($data as $key => $value) {
@@ -209,23 +187,12 @@ abstract class RepositoryService implements RepositoryInterface
         }
     }
 
-
-    public function destroy($id)
-    {
-        try {
-            $result = $model->where('id', $id)->delete();
-        } catch (QueryException $e) {
-            if($e->errorInfo[1] !== 1451){
-                Log::channel('debug')->info($e->errorInfo);
-            }
-            throw new ConstrainException('delete', $e->errorInfo[1]);
-        }
-        return $result;
-    }
-
-
+    /**
+     * @inheritdoc
+     */
     public function delete($model)
     {
+        $result = TRUE;
         // we don't need to delete NULL, right?
         if (is_null($model)) {
             $result = FALSE;

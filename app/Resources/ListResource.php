@@ -2,9 +2,7 @@
 
 namespace App\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
-
-class ListResource extends JsonResource
+class ListResource extends ResourceService
 {
     /**
      * Transform the resource into an array.
@@ -14,13 +12,24 @@ class ListResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        // $this->model has the name of the model. e.g. Role, User
+
+        $resource = [
             'id'            => $this->id,
-            'sku'           => isset($this->sku) ? $this->sku : '',
-            'value'         => isset($this->parameter_value) ? $this->parameter_value : $this->id,
-            'name'          => isset($this->name_full) ? $this->name_full : $this->name,
-            // 'name'          => !empty($this->description) ? $this->description : $this->name,
+            'value'         => $this->id,
+            'name'          => $this->description ?? $this->name ?? '',
             'is_default'    => isset($this->is_default) ? $this->is_default : 0
         ];
+        switch ($this->model) {
+            case 'Product':
+                $resource['sku']    = $this->sku;
+                break;
+            case 'Parameter':
+                $resource['name']   = $this->parameter_name;
+                $resource['value']  = $this->parameter_value;
+                break;
+        }
+
+        return $resource;
     }
 }

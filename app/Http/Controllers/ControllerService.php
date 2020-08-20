@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Concerns\WithAllPolicies;
+use App\Concerns\CheckPolicies;
 use App\Resources\ListResource;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as LaravelController;
@@ -18,43 +18,41 @@ class ControllerService extends LaravelController implements ControllerInterface
     public function count()
     {
         $count = $this->repository->modelCount();
-        return $this->respondWithArray($count);
+        return $this->sendArray($count);
     }
 
     public function index(Request $request)
     {
+        $isList = $request->has('list') && $request->list;
 
-        if($this instanceof WithAllPolicies){
+        if($this instanceof CheckPolicies){
             // call the police associated with this model
-            $this->authorize('index', get_class($this->repository->model));
+            if($isList){
+                $this->authorize('list', get_class($this->repository->model));
+            }
+            else{
+                $this->authorize('index', get_class($this->repository->model));
+            }
         }
 
-        if($request->has('list')){
-            // this request is to populate lists
-            $itens = $this->repository->getList($request->except(['list']));
-            return $this->respondWithNativeCollection($itens, ListResource::class);
+        $items = $this->repository->findBy($request->all());
+        if($isList){
+            return $this->sendCollectionResponse($items, ListResource::class);
         }
         else{
-            $itens = $this->repository->findBy($request->all());
-            if($this instanceof WithAllPolicies){
-                $user = auth()->user();
-                foreach ($itens as $item) {
-                    $item->can_be_deleted = $user->can('destroy', $item);
-                }
-            }
-            return $this->respondWithCollection($itens, $this->resource);
+            return $this->sendFullCollectionResponse($items, $this->resource);
         }
     }
 
     public function show($id)
     {
         $item = $this->repository->findOne($id);
-        if($this instanceof WithAllPolicies){
+        if($this instanceof CheckPolicies){
             $this->authorize('show', $item);
         }
 
         if ($item) {
-            return $this->respondWithObject($item, $this->resource);
+            return $this->sendObjectResource($item, $this->resource);
         } else {
             return $this->notFoundResponse(['id' => $id]);
         }
@@ -63,7 +61,7 @@ class ControllerService extends LaravelController implements ControllerInterface
     public function store(Request $request)
     {
 
-        if($this instanceof WithAllPolicies){
+        if($this instanceof CheckPolicies){
             $this->authorize('store', get_class($this->repository->model));
         }
 
@@ -87,14 +85,14 @@ class ControllerService extends LaravelController implements ControllerInterface
         }
 
         $this->repository->store($request->all());
-        return $this->setStatusCode(201)->respondWithObject($this->repository->model, $this->resource);
+        return $this->setStatusCode(201)->sendObjectResource($this->repository->model, $this->resource);
     }
 
     public function update(Request $request, $id)
     {
         $item = $this->repository->findOne($id);
 
-        if($this instanceof WithAllPolicies){
+        if($this instanceof CheckPolicies){
             $this->authorize('update', $item);
         }
 
@@ -113,7 +111,7 @@ class ControllerService extends LaravelController implements ControllerInterface
 
         $this->repository->update($item, $request->all());
         if ($this->repository->model->exists) {
-            return $this->respondWithObject($this->repository->model, $this->resource);
+            return $this->sendObjectResource($this->repository->model, $this->resource);
         } else {
             return $this->notFoundResponse(['id' => $id]);
         }
@@ -121,9 +119,10 @@ class ControllerService extends LaravelController implements ControllerInterface
 
     public function destroy($id)
     {
+
         $item = $this->repository->findOne($id);
 
-        if($this instanceof WithAllPolicies){
+        if($this instanceof CheckPolicies){
             $this->authorize('destroy', $item);
         }
 

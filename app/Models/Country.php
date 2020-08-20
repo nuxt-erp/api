@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 
-class Country extends Model
+class Country extends ModelService
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'name'
     ];
@@ -21,9 +19,13 @@ class Country extends Model
         // CREATE
         if (is_null($item))
         {
+            $rules['name'][] = 'unique:countries';
             $rules['name'][] = 'required';
         }
-
+        else {
+            //update
+            $rules['name'][]    = Rule::unique('countries')->ignore($item->id);
+        }
         return $rules;
     }
 

@@ -10,35 +10,33 @@ class LocationPolicy
 {
     use HandlesAuthorization;
 
-    public function before($currentUser, $ability)
+    public function list(User $currentUser)
     {
-        if ($currentUser->isAdmin()) {
-            return true;
-        }
+        return TRUE;
     }
 
     public function index(User $currentUser)
     {
-        return $currentUser->hasRole('inventory');
+        return $currentUser->isAdmin();
     }
 
     public function show(User $currentUser, Location $target)
     {
-        return $currentUser->hasRole('inventory');
+        return $currentUser->isAdmin();
     }
 
     public function store(User $currentUser)
     {
-        return $currentUser->hasRole('inventory');
+        return $currentUser->isAdmin();
     }
 
     public function update(User $currentUser, Location $target)
     {
-        return $currentUser->hasRole('inventory');
+        return $currentUser->isAdmin();
     }
 
     public function destroy(User $currentUser, Location $target)
     {
-        return FALSE;
+        return $currentUser->isAdmin();
     }
 }

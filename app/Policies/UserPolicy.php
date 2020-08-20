@@ -9,6 +9,16 @@ class UserPolicy
 {
     use HandlesAuthorization;
 
+    public function list(User $currentUser)
+    {
+        return TRUE;
+    }
+
+    public function index(User $currentUser)
+    {
+        return $currentUser->isAdmin();
+    }
+
     public function show(User $currentUser, User $target)
     {
         return $currentUser->isAdmin() || $target->id === $currentUser->id;

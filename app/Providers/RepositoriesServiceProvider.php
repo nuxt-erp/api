@@ -3,103 +3,34 @@
 namespace App\Providers;
 
 // MODELS
-use App\Models\Brand;
-use App\Models\Attribute;
-use App\Models\Category;
-use App\Models\Specification;
-use App\Models\SubSpecification;
+use App\Models\Config;
 use App\Models\Country;
-use App\Models\Province;
-use App\Models\Supplier;
-use App\Models\SystemParameter;
-use App\Models\Product;
-use App\Models\ProductAttribute;
-use App\Models\ProductSpecification;
-use App\Models\Employee;
-use App\Models\Role;
 use App\Models\Location;
+use App\Models\Parameter;
+use App\Models\Province;
+use App\Models\Role;
+use App\Models\Supplier;
 use App\Models\User;
-use App\Models\ProductFamily;
-use App\Models\ProductFamilyAttribute;
-use App\Models\ProductAvailability;
-use App\Models\StockTake;
-use App\Models\StockTakeDetails;
-use App\Models\Purchase;
-use App\Models\PurchaseDetails;
-use App\Models\Transfer;
-use App\Models\TransferDetails;
-use App\Models\Sale;
-use App\Models\SaleDetails;
-use App\Models\Customer;
-use App\Models\ProductLog;
-
-
 // REPOSITORIES
-use App\Repositories\ProductSpecificationRepository;
-use App\Repositories\ProductAttributeRepository;
-use App\Repositories\ProductAvailabilityRepository;
-use App\Repositories\SystemParameterRepository;
-use App\Repositories\SupplierRepository;
-use App\Repositories\ProvinceRepository;
+use App\Repositories\ConfigRepository;
 use App\Repositories\CountryRepository;
-use App\Repositories\SubSpecificationRepository;
-use App\Repositories\SpecificationRepository;
-use App\Repositories\CategoryRepository;
-use App\Repositories\AttributeRepository;
-use App\Repositories\RoleRepository;
-use App\Repositories\BrandRepository;
 use App\Repositories\LocationRepository;
+use App\Repositories\ParameterRepository;
+use App\Repositories\ProvinceRepository;
+use App\Repositories\RoleRepository;
+use App\Repositories\SupplierRepository;
 use App\Repositories\UserRepository;
-use App\Repositories\EmployeeRepository;
-use App\Repositories\ProductRepository;
-use App\Repositories\ProductFamilyRepository;
-use App\Repositories\ProductFamilyAttributeRepository;
-use App\Repositories\StockTakeRepository;
-use App\Repositories\StockTakeDetailsRepository;
-use App\Repositories\PurchaseRepository;
-use App\Repositories\PurchaseDetailsRepository;
-use App\Repositories\TransferRepository;
-use App\Repositories\TransferDetailsRepository;
-use App\Repositories\SaleRepository;
-use App\Repositories\SaleDetailsRepository;
-use App\Repositories\CustomerRepository;
-use App\Repositories\ProductLogRepository;
-
-
 // RESOURCES
-use App\Resources\ProductSpecificationResource;
-use App\Resources\ProductAttributeResource;
-use App\Resources\ProductAvailabilityResource;
-use App\Resources\SystemParameterResource;
+use App\Resources\ConfigResource;
 use App\Resources\CountryResource;
-use App\Resources\SupplierResource;
-use App\Resources\ProvinceResource;
-use App\Resources\SubSpecificationResource;
-use App\Resources\SpecificationResource;
-use App\Resources\CategoryResource;
-use App\Resources\AttributeResource;
-use App\Resources\RoleResource;
-use App\Resources\UserResource;
-use App\Resources\BrandResource;
 use App\Resources\LocationResource;
+use App\Resources\ParameterResource;
+use App\Resources\ProvinceResource;
+use App\Resources\RoleResource;
+use App\Resources\SupplierResource;
+use App\Resources\UserResource;
+
 use Illuminate\Support\ServiceProvider;
-use App\Resources\EmployeeResource;
-use App\Resources\ProductCategoryResource;
-use App\Resources\ProductResource;
-use App\Resources\WarehouseResource;
-use App\Resources\ProductFamilyResource;
-use App\Resources\ProductFamilyAttributeResource;
-use App\Resources\StockTakeResource;
-use App\Resources\StockTakeDetailsResource;
-use App\Resources\ProductAvailabilityStockCountResource;
-use App\Resources\PurchaseResource;
-use App\Resources\PurchaseDetailsResource;
-use App\Resources\TransferResource;
-use App\Resources\TransferDetailsResource;
-use App\Resources\SaleResource;
-use App\Resources\SaleDetailsResource;
-use App\Resources\CustomerResource;
-use App\Resources\ProductLogResource;
 
 class RepositoriesServiceProvider extends ServiceProvider
 {
@@ -117,100 +48,20 @@ class RepositoriesServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(ProductSpecificationRepository::class, function () {
-            return new ProductSpecificationRepository(new ProductSpecification());
-        });
-
-        $this->app->bind(ProductSpecificationResource::class, function () {
-            return new ProductSpecificationResource(new ProductSpecification());
-        });
-
-        $this->app->bind(ProductAttributeRepository::class, function () {
-            return new ProductAttributeRepository(new ProductAttribute());
-        });
-
-        $this->app->bind(ProductAttributeResource::class, function () {
-            return new ProductAttributeResource(new ProductAttribute());
-        });
-
-        $this->app->bind(ProductRepository::class, function () {
-            return new ProductRepository(new Product());
-        });
-
-        $this->app->bind(ProductResource::class, function () {
-            return new ProductResource(new Product());
-        });
-
-        $this->app->bind(SystemParameterRepository::class, function () {
-            return new SystemParameterRepository(new SystemParameter());
-        });
-
-        $this->app->bind(SystemParameterResource::class, function () {
-            return new SystemParameterResource(new SystemParameter());
-        });
-
-        $this->app->bind(SupplierRepository::class, function () {
-            return new SupplierRepository(new Supplier());
-        });
-
-        $this->app->bind(SupplierResource::class, function () {
-            return new SupplierResource(new Supplier());
-        });
-
-        $this->app->bind(ProvinceRepository::class, function () {
-            return new ProvinceRepository(new Province());
-        });
-
-        $this->app->bind(ProvinceResource::class, function () {
-            return new ProvinceResource(new Province());
-        });
-
-        $this->app->bind(CountryRepository::class, function () {
-            return new CountryRepository(new Country());
-        });
-
-        $this->app->bind(CountryResource::class, function () {
-            return new CountryResource(new Country());
-        });
-
-        $this->app->bind(SubSpecificationRepository::class, function () {
-            return new SubSpecificationRepository(new SubSpecification());
-        });
-
-        $this->app->bind(SubSpecificationResource::class, function () {
-            return new SubSpecificationResource(new SubSpecification());
-        });
-
-        $this->app->bind(SpecificationRepository::class, function () {
-            return new SpecificationRepository(new Specification());
-        });
-
-        $this->app->bind(SpecificationResource::class, function () {
-            return new SpecificationResource(new Specification());
-        });
-
-        $this->app->bind(CategoryRepository::class, function () {
-            return new CategoryRepository(new Category());
-        });
-
-        $this->app->bind(CategoryResource::class, function () {
-            return new CategoryResource(new Category());
-        });
-
-        $this->app->bind(AttributeRepository::class, function () {
-            return new AttributeRepository(new Attribute());
-        });
-
-        $this->app->bind(AttributeResource::class, function () {
-            return new AttributeResource(new Attribute());
-        });
-
         $this->app->bind(UserRepository::class, function () {
             return new UserRepository(new User());
         });
 
         $this->app->bind(UserResource::class, function () {
             return new UserResource(new User());
+        });
+
+        $this->app->bind(ConfigRepository::class, function () {
+            return new ConfigRepository(new Config());
+        });
+
+        $this->app->bind(ConfigResource::class, function () {
+            return new ConfigResource(new Config());
         });
 
         $this->app->bind(RoleRepository::class, function () {
@@ -221,28 +72,12 @@ class RepositoriesServiceProvider extends ServiceProvider
             return new RoleResource(new Role());
         });
 
-        $this->app->bind(EmployeeRepository::class, function () {
-            return new EmployeeRepository(new Employee());
+        $this->app->bind(ParameterRepository::class, function () {
+            return new ParameterRepository(new Parameter());
         });
 
-        $this->app->bind(EmployeeResource::class, function () {
-            return new EmployeeResource(new Employee());
-        });
-
-        $this->app->bind(ProductRepository::class, function () {
-            return new ProductRepository(new Product());
-        });
-
-        $this->app->bind(ProductResource::class, function () {
-            return new ProductResource(new Product());
-        });
-
-        $this->app->bind(BrandRepository::class, function () {
-            return new BrandRepository(new Brand());
-        });
-
-        $this->app->bind(BrandResource::class, function () {
-            return new BrandResource(new Brand());
+        $this->app->bind(ParameterResource::class, function () {
+            return new ParameterResource(new Parameter());
         });
 
         $this->app->bind(LocationRepository::class, function () {
@@ -253,114 +88,29 @@ class RepositoriesServiceProvider extends ServiceProvider
             return new LocationResource(new Location());
         });
 
-        $this->app->bind(ProductFamilyRepository::class, function () {
-            return new ProductFamilyRepository(new ProductFamily());
+        $this->app->bind(CountryRepository::class, function () {
+            return new CountryRepository(new Country());
         });
 
-        $this->app->bind(ProductFamilyResource::class, function () {
-            return new ProductFamilyResource(new ProductFamily());
+        $this->app->bind(CountryResource::class, function () {
+            return new CountryResource(new Country());
         });
 
-        $this->app->bind(ProductFamilyAttributeRepository::class, function () {
-            return new ProductFamilyAttributeRepository(new ProductFamilyAttribute());
+        $this->app->bind(ProvinceRepository::class, function () {
+            return new ProvinceRepository(new Province());
         });
 
-        $this->app->bind(ProductFamilyAttributeResource::class, function () {
-            return new ProductFamilyAttributeResource(new ProductFamilyAttribute());
+        $this->app->bind(ProvinceResource::class, function () {
+            return new ProvinceResource(new Province());
         });
 
-        $this->app->bind(ProductAvailabilityRepository::class, function () {
-            return new ProductAvailabilityRepository(new ProductAvailability());
+        $this->app->bind(SupplierRepository::class, function () {
+            return new SupplierRepository(new Supplier());
         });
 
-        $this->app->bind(ProductAvailabilityResource::class, function () {
-            return new ProductAvailabilityResource(new ProductAvailability());
+        $this->app->bind(SupplierResource::class, function () {
+            return new SupplierResource(new Supplier());
         });
-
-        $this->app->bind(StockTakeRepository::class, function () {
-            return new StockTakeRepository(new StockTake());
-        });
-
-        $this->app->bind(StockTakeResource::class, function () {
-            return new StockTakeResource(new StockTake());
-        });
-
-        $this->app->bind(StockTakeDetailsRepository::class, function () {
-            return new StockTakeDetailsRepository(new StockTakeDetails());
-        });
-
-        $this->app->bind(StockTakeDetailsResource::class, function () {
-            return new StockTakeDetailsResource(new StockTakeDetails());
-        });
-
-        $this->app->bind(ProductAvailabilityStockCountResource::class, function () {
-            return new ProductAvailabilityStockCountResource(new ProductAvailability());
-        });
-
-        $this->app->bind(PurchaseResource::class, function () {
-            return new PurchaseResource(new Purchase());
-        });
-
-        $this->app->bind(PurchaseRepository::class, function () {
-            return new PurchaseRepository(new Purchase());
-        });
-
-        $this->app->bind(PurchaseDetailsRepository::class, function () {
-            return new PurchaseDetailsRepository(new PurchaseDetails());
-        });
-
-        $this->app->bind(PurchaseDetailsResource::class, function () {
-            return new PurchaseDetailsResource(new PurchaseDetails());
-        });
-
-        $this->app->bind(TransferResource::class, function () {
-            return new TransferResource(new Transfer());
-        });
-
-        $this->app->bind(TransferRepository::class, function () {
-            return new TransferRepository(new Transfer());
-        });
-
-        $this->app->bind(TransferDetailsRepository::class, function () {
-            return new TransferDetailsRepository(new TransferDetails());
-        });
-
-        $this->app->bind(TransferDetailsResource::class, function () {
-            return new TransferDetailsResource(new TransferDetails());
-        });
-
-        $this->app->bind(SaleDetailsRepository::class, function () {
-            return new SaleDetailsRepository(new SaleDetails());
-        });
-
-        $this->app->bind(SaleDetailsResource::class, function () {
-            return new SaleDetailsResource(new SaleDetails());
-        });
-
-        $this->app->bind(SaleResource::class, function () {
-            return new SaleResource(new Sale());
-        });
-
-        $this->app->bind(SaleRepository::class, function () {
-            return new SaleRepository(new Sale());
-        });
-
-        $this->app->bind(CustomerResource::class, function () {
-            return new CustomerResource(new Customer());
-        });
-
-        $this->app->bind(CustomerRepository::class, function () {
-            return new CustomerRepository(new Customer());
-        });
-
-        $this->app->bind(ProductLogResource::class, function () {
-            return new ProductLogResource(new ProductLog());
-        });
-
-        $this->app->bind(ProductLogRepository::class, function () {
-            return new ProductLogRepository(new ProductLog());
-        });
-
     }
 
     /**
@@ -372,36 +122,13 @@ class RepositoriesServiceProvider extends ServiceProvider
     {
         return [
             UserRepository::class,
+            ConfigRepository::class,
             RoleRepository::class,
-            EmployeeRepository::class,
-            ProductRepository::class,
-            BrandRepository::class,
+            ParameterRepository::class,
             LocationRepository::class,
-            WarehouseRepository::class,
-            ProductAvailabilityRepository::class,
-            AttributeRepository::class,
-            CategoryRepository::class,
-            SpecificationRepository::class,
-            SubSpecificationRepository::class,
             CountryRepository::class,
             ProvinceRepository::class,
-            SupplierRepository::class,
-            SystemParameterRepository::class,
-            ProductAttributeRepository::class,
-            ProductFamilyRepository::class,
-            ProductSpecificationRepository::class,
-            ProductFamilyAttributeRepository::class,
-            ProductAvailabilityRepository::class,
-            StockTakeRepository::class,
-            StockTakeDetailsRepository::class,
-            PurchaseRepository::class,
-            PurchaseDetailsRepository::class,
-            TransferRepository::class,
-            TransferDetailsRepository::class,
-            SaleDetailsRepository::class,
-            CustomerRepository::class,
-            SaleRepository::class,
-            ProductLogRepository::class,
+            SupplierRepository::class
         ];
     }
 }

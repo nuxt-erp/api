@@ -10,9 +10,12 @@ class RoleRepository extends RepositoryService
     public function findBy(array $searchCriteria = [])
     {
 
-        if (!empty($searchCriteria['name'])) {
-            $searchCriteria['query_type'] = 'LIKE';
-            $searchCriteria['name'] = '%' . Arr::pull($searchCriteria, 'name') . '%';
+        if (!empty($searchCriteria['text'])) {
+            $text = '%' . Arr::pull($searchCriteria, 'text') . '%';
+            $this->queryBuilder->where(function ($query) use($text) {
+                $query->where('code', 'LIKE', $text)
+                ->orWhere('name', 'LIKE', $text);
+            });
         }
 
         return parent::findBy($searchCriteria);

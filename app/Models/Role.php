@@ -1,19 +1,32 @@
 <?php
 
 namespace App\Models;
+
 class Role extends ModelService
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+
     protected $fillable = [
-        'name'
+        'name', 'code'
     ];
 
+    public function getRules($request, $item = null)
+    {
 
-    public function operations(){
-        return $this->belongsToMany(Operation::class, 'operations_roles')->withTimestamps();
+        $rules = [
+            'name'          => ['string', 'max:255'],
+            'code'          => ['string', 'max:255'],
+
+        ];
+        //create
+        if (is_null($item)) {
+            $rules['name'][]    = 'required';
+            $rules['code'][]    = 'required';
+            $rules['code'][]    = 'unique:roles';
+        } else {
+            //update
+            $rules['code'][]    = Rule::unique('roles')->ignore($item->id);
+        }
+
+        return $rules;
     }
 }

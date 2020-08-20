@@ -38,7 +38,7 @@ class ModelService extends Model implements ModelInterface
 
     protected function getParam($key, $value){
         $param = Parameter::firstOrCreate(
-            ['parameter_name' => $key, 'parameter_value' => $value]
+            ['name' => $key, 'value' => $value]
         );
         return $param;
     }
