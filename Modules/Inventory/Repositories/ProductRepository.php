@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Repositories;
+namespace Modules\Inventory\Repositories;
 
 use Illuminate\Support\Arr;
-use Illuminate\Database\Eloquent\Builder;
-use Auth;
-use App\Models\ProductAttribute;
-use App\Models\ProductFamily;
-use App\Models\ProductFamilyAttribute;
-use App\Models\Product;
+use App\Repositories\RepositoryService;
 use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Entities\Family;
+use Modules\Inventory\Entities\Product;
+use Modules\Inventory\Entities\ProductAttributes;
+use Modules\Inventory\Entities\ProductFamilyAttribute;
 
 class ProductRepository extends RepositoryService
 {
@@ -96,7 +95,6 @@ class ProductRepository extends RepositoryService
             $searchCriteria['sku']          = '%' . $name . '%';
         }
 
-        $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::findBy($searchCriteria);
     }
 
@@ -105,7 +103,6 @@ class ProductRepository extends RepositoryService
     {
         DB::transaction(function () use ($data)
         {
-            $data["company_id"] = Auth::user()->company_id; // COMPANY ID FROM THE CURRENT USER LOGGED
             $family_id = null;
 
             $this->generate = isset($data["generate_family"]) ? $data["generate_family"] : false;
@@ -142,7 +139,7 @@ class ProductRepository extends RepositoryService
             $row=0;
 
             // DELETE ATTRIBUTES TO INSERT AGAIN
-            ProductAttribute::where('product_id', $product_id)->delete();
+            ProductAttributes::where('product_id', $product_id)->delete();
 
             foreach ($object as $attributes) // EACH ATTRIBUTE
             {
@@ -169,14 +166,13 @@ class ProductRepository extends RepositoryService
 
     private function createFamily($data)
     {
-        $new                = new ProductFamily;
+        $new                = new Family();
         $new->name          = $data["name"];
         $new->description   = $data["description"];
         $new->status        = $data["status"];
         $new->brand_id      = $data["brand_id"];
         $new->category_id   = $data["category_id"];
         $new->supplier_id   = $data["supplier_id"];
-        $new->company_id    = $data["company_id"];
         $new->sku           = $data["sku"];
         $new->location_id   = $data["location_id"];
         $new->launch_date   = $data["launch_date"];
@@ -198,7 +194,7 @@ class ProductRepository extends RepositoryService
     private function saveProductAttribute($product_id, $attribute_id, $value)
     {
         // SAVE ATTRIBUTE BY PRODUCT
-        ProductAttribute::updateOrCreate([
+        ProductAttributes::updateOrCreate([
             'product_id'    => $product_id,
             'attribute_id'  => $attribute_id,
         ],

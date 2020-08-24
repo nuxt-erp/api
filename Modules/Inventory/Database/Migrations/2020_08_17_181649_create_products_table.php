@@ -16,11 +16,11 @@ class CreateProductsTable extends Migration
         Schema::create('inv_products', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('brand_id')->constrained('inv_brands')->onDelete('set null');
+            $table->foreignId('brand_id')->nullable()->constrained('inv_brands')->onDelete('set null');
             $table->foreignId('category_id')->constrained('inv_categories')->onDelete('set null');
-            $table->foreignId('supplier_id')->nullable('suppliers')->constrained()->onDelete('set null');
-            $table->foreignId('family_id')->nullable('inv_families')->constrained()->onDelete('set null');
-            $table->foreignId('location_id')->nullable('inv_locations')->constrained()->onDelete('set null');
+            $table->foreignId('supplier_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('family_id')->nullable()->constrained('inv_families')->onDelete('set null');
+            $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('set null');
 
             $table->string('dear_id')->nullable()->unique();
             $table->string('name');

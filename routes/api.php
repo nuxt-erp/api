@@ -30,7 +30,6 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('countries', 'General\CountryController');
         Route::resource('provinces', 'General\ProvinceController');
         Route::resource('suppliers', 'General\SupplierController');
-
     });
 
 

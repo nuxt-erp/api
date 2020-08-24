@@ -6,16 +6,28 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 // models
 use Modules\Inventory\Entities\Attribute;
+use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\Brand;
 use Modules\Inventory\Entities\Category;
+use Modules\Inventory\Entities\Family;
+use Modules\Inventory\Entities\Product;
+use Modules\Inventory\Entities\ProductAttributes;
 // repositories
 use Modules\Inventory\Repositories\AttributeRepository;
+use Modules\Inventory\Repositories\AvailabilityRepository;
 use Modules\Inventory\Repositories\BrandRepository;
 use Modules\Inventory\Repositories\CategoryRepository;
+use Modules\Inventory\Repositories\FamilyRepository;
+use Modules\Inventory\Repositories\ProductAttributeRepository;
+use Modules\Inventory\Repositories\ProductRepository;
 // resources
 use Modules\Inventory\Resources\AttributeResource;
+use Modules\Inventory\Resources\AvailabilityResource;
 use Modules\Inventory\Resources\BrandResource;
 use Modules\Inventory\Resources\CategoryResource;
+use Modules\Inventory\Resources\FamilyResource;
+use Modules\Inventory\Resources\ProductAttributeResource;
+use Modules\Inventory\Resources\ProductResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -52,6 +64,8 @@ class InventoryServiceProvider extends ServiceProvider
     {
         $this->app->register(RouteServiceProvider::class);
 
+        $this->app->register(AuthServiceProvider::class);
+
         $this->app->bind(BrandRepository::class, function () {
             return new BrandRepository(new Brand());
         });
@@ -75,6 +89,56 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(AttributeResource::class, function () {
             return new AttributeResource(new Attribute());
         });
+
+        $this->app->bind(ProductRepository::class, function () {
+            return new ProductRepository(new Product());
+        });
+
+        $this->app->bind(ProductResource::class, function () {
+            return new ProductResource(new Product());
+        });
+
+        $this->app->bind(FamilyRepository::class, function () {
+            return new FamilyRepository(new Family());
+        });
+
+        $this->app->bind(FamilyResource::class, function () {
+            return new FamilyResource(new Family());
+        });
+
+        $this->app->bind(AvailabilityRepository::class, function () {
+            return new AvailabilityRepository(new Availability());
+        });
+
+        $this->app->bind(AvailabilityResource::class, function () {
+            return new AvailabilityResource(new Availability());
+        });
+
+        $this->app->bind(ProductAttributeRepository::class, function () {
+            return new ProductAttributeRepository(new ProductAttributes());
+        });
+
+        $this->app->bind(ProductAttributeResource::class, function () {
+            return new ProductAttributeResource(new ProductAttributes());
+        });
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            BrandRepository::class,
+            CategoryRepository::class,
+            AttributeRepository::class,
+            ProductRepository::class,
+            FamilyRepository::class,
+            AvailabilityRepository::class,
+            ProductAttributeRepository::class
+        ];
     }
 
     /**
@@ -138,19 +202,7 @@ class InventoryServiceProvider extends ServiceProvider
         }
     }
 
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [
-            BrandRepository::class,
-            CategoryRepository::class,
-            AttributeRepository::class
-        ];
-    }
+
 
     private function getPublishableViewPaths(): array
     {

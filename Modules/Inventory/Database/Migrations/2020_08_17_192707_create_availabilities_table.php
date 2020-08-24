@@ -17,7 +17,7 @@ class CreateAvailabilitiesTable extends Migration
             $table->id();
 
             $table->foreignId('product_id')->constrained('inv_products')->nullable()->onDelete('cascade');
-            $table->foreignId('location_id')->constrained('inv_locations')->nullable()->onDelete('set null');
+            $table->foreignId('location_id')->constrained('locations')->nullable()->onDelete('set null');
 
             $table->double('available', 10, 4)->default(0);
             $table->double('on_hand', 10, 4)->default(0);

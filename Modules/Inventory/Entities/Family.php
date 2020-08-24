@@ -1,12 +1,4 @@
 <?php
-/*
-$table->string('dear_id')->nullable()->unique();
-$table->string('name')->unique();
-$table->mediumText('description')->nullable();
-$table->string('sku')->nullable()->unique();
-$table->timestamp('launch_at')->nullable();
-$table->boolean('is_enabled')->default(1);
-$table->timestamp('disabled_at')->nullable();*/
 
 namespace Modules\Inventory\Entities;
 
@@ -17,7 +9,11 @@ use Illuminate\Validation\Rule;
 
 class Family extends ModelService
 {
-    public $timestamps = false;
+    protected $table = 'inv_families';
+
+    protected $dates = [
+        'launch_at', 'disabled_at',
+    ];
 
     protected $fillable = [
         'brand_id', 'category_id', 'supplier_id',
@@ -37,18 +33,22 @@ class Family extends ModelService
             'name'          => ['string', 'max:100'],
             'description'   => ['nullable', 'string', 'max:500'],
             'sku'           => ['nullable', 'string', 'max:255'],
+            'launch_at'     => ['nullable', 'date'],
+            'is_enabled'    => ['nullable', 'boolean']
         ];
 
         // CREATE
         if (is_null($item))
         {
             $rules['name'][]    = 'required';
-            $rules['name'][]    = 'unique:inv_products';
-            $rules['sku'][]     = 'unique:inv_products';
+            $rules['dear_id'][] = 'unique:inv_families';
+            $rules['name'][]    = 'unique:inv_families';
+            $rules['sku'][]     = 'unique:inv_families';
         } else {
             //update
-            $rules['name'][]    = Rule::unique('inv_products')->ignore($item->id);
-            $rules['sku'][]     = Rule::unique('inv_products')->ignore($item->id);
+            $rules['dear_id'][] = Rule::unique('inv_families')->ignore($item->id);
+            $rules['name'][]    = Rule::unique('inv_families')->ignore($item->id);
+            $rules['sku'][]     = Rule::unique('inv_families')->ignore($item->id);
         }
 
         return $rules;

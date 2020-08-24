@@ -4,6 +4,8 @@ namespace Modules\Inventory\Http\Controllers;
 
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
+use Modules\Inventory\Repositories\ProductRepository;
+use Modules\Inventory\Resources\ProductResource;
 
 class ProductController extends ControllerService implements CheckPolicies
 {

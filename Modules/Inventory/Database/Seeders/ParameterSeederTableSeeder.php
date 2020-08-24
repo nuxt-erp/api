@@ -5,7 +5,7 @@ namespace Modules\Inventory\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
-class InventoryDatabaseSeeder extends Seeder
+class ParameterSeederTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,6 +16,5 @@ class InventoryDatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        $this->call(ParameterSeederTableSeeder::class);
     }
 }

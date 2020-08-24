@@ -5,14 +5,16 @@ namespace Modules\Inventory\Http\Controllers;
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 use Illuminate\Http\Request;
+use Modules\Inventory\Repositories\FamilyRepository;
+use Modules\Inventory\Resources\FamilyResource;
 use Modules\Inventory\Resources\ProductResource;
 
-class ProductFamilyController extends ControllerService implements CheckPolicies
+class FamilyController extends ControllerService implements CheckPolicies
 {
     protected $repository;
     protected $resource;
 
-    public function __construct(ProductFamilyRepository $repository, ProductFamilyResource $resource)
+    public function __construct(FamilyRepository $repository, FamilyResource $resource)
     {
         $this->repository = $repository;
         $this->resource = $resource;
