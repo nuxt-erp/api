@@ -24,17 +24,28 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('products', 'ProductController');
         Route::resource('product_attributes', 'ProductAttributeController');
         //Route::get('product_logs/get_log', 'ProductLogController@getLog'); //@todo review this
-        Route::resource('product_logs', 'ProductLogController');
+        //Route::resource('product_logs', 'ProductLogController');
 
-        Route::resource('product_families', 'ProductFamilyController');
+        //Route::resource('product_families', 'ProductFamilyController');
 
         //Route::get('families/remove/{id?}', 'ProductFamilyController@remove'); //@todo review this
         //Route::get('families/get_products', 'ProductFamilyController@getListProducts'); //@todo review this
         Route::resource('families', 'FamilyController');
-        Route::resource('family_attributes', 'ProductFamilyAttributeController');
+        //Route::resource('family_attributes', 'ProductFamilyAttributeController');
         Route::resource('availabilities', 'AvailabilityController');
-        Route::resource('specifications', 'SpecificationController');
-        Route::resource('subspecifications', 'SubSpecificationController');
-
+        //Route::resource('specifications', 'SpecificationController');
+        //Route::resource('subspecifications', 'SubSpecificationController');
     });
+
+    Route::group(['prefix' => 'import'], function () {
+        Route::get('brands', 'ImportController@dearSyncBrands');
+        Route::get('categories', 'ImportController@dearSyncCategories');
+        Route::get('suppliers', 'ImportController@dearSyncSuppliers');
+        Route::get('locations', 'ImportController@dearSyncLocations');
+        Route::get('products', 'ImportController@dearSyncProducts');
+        Route::get('availabilities', 'ImportController@dearSyncAvailabilities');
+        Route::get('products/{sku}', 'ImportController@syncProduct'); // sync in DEAR only one product
+        Route::post('xls/stock_count', 'ImportController@xlsInsertStock');
+    });
+
 });

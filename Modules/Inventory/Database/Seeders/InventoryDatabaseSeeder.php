@@ -17,5 +17,6 @@ class InventoryDatabaseSeeder extends Seeder
         Model::unguard();
 
         $this->call(ParameterSeederTableSeeder::class);
+        $this->call(AttributeTableSeeder::class);
     }
 }

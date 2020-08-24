@@ -6,7 +6,7 @@ use App\Models\ModelService;
 
 class ProductAttributes extends ModelService
 {
-    public $timestamps = false;
+    protected $table = 'inv_product_attributes';
 
     protected $fillable = [
         'value', 'product_id', 'attribute_id'
@@ -16,8 +16,8 @@ class ProductAttributes extends ModelService
     {
         $rules = [
             'value'         => ['string', 'max:60'],
-            'attribute_id'  => ['exists:attributes,id'],
-            'product_id'    => ['exists:products,id'],
+            'attribute_id'  => ['exists:inv_attributes,id'],
+            'product_id'    => ['exists:inv_products,id'],
         ];
 
         // CREATE
