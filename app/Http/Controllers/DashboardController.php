@@ -21,6 +21,9 @@ class DashboardController extends Controller
 
     public function welcome(){
         echo '<==== NextERP API ====>';
+
+        $api    = resolve('Shopify\API');
+        $api->syncOrders();
     }
 
 }

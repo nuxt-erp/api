@@ -2,11 +2,12 @@
 
 namespace Modules\Inventory\Repositories;
 
+use App\Models\Parameter;
 use App\Repositories\RepositoryService;
 
 use Illuminate\Support\Arr;
-use App\Models\ProductLog;
 use Modules\Inventory\Entities\Availability;
+use Modules\Inventory\Entities\ProductLog;
 
 class AvailabilityRepository extends RepositoryService
 {
@@ -77,27 +78,33 @@ class AvailabilityRepository extends RepositoryService
         // Update stock
         if ($operator == "+") {
             if ($location_id == null) {
-                Availability::where(['company_id' => $company_id, 'product_id' => $product_id])->increment($field_to_update, $qty);
+                Availability::where(['product_id' => $product_id])->increment($field_to_update, $qty);
             } else {
-                Availability::where(['company_id' => $company_id, 'product_id' => $product_id, 'location_id' => $location_id])->increment($field_to_update, $qty);
+                Availability::where(['product_id' => $product_id, 'location_id' => $location_id])->increment($field_to_update, $qty);
             }
         } elseif ($operator == "-") {
             if ($location_id == null) {
-                Availability::where(['company_id' => $company_id, 'product_id' => $product_id])->decrement($field_to_update, $qty);
+                Availability::where(['product_id' => $product_id])->decrement($field_to_update, $qty);
             } else {
-                Availability::where(['company_id' => $company_id, 'product_id' => $product_id, 'location_id' => $location_id])->decrement($field_to_update, $qty);
+                Availability::where(['product_id' => $product_id, 'location_id' => $location_id])->decrement($field_to_update, $qty);
             }
         }
 
         // Create product log
         //if ($on_order_qty == 0 && $allocated_qty == 0) { // Log just for finished tasks
-            $log = new ProductLog;
+
+            $type = Parameter::firstOrCreate(
+                ['name' => 'product_log_type', 'value' => $type]
+                //'order', 'description', 'is_internal', 'is_default'
+            );
+
+            $log = new ProductLog();
             $log->product_id    = $product_id;
             $log->location_id   = $location_id;
             $log->date          = date('Y-m-d H:s:i');
             $log->quantity      = ($operator == "-" ? -$qty : $qty);
             $log->ref_code_id   = $ref_code;
-            $log->type          = $type;
+            $log->type_id       = $type->id;
             $log->description   = $description;
             $log->save();
         //}

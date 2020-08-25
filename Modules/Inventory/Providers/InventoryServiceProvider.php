@@ -4,6 +4,7 @@ namespace Modules\Inventory\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
+use Illuminate\Console\Scheduling\Schedule;
 // models
 use Modules\Inventory\Entities\Attribute;
 use Modules\Inventory\Entities\Availability;
@@ -56,6 +57,13 @@ class InventoryServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->registerFactories();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
+
+        // $this->app->booted(function () {
+        //     $schedule = $this->app->make(Schedule::class);
+        //     $schedule->call('Modules\Inventory\Http\Controllers\ImportController@importShopify')->everyMinute();
+        // });
+
+
     }
 
     /**
@@ -213,8 +221,6 @@ class InventoryServiceProvider extends ServiceProvider
             app(Factory::class)->load(module_path($this->moduleName, 'Database/factories'));
         }
     }
-
-
 
     private function getPublishableViewPaths(): array
     {

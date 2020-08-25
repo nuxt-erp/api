@@ -11,7 +11,6 @@ use App\Imports\StockCountImport;
 
 class ImportController extends ControllerService
 {
-
     public function xlsInsertStock(Request $request)
     {
 
@@ -27,7 +26,6 @@ class ImportController extends ControllerService
         }
         return $this->respondWithNativeObject($import);
     }
-
 
     public function syncProduct($sku = null)
     {
@@ -99,13 +97,6 @@ class ImportController extends ControllerService
     {
         $api = resolve('Dear\API');
         $result = $api->syncProds();
-
-        /*Import::create([
-            'name' => Import::DEAR_SYNC_PRODUCTS,
-            'author_id' => 1,
-            'rows'  => $result,
-            'status' => ''
-        ]);*/
 
         return $this->sendArray([
             'errors'    => [],

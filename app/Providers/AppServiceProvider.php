@@ -2,7 +2,8 @@
 
 namespace App\Providers;
 
-use App\Services\DearService;
+use App\Service\DearService;
+use App\Service\ShopifyService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -16,6 +17,10 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind('Dear\API', function(){
             return new DearService(config('dear.id'), config('dear.key'), config('dear.url'));
+        });
+
+        $this->app->bind('Shopify\API', function(){
+            return new ShopifyService();
         });
     }
 

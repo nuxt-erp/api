@@ -1,4 +1,6 @@
 {
     "Inventory": true,
-    "Accounting": false
+    "Accounting": false,
+    "Sale": true,
+    "Sales": true
 }
