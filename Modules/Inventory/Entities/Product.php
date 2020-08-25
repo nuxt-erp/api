@@ -2,29 +2,9 @@
 
 namespace Modules\Inventory\Entities;
 
+use App\Models\Location;
 use App\Models\ModelService;
-/*
-$table->foreignId('brand_id')->nullable()->constrained('inv_brands')->onDelete('set null');
-$table->foreignId('category_id')->constrained('inv_categories')->onDelete('set null');
-$table->foreignId('supplier_id')->nullable()->constrained()->onDelete('set null');
-$table->foreignId('family_id')->nullable()->constrained('inv_families')->onDelete('set null');
-$table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('set null');
-
-$table->string('dear_id')->nullable()->unique();
-$table->string('name');
-$table->string('sku')->unique();
-$table->mediumText('description')->nullable();
-$table->float('cost', 10, 4)->nullable();
-$table->float('price', 10, 4)->nullable();
-$table->string('barcode')->nullable()->unique();
-$table->double('length', 10, 4)->nullable();
-$table->double('width', 10, 4)->nullable();
-$table->double('height', 10, 4)->nullable();
-$table->double('weight', 10, 4)->nullable();
-$table->timestamp('launch_at')->nullable();
-$table->boolean('is_enabled')->default(1);
-$table->timestamp('disabled_at')->nullable();
-*/
+use App\Models\Supplier;
 
 class Product extends ModelService
 {
@@ -36,9 +16,11 @@ class Product extends ModelService
         'family_id', 'location_id', 'dear_id',
         'name', 'sku', 'description',
         'cost', 'price', 'barcode',
-        'length', 'width', 'weight',
-        'launch_at', 'is_enabled', 'disabled_at'
+        'length', 'width', 'height',
+        'weight', 'launch_at', 'is_enabled',
+        'disabled_at', 'sales_channel'
     ];
+
 
     public function getRules($request, $item = null)
     {
@@ -60,59 +42,55 @@ class Product extends ModelService
 
     public function getFullDescriptionAttribute()
     {
-        return $this->name . ' ' . $this->getFirstAttribute();
+        return $this->name . ' ' . $this->details;
     }
 
     // GET ALL ATTRIBUTES FROM PRODUCT
-    public function getFirstAttribute()
+    public function getDetailsAttribute()
     {
+        lad('attributes', $this->product_attributes);
         $string = '';
-        $attributes = $this->attributes()->get();
-        if ($attributes) {
-            foreach ($attributes as $key => $value) {
-                if ($string == '') {
-                    $string = Attribute::where('id', $value->attribute_id)->pluck('name')->first() . ': ' . $value->value;
-                } else {
-                    $string .= ', ' . Attribute::where('id', $value->attribute_id)->pluck('name')->first() . ': ' . $value->value;
-                }
-            }
+        foreach ($this->product_attributes as $key => $p_attribute) {
+            //lad($attribute);
+            $string .= ($key == 0  ? '' : ', ') . $p_attribute->attribute->name . ': ' . $p_attribute->value;
         }
         return $string;
     }
 
-    // // GET TOTAL QTY IN TRANSIT (COMING FROM SUPPLIER - PURCHASE)
-    // public function getInTransitAttribute($product_id)
-    // {
-    //     $data = PurchaseDetails::where('product_id', $product_id)
-    //         ->selectRaw('SUM(qty) as tot')
-    //         ->with('purchase')
-    //         ->whereHas('purchase', function ($query) {
-    //             $query->where('status', '=', 0); // NOT RECEIVED YET
-    //         })->get();
-
-    //     if ($data) {
-    //         return ($data[0]->tot);
-    //     }
-    // }
-
-    // // GET TOTAL QTY IN TRANSIT (TRANSFERS)
-    // public function getInTransitTransferAttribute($product_id)
-    // {
-    //     $data = TransferDetails::where('product_id', $product_id)
-    //         ->selectRaw('SUM(qty_sent) as tot')
-    //         ->with('transfer')
-    //         ->whereHas('transfer', function ($query) {
-    //             $query->where('status', '=', 0); // NOT RECEIVED YET
-    //         })->get();
-
-    //     if ($data) {
-    //         return ($data[0]->tot);
-    //     }
-    // }
-
-    public function attributes()
+    // GET TOTAL QTY IN TRANSIT (COMING FROM SUPPLIER - PURCHASE)
+    public function getInTransitAttribute($product_id)
     {
-        return $this->hasMany(Attribute::class, 'product_id');
+        return 0;
+        // $data = PurchaseDetails::where('product_id', $product_id)
+        //     ->selectRaw('SUM(qty) as tot')
+        //     ->with('purchase')
+        //     ->whereHas('purchase', function ($query) {
+        //         $query->where('status', '=', 0); // NOT RECEIVED YET
+        //     })->get();
+
+        // if ($data) {
+        //     return ($data[0]->tot);
+        // }
+    }
+
+    // GET TOTAL QTY IN TRANSIT (TRANSFERS)
+    public function getInTransitTransferAttribute($product_id)
+    {
+        return 0;
+        // $data = TransferDetails::where('product_id', $product_id)
+        //     ->selectRaw('SUM(qty_sent) as tot')
+        //     ->with('transfer')
+        //     ->whereHas('transfer', function ($query) {
+        //         $query->where('status', '=', 0); // NOT RECEIVED YET
+        //     })->get();
+
+        // if ($data) {
+        //     return ($data[0]->tot);
+        // }
+    }
+
+    public function product_attributes(){
+        return $this->hasMany(ProductAttributes::class, 'product_id', 'id');
     }
 
     public function availability()
@@ -140,8 +118,4 @@ class Product extends ModelService
         return $this->belongsTo(Supplier::class);
     }
 
-    public function getOnlyAttribute()
-    {
-        return $this->getFirstAttribute();
-    }
 }

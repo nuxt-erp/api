@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Resources;
+namespace Modules\Inventory\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Resources\ResourceService;
 
-class ProductLogResource extends JsonResource
+class ProductLogResource extends ResourceService
 {
     /**
      * Transform the resource into an array.
@@ -17,14 +17,15 @@ class ProductLogResource extends JsonResource
         return [
             'id'            => $this->id,
             'product_id'    => $this->product_id,
-            'quantity'      => $this->quantity,
-            'date'          => $this->date,
-            'ref_code_id'   => $this->ref_code_id,
-            'type'          => $this->type,
-            'description'   => $this->description,
             'location_id'   => $this->location_id,
             'location_name' => optional($this->location)->name,
-            'source'        => $this->getSourceAttribute(),
+            'type_id'       => $this->type_id,
+            'type_name'     => optional($this->type)->name,
+            'quantity'      => $this->quantity,
+            'description'   => $this->description,
+            'source'        => $this->source,
+            'created_at'    => optional($this->created_at)->format('Y-m-d H:i:s'),
+            'updated_at'    => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];
     }
 }

@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Repositories;
+namespace Modules\Inventory\Repositories;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
-use \App\Models\ProductLog;
+use App\Repositories\RepositoryService;
 
 class ProductLogRepository extends RepositoryService
 {

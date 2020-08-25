@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Inventory;
+namespace Modules\Inventory\Http\Controllers;
 
+use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
-use App\Repositories\ProductLogRepository;
-use App\Resources\ProductLogResource;
 use Illuminate\Http\Request;
+use Modules\Inventory\Repositories\ProductLogRepository;
+use Modules\Inventory\Resources\ProductLogResource;
 
-class ProductLogController extends ControllerService
+class ProductLogController extends ControllerService implements CheckPolicies
 {
     protected $repository;
     protected $resource;
@@ -19,8 +20,8 @@ class ProductLogController extends ControllerService
     }
 
     public function getLog(Request $request) {
-        $itens = $this->repository->getLog($request->all());
+        $items = $this->repository->getLog($request->all());
         // respondWithCollection it's important to return total of records (useful for pagination)
-        return $this->respondWithCollection($itens, ProductLogResource::class);
+        return $this->respondWithCollection($items, ProductLogResource::class);
     }
 }

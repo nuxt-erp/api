@@ -10,6 +10,10 @@ class ModelService extends Model implements ModelInterface
     //public $timestamps = false;
     protected $dateFormat = 'Y-m-d H:i:s';
 
+    protected $casts = [
+        'is_enabled' => 'int',
+    ];
+
     public static function getTableName()
     {
         return with(new static)->getTable();

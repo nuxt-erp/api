@@ -57,6 +57,7 @@ class ProductLog extends ModelService
 
     public function getSourceAttribute()
     {
+        return '';
         // if ($this->type == self::TYPE_LOG_SALE) {
         //     $get = Sale::where('id', $this->ref_code_id)->with('customer')->first();
         //     if ($get) {

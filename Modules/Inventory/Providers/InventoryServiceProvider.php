@@ -12,6 +12,7 @@ use Modules\Inventory\Entities\Category;
 use Modules\Inventory\Entities\Family;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductAttributes;
+use Modules\Inventory\Entities\ProductLog;
 // repositories
 use Modules\Inventory\Repositories\AttributeRepository;
 use Modules\Inventory\Repositories\AvailabilityRepository;
@@ -19,6 +20,7 @@ use Modules\Inventory\Repositories\BrandRepository;
 use Modules\Inventory\Repositories\CategoryRepository;
 use Modules\Inventory\Repositories\FamilyRepository;
 use Modules\Inventory\Repositories\ProductAttributeRepository;
+use Modules\Inventory\Repositories\ProductLogRepository;
 use Modules\Inventory\Repositories\ProductRepository;
 // resources
 use Modules\Inventory\Resources\AttributeResource;
@@ -27,6 +29,7 @@ use Modules\Inventory\Resources\BrandResource;
 use Modules\Inventory\Resources\CategoryResource;
 use Modules\Inventory\Resources\FamilyResource;
 use Modules\Inventory\Resources\ProductAttributeResource;
+use Modules\Inventory\Resources\ProductLogResource;
 use Modules\Inventory\Resources\ProductResource;
 
 class InventoryServiceProvider extends ServiceProvider
@@ -121,6 +124,14 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductAttributeResource::class, function () {
             return new ProductAttributeResource(new ProductAttributes());
         });
+
+        $this->app->bind(ProductLogRepository::class, function () {
+            return new ProductLogRepository(new ProductLog());
+        });
+
+        $this->app->bind(ProductLogResource::class, function () {
+            return new ProductLogResource(new ProductLog());
+        });
     }
 
     /**
@@ -137,7 +148,8 @@ class InventoryServiceProvider extends ServiceProvider
             ProductRepository::class,
             FamilyRepository::class,
             AvailabilityRepository::class,
-            ProductAttributeRepository::class
+            ProductAttributeRepository::class,
+            ProductLogRepository::class
         ];
     }
 

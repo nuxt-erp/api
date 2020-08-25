@@ -11,12 +11,16 @@ use Modules\Inventory\Entities\Brand;
 use Modules\Inventory\Entities\Category;
 use Modules\Inventory\Entities\Family;
 use Modules\Inventory\Entities\Product;
+use Modules\Inventory\Entities\ProductAttributes;
+use Modules\Inventory\Entities\ProductLog;
 // policies
 use Modules\Inventory\Policies\AttributePolicy;
 use Modules\Inventory\Policies\AvailabilityPolicy;
 use Modules\Inventory\Policies\BrandPolicy;
 use Modules\Inventory\Policies\CategoryPolicy;
 use Modules\Inventory\Policies\FamilyPolicy;
+use Modules\Inventory\Policies\ProductAttributesPolicy;
+use Modules\Inventory\Policies\ProductLogPolicy;
 use Modules\Inventory\Policies\ProductPolicy;
 
 class AuthServiceProvider extends ServiceProvider
@@ -40,5 +44,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Category::class, CategoryPolicy::class);
         Gate::policy(Family::class, FamilyPolicy::class);
         Gate::policy(Product::class, ProductPolicy::class);
+        Gate::policy(ProductLog::class, ProductLogPolicy::class);
+        Gate::policy(ProductAttributes::class, ProductAttributesPolicy::class);
     }
 }

@@ -24,7 +24,7 @@ class ProductRepository extends RepositoryService
 
         $searchCriteria['per_page'] = 50;
 
-        if(!empty($searchCriteria['category_name'])){
+        if (!empty($searchCriteria['category_name'])) {
             $category = Arr::pull($searchCriteria, 'category_name');
             $this->queryBuilder->whereHas('category', function ($query) use ($category) {
                 $query->where('product_categories.name', $category);
@@ -34,13 +34,13 @@ class ProductRepository extends RepositoryService
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
             $this->queryBuilder
-            ->where('name', 'LIKE', $name)
-            ->orWhere('sku', 'LIKE', $name);
+                ->where('name', 'LIKE', $name)
+                ->orWhere('sku', 'LIKE', $name);
         }
 
         if (!empty($searchCriteria['sku'])) {
             $this->queryBuilder
-            ->where('sku', 'LIKE', '%' . Arr::pull($searchCriteria, 'sku') . '%');
+                ->where('sku', 'LIKE', '%' . Arr::pull($searchCriteria, 'sku') . '%');
         }
 
         return parent::getList($searchCriteria);
@@ -56,28 +56,28 @@ class ProductRepository extends RepositoryService
         if (!empty($searchCriteria['sku'])) {
             $sku = '%' . Arr::pull($searchCriteria, 'sku') . '%';
             $this->queryBuilder
-            ->where('sku', 'LIKE', $sku)
-            ->orWhere('name', 'LIKE', $sku);
+                ->where('sku', 'LIKE', $sku)
+                ->orWhere('name', 'LIKE', $sku);
         }
 
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
-            ->where('id', $searchCriteria['id']);
+                ->where('id', $searchCriteria['id']);
         }
 
         if (!empty($searchCriteria['category_id'])) {
             $this->queryBuilder
-            ->where('category_id', $searchCriteria['category_id']);
+                ->where('category_id', $searchCriteria['category_id']);
         }
 
         if (!empty($searchCriteria['brand_id'])) {
             $this->queryBuilder
-            ->where('brand_id', $searchCriteria['brand_id']);
+                ->where('brand_id', $searchCriteria['brand_id']);
         }
 
         if (!empty($searchCriteria['location_id'])) {
             $this->queryBuilder
-            ->where('location_id', $searchCriteria['location_id']);
+                ->where('location_id', $searchCriteria['location_id']);
         }
 
         if (!empty($searchCriteria['name'])) {
@@ -88,7 +88,7 @@ class ProductRepository extends RepositoryService
             $searchCriteria['sku'] = $name;
         }
 
-        if(Arr::has($searchCriteria, 'complete_name')){
+        if (Arr::has($searchCriteria, 'complete_name')) {
             $searchCriteria['query_type']   = 'LIKE';
             $searchCriteria['where']        = 'OR';
             $name = Arr::pull($searchCriteria, 'complete_name');
@@ -101,42 +101,35 @@ class ProductRepository extends RepositoryService
 
     public function store($data)
     {
-        DB::transaction(function () use ($data)
-        {
-            $family_id = null;
+        DB::transaction(function () use ($data) {
 
-            $this->generate = isset($data["generate_family"]) ? $data["generate_family"] : false;
+            $this->generate = !empty($data["generate_family"]);
 
-            if ($this->generate == true) // IT CAMES FROM PRODUCT FAMILY
+            if ($this->generate == true) // It came from product family
             {
-                $family_id = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
+                $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
             }
 
-            $data["family_id"] = $family_id;
-
-            if ($this->generate == true)
-            {
-                $this->generateFamily($data, $family_id); // GENERATE FAMILY
+            if ($this->generate == true) {
+                $this->generateFamily($data, $data['family_id']); // GENERATE FAMILY
             } else {
                 parent::store($data);
                 $this->createAttribute($data); // CREATE ATTRIBUTE
             }
-
         });
-
     }
 
     private function createAttribute($data)
     {
-        if (isset($data["prod_attributes"]))
-        {
-            $product_id         = isset($this->model->id) ? $this->model->id : $data["id"]; //SAVE CURRENT PRODUCT ID
+        if (!empty($data["prod_attributes"])) {
+
+            $product_id         = $data["id"] ?? $this->model->id;; //Get CURRENT PRODUCT ID
             $object             = $data["prod_attributes"];
             $row                = 0;
             $tot                = 0;
             $sku_increment      = 1;
 
-            $row=0;
+            $row = 0;
 
             // DELETE ATTRIBUTES TO INSERT AGAIN
             ProductAttributes::where('product_id', $product_id)->delete();
@@ -146,14 +139,12 @@ class ProductRepository extends RepositoryService
                 $row++;
                 $tot = count($attributes); // TOTAL ATTRIBUTES
 
-                if ($row==1) // ONE ROW CONTAINS ALL ATTRIBUTES
+                if ($row == 1) // ONE ROW CONTAINS ALL ATTRIBUTES
                 {
-                    for ($i=0; $i < $tot; $i++) // WHILE FOUND ATTRIBUTES
+                    for ($i = 0; $i < $tot; $i++) // WHILE FOUND ATTRIBUTES
                     {
-                        if (isset($attributes[$i]))
-                        {
-                            if ($attributes[$i]!=0)
-                            {
+                        if (isset($attributes[$i])) {
+                            if ($attributes[$i] != 0) {
                                 $get_array = $attributes[$i];
                                 $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"]);
                             }
@@ -167,16 +158,17 @@ class ProductRepository extends RepositoryService
     private function createFamily($data)
     {
         $new                = new Family();
-        $new->name          = $data["name"];
-        $new->description   = $data["description"];
-        $new->status        = $data["status"];
-        $new->brand_id      = $data["brand_id"];
-        $new->category_id   = $data["category_id"];
-        $new->supplier_id   = $data["supplier_id"];
+        $new->name          = $data["brand_id"];
+        $new->description   = $data["category_id"];
+        $new->status        = $data["supplier_id"];
+        $new->brand_id      = $data["location_id"];
+        $new->category_id   = $data["name"];
+        $new->supplier_id   = $data["description"];
         $new->sku           = $data["sku"];
-        $new->location_id   = $data["location_id"];
-        $new->launch_date   = $data["launch_date"];
+        $new->launch_at     = $data["launch_at"];
+        $new->is_enabled    = $data["is_enabled"];
         $new->save();
+
         return $new->id;
     }
 
@@ -185,8 +177,7 @@ class ProductRepository extends RepositoryService
         $this->generate = isset($data["generate_family"]) ? $data["generate_family"] : false;
         parent::update($model, $data);
 
-        if ($this->generate != true)
-        {
+        if ($this->generate != true) {
             $this->createAttribute($data); // CREATE/EDIT ATTRIBUTES
         }
     }
@@ -194,19 +185,20 @@ class ProductRepository extends RepositoryService
     private function saveProductAttribute($product_id, $attribute_id, $value)
     {
         // SAVE ATTRIBUTE BY PRODUCT
-        ProductAttributes::updateOrCreate([
-            'product_id'    => $product_id,
-            'attribute_id'  => $attribute_id,
-        ],
-        [
-            'value' => $value
-        ]);
+        ProductAttributes::updateOrCreate(
+            [
+                'product_id'    => $product_id,
+                'attribute_id'  => $attribute_id,
+            ],
+            [
+                'value' => $value
+            ]
+        );
     }
 
     public function generateFamily($data, $family_id = null)
     {
-        if (isset($data["prod_attributes"]))
-        {
+        if (isset($data["prod_attributes"])) {
 
             $all_products_id    = [];
             $object             = $data["prod_attributes"];
@@ -218,28 +210,25 @@ class ProductRepository extends RepositoryService
             $sku_increment      = 1;
             $attributes_concat  = [];
 
-            $row=0;
+            $row = 0;
 
             foreach ($object as $attributes) // EACH ATTRIBUTE
             {
                 $row++;
                 $tot = count($attributes); // TOTAL ATTRIBUTES
 
-                if ($row==1) // ONE ROW CONTAINS ALL ATTRIBUTES
+                if ($row == 1) // ONE ROW CONTAINS ALL ATTRIBUTES
                 {
-                    for ($i=0; $i < $tot; $i++) // WHILE FOUND ATTRIBUTES
+                    for ($i = 0; $i < $tot; $i++) // WHILE FOUND ATTRIBUTES
                     {
-                        if (isset($attributes[$i]))
-                        {
-                            if ($attributes[$i]!=0)
-                            {
+                        if (isset($attributes[$i])) {
+                            if ($attributes[$i] != 0) {
                                 $get_array = $attributes[$i];
                                 // SAVING ALL FAMILY ATTRIBUTES
                                 ProductFamilyAttribute::updateOrCreate(['family_id' => $family_id, 'attribute_id' => $get_array["id"], 'value' => $get_array["value"]]);
                                 $attributes_concat[$i] = $get_array["id"] . "|" . $get_array["value"];
                             }
                         }
-
                     }
                 }
             }
@@ -271,8 +260,7 @@ class ProductRepository extends RepositoryService
             */
 
             // HERE WE NEED TO LOOP COMBINATIONS AND CREATE ONE PRODUCT BY ROW
-            foreach ($my_array as $index => $element)
-            {
+            foreach ($my_array as $index => $element) {
                 // CONCAT ATTRIBUTES TO SAVE ON PRODUCT NAME
                 $concat_name = "";
 
@@ -298,10 +286,8 @@ class ProductRepository extends RepositoryService
                 $attributes = explode(',', $element);
 
                 // LOOP ROW OF ATTRIBUTES
-                foreach ($attributes as $v)
-                {
-                    if (isset($v[0]))
-                    {
+                foreach ($attributes as $v) {
+                    if (isset($v[0])) {
                         $get_array = explode('|', $v); // 3|sour 2|50ml 1|50mg - ALL ATTRIBUTES FOR ONE PRODUCT
                         $this->saveProductAttribute($new_product_id, $get_array[0], $get_array[1], $family_id); // CREATE NEW PRODUCT ATTRIBUTE
                         $concat_name .= " - " . $get_array[1];
@@ -311,14 +297,13 @@ class ProductRepository extends RepositoryService
                 // CONCAT PRODUCT NAME WITH ATTRIBUTE VALUE
                 Product::where('id', $new_product_id)->update(['name' => $data["name"] . $concat_name]);
             }
-
         }
     }
 
     private function printCombination($arr, $n, $r)
     {
         // A temporary array to store all combination one by one
-        $data = Array();
+        $data = array();
 
         // save all combination using temprary array 'data[]'
         return $this->combinationUtil($arr, $n, $r, 0, $data, 0);
@@ -338,14 +323,10 @@ class ProductRepository extends RepositoryService
         $comb           = "";
 
         // Current cobination is ready, save it
-        if ($index == $r)
-        {
-            for ($j = 0; $j < $r; $j++)
-            {
-                if (isset($data[$j-1]))
-                {
-                    if (substr($data[$j],0,1) != substr($data[$j-1],0,1))
-                    {
+        if ($index == $r) {
+            for ($j = 0; $j < $r; $j++) {
+                if (isset($data[$j - 1])) {
+                    if (substr($data[$j], 0, 1) != substr($data[$j - 1], 0, 1)) {
                         $comb .= $data[$j] . ",";
                         $qt_elements++;
                     }
@@ -356,8 +337,7 @@ class ProductRepository extends RepositoryService
             }
 
             // WE NEED THE COMPLETE COMBINATION (# r passed as parameter)
-            if ($qt_elements == $r)
-            {
+            if ($qt_elements == $r) {
                 array_push($this->result, $comb);
             }
 
@@ -365,29 +345,29 @@ class ProductRepository extends RepositoryService
         }
 
         // When no more elements are there to put in data[]
-        if ($i >= $n)
-        {
+        if ($i >= $n) {
             return;
         }
 
         // current is included, put next at next location
         $data[$index] = $arr[$i];
-        $this->combinationUtil($arr, $n, $r,
-                        $index + 1,
-                        $data, $i + 1);
+        $this->combinationUtil(
+            $arr,
+            $n,
+            $r,
+            $index + 1,
+            $data,
+            $i + 1
+        );
 
         // Remove duplicates
-        if (isset($arr[$i]) && isset($arr[$i+1]))
-        {
-            while ($arr[$i] == $arr[$i+1])
-            {
+        if (isset($arr[$i]) && isset($arr[$i + 1])) {
+            while ($arr[$i] == $arr[$i + 1]) {
                 $i++;
             }
         }
 
         // current is excluded, replace it with next (Note that i+1 is passed, but index is not changed)
         $this->combinationUtil($arr, $n, $r, $index, $data, $i + 1);
-
     }
-
 }
