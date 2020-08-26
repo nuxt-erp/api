@@ -1,32 +1,32 @@
 <?php
 
-namespace App\Resources;
+namespace Modules\Sales\Transformers;
 
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Resources\ResourceService;
 
-class SaleResource extends JsonResource
+class SaleResource extends ResourceService
 {
     public function toArray($request)
     {
         return [
-            'id'                    => $this->id,
-            'order_number'          => $this->order_number,
-            'sales_date'            => $this->sales_date,
-            'company_id'            => $this->company_id,
-            'customer_id'           => $this->customer_id,
-            'customer_name'         => optional($this->customer)->name,
-            'financial_status'      => $this->financial_status,
-            'fulfillment_status'    => $this->fulfillment_status,
-            'fulfillment_date'      => $this->fulfillment_date,
-            'payment_date'          => $this->payment_date,
-            'user_id'               => $this->user_id,
-            'total'                 => $this->total,
-            'subtotal'              => $this->subtotal,
-            'taxes'                 => $this->taxes,
-            'discount'              => $this->discount,
-            'shipping'              => $this->shipping,
-            'order_status_label'    => $this->fulfillment_status == 1 ? 'Fulfilled' : 'Unfulfilled',
-            'can_be_deleted'        => false
+            'id'                        => $this->id,
+            'customer_id'               => $this->customer_id,
+            'customer_name'             => optional($this->customer)->name,
+            'financial_status_id'       => $this->financial_status_id,
+            'financial_status_name'     => optional($this->financial_status)->name,
+            'fulfillment_status_id'     => $this->fulfillment_status_id,
+            'fulfillment_status_name'   => optional($this->fulfillment_status)->name,
+            'author_id'                 => $this->author_id,
+            'author_name'               => optional($this->author)->name,
+            'order_number'              => $this->order_number,
+            'discount'                  => $this->discount,
+            'taxes'                     => $this->taxes,
+            'shipping'                  => $this->shipping,
+            'subtotal'                  => $this->subtotal,
+            'total'                     => $this->total,
+            'fulfillment_date'          => optional($this->fulfillment_date)->format('Y-m-d H:i:s'),
+            'sales_date'                => optional($this->sales_date)->format('Y-m-d H:i:s'),
+            'payment_date'              => optional($this->payment_date)->format('Y-m-d H:i:s')
         ];
     }
 }

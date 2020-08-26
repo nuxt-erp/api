@@ -13,8 +13,23 @@ class CreateSaleDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sale_details', function (Blueprint $table) {
+        Schema::create('sal_sale_details', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('sale_id')->constrained('sal_sales')->onDelete('cascade');
+            $table->foreignId('product_id')->nullable()->constrained('inv_products')->onDelete('set null');
+            $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('set null');
+            $table->foreignId('fulfillment_status_id')->nullable()->constrained('parameters')->onDelete('set null');
+
+            $table->string('shopify_id')->nullable();
+            $table->double('qty', 10, 4)->nullable();
+            $table->double('price', 10, 4)->nullable();
+            $table->double('discount_value', 10, 4)->nullable();
+            $table->double('discount_percent', 10, 4)->nullable();
+            $table->double('total_item', 10, 4)->nullable();
+            $table->double('qty_fulfilled', 10, 4)->nullable();
+
+            $table->timestamp('fulfillment_date')->nullable();
 
             $table->timestamps();
         });
@@ -27,21 +42,6 @@ class CreateSaleDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sale_details');
+        Schema::dropIfExists('sal_sale_details');
     }
 }
-/*
-CREATE TABLE IF NOT EXISTS `erp_db`.`sale_details` (
-  `sale_id` INT NULL,
-  `product_id` INT NULL,
-  `qty` DOUBLE NULL,
-  `price` FLOAT NULL,
-  `discount_value` FLOAT NULL,
-  `discount_percent` FLOAT NULL,
-  `total_item` FLOAT NULL,
-  `shopify_lineitem` VARCHAR(45) NULL,
-  `qty_fulfilled` DOUBLE NULL,
-  `fulfillment_status` TINYINT NULL,
-  `fulfillment_date` DATETIME NULL,
-  `location_id` INT NULL,
-*/

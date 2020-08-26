@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->group(function () {
 
-    // INVENTORY
     Route::group(['prefix' => 'sales'], function () {
         Route::resource('sales', 'SaleController');
         Route::resource('sale_details', 'SaleDetailsController');

@@ -11,6 +11,10 @@ class Product extends ModelService
 
     protected $table = 'inv_products';
 
+    protected $dates = [
+        'disabled_at', 'launch_at'
+    ];
+
     protected $fillable = [
         'brand_id', 'category_id', 'supplier_id',
         'family_id', 'location_id', 'dear_id',
@@ -30,6 +34,7 @@ class Product extends ModelService
             'category_id'   => ['nullable', 'exists:inv_categories,id'],
             'supplier_id'   => ['nullable', 'exists:suppliers,id'],
             'family_id'     => ['nullable', 'exists:inv_families,id'],
+            //@todo add more validation
         ];
 
         // CREATE
@@ -48,7 +53,6 @@ class Product extends ModelService
     // GET ALL ATTRIBUTES FROM PRODUCT
     public function getDetailsAttribute()
     {
-        lad('attributes', $this->product_attributes);
         $string = '';
         foreach ($this->product_attributes as $key => $p_attribute) {
             //lad($attribute);

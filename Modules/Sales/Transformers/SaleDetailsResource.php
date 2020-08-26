@@ -1,30 +1,30 @@
 <?php
 
-namespace App\Resources;
+namespace Modules\Sales\Transformers;
 
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Resources\ResourceService;
 
-class SaleDetailsResource extends JsonResource
+class SaleDetailsResource extends ResourceService
 {
     public function toArray($request)
     {
         return [
-            'id'                    => $this->id,
-            'sale_id'               => $this->sale_id,
-            'product_id'            => $this->product_id,
-            'product_name'          => optional($this->product)->getConcatNameAttribute(),
-            'name'                  => optional($this->product)->sku . ' - ' . optional($this->product)->getConcatNameAttribute(),
-            'qty'                   => $this->qty,
-            'price'                 => $this->price,
-            'discount_value'        => $this->discount_value,
-            'total_item'            => $this->total_item,
-            'discount_percent'      => $this->discount_percent,
-            'qty_fulfilled'         => $this->qty_fulfilled,
-            'received_date'         => $this->received_date,
-            'shopify_lineitem'      => $this->shopify_lineitem,
-            'fulfillment_status'    => $this->fulfillment_status,
-            'fulfillment_date'      => $this->fulfillment_date,
-            'can_be_deleted'        => true
+            'id'                        => $this->id,
+            'sale_id'                   => $this->sale_id,
+            'product_id'                => $this->product_id,
+            'location_id'               => $this->location_id,
+            'fulfillment_status_id'     => $this->fulfillment_status_id,
+            'fulfillment_status_name'   => optional($this->fulfillment_status)->name,
+            'shopify_id'                => $this->shopify_id,
+            'qty'                       => $this->qty,
+            'price'                     => $this->price,
+            'discount_value'            => $this->discount_value,
+            'discount_percent'          => $this->discount_percent,
+            'total_item'                => $this->total_item,
+            'qty_fulfilled'             => $this->qty_fulfilled,
+            'fulfillment_date'          => $this->fulfillment_date,
+            'product_name'              => optional($this->product)->full_description,
+            'name'                      => optional($this->product)->sku . ' - ' . optional($this->product)->full_description,
         ];
     }
 }

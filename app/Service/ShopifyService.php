@@ -11,6 +11,7 @@ use App\Models\User;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Repositories\AvailabilityRepository;
+use Modules\Sales\Entities\SaleDetails;
 use PHPShopify\ShopifySDK;
 
 class ShopifyService
@@ -90,23 +91,22 @@ class ShopifyService
                     $data["order_number"]       = $order_number;
                     $data["customer_id"]        = $customer_id;
                     $data["sales_date"]         = date('Y-m-d H:i:s', strtotime($order["processed_at"]));
-                    $data["financial_status"]   = ($order["financial_status"] == "pending" ? 0 : 1);
+                    $data["financial_status_id"]= ($order["financial_status"] == "pending" ? 0 : 1); //@todo get id from parameters sales_financial_status
                     $data["fulfillment_status"] = ($order["fulfillment_status"] == "fulfilled" ? 1 : 0);
-                    $data["user_id"]            = $this->user->id;
+                    $data["author_id"]           = $this->user->id;
                     $data["subtotal"]           = $order["subtotal_price"];
                     $data["discount"]           = $order["total_discounts"];
                     $data["taxes"]              = $order["total_tax"];
                     $data["shipping"]           = isset($order["shipping_lines"][0]["price"]) ? $order["shipping_lines"][0]["price"] : 0;
                     $data["total"]              = $order["total_price"];
-                    $data["order_status_label"] = "";
 
                     $sale = Sale::where('order_number', $order_number)->first();
 
                     if ($sale) { // Update
                         $sale->fill([
-                            'financial_status'      => $data["financial_status"],
+                            'financial_status_id'   => $data["financial_status_id"],
                             'fulfillment_status'    => $data["fulfillment_status"],
-                            'user_id'               => $this->user->id,
+                            'author_id'             => $this->user->id,
                             'subtotal'              => isset($order["current_subtotal_price"]) ? $order["current_subtotal_price"] : $order["subtotal_price"],
                             'discount'              => isset($order["current_total_discounts"]) ? $order["current_total_discounts"] : $order["total_discounts"],
                             'taxes'                 => isset($order["current_total_tax"]) ? $order["current_total_tax"] : $order["total_tax"],
@@ -137,8 +137,8 @@ class ShopifyService
                                     'price'                 => $items["price"],
                                     'discount_value'        => $items["total_discount"],
                                     'total_item'            => ($items["quantity"] * $items["price"]),
-                                    'shopify_lineitem'      => $items["id"],
-                                    'fulfillment_status'    => $items["fulfillment_status"]
+                                    'shopify_id'            => $items["id"],
+                                    'fulfillment_status'    => $items["fulfillment_status"] //@todo change to id on parameters
                                 ]
                             );
 

@@ -13,8 +13,24 @@ class CreateSalesTable extends Migration
      */
     public function up()
     {
-        Schema::create('sales', function (Blueprint $table) {
+        Schema::create('sal_sales', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('set null');
+            $table->foreignId('financial_status_id')->nullable()->constrained('parameters')->onDelete('set null');
+            $table->foreignId('fulfillment_status_id')->nullable()->constrained('parameters')->onDelete('set null');
+            $table->foreignId('author_id')->nullable()->constrained('users')->onDelete('set null');
+
+            $table->string('order_number');
+            $table->double('discount', 10, 4)->nullable();
+            $table->double('taxes', 10, 4)->nullable();
+            $table->double('shipping', 10, 4)->nullable();
+            $table->double('subtotal', 10, 4)->nullable();
+            $table->double('total', 10, 4)->nullable();
+
+            $table->timestamp('fulfillment_date')->nullable();
+            $table->timestamp('sales_date')->nullable();
+            $table->timestamp('payment_date')->nullable();
 
             $table->timestamps();
         });
@@ -27,24 +43,6 @@ class CreateSalesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales');
+        Schema::dropIfExists('sal_sales');
     }
 }
-/*
-CREATE TABLE IF NOT EXISTS `erp_db`.`sales` (
-  `order_number` VARCHAR(45) NULL,
-  `customer_id` INT NULL,
-  `sales_date` DATETIME NULL,
-  `financial_status` TINYINT NULL,
-  `fulfillment_status` TINYINT NULL,
-  `fulfillment_date` DATETIME NULL,
-  `payment_date` DATETIME NULL,
-  `user_id` INT NULL,
-  `company_id` INT NULL,
-  `subtotal` FLOAT NULL,
-  `discount` FLOAT NULL,
-  `taxes` FLOAT NULL,
-  `shipping` FLOAT NULL,
-  `total` FLOAT NULL,
-  `order_status_label` VARCHAR(30) NULL,
-*/
