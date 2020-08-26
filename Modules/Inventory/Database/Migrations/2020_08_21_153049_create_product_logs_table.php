@@ -17,8 +17,8 @@ class CreateProductLogsTable extends Migration
             $table->id();
 
             $table->foreignId('product_id')->constrained('inv_products')->onDelete('cascade');
-            $table->foreignId('location_id')->constrained()->nullable()->onDelete('set null');
-            $table->foreignId('type_id')->constrained('parameters')->nullable()->onDelete('set null');
+            $table->foreignId('location_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('type_id')->nullable()->constrained('parameters')->onDelete('set null');
 
             $table->bigInteger('ref_code_id')->nullable();
             $table->index(['ref_code_id']);

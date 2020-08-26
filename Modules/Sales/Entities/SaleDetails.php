@@ -27,10 +27,10 @@ class SaleDetails extends ModelService
     {
 
         $rules = [
-            'sale_id'               => ['exists:sal_sales'],
-            'product_id'            => ['nullable', 'exists:products'],
-            'location_id'           => ['nullable', 'exists:locations'],
-            'fulfillment_status_id' => ['nullable', 'exists:parameters'],
+            'sale_id'               => ['exists:sal_sales,id'],
+            'product_id'            => ['nullable', 'exists:products,id'],
+            'location_id'           => ['nullable', 'exists:locations,id'],
+            'fulfillment_status_id' => ['nullable', 'exists:parameters,id'],
             'shopify_id'            => ['nullable'],
             //@todo add more validation
         ];

@@ -26,8 +26,8 @@ class AvailabilityRepository extends RepositoryService
             ->orWhere('products.sku', 'LIKE', $name);
         }
 
-        $this->queryBuilder->select('availabilities.id', 'availabilities.product_id', 'availabilities.company_id', 'availabilities.available', 'availabilities.location_id', 'availabilities.on_hand', 'availabilities.on_order', 'availabilities.allocated');
-        $this->queryBuilder->join('products', 'availabilities.product_id', 'products.id');
+        $this->queryBuilder->select('inv_availabilities.id', 'inv_availabilities.product_id', 'inv_availabilities.company_id', 'inv_availabilities.available', 'inv_availabilities.location_id', 'inv_availabilities.on_hand', 'inv_availabilities.on_order', 'inv_availabilities.allocated');
+        $this->queryBuilder->join('products', 'inv_availabilities.product_id', 'products.id');
 
         if (!empty($searchCriteria['category_id'])) {
             $this->queryBuilder
@@ -60,8 +60,8 @@ class AvailabilityRepository extends RepositoryService
     *        $allocated   = When sale not fulfilled yet - Reserved quantity
     *
     */
-
-    public function updateStock($company_id, $product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
+                            //  $product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty, $allocated_qty, $description
+    public function updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
     {
 
         $field_to_update = 'on_hand'; // Default option
@@ -90,25 +90,18 @@ class AvailabilityRepository extends RepositoryService
             }
         }
 
-        // Create product log
-        //if ($on_order_qty == 0 && $allocated_qty == 0) { // Log just for finished tasks
+        $type = Parameter::firstOrCreate(
+            ['name' => 'product_log_type', 'value' => $type]
+        );
 
-            $type = Parameter::firstOrCreate(
-                ['name' => 'product_log_type', 'value' => $type]
-                //'order', 'description', 'is_internal', 'is_default'
-            );
-
-            $log = new ProductLog();
-            $log->product_id    = $product_id;
-            $log->location_id   = $location_id;
-            $log->date          = date('Y-m-d H:s:i');
-            $log->quantity      = ($operator == "-" ? -$qty : $qty);
-            $log->ref_code_id   = $ref_code;
-            $log->type_id       = $type->id;
-            $log->description   = $description;
-            $log->save();
-        //}
-
+        $log = new ProductLog();
+        $log->product_id    = $product_id;
+        $log->location_id   = $location_id;
+        $log->quantity      = ($operator == "-" ? -$qty : $qty);
+        $log->ref_code_id   = $ref_code;
+        $log->type_id       = $type->id;
+        $log->description   = $description;
+        $log->save();
     }
 
      // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
@@ -122,8 +115,8 @@ class AvailabilityRepository extends RepositoryService
         $searchCriteria['per_page'] = 20;
 
         $this->queryBuilder->select('brands.name as brand_name', 'categories.name as category_name', 'products.id', 'products.name', 'products.sku',
-         'availabilities.location_id', 'availabilities.on_hand', 'products.category_id', 'products.brand_id');
-        $this->queryBuilder->rightJoin('products', 'availabilities.product_id', 'products.id');
+         'inv_availabilities.location_id', 'inv_availabilities.on_hand', 'products.category_id', 'products.brand_id');
+        $this->queryBuilder->rightJoin('products', 'inv_availabilities.product_id', 'products.id');
         $this->queryBuilder->join('brands', 'brands.id', 'products.brand_id');
         $this->queryBuilder->join('categories', 'categories.id', 'products.category_id');
 
@@ -135,14 +128,14 @@ class AvailabilityRepository extends RepositoryService
          }
 
          if ($searchCriteria['location_id']) {
-            $this->queryBuilder->join('locations', 'locations.id', 'availabilities.location_id')->where('availabilities.location_id', $searchCriteria['location_id']);
+            $this->queryBuilder->join('locations', 'locations.id', 'inv_availabilities.location_id')->where('inv_availabilities.location_id', $searchCriteria['location_id']);
          } else {
-            $this->queryBuilder->join('locations', 'locations.id', 'availabilities.location_id');
+            $this->queryBuilder->join('locations', 'locations.id', 'inv_availabilities.location_id');
          }
 
          if (!empty($searchCriteria['location_id'])) {
             $this->queryBuilder
-            ->where('availabilities.location_id', Arr::pull($searchCriteria, 'location_id'));
+            ->where('inv_availabilities.location_id', Arr::pull($searchCriteria, 'location_id'));
          }
 
          if (!empty($searchCriteria['add_discontinued'])) {

@@ -27,9 +27,9 @@ class Sale extends ModelService
     public function getRules($request, $item = null)
     {
         $rules = [
-            'customer_id'           => ['nullable', 'exists:customers'],
-            'financial_status_id'   => ['nullable', 'exists:parameters'],
-            'fulfillment_status_id' => ['nullable', 'exists:parameters'],
+            'customer_id'           => ['nullable', 'exists:customers,id'],
+            'financial_status_id'   => ['nullable', 'exists:parameters,id'],
+            'fulfillment_status_id' => ['nullable', 'exists:parameters,id'],
             'author_id'             => ['nullable', 'exists:users,id'],
             //@todo add more validation
         ];

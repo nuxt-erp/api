@@ -16,8 +16,8 @@ class CreateProductAttributesTable extends Migration
         Schema::create('inv_product_attributes', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('product_id')->constrained('inv_products')->nullable()->onDelete('cascade');
-            $table->foreignId('attribute_id')->constrained('inv_attributes')->nullable()->onDelete('cascade');
+            $table->foreignId('product_id')->nullable()->constrained('inv_products')->onDelete('cascade');
+            $table->foreignId('attribute_id')->nullable()->constrained('inv_attributes')->onDelete('cascade');
             $table->string('value');
 
             $table->timestamps();

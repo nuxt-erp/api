@@ -1,18 +1,18 @@
 <?php
 
-namespace Modules\Sales\Providers;
+namespace $NAMESPACE$;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
-class RouteServiceProvider extends ServiceProvider
+class $CLASS$ extends ServiceProvider
 {
     /**
      * The module namespace to assume when generating URLs to actions.
      *
      * @var string
      */
-    protected $moduleNamespace = 'Modules\Sales\Http\Controllers';
+    protected $moduleNamespace = '$MODULE_NAMESPACE$\$MODULE$\$CONTROLLER_NAMESPACE$';
 
     /**
      * Called before routes are registered.
@@ -49,7 +49,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::middleware('web')
             ->namespace($this->moduleNamespace)
-            ->group(module_path('Sales', '/Routes/web.php'));
+            ->group(module_path('$MODULE$', '$WEB_ROUTES_PATH$'));
     }
 
     /**
@@ -63,6 +63,6 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::middleware('api')
             ->namespace($this->moduleNamespace)
-            ->group(module_path('Sales', '/Routes/api.php'));
+            ->group(module_path('$MODULE$', '$API_ROUTES_PATH$'));
     }
 }

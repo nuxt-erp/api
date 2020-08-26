@@ -14,7 +14,7 @@ class Availability extends ModelService
      * @var array
      */
 
-     public $timestamps = true;
+    protected $table = 'inv_availabilities';
 
     protected $fillable = [
         'product_id', 'location_id', 'available', 'on_hand', 'on_order', 'allocated'

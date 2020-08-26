@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,12 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->group(function () {
-
-    Route::group(['prefix' => 'sales'], function () {
-        Route::resource('sales', 'SaleController');
-        Route::resource('sale_details', 'SaleDetailsController');
-        Route::get('shopify_import', 'SaleController@importFromShopify');
-    });
-
+Route::middleware('auth:api')->get('/$LOWER_NAME$', function (Request $request) {
+    return $request->user();
 });

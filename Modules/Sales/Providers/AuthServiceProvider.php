@@ -5,9 +5,11 @@ namespace Modules\Sales\Providers;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 // models
-
+use Modules\Sales\Entities\Sale;
+use Modules\Sales\Entities\SaleDetails;
 // policies
-
+use Modules\Sales\Policies\SaleDetailsPolicy;
+use Modules\Sales\Policies\SalePolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -24,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Gate::policy(Attribute::class, AttributePolicy::class);
+        Gate::policy(Sale::class, SalePolicy::class);
+        Gate::policy(SaleDetails::class, SaleDetailsPolicy::class);
     }
 }

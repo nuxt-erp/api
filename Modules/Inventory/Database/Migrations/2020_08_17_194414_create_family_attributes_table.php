@@ -16,8 +16,8 @@ class CreateFamilyAttributesTable extends Migration
         Schema::create('inv_family_attributes', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('family_id')->constrained('inv_families')->nullable()->onDelete('cascade');
-            $table->foreignId('attribute_id')->constrained('inv_attributes')->nullable()->onDelete('cascade');
+            $table->foreignId('family_id')->nullable()->constrained('inv_families')->onDelete('cascade');
+            $table->foreignId('attribute_id')->nullable()->constrained('inv_attributes')->onDelete('cascade');
             $table->string('value');
 
             $table->timestamps();
