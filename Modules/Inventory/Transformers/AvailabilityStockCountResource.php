@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Inventory\Resources;
+namespace Modules\Inventory\Transformers;
 
 use App\Resources\ResourceService;
 

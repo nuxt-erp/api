@@ -5,7 +5,7 @@ namespace Modules\Inventory\Http\Controllers;
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 use Modules\Inventory\Repositories\BrandRepository;
-use Modules\Inventory\Resources\BrandResource;
+use Modules\Inventory\Transformers\BrandResource;
 
 class BrandController extends ControllerService implements CheckPolicies
 {

@@ -5,7 +5,7 @@ namespace Modules\Inventory\Http\Controllers;
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 use Modules\Inventory\Repositories\AttributeRepository;
-use Modules\Inventory\Resources\AttributeResource;
+use Modules\Inventory\Transformers\AttributeResource;
 
 class AttributeController extends ControllerService implements CheckPolicies
 {

@@ -6,8 +6,8 @@ use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 use Illuminate\Http\Request;
 use Modules\Inventory\Repositories\FamilyRepository;
-use Modules\Inventory\Resources\FamilyResource;
-use Modules\Inventory\Resources\ProductResource;
+use Modules\Inventory\Transformers\FamilyResource;
+use Modules\Inventory\Transformers\ProductResource;
 
 class FamilyController extends ControllerService implements CheckPolicies
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Repositories;
+namespace Modules\Inventory\Repositories;
 
+use App\Repositories\RepositoryService;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 
 class ProductFamilyAttributeRepository extends RepositoryService
 {

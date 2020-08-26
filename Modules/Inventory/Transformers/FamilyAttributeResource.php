@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Resources;
+namespace Modules\Inventory\Transformers;
 
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Resources\ResourceService;
 
-class ProductFamilyAttributeResource extends JsonResource
+class ProductFamilyAttributeResource extends ResourceService
 {
     public function toArray($request)
     {

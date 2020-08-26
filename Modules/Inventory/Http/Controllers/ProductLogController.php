@@ -6,7 +6,7 @@ use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 use Illuminate\Http\Request;
 use Modules\Inventory\Repositories\ProductLogRepository;
-use Modules\Inventory\Resources\ProductLogResource;
+use Modules\Inventory\Transformers\ProductLogResource;
 
 class ProductLogController extends ControllerService implements CheckPolicies
 {

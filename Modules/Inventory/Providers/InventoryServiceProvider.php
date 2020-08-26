@@ -24,14 +24,14 @@ use Modules\Inventory\Repositories\ProductAttributeRepository;
 use Modules\Inventory\Repositories\ProductLogRepository;
 use Modules\Inventory\Repositories\ProductRepository;
 // resources
-use Modules\Inventory\Resources\AttributeResource;
-use Modules\Inventory\Resources\AvailabilityResource;
-use Modules\Inventory\Resources\BrandResource;
-use Modules\Inventory\Resources\CategoryResource;
-use Modules\Inventory\Resources\FamilyResource;
-use Modules\Inventory\Resources\ProductAttributeResource;
-use Modules\Inventory\Resources\ProductLogResource;
-use Modules\Inventory\Resources\ProductResource;
+use Modules\Inventory\Transformers\AttributeResource;
+use Modules\Inventory\Transformers\AvailabilityResource;
+use Modules\Inventory\Transformers\BrandResource;
+use Modules\Inventory\Transformers\CategoryResource;
+use Modules\Inventory\Transformers\FamilyResource;
+use Modules\Inventory\Transformers\ProductAttributeResource;
+use Modules\Inventory\Transformers\ProductLogResource;
+use Modules\Inventory\Transformers\ProductResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {

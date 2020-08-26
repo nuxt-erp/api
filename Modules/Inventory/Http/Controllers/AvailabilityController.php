@@ -6,8 +6,8 @@ use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 use Illuminate\Http\Request;
 use Modules\Inventory\Repositories\AvailabilityRepository;
-use Modules\Inventory\Resources\AvailabilityResource;
-use Modules\Inventory\Resources\AvailabilityStockCountResource;
+use Modules\Inventory\Transformers\AvailabilityResource;
+use Modules\Inventory\Transformers\AvailabilityStockCountResource;
 
 class AvailabilityController extends ControllerService implements CheckPolicies
 {

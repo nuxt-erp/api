@@ -124,7 +124,7 @@ return [
             'jobs' => ['path' => 'Jobs', 'generate' => false],
             'emails' => ['path' => 'Emails', 'generate' => false],
             'notifications' => ['path' => 'Notifications', 'generate' => false],
-            'resource' => ['path' => 'Resources', 'generate' => true],
+            'resource' => ['path' => 'Transformers', 'generate' => true],
         ],
     ],
     /*
