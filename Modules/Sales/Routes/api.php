@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +13,13 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/sales', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:api')->group(function () {
+
+    // INVENTORY
+    Route::group(['prefix' => 'sales'], function () {
+        Route::resource('sales', 'SaleController');
+        Route::resource('sale_details', 'SaleDetailsController');
+        Route::get('shopify_import', 'SaleController@importShopify');
+    });
+
 });

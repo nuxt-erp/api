@@ -5,6 +5,7 @@ namespace App\Providers;
 // MODELS
 use App\Models\Config;
 use App\Models\Country;
+use App\Models\Customer;
 use App\Models\Location;
 use App\Models\Parameter;
 use App\Models\Province;
@@ -14,6 +15,7 @@ use App\Models\User;
 // REPOSITORIES
 use App\Repositories\ConfigRepository;
 use App\Repositories\CountryRepository;
+use App\Repositories\CustomerRepository;
 use App\Repositories\LocationRepository;
 use App\Repositories\ParameterRepository;
 use App\Repositories\ProvinceRepository;
@@ -23,6 +25,7 @@ use App\Repositories\UserRepository;
 // RESOURCES
 use App\Resources\ConfigResource;
 use App\Resources\CountryResource;
+use App\Resources\CustomerResource;
 use App\Resources\LocationResource;
 use App\Resources\ParameterResource;
 use App\Resources\ProvinceResource;
@@ -111,6 +114,14 @@ class RepositoriesServiceProvider extends ServiceProvider
         $this->app->bind(SupplierResource::class, function () {
             return new SupplierResource(new Supplier());
         });
+
+        $this->app->bind(CustomerRepository::class, function () {
+            return new CustomerRepository(new Customer());
+        });
+
+        $this->app->bind(CustomerResource::class, function () {
+            return new CustomerResource(new Customer());
+        });
     }
 
     /**
@@ -128,7 +139,8 @@ class RepositoriesServiceProvider extends ServiceProvider
             LocationRepository::class,
             CountryRepository::class,
             ProvinceRepository::class,
-            SupplierRepository::class
+            SupplierRepository::class,
+            CustomerRepository::class
         ];
     }
 }

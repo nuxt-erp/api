@@ -9,7 +9,7 @@ class ProvinceResource extends ResourceService
         return [
             'id'            => $this->id,
             'name'          => $this->name,
-            'short_name'    => $this->short_name,
+            'code'          => $this->code,
             'country_id'    => $this->country_id,
             'country_name'  => optional($this->country)->name
         ];

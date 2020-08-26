@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Policies;
+
+use App\Models\Customer;
+use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class CustomerPolicy
+{
+    use HandlesAuthorization;
+
+    public function list(User $currentUser)
+    {
+        return TRUE;
+    }
+
+    public function index(User $currentUser)
+    {
+        return $currentUser->isAdmin();
+    }
+
+    public function show(User $currentUser, Customer $target)
+    {
+        return $currentUser->isAdmin();
+    }
+
+    public function store(User $currentUser)
+    {
+        return $currentUser->isAdmin();
+    }
+
+    public function update(User $currentUser, Customer $target)
+    {
+        return $currentUser->isAdmin();
+    }
+
+    public function destroy(User $currentUser, Customer $target)
+    {
+        return $currentUser->isAdmin();
+    }
+}
