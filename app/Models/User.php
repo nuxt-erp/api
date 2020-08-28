@@ -6,6 +6,9 @@ use Illuminate\Validation\Rule;
 
 class User extends LoginModel implements ModelInterface
 {
+
+    protected $connection = 'public';
+
     /**
      * The attributes that are mass assignable.
      *

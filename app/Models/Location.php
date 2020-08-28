@@ -4,6 +4,9 @@ namespace App\Models;
 
 class Location extends ModelService
 {
+
+    protected $connection = 'tenant';
+
     protected $dates = [
         'disabled_at',
     ];

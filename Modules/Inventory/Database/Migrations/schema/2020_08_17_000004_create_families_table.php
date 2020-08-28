@@ -13,7 +13,7 @@ class CreateFamiliesTable extends Migration
      */
     public function up()
     {
-        Schema::create('inv_families', function (Blueprint $table) {
+        Schema::connection('tenant')->create('inv_families', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('brand_id')->nullable()->constrained('inv_brands')->onDelete('set null');
@@ -40,6 +40,6 @@ class CreateFamiliesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('inv_families');
+        Schema::connection('tenant')->dropIfExists('inv_families');
     }
 }

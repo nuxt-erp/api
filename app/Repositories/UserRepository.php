@@ -8,36 +8,51 @@ use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
+use Artisan;
 class UserRepository extends RepositoryService
 {
 
     public function register(array $data)
     {
-        DB::transaction(function () use ($data) {
+        //@todo we should use transaction here, the request is cancelling at the end of the request and is taking too much time to finish
 
-            // generate unique name for the schema
-            do {
-                $company = implode('_', explode(' ', $data['company']));
-                $hash = 's' . Str::random(7).'_'.substr($company, 0, 20);
-            } while (Company::where('schema', $hash)->exists());
+        // generate unique name for the schema
+        do {
+            $company = implode('_', explode(' ', $data['company']));
+            $hash = strtolower('s' . Str::random(7).'_'.substr($company, 0, 20));
+        } while (Company::where('schema', $hash)->exists());
 
-            // create schema for this company
-            $result = DB::unprepared('CREATE SCHEMA ' . $hash . ' AUTHORIZATION '.config('database.connections.public.username', 'postgres').';');
+        // create schema for this company
+        $result = DB::unprepared('CREATE SCHEMA ' . $hash . ' AUTHORIZATION '.config('database.connections.public.username', 'postgres').';');
 
-            if ($result) {
-                $data['roles'] = Role::where('code', 'admin')->get(); // set user as admin
+        if ($result) {
+
                 $this->store($data); // save user
                 $company = Company::create([
-                    'owner_id'  => $this->model->id,
                     'name'      => $data['company'],
-                    'schema'    => $hash
+                    'schema'    => $hash,
+                    'owner_id'  => $this->model->id
                 ]);
                 $this->model->company_id = $company->id; //update company information for the user
                 $this->model->save();
-            }
 
-        });
+                DB::setDefaultConnection('tenant');
+                config(['database.connections.tenant.schema' => $hash]);
+
+                // run specific migration files for the schema
+                Artisan::call('migrate', [
+                    '--path' => '/database/migrations/schema'
+                ]);
+
+                // add basic roles
+                Artisan::call('db:seed', [
+                    '--class' => 'RoleSeeder'
+                ]);
+
+                // set user as admin
+                $role_admin = Role::where('code', 'admin')->first();
+                $this->model->roles()->sync([$role_admin->id]);
+        }
     }
 
     public function findBy(array $searchCriteria = [])

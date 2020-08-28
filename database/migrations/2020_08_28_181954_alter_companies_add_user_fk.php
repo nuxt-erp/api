@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterUsersAddCompanyId extends Migration
+class AlterCompaniesAddUserFk extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AlterUsersAddCompanyId extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('company_id')->nullable()->constrained()->onDelete('set null');
+        Schema::table('companies', function (Blueprint $table) {
+            $table->foreign('owner_id')->references('id')->on('users');
         });
     }
 
@@ -25,8 +25,8 @@ class AlterUsersAddCompanyId extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('company_id');
+        Schema::table('companies', function (Blueprint $table) {
+            $table->dropForeign(['owner_id']);
         });
     }
 }

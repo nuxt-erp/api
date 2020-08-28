@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLocationsTable extends Migration
+class CreateUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,14 @@ class CreateLocationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('locations', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
 
-            $table->string('dear_id')->nullable()->unique();
-            $table->string('shopify_id')->nullable()->unique();
-            $table->string('name')->unique();
-            $table->string('short_name')->nullable();
+            $table->foreignId('company_id')->nullable()->constrained()->onDelete('set null');
+
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
             $table->boolean('is_enabled')->default(1);
             $table->timestamp('disabled_at')->nullable();
 
@@ -34,6 +35,6 @@ class CreateLocationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('locations');
+        Schema::dropIfExists('users');
     }
 }

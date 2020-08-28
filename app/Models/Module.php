@@ -6,6 +6,9 @@ use Illuminate\Validation\Rule;
 
 class Module extends ModelService
 {
+
+    protected $connection = 'public';
+
     protected $dates = [
         'enabled_at', 'disabled_at'
     ];

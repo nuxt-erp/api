@@ -13,7 +13,7 @@ class CreateParametersTable extends Migration
      */
     public function up()
     {
-        Schema::create('parameters', function (Blueprint $table) {
+        Schema::connection('tenant')->create('parameters', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('value');
@@ -32,6 +32,6 @@ class CreateParametersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('parameters');
+        Schema::connection('tenant')->dropIfExists('parameters');
     }
 }

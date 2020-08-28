@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProvincesTable extends Migration
+class CreateModulesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,11 @@ class CreateProvincesTable extends Migration
      */
     public function up()
     {
-        Schema::create('provinces', function (Blueprint $table) {
+        Schema::create('modules', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('country_id')->constrained()->onDelete('cascade');
-
             $table->string('name')->unique();
-            $table->string('code', 2)->unique();
-
+            $table->boolean('is_enabled')->default(1);
+            $table->timestamp('disabled_at')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ class CreateProvincesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('provinces');
+        Schema::dropIfExists('modules');
     }
 }

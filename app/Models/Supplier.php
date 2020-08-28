@@ -7,6 +7,8 @@ use Illuminate\Validation\Rule;
 
 class Supplier extends ModelService
 {
+    protected $connection = 'tenant';
+
     protected $dates = [
         'disabled_at',
     ];

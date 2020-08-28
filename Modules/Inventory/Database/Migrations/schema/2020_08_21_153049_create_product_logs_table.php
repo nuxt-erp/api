@@ -13,7 +13,7 @@ class CreateProductLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('inv_product_logs', function (Blueprint $table) {
+        Schema::connection('tenant')->create('inv_product_logs', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('product_id')->constrained('inv_products')->onDelete('cascade');
@@ -36,6 +36,6 @@ class CreateProductLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('inv_product_logs');
+        Schema::connection('tenant')->dropIfExists('inv_product_logs');
     }
 }

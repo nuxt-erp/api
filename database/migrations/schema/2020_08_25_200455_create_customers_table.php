@@ -13,7 +13,7 @@ class CreateCustomersTable extends Migration
      */
     public function up()
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::connection('tenant')->create('customers', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('country_id')->nullable()->constrained()->onDelete('set null');
@@ -41,6 +41,6 @@ class CreateCustomersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customers');
+        Schema::connection('tenant')->dropIfExists('customers');
     }
 }

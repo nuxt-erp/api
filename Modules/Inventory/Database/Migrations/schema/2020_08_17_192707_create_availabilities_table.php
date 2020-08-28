@@ -13,7 +13,7 @@ class CreateAvailabilitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('inv_availabilities', function (Blueprint $table) {
+        Schema::connection('tenant')->create('inv_availabilities', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('product_id')->nullable()->constrained('inv_products')->onDelete('cascade');
@@ -35,6 +35,6 @@ class CreateAvailabilitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('inv_availabilities');
+        Schema::connection('tenant')->dropIfExists('inv_availabilities');
     }
 }

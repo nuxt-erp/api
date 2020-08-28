@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreateAttributesTable extends Migration
+class CreateCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,14 @@ class CreateAttributesTable extends Migration
      */
     public function up()
     {
-        Schema::create('inv_attributes', function (Blueprint $table) {
+        Schema::connection('tenant')->create('inv_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
-            $table->string('name')->nullable();
+
+            $table->string('dear_id')->nullable()->unique();
+            $table->string('name')->unique();
             $table->boolean('is_enabled')->default(1);
             $table->timestamp('disabled_at')->nullable();
+
             $table->timestamps();
         });
     }
@@ -30,6 +32,6 @@ class CreateAttributesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('inv_attributes');
+        Schema::connection('tenant')->dropIfExists('inv_categories');
     }
 }

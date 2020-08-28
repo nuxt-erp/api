@@ -7,6 +7,8 @@ use Illuminate\Validation\Rule;
 class Config extends ModelService
 {
 
+    protected $connection = 'tenant';
+
     protected $fillable = [
         'country_id', 'province_id', 'contact_name',
         'email', 'address1', 'address2',

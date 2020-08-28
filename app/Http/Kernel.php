@@ -4,6 +4,7 @@ namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use App\Http\Middleware\JsonMiddleware;
+use App\Http\Middleware\SchemaMiddleware;
 
 class Kernel extends HttpKernel
 {
@@ -43,7 +44,8 @@ class Kernel extends HttpKernel
         'api' => [
             'throttle:60,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            JsonMiddleware::class
+            JsonMiddleware::class,
+            SchemaMiddleware::class
         ],
     ];
 

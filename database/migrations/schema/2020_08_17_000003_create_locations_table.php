@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCategoriesTable extends Migration
+class CreateLocationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,13 @@ class CreateCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('inv_categories', function (Blueprint $table) {
+        Schema::connection('tenant')->create('locations', function (Blueprint $table) {
             $table->id();
 
             $table->string('dear_id')->nullable()->unique();
+            $table->string('shopify_id')->nullable()->unique();
             $table->string('name')->unique();
+            $table->string('short_name')->nullable();
             $table->boolean('is_enabled')->default(1);
             $table->timestamp('disabled_at')->nullable();
 
@@ -32,6 +34,6 @@ class CreateCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('inv_categories');
+        Schema::connection('tenant')->dropIfExists('locations');
     }
 }

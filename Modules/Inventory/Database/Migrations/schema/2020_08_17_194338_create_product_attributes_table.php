@@ -13,7 +13,7 @@ class CreateProductAttributesTable extends Migration
      */
     public function up()
     {
-        Schema::create('inv_product_attributes', function (Blueprint $table) {
+        Schema::connection('tenant')->create('inv_product_attributes', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('product_id')->nullable()->constrained('inv_products')->onDelete('cascade');
@@ -31,6 +31,6 @@ class CreateProductAttributesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('inv_product_attributes');
+        Schema::connection('tenant')->dropIfExists('inv_product_attributes');
     }
 }

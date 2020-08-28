@@ -13,7 +13,7 @@ class ChangeProductsAddSalesChannel extends Migration
      */
     public function up()
     {
-        Schema::table('inv_products', function (Blueprint $table) {
+        Schema::connection('tenant')->table('inv_products', function (Blueprint $table) {
             $table->smallInteger('sales_channel')->nullable();
         });
 
@@ -26,7 +26,7 @@ class ChangeProductsAddSalesChannel extends Migration
      */
     public function down()
     {
-        Schema::table('inv_products', function (Blueprint $table) {
+        Schema::connection('tenant')->table('inv_products', function (Blueprint $table) {
             $table->dropColumn('sales_channel');
         });
     }

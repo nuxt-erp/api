@@ -6,6 +6,8 @@ use Illuminate\Validation\Rule;
 
 class Province extends ModelService
 {
+    protected $connection = 'tenant';
+
     protected $fillable = [
         'name', 'code', 'country_id'
     ];

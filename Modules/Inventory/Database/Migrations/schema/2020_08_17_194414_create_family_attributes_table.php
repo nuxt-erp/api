@@ -13,7 +13,7 @@ class CreateFamilyAttributesTable extends Migration
      */
     public function up()
     {
-        Schema::create('inv_family_attributes', function (Blueprint $table) {
+        Schema::connection('tenant')->create('inv_family_attributes', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('family_id')->nullable()->constrained('inv_families')->onDelete('cascade');
@@ -31,6 +31,6 @@ class CreateFamilyAttributesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('inv_family_attributes');
+        Schema::connection('tenant')->dropIfExists('inv_family_attributes');
     }
 }

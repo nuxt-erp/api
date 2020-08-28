@@ -7,6 +7,8 @@ use Illuminate\Validation\Rule;
 class Customer extends ModelService
 {
 
+    protected $connection = 'tenant';
+
     protected $fillable = [
         'country_id', 'province_id', 'shopify_id',
         'name', 'email', 'address1',

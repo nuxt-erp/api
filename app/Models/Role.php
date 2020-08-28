@@ -5,6 +5,8 @@ namespace App\Models;
 class Role extends ModelService
 {
 
+    protected $connection = 'tenant';
+
     protected $fillable = [
         'name', 'code'
     ];

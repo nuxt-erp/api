@@ -13,11 +13,10 @@ class CreateSuppliersTable extends Migration
      */
     public function up()
     {
-        Schema::create('suppliers', function (Blueprint $table) {
+        Schema::connection('tenant')->create('suppliers', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('supplier_type_id')->nullable()->constrained('parameters')->onDelete('set null');
-            //$table->foreignId('brand_id')->nullable()->constrained('inv_brands')->onDelete('set null');
 
             $table->string('name')->unique();
             $table->integer('lead_time')->nullable();
@@ -37,6 +36,6 @@ class CreateSuppliersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('suppliers');
+        Schema::connection('tenant')->dropIfExists('suppliers');
     }
 }
