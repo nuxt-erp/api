@@ -4,9 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use ReflectionClass;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Facades\DB;
 
 class ModelService extends Model implements ModelInterface
 {
+
+    protected function newBaseQueryBuilder()
+    {
+        $user = auth()->user();
+        if($user && empty(config('database.connections.tenant.schema'))){
+            $company = DB::table('companies')->find($user->company_id);
+            lad('new schema');
+            lad($company->schema);
+            config(['database.connections.tenant.schema' => $company->schema]);
+            DB::reconnect('tenant');
+        }
+
+        return parent::newBaseQueryBuilder();
+    }
 
     protected $dateFormat = 'Y-m-d H:i:s';
 

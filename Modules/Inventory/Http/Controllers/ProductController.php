@@ -16,10 +16,6 @@ class ProductController extends ControllerService implements CheckPolicies
     {
         $this->repository = $repository;
         $this->resource = $resource;
-
-        //config(['database.connections.tenant.schema' => $user->company->schema]);
-        lad('ProductController');
-        lad(config('database.connections'));
     }
 
 }
