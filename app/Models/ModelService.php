@@ -7,7 +7,7 @@ use ReflectionClass;
 
 class ModelService extends Model implements ModelInterface
 {
-    //public $timestamps = false;
+
     protected $dateFormat = 'Y-m-d H:i:s';
 
     protected $casts = [

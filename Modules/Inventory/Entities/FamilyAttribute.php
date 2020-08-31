@@ -17,14 +17,14 @@ class ProductFamilyAttribute extends ModelService
     {
         $rules = [
             'value'         => ['string', 'max:60'],
-            'attribute_id'  => ['exists:attributes,id']
+            'attribute_id'  => ['exists:tenant.attributes,id']
         ];
 
         // CREATE
         if (is_null($item))
         {
             $rules['value'][]           = 'required';
-            $rules['family_id'][]      = 'required';
+            $rules['family_id'][]       = 'required';
             $rules['attribute_id'][]    = 'required';
         }
 

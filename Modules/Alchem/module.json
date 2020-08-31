@@ -1,0 +1,13 @@
+{
+    "name": "Alchem",
+    "alias": "alchem",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\Alchem\\Providers\\AlchemServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

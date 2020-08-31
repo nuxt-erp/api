@@ -2,6 +2,7 @@
 
 namespace Modules\Inventory\Providers;
 
+use App\Http\Middleware\SchemaMiddleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
@@ -45,7 +46,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes()
     {
-        Route::middleware('api')
+        Route::middleware(['api', SchemaMiddleware::class])
             ->namespace($this->moduleNamespace)
             ->group(module_path('Inventory', '/Routes/api.php'));
     }

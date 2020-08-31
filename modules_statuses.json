@@ -1,6 +1,6 @@
 {
     "Inventory": true,
     "Accounting": false,
-    "Sale": true,
-    "Sales": true
+    "Sales": true,
+    "Alchem": true
 }

@@ -12,7 +12,6 @@ class LoginResource extends ResourceService
      */
     public function toArray($request)
     {
-        //config(['database.connections.tenant.schema' => 'something']);
         return [
             'id'                    => $this->id,
             'name'                  => $this->name,

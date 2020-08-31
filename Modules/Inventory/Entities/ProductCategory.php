@@ -29,12 +29,12 @@ class ProductCategory extends ModelService
         if (is_null($item)) {
             //create
             $rules['name'][]    = 'required';
-            $rules['name'][]    = 'unique:product_categories';
-            $rules['dear'][]    = 'unique:product_categories';
+            $rules['name'][]    = 'unique:tenant.product_categories';
+            $rules['dear'][]    = 'unique:tenant.product_categories';
         } else {
             //update
-            $rules['name'][]    = Rule::unique('product_categories')->ignore($item->id);
-            $rules['dear'][]    = Rule::unique('product_categories')->ignore($item->id);
+            $rules['name'][]    = Rule::unique('tenant.product_categories')->ignore($item->id);
+            $rules['dear'][]    = Rule::unique('tenant.product_categories')->ignore($item->id);
         }
 
         return $rules;

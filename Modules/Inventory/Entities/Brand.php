@@ -33,13 +33,13 @@ class Brand extends ModelService
         // CREATE
         if (is_null($item))
         {
-            $rules['dear_id'][]     = 'unique:inv_brands';
-            $rules['name'][]        = 'unique:inv_brands';
+            $rules['dear_id'][]     = 'unique:tenant.inv_brands';
+            $rules['name'][]        = 'unique:tenant.inv_brands';
             $rules['name'][]        = 'required';
         } else {
             //update
-            $rules['dear_id'][]    = Rule::unique('inv_brands')->ignore($item->id);
-            $rules['name'][]       = Rule::unique('inv_brands')->ignore($item->id);
+            $rules['dear_id'][]    = Rule::unique('tenant.inv_brands')->ignore($item->id);
+            $rules['name'][]       = Rule::unique('tenant.inv_brands')->ignore($item->id);
         }
 
         return $rules;

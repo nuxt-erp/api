@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Routing\ResponseFactory;
-
+use Illuminate\Support\Facades\DB;
 class SchemaMiddleware
 {
     /**
@@ -33,10 +33,7 @@ class SchemaMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $user = auth()->user();
-        if($user){
-            config(['database.connections.tenant.schema' => $user->company->schema]);
-        }
+
 
         // Get the response
         $response = $next($request);

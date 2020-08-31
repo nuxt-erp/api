@@ -28,9 +28,9 @@ class ProductLog extends ModelService
     public function getRules($request, $item = null)
     {
         $rules = [
-            'product_id'    => ['exists:inv_products,id'],
-            'location_id'   => ['nullable', 'exists:locations,id'],
-            'type_id'       => ['nullable', 'exists:parameters,id'],
+            'product_id'    => ['exists:tenant.inv_products,id'],
+            'location_id'   => ['nullable', 'exists:tenant.locations,id'],
+            'type_id'       => ['nullable', 'exists:tenant.parameters,id'],
             'ref_code_id'   => ['nullable', 'integer'],
             'quantity'      => ['nullable', 'number'],
             'description'   => ['nullable', 'string', 'max:255']

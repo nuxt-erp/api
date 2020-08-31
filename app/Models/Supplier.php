@@ -22,8 +22,8 @@ class Supplier extends ModelService
     public function getRules($request, $item = null)
     {
         $rules = [
-            'supplier_type_id'  => ['nullable', 'exists:parameters,id'],
-            'brand_id'          => ['nullable', 'exists:inv_brands,id'],
+            'supplier_type_id'  => ['nullable', 'exists:tenant.parameters,id'],
+            'brand_id'          => ['nullable', 'exists:tenant.inv_brands,id'],
             'name'              => ['string', 'max:60'],
             'lead_time'         => ['nullable', 'integer'],
             'ordering_cycle'    => ['nullable', 'integer'],
@@ -35,10 +35,10 @@ class Supplier extends ModelService
         if (is_null($item))
         {
             $rules['name'][] = 'required';
-            $rules['name'][] = 'unique:suppliers';
+            $rules['name'][] = 'unique:tenant.suppliers';
         }
         else{
-            $rules['name'][]    = Rule::unique('suppliers')->ignore($item->id);
+            $rules['name'][]    = Rule::unique('tenant.suppliers')->ignore($item->id);
         }
 
         return $rules;

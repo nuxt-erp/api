@@ -27,8 +27,8 @@ class Availability extends ModelService
     {
 
         $rules = [
-            'product_id'            => ['exists:products,id'],
-            'location_id'           => ['nullable', 'exists:locations,id']
+            'product_id'            => ['exists:tenant.products,id'],
+            'location_id'           => ['nullable', 'exists:tenant.locations,id']
         ];
         //create
         if (is_null($item)) {

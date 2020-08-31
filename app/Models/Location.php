@@ -30,15 +30,15 @@ class Location extends ModelService
         // CREATE
         if (is_null($item))
         {
-            $rules['dear_id'][]     = 'unique:locations';
-            $rules['shopify_id'][]  = 'unique:locations';
-            $rules['name'][]        = 'unique:locations';
+            $rules['dear_id'][]     = 'unique:tenant.locations';
+            $rules['shopify_id'][]  = 'unique:tenant.locations';
+            $rules['name'][]        = 'unique:tenant.locations';
             $rules['name'][]        = 'required';
         } else {
             //update
-            $rules['dear_id'][]     = Rule::unique('locations')->ignore($item->id);
-            $rules['shopify_id'][]  = Rule::unique('locations')->ignore($item->id);
-            $rules['name'][]        = Rule::unique('locations')->ignore($item->id);
+            $rules['dear_id'][]     = Rule::unique('tenant.locations')->ignore($item->id);
+            $rules['shopify_id'][]  = Rule::unique('tenant.locations')->ignore($item->id);
+            $rules['name'][]        = Rule::unique('tenant.locations')->ignore($item->id);
         }
 
         return $rules;

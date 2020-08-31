@@ -39,7 +39,7 @@ class RegisterController extends Controller
     }
 
     public function installModules($name){
-        //$user = auth()->user();
+        //$user = auth()->user(); // this is the right option after we make a page to install modules
         $user = User::where('name', 'LIKE', '%'.$name.'%')->first();
 
         // run specific migration files for the schema
@@ -51,24 +51,32 @@ class RegisterController extends Controller
                 'module_id'     => $module->id,
                 'company_id'    => $user->company_id
             ]);
+            echo $module->name . ' module added for: '.$user->company->name.'. <br>';
         }
 
         // 2 - run migrations and seeders for enabled modules
 
         DB::setDefaultConnection('tenant');
-        config(['database.connections.tenant.schema' => $user->company->schema]);
+        config(['database.connections.tenant.schema' => $user->company->schema]); // we can remove this after we have a logged user
 
         foreach ($modules as $module){
-            Artisan::call('migrate', [
-                '--path' => '/Modules/'.ucfirst($module->name).'/Database/Migrations/schema'
-            ]);
-            Artisan::call('module:seed '.ucfirst($module->name));
-
-            echo $module->name . ' module registered. <br>';
+            try {
+                Artisan::call('migrate', [
+                    '--path' => '/Modules/'.ucfirst($module->name).'/Database/Migrations/schema'
+                ]);
+                echo $module->name . ' migration done. <br>';
+            } catch (\Throwable $th) {
+                echo 'Migration error for '.ucfirst($module->name).'!<br>';
+                dump(Artisan::output());
+            }
+            try {
+                Artisan::call('module:seed '.ucfirst($module->name));
+                echo $module->name . ' seeder done. <br>';
+            } catch (\Throwable $th) {
+                echo 'Seed error for '.ucfirst($module->name).'!<br>';
+                dump(Artisan::output());
+            }
         }
-
-        // php artisan module:migrate Blog
-        // php artisan module:seed Blog
     }
 
 }

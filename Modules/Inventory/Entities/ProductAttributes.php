@@ -19,8 +19,8 @@ class ProductAttributes extends ModelService
     {
         $rules = [
             'value'         => ['string', 'max:60'],
-            'attribute_id'  => ['exists:inv_attributes,id'],
-            'product_id'    => ['exists:inv_products,id'],
+            'attribute_id'  => ['exists:tenant.inv_attributes,id'],
+            'product_id'    => ['exists:tenant.inv_products,id'],
         ];
 
         // CREATE

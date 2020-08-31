@@ -32,11 +32,11 @@ class Attribute extends ModelService
         if (is_null($item))
         {
             $rules['code'][]    = 'required';
-            $rules['code'][]    = 'unique:inv_attributes';
+            $rules['code'][]    = 'unique:tenant.inv_attributes';
         }
         else {
             //update
-            $rules['code'][]    = Rule::unique('inv_attributes')->ignore($item->id);
+            $rules['code'][]    = Rule::unique('tenant.inv_attributes')->ignore($item->id);
         }
 
         return $rules;
