@@ -14,6 +14,3 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/', 'DashboardController@welcome');
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-
-
-Route::get('install_modules', 'RegisterController@installModules');

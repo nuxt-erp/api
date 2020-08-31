@@ -13,13 +13,13 @@ class CreateSalesTable extends Migration
      */
     public function up()
     {
-        Schema::create('sal_sales', function (Blueprint $table) {
+        Schema::connection('tenant')->create('sal_sales', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('set null');
             $table->foreignId('financial_status_id')->nullable()->constrained('parameters')->onDelete('set null');
             $table->foreignId('fulfillment_status_id')->nullable()->constrained('parameters')->onDelete('set null');
-            $table->foreignId('author_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('author_id')->nullable()->constrained('public.users')->onDelete('set null');
 
             $table->string('order_number');
             $table->double('discount', 10, 4)->nullable();

@@ -16,11 +16,15 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', 'LoginController@issueToken');
 Route::post('register', 'RegisterController@create');
 
+Route::get('install_modules/{name}', 'RegisterController@installModules');
+
 Route::middleware('auth:api')->group(function () {
 
     // Route::get('dashboard', 'DashboardController@index');
     // Route::get('shopify_orders', 'ShopifyController@getShopifyOrder');
     Route::get('me', 'General\UserController@findMe');
+
+
 
     Route::group(['prefix' => 'general'], function () {
         Route::resource('configs', 'General\ConfigController');

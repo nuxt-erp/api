@@ -13,7 +13,7 @@ class CreateSaleDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sal_sale_details', function (Blueprint $table) {
+        Schema::connection('tenant')->create('sal_sale_details', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('sale_id')->constrained('sal_sales')->onDelete('cascade');

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CompanyModules;
+use App\Models\Module;
 use App\Models\Role;
 use App\Models\User;
 use App\Repositories\UserRepository;
@@ -36,38 +38,41 @@ class RegisterController extends Controller
 
     }
 
-    public function installModules(Request $request){
+    public function installModules($name){
+        //$user = auth()->user();
+        $user = User::where('name', 'LIKE', '%'.$name.'%')->first();
 
-        // 1 - run module migrations
-        // 2 - run seeders for each module
+        // run specific migration files for the schema
+
+        // 1 - add modules to the company
+        $modules = Module::all();
+        foreach ($modules as $module){
+            CompanyModules::updateOrCreate([
+                'module_id'     => $module->id,
+                'company_id'    => $user->company_id
+            ]);
+            echo $module->name . ' module registered. <br>';
+        }
+
+        // 2 - run migrations and seeders for enabled modules
+
+        DB::setDefaultConnection('tenant');
+        config(['database.connections.tenant.schema' => $user->company->schema]);
+
+        // INVENTORY
+        Artisan::call('migrate', [
+            '--path' => '/Modules/Inventory/Database/Migrations/schema'
+        ]);
+        Artisan::call('module:seed Inventory');
+
+        // SALES
+        Artisan::call('migrate', [
+            '--path' => '/Modules/Sales/Database/Migrations/schema'
+        ]);
+        Artisan::call('module:seed Sales');
 
         // php artisan module:migrate Blog
         // php artisan module:seed Blog
-
-        DB::setDefaultConnection('tenant'); // it's important because the migration table will be created in the public schema
-
-        try {
-            Artisan::call('migrate', [
-                '--path' => '/database/migrations/schema'
-            ]);
-            echo 'SUCCESS! ----- ';
-        } catch (\Throwable $th) {
-            echo $th->getMessage();
-            echo 'ERROR! ----- ';
-        }
-
-        // Artisan::call('db:seed', [
-        //     '--class' => 'CountryProvinceSeeder'
-        // ]);
-
-
-        dd(Artisan::output());
-
-        //@todo run seeders?
-
-        // php artisan migrate --path=/database/migrations/fileName.php
-        // php artisan db:seed --class=classNameTableSeeder
-
     }
 
 }
