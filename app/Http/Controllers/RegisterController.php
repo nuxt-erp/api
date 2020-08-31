@@ -51,7 +51,6 @@ class RegisterController extends Controller
                 'module_id'     => $module->id,
                 'company_id'    => $user->company_id
             ]);
-            echo $module->name . ' module registered. <br>';
         }
 
         // 2 - run migrations and seeders for enabled modules
@@ -59,17 +58,14 @@ class RegisterController extends Controller
         DB::setDefaultConnection('tenant');
         config(['database.connections.tenant.schema' => $user->company->schema]);
 
-        // INVENTORY
-        Artisan::call('migrate', [
-            '--path' => '/Modules/Inventory/Database/Migrations/schema'
-        ]);
-        Artisan::call('module:seed Inventory');
+        foreach ($modules as $module){
+            Artisan::call('migrate', [
+                '--path' => '/Modules/'.ucfirst($module->name).'/Database/Migrations/schema'
+            ]);
+            Artisan::call('module:seed '.ucfirst($module->name));
 
-        // SALES
-        Artisan::call('migrate', [
-            '--path' => '/Modules/Sales/Database/Migrations/schema'
-        ]);
-        Artisan::call('module:seed Sales');
+            echo $module->name . ' module registered. <br>';
+        }
 
         // php artisan module:migrate Blog
         // php artisan module:seed Blog

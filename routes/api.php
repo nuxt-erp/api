@@ -24,8 +24,6 @@ Route::middleware('auth:api')->group(function () {
     // Route::get('shopify_orders', 'ShopifyController@getShopifyOrder');
     Route::get('me', 'General\UserController@findMe');
 
-
-
     Route::group(['prefix' => 'general'], function () {
         Route::resource('configs', 'General\ConfigController');
         Route::resource('users', 'General\UserController');

@@ -7,6 +7,9 @@ use Illuminate\Validation\Rule;
 
 class Brand extends ModelService
 {
+
+    protected $connection = 'tenant';
+
     protected $table = 'inv_brands';
 
     protected $dates = [

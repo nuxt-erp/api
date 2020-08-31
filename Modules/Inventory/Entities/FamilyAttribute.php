@@ -6,7 +6,8 @@ use App\Models\ModelService;
 
 class ProductFamilyAttribute extends ModelService
 {
-    public $timestamps = false;
+
+    protected $connection = 'tenant';
 
     protected $fillable = [
         'value', 'family_id', 'attribute_id'

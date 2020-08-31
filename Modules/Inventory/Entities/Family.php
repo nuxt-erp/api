@@ -9,6 +9,8 @@ use Illuminate\Validation\Rule;
 
 class Family extends ModelService
 {
+    protected $connection = 'tenant';
+
     protected $table = 'inv_families';
 
     protected $dates = [

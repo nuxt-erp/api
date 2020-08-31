@@ -8,6 +8,9 @@ use Illuminate\Validation\Rule;
 
 class Availability extends ModelService
 {
+
+    protected $connection = 'tenant';
+
     /**
      * The attributes that are mass assignable.
      *

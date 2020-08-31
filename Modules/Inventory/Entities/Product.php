@@ -9,6 +9,8 @@ use App\Models\Supplier;
 class Product extends ModelService
 {
 
+    protected $connection = 'tenant';
+
     protected $table = 'inv_products';
 
     protected $dates = [

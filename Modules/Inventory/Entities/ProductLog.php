@@ -9,6 +9,8 @@ use Illuminate\Validation\Rule;
 class ProductLog extends ModelService
 {
 
+    protected $connection = 'tenant';
+
     protected $table = 'inv_product_logs';
 
     const TYPE_LOG_SALE         = 'Sale';

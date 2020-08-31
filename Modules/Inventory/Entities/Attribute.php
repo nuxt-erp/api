@@ -6,6 +6,8 @@ use App\Models\ModelService;
 
 class Attribute extends ModelService
 {
+    protected $connection = 'tenant';
+
     protected $table = 'inv_attributes';
 
     protected $dates = [

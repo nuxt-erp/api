@@ -6,6 +6,9 @@ use App\Models\ModelService;
 
 class ProductAttributes extends ModelService
 {
+
+    protected $connection = 'tenant';
+
     protected $table = 'inv_product_attributes';
 
     protected $fillable = [

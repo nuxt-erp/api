@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 class ProductCategory extends ModelService
 {
 
+    protected $connection = 'tenant';
     /**
      * The attributes that are mass assignable.
      *

@@ -6,6 +6,9 @@ use App\Models\ModelService as ModelsModelService;
 
 class Category extends ModelsModelService
 {
+
+    protected $connection = 'tenant';
+
     protected $table = 'inv_categories';
 
     protected $dates = [

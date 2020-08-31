@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Inventory\Entities;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\ModelService;
 
-class ProductSpecification extends Model
+class ProductSpecification extends ModelService
 {
-    public $timestamps = false;
+    protected $connection = 'tenant';
 
     protected $fillable = [
         'value', 'product_id', 'spec_id', 'sub_spec_id'
@@ -39,7 +39,7 @@ class ProductSpecification extends Model
 
     public function specification()
     {
-        return $this->belongsTo(Specification::class);
+        return $this->belongsTo(ProductSpecification::class);
     }
 
 }
