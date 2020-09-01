@@ -13,7 +13,7 @@ class $CLASS$ extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('$TABLE$');
+        Schema::connection('tenant')->dropIfExists('$TABLE$');
     }
 
     /**
@@ -23,7 +23,7 @@ class $CLASS$ extends Migration
      */
     public function down()
     {
-        Schema::create('$TABLE$', function (Blueprint $table) {
+        Schema::connection('tenant')->create('$TABLE$', function (Blueprint $table) {
             $table->bigIncrements('id');
 $FIELDS$
             $table->timestamps();

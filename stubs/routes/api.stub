@@ -13,6 +13,10 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/$LOWER_NAME$', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:api')->group(function () {
+
+    // module prefix
+    Route::group(['prefix' => '$LOWER_NAME$'], function () {
+
+    });
 });

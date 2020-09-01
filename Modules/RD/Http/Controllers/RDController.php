@@ -1,12 +1,12 @@
 <?php
 
-namespace $CLASS_NAMESPACE$;
+namespace Modules\RD\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 
-class $CLASS$ extends ControllerService implements CheckPolicies
+class RDController extends ControllerService implements CheckPolicies
 {
 
     protected $repository;

@@ -12,3 +12,11 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::middleware('auth:api')->group(function () {
+
+    // module prefix
+    Route::group(['prefix' => 'rd'], function () {
+
+    });
+});

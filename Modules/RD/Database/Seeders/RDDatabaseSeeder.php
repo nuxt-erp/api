@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Alchem\Database\Seeders;
+namespace Modules\RD\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
-class AlchemDatabaseSeeder extends Seeder
+class RDDatabaseSeeder extends Seeder
 {
     /**
      * Run the database seeds.

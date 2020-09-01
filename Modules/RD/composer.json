@@ -1,10 +1,10 @@
 {
-    "name": "nwidart/alchem",
+    "name": "nwidart/rd",
     "description": "",
     "authors": [
         {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
+            "name": "Gabriel Fernandez",
+            "email": "contact@gfernandez.me"
         }
     ],
     "extra": {
@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Modules\\Alchem\\": ""
+            "Modules\\RD\\": ""
         }
     }
 }

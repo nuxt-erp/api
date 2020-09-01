@@ -1,21 +1,21 @@
 <?php
 
-namespace Modules\Alchem\Providers;
+namespace Modules\RD\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 
-class AlchemServiceProvider extends ServiceProvider
+class RDServiceProvider extends ServiceProvider
 {
     /**
      * @var string $moduleName
      */
-    protected $moduleName = 'Alchem';
+    protected $moduleName = 'RD';
 
     /**
      * @var string $moduleNameLower
      */
-    protected $moduleNameLower = 'alchem';
+    protected $moduleNameLower = 'rd';
 
     /**
      * Boot the application events.
@@ -24,7 +24,6 @@ class AlchemServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
@@ -39,6 +38,17 @@ class AlchemServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(RouteServiceProvider::class);
+        $this->app->register(AuthServiceProvider::class);
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [];
     }
 
     /**
@@ -73,23 +83,6 @@ class AlchemServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
     }
-
-    /**
-     * Register translations.
-     *
-     * @return void
-     */
-    public function registerTranslations()
-    {
-        $langPath = resource_path('lang/modules/' . $this->moduleNameLower);
-
-        if (is_dir($langPath)) {
-            $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
-        } else {
-            $this->loadTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
-        }
-    }
-
     /**
      * Register an additional directory of factories.
      *
@@ -100,16 +93,6 @@ class AlchemServiceProvider extends ServiceProvider
         if (! app()->environment('production') && $this->app->runningInConsole()) {
             app(Factory::class)->load(module_path($this->moduleName, 'Database/factories'));
         }
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [];
     }
 
     private function getPublishableViewPaths(): array

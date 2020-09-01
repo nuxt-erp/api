@@ -1,11 +1,11 @@
 {
-    "name": "Alchem",
-    "alias": "alchem",
+    "name": "RD",
+    "alias": "rd",
     "description": "",
     "keywords": [],
     "order": 0,
     "providers": [
-        "Modules\\Alchem\\Providers\\AlchemServiceProvider"
+        "Modules\\RD\\Providers\\RDServiceProvider"
     ],
     "aliases": {},
     "files": [],

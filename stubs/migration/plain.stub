@@ -13,7 +13,11 @@ class $CLASS$ extends Migration
      */
     public function up()
     {
-        //
+        Schema::connection('tenant')->create('$TABLE$', function (Blueprint $table) {
+            $table->id();
+$FIELDS$
+            $table->timestamps();
+        });
     }
 
     /**
@@ -23,6 +27,6 @@ class $CLASS$ extends Migration
      */
     public function down()
     {
-        //
+        Schema::connection('tenant')->dropIfExists('$TABLE$');
     }
 }

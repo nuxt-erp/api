@@ -2,7 +2,6 @@
 
 namespace Modules\Inventory\Providers;
 
-use App\Http\Middleware\SchemaMiddleware;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Console\Scheduling\Schedule;

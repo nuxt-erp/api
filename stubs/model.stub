@@ -2,9 +2,32 @@
 
 namespace $NAMESPACE$;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\ModelService;
+use Illuminate\Validation\Rule;
 
-class $CLASS$ extends Model
+class $CLASS$ extends ModelService
 {
+    protected $connection = 'tenant';
+
+    protected $table = '';
+
     protected $fillable = $FILLABLE$;
+
+    public function getRules($request, $item = null)
+    {
+        // generic rules
+        $rules = [
+        ];
+
+        // rules when creating the item
+        if (is_null($item)) {
+            //$rules['field'][] = 'required';
+        }
+        // rules when updating the item
+        else{
+
+        }
+
+        return $rules;
+    }
 }
