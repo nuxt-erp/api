@@ -15,7 +15,7 @@ class CreateExpensesAttachmentsTable extends Migration
     {
         Schema::create('exp_ap_attachments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('expense_proposal_id')->constrained('exp_ap_proposals')->onDelete('cascade');
+            $table->foreignId('expenses_proposal_id')->constrained('exp_ap_proposals')->onDelete('cascade');
             $table->string('file_name');
             $table->string('file_url');
             $table->timestamps();

@@ -25,7 +25,7 @@ class CreateExpensesProposalsTable extends Migration
             $table->double('ship', 10, 2)->default(0);
             $table->double('total_cost', 10, 2)->default(0);
             $table->foreignId('status_id')->constrained('parameters')->onDelete('restrict'); 
-            $table->timestampTz('purchase_date', 0);
+            $table->timestampTz('purchase_date', 0)->nullable();
             $table->timestamps();
         });
     }

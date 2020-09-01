@@ -3,6 +3,7 @@
 namespace Modules\ExpensesApproval\Entities;
 
 use App\Models\ModelService;
+use App\Models\User;
 use Illuminate\Validation\Rule;
 
 class Category extends ModelService

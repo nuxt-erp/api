@@ -9,7 +9,12 @@ class ExpensesRuleRepository extends RepositoryService
 {
 
     public function findBy(array $searchCriteria = [])
-    {        
+    {   
+        $searchCriteria['order_by'] = [
+            'field'         => 'start_value',
+            'direction'     => 'asc'
+        ];
+
         return parent::findBy($searchCriteria);
     }
 }

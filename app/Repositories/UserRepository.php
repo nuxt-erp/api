@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Models\Role;
+use App\Models\UserRoles;
 use Illuminate\Support\Arr;
 
 class UserRepository extends RepositoryService
@@ -23,9 +25,17 @@ class UserRepository extends RepositoryService
             });
         }
 
-        return parent::findBy($searchCriteria);
-    }
+        if (!empty($searchCriteria['role'])) {
+            $role = strtolower(Arr::pull($searchCriteria, 'role'));
+            $role_id = Role::where('name', $role)->orWhere('code', $role)->pluck('id')->first();
+            $user_ids = UserRoles::where('role_id', $role_id)->pluck('user_id');
 
+            $this->queryBuilder->whereIn('id', $user_ids);
+        }
+
+        return parent::findBy($searchCriteria);
+    }   
+    
     public function store(array $data)
     {
 
@@ -53,5 +63,5 @@ class UserRepository extends RepositoryService
         if (Arr::has($data, 'roles')) {
             $this->model->roles()->sync($data['roles']);
         }
-    }
+    }   
 }

@@ -16,9 +16,9 @@ class ExpensesAttachmentResource extends JsonResource
     {
         return [
             'id'                    => $this->id,
-            'expense_proposal_id'   => $this->expense_proposal_id,
+            'expenses_proposal_id'  => $this->expenses_proposal_id,
             'file_name'             => $this->file_name,
-            'attachment_url'        => $this->attachment_url,
+            'file_url'              => $this->file_url,
             'created_at'            => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'            => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];

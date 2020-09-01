@@ -5,6 +5,7 @@ namespace Modules\ExpensesApproval\Http\Controllers;
 use App\Http\Controllers\ControllerService;
 use Modules\ExpensesApproval\Repositories\ExpensesProposalRepository;
 use Modules\ExpensesApproval\Transformers\ExpensesProposalResource;
+use Illuminate\Http\Request;
 
 class ExpensesProposalController extends ControllerService
 {
@@ -16,6 +17,30 @@ class ExpensesProposalController extends ControllerService
     {
         $this->repository = $repository;
         $this->resource = $resource;
+    }
+
+    public function getPendingProposals(Request $request)
+    {
+        $items = $this->repository->getPendingProposals($request->all());
+        return $this->sendFullCollectionResponse($items, ExpensesProposalResource::class);
+    }
+
+    public function getProcessedProposals(Request $request)
+    {
+        $items = $this->repository->getProcessedProposals($request->all());
+        return $this->sendFullCollectionResponse($items, ExpensesProposalResource::class);
+    }
+
+    public function approveProposal($id)
+    {
+        $item = $this->repository->approveProposal($id);
+        return $this->sendObjectResource($item, ExpensesProposalResource::class);
+    }
+
+    public function disapproveProposal($id)
+    {
+        $item = $this->repository->disapproveProposal($id);
+        return $this->sendObjectResource($item, ExpensesProposalResource::class);
     }
     
 }

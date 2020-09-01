@@ -3,6 +3,8 @@
 namespace Modules\ExpensesApproval\Entities;
 
 use App\Models\ModelService;
+use App\Models\Parameter;
+use App\Models\User;
 
 class ExpensesProposal extends ModelService
 {
@@ -33,14 +35,12 @@ class ExpensesProposal extends ModelService
         if (is_null($item))
         {
             $rules['expenses_category_id'][]    = 'required';
-            $rules['author_id'][]               = 'required';
             $rules['item'][]                    = 'required';
             $rules['reason'][]                  = 'required';
             $rules['subtotal'][]                = 'required';
             $rules['hst'][]                     = 'required';
             $rules['ship'][]                    = 'required';
             $rules['total_cost'][]              = 'required';
-            $rules['status_id'][]               = 'required';
         }
 
         return $rules;
@@ -53,7 +53,7 @@ class ExpensesProposal extends ModelService
 
     public function author()
     {
-        return $this->belongsTo(Category::class, 'author_id');
+        return $this->belongsTo(User::class, 'author_id');
     } 
     
     public function status()
@@ -63,19 +63,33 @@ class ExpensesProposal extends ModelService
 
     public function approvals()
     {
-        return $this->hasMany(ExpensesApproval::class, 'expense_proposal_id', 'id');
+        return $this->hasMany(ExpensesApproval::class, 'expenses_proposal_id', 'id');
     }
 
     public function attachments()
     {
-        return $this->hasMany(ExpensesAttachments::class, 'expense_proposal_id', 'id');
+        return $this->hasMany(ExpensesAttachment::class, 'expenses_proposal_id', 'id');
+    }
+
+    public function rule()
+    {
+        $rule = ExpensesRule::where('start_value', '<', $this->total_cost)->where('end_value', '>=', $this->total_cost)->orWhereNull('end_value')->orderBy('start_value')->first();
+        return $rule;
     }
 
     public function approvers()
     {
-        $category = Category::where('id', 'expenses_category_id')->first();
-        if ($category) {
-            return $category->director->name . ', ' . $category->team_leader->name;
+        $category = $this->category;
+        $rule = $this->rule();
+        lad($category);
+        lad($rule);
+
+        if ($category && $rule) {
+            if($rule->team_leader_approval && $rule->director_approval){
+                return $category->director->name . ', ' . $category->team_leader->name;
+            } else if($rule->team_leader_approval && !$rule->director_approval){
+                return $category->team_leader->name;
+            } 
         } else {
             return '';
         }
