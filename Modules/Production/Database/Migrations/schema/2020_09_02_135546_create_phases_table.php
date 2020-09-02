@@ -13,18 +13,19 @@ class CreatePhasesTable extends Migration
      */
     public function up()
     {
-        Schema::create('phases', function (Blueprint $table) {
+        Schema::connection('tenant')->create('prod_phases', function (Blueprint $table) {
+
             $table->bigIncrements('id');
-            
+
             $table->unsignedBigInteger('operation_id');
-            $table->foreign('operation_id')->references('id')->on('operations');
+            $table->foreign('operation_id')->references('id')->on('prod_operations');
 
             $table->string('name')->unique();
-            
-            $table->tinyInteger('start')->nullable();	
-            
-            $table->tinyInteger('end')->nullable();	
-            
+
+            $table->tinyInteger('start')->nullable();
+
+            $table->tinyInteger('end')->nullable();
+
             $table->timestamps();
 
         });
@@ -37,6 +38,6 @@ class CreatePhasesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('phases');
+        Schema::connection('tenant')->dropIfExists('prod_phases');
     }
 }

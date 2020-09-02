@@ -13,11 +13,11 @@ class CreateMachinesTable extends Migration
      */
     public function up()
     {
-        Schema::create('machines', function (Blueprint $table) {
+        Schema::connection('tenant')->create('prod_machines', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('flow_id')->nullable();
-            $table->foreign('flow_id')->references('id')->on('flows');
+            $table->foreign('flow_id')->references('id')->on('prod_flows');
 
             $table->string('name', 50)->unique();
             $table->unsignedBigInteger('capacity')->nullable();
@@ -33,6 +33,6 @@ class CreateMachinesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('machines');
+        Schema::connection('tenant')->dropIfExists('prod_machines');
     }
 }

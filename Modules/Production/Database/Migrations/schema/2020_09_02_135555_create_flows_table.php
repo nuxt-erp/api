@@ -13,12 +13,11 @@ class CreateFlowsTable extends Migration
      */
     public function up()
     {
-        Schema::create('flows', function (Blueprint $table) {
+        Schema::connection('tenant')->create('prod_flows', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('first_phase_id')->nullable();
-            
-            $table->foreign('first_phase_id')->references('id')->on('phases');
+            $table->foreign('first_phase_id')->references('id')->on('prod_phases');
 
             $table->string('name')->unique();
 
@@ -33,6 +32,6 @@ class CreateFlowsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('flows');
+        Schema::connection('tenant')->dropIfExists('prod_flows');
     }
 }

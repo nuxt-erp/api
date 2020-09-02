@@ -13,14 +13,10 @@ class CreateOperationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('operations', function (Blueprint $table) {
+        Schema::connection('tenant')->create('prod_operations', function (Blueprint $table) {
             $table->bigIncrements('id');
-            
+
             $table->string('name')->unique();
-                        
-            $table->dateTime('created_at')->nullable();
-            
-            $table->dateTime('updated_at')->nullable();
 
             $table->timestamps();
         });
@@ -33,6 +29,6 @@ class CreateOperationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('operations');
+        Schema::connection('tenant')->dropIfExists('prod_operations');
     }
 }

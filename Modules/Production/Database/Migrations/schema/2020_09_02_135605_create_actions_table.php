@@ -13,7 +13,7 @@ class CreateActionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('actions', function (Blueprint $table) {
+        Schema::connection('tenant')->create('prod_actions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('code')->unique();
             $table->string('description')->nullable();
@@ -28,6 +28,6 @@ class CreateActionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('actions');
+        Schema::connection('tenant')->dropIfExists('prod_actions');
     }
 }
