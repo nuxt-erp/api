@@ -17,12 +17,13 @@ class CreateRecipeProposalItemsTable extends Migration
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('recipe_proposal_id');
-            $table->foreign('recipe_proposal_id')->references('id')->on('recipe_proposals');
+            $table->foreign('recipe_proposal_id')->references('id')->on('rd_recipe_proposals');
 
             $table->unsignedBigInteger('recipe_item_id');
-            $table->foreign('recipe_item_id')->references('id')->on('recipe_items');
+            $table->foreign('recipe_item_id')->references('id')->on('rd_recipe_items');
 
-            $table->unsignedDecimal('percent', 10, 4);
+            $table->unsignedDecimal('quantity', 10, 4)->nullable();
+            $table->unsignedDecimal('percent', 10, 4)->nullable();
 
             $table->timestamps();
         });

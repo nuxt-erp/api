@@ -17,7 +17,7 @@ class CreateRecipeProposalsTable extends Migration
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('recipe_id');
-            $table->foreign('recipe_id')->references('id')->on('recipes');
+            $table->foreign('recipe_id')->references('id')->on('rd_recipes');
 
             $table->unsignedBigInteger('author_id');
             $table->foreign('author_id')->references('id')->on('users');
@@ -25,8 +25,7 @@ class CreateRecipeProposalsTable extends Migration
             $table->unsignedBigInteger('approver_id')->nullable();
             $table->foreign('approver_id')->references('id')->on('users');
 
-            $table->unsignedBigInteger('status_id')->nullable();
-            $table->foreign('status_id')->references('id')->on('parameters');
+            $table->string('status');
 
             $table->string('comment')->nullable();
             $table->date('approved_at')->nullable();

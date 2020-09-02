@@ -19,14 +19,14 @@ class CreateProjectsTable extends Migration
             $table->unsignedBigInteger('author_id');
             $table->foreign('author_id')->references('id')->on('users');
 
-            $table->unsignedBigInteger('assignee_id');
-            $table->foreign('assignee_id')->references('id')->on('users');
+            $table->unsignedBigInteger('customer_id')->nullable();
+            $table->foreign('customer_id')->references('id')->on('customers');
 
-            $table->string('status')->nullable();
-
-            $table->date('closed_at')->nullable();
-
+            $table->string('status');
+            $table->string('code');
             $table->string('comments');
+            $table->date('start_at')->nullable();
+            $table->date('closed_at')->nullable();
 
             $table->timestamps();
         });

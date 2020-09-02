@@ -17,17 +17,14 @@ class CreateRecipesItemsTable extends Migration
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('product_id')->references('id')->on('inv_products');
 
             $table->unsignedBigInteger('recipe_id');
-            $table->foreign('recipe_id')->references('id')->on('recipes');
+            $table->foreign('recipe_id')->references('id')->on('rd_recipes');
 
             //Added by me
-            $table->unsignedDecimal('quantity', 10, 4);
-            $table->unsignedDecimal('initial_quantity', 10, 4);
-
-            $table->unsignedDecimal('percent', 10, 4);
-            $table->unsignedDecimal('initial_percent', 10, 4)->nullable();
+            $table->unsignedDecimal('quantity', 10, 4)->nullable();
+            $table->unsignedDecimal('percent', 10, 4)->nullable();
 
             //Added by me
             $table->float('cost', 10, 4)->nullable();
