@@ -13,18 +13,18 @@ class CreateProductionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('productions', function (Blueprint $table) {
-            
+        Schema::connection('tenant')->create('prod_productions', function (Blueprint $table) {
+
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('machine_id')->nullable();
-            $table->foreign('machine_id')->references('id')->on('machines');
+            $table->foreign('machine_id')->references('id')->on('prod_machines');
 
             $table->unsignedBigInteger('phase_id')->nullable();
-            $table->foreign('phase_id')->references('id')->on('phases');
+            $table->foreign('phase_id')->references('id')->on('prod_phases');
 
             $table->unsignedBigInteger('previous_phase_id')->nullable();
-            $table->foreign('previous_phase_id')->references('id')->on('phases');
+            $table->foreign('previous_phase_id')->references('id')->on('prod_phases');
 
             $table->unsignedBigInteger('relation_id')->nullable();
             $table->index(['relation_id', 'relation_type']);
@@ -35,7 +35,7 @@ class CreateProductionsTable extends Migration
             $table->foreign('location_id')->references('id')->on('locations');
 
             $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('product_id')->references('id')->on('inv_products');
 
             $table->unsignedBigInteger('status_id');
             $table->foreign('status_id')->references('id')->on('parameters');
@@ -65,17 +65,17 @@ class CreateProductionsTable extends Migration
             $table->unsignedInteger('finished_qty');
 
             $table->unsignedInteger('requested_qty');
-            
+
             $table->unsignedInteger('scheduled_qty')->nullable();
-            
+
             $table->unsignedInteger('sequence')->nullable();
 
-            $table->tinyInteger('scheduled');	
+            $table->tinyInteger('scheduled');
 
             $table->date('finished_at')->nullable();
 
             $table->date('expected_start_date')->nullable();
-            
+
             $table->date('planned_date')->nullable();
 
             $table->timestamps();
@@ -89,6 +89,6 @@ class CreateProductionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('productions');
+        Schema::connection('tenant')->dropIfExists('prod_productions');
     }
 }
