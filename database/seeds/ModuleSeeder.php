@@ -19,5 +19,13 @@ class ModuleSeeder extends Seeder
         Module::updateOrCreate([
             'name'  => 'Sales'
         ]);
+
+
+
+
+
+        Module::updateOrCreate([
+            'name'  => 'RD'
+        ]);
     }
 }
