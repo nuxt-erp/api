@@ -13,7 +13,7 @@ class CreateRecipesItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('recipe_items', function (Blueprint $table) {
+        Schema::connection('tenant')->create('rd_recipe_items', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('product_id');
@@ -21,15 +21,15 @@ class CreateRecipesItemsTable extends Migration
 
             $table->unsignedBigInteger('recipe_id');
             $table->foreign('recipe_id')->references('id')->on('recipes');
-            
-            //Added by me 
+
+            //Added by me
             $table->unsignedDecimal('quantity', 10, 4);
             $table->unsignedDecimal('initial_quantity', 10, 4);
-            
+
             $table->unsignedDecimal('percent', 10, 4);
             $table->unsignedDecimal('initial_percent', 10, 4)->nullable();
-          
-            //Added by me 
+
+            //Added by me
             $table->float('cost', 10, 4)->nullable();
 
             $table->timestamps();
@@ -43,6 +43,6 @@ class CreateRecipesItemsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('recipe_items');
+        Schema::connection('tenant')->dropIfExists('rd_recipe_items');
     }
 }

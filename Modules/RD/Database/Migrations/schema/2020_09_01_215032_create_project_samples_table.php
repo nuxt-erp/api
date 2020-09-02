@@ -13,15 +13,15 @@ class CreateRecipeTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create('project_samples', function (Blueprint $table) {
+        Schema::connection('tenant')->create('rd_project_samples', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('recipe_id');
-            $table->foreign('recipe_id')->references('id')->on('recipes');
+            $table->foreign('recipe_id')->references('id')->on('rd_recipes');
 
             $table->unsignedBigInteger('project_id');
-            $table->foreign('project_id')->references('id')->on('projects');
-            
+            $table->foreign('project_id')->references('id')->on('rd_projects');
+
             $table->timestamps();
         });
     }
@@ -33,6 +33,6 @@ class CreateRecipeTagsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('project_samples');
+        Schema::connection('tenant')->dropIfExists('rd_project_samples');
     }
 }

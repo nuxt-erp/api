@@ -13,7 +13,7 @@ class CreateRecipesTable extends Migration
      */
     public function up()
     {
-        Schema::create('recipes', function (Blueprint $table) {
+        Schema::connection('tenant')->create('rd_recipes', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('author_id');
@@ -36,16 +36,16 @@ class CreateRecipesTable extends Migration
 
             // Code for recipe history
             $table->string('code');
-            
+
             // Added by me
             $table->float('cost', 10, 4)->nullable();
-            
-            $table->smallInteger('version');	
-            
+
+            $table->smallInteger('version');
+
             $table->dateTime('created_at')->nullable();
 
             $table->dateTime('checked_at')->nullable();
-            
+
             $table->timestamps();
         });
     }
@@ -57,6 +57,6 @@ class CreateRecipesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('recipes');
+        Schema::connection('tenant')->dropIfExists('rd_recipes');
     }
 }

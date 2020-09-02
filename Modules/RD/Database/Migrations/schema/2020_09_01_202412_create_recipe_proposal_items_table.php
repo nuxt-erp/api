@@ -13,7 +13,7 @@ class CreateRecipeProposalItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('recipe_proposal_items', function (Blueprint $table) {
+        Schema::connection('tenant')->create('rd_recipe_proposal_items', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('recipe_proposal_id');
@@ -35,6 +35,6 @@ class CreateRecipeProposalItemsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('recipe_proposal_items');
+        Schema::connection('tenant')->dropIfExists('rd_recipe_proposal_items');
     }
 }

@@ -13,11 +13,8 @@ class CreateProjectsTable extends Migration
      */
     public function up()
     {
-        Schema::create('projects', function (Blueprint $table) {
+        Schema::connection('tenant')->create('rd_projects', function (Blueprint $table) {
             $table->bigIncrements('id');
-
-            $table->unsignedBigInteger('client_id'); 
-            $table->foreign('client_id')->references('id')->on('oauth_clients');
 
             $table->unsignedBigInteger('author_id');
             $table->foreign('author_id')->references('id')->on('users');
@@ -25,13 +22,10 @@ class CreateProjectsTable extends Migration
             $table->unsignedBigInteger('assignee_id');
             $table->foreign('assignee_id')->references('id')->on('users');
 
-            $table->unsignedBigInteger('status_id')->nullable();
-            $table->foreign('status_id')->references('id')->on('parameters');
-
-            $table->date('created_at')->nullable();
+            $table->string('status')->nullable();
 
             $table->date('closed_at')->nullable();
-            
+
             $table->string('comments');
 
             $table->timestamps();
@@ -45,6 +39,6 @@ class CreateProjectsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('projects');
+        Schema::connection('tenant')->dropIfExists('rd_projects');
     }
 }
