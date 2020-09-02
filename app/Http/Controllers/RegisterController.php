@@ -47,6 +47,7 @@ class RegisterController extends Controller
         // 1 - add modules to the company
         $modules = Module::all();
         foreach ($modules as $module){
+            //@todo change here to add only selected modules [this must come from the frontend]
             CompanyModules::updateOrCreate([
                 'module_id'     => $module->id,
                 'company_id'    => $user->company_id
