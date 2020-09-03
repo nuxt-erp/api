@@ -30,6 +30,10 @@ Route::middleware('auth:api')->group(function () {
 
         // approve or disapprove Expenses Proposal
         Route::post('approve_proposal/{id}', 'ExpensesProposalController@approveProposal');    
-        Route::post('disapprove_proposal/{id}', 'ExpensesProposalController@disapproveProposal');    
+        Route::post('disapprove_proposal/{id}', 'ExpensesProposalController@disapproveProposal');
+
+        // save attachments to AWS S3
+        Route::post('attachments/save', 'ExpensesAttachmentController@saveFile');
+
     });    
 });

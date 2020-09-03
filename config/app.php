@@ -162,12 +162,13 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
+
         /*
          * Package Service Providers...
          */
 
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
-        //Snowfire\Beautymail\BeautymailServiceProvider::class,
+        Snowfire\Beautymail\BeautymailServiceProvider::class,
         Lanin\Laravel\ApiDebugger\ServiceProvider::class,
         //Barryvdh\DomPDF\ServiceProvider::class,
         //Intervention\Image\ImageServiceProvider::class,

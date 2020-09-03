@@ -3,14 +3,17 @@
 namespace Modules\ExpensesApproval\Repositories;
 
 use App\Models\Parameter;
+use App\Models\User;
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Modules\ExpensesApproval\Entities\Category;
 use Modules\ExpensesApproval\Entities\ExpensesApproval;
+use Modules\ExpensesApproval\Entities\ExpensesAttachment;
 use Modules\ExpensesApproval\Entities\ExpensesProposal;
 use Modules\ExpensesApproval\Entities\ExpensesRule;
+use Snowfire\Beautymail\Beautymail;
 
 class ExpensesProposalRepository extends RepositoryService
 {
@@ -131,7 +134,17 @@ class ExpensesProposalRepository extends RepositoryService
                 if ($user->id === $category->team_leader_id || $user->id === $category->director_id) {
                     $data['status_id'] = $approved_id;
                 }
-                // AUTHOR OF EXPENSE IS OTHER USER, TEAM LEADER
+                // AUTHOR OF EXPENSE IS OTHER USER, WAIT FOR TEAM LEADER APPROVAL
+                else {
+                    $data['status_id'] = $pending_id;
+                }
+            }
+            else if(!$team_leader_required && $director_required) {
+                // AUTHOR OF EXPENSE IS THE DIRECTOR OF THE CATEGORY, APPROVE DIRECTLY
+                if ($user->id === $category->director_id) {
+                    $data['status_id'] = $approved_id;
+                }
+                // AUTHOR OF EXPENSE IS OTHER USER, WAIT DIRECTOR APPROVAL
                 else {
                     $data['status_id'] = $pending_id;
                 }
@@ -143,8 +156,51 @@ class ExpensesProposalRepository extends RepositoryService
            
             parent::store($data);
 
-            // TODO: save attachments
-            
+            if($this->model) {
+
+                // IF USER THAT CREATE THE EXPENSE IS ONE OF THE APPROVERS, HE DOESN'T NEED TO APPROVE AGAIN
+                if(($user->id === $category->team_leader_id && $team_leader_required) 
+                || ($user->id === $category->director_id && ($director_required || ($team_leader_required && !$director_required)))) {
+                    ExpensesApproval::create([
+                        'expenses_proposal_id'  => $this->model->id,
+                        'approver_id'           => $user->id
+                    ]);
+                }
+
+                $to = [];
+
+                if ($team_leader_required && $user->id !== $category->team_leader_id) {
+                    $team_leader_email = User::where('id', $category->team_leader_id)->pluck('email')->first();
+                    $to[] = $team_leader_email;
+                }
+                if ($director_required && $user->id !== $category->director_id) {
+                    $director_email = User::where('id', $category->director_id)->pluck('email')->first();
+                    $to[] = $director_email;
+                }
+
+                $data = [
+                    'user_name'     => $user->name, 
+                    'category'      => $category->name,
+                    'item'          => $this->model->item,
+                    'supplier_link' => $this->model->supplier_link,
+                    'subtotal'      => $this->model->subtotal,
+                    'hst'           => $this->model->hst,
+                    'ship'          => $this->model->ship,
+                    'total_cost'    => $this->model->total_cost,
+                    'type'          => 'approval',
+                ];
+
+                $this->sendEmail($to, $data);
+
+                foreach($data['attachments_list'] as $attachment) {
+                    ExpensesAttachment::create([
+                        'expenses_proposal_id'  => $this->model->id,
+                        'file_name'           => $attachment->file_name
+                    ]);
+                }
+                
+
+            }
         });
     }
 
@@ -152,12 +208,54 @@ class ExpensesProposalRepository extends RepositoryService
     {
 
         DB::transaction(function () use ($data, $model)
-        {
-            // TODO: update attachments                      
+        {   
+            // BUYER FINISH PURCHASE - SAVE PURCHASE DATE
+            if($data['buyer_role']) {
+                $purchased_id = Parameter::where('value', 'purchased')->pluck('id')->first();
+                $data['status_id'] = $purchased_id;
+                $data['purchase_date'] = now();
+            }
+            parent::update($model, $data);
             
-            parent::update($model, $data); 
-        });
-              
+            // $attachments = ExpensesAttachment::where('expenses_proposal_id', $model->id)->get();
+
+            // foreach($attachments as $attachment) {
+            //     foreach($data['attachments_list'] as $file) {
+            //         if($attachment)
+            //         ExpensesAttachment::create([
+            //             'expenses_proposal_id'  => $this->model->id,
+            //             'file_name'           => $attachment->file_name
+            //         ]);
+            //     }
+            // }
+
+            // foreach($data['attachments_list'] as ) {
+
+            //     ExpensesAttachment::create([
+            //         'expenses_proposal_id'  => $this->model->id,
+            //         'file_name'           => $attachment->file_name
+            //     ]);
+            // }    
+            
+            // BUYER FINISH PURCHASE - SEND PURCHASE CONFIRMATION EMAIL
+            if($data['buyer_role']) {
+
+                $data = [
+                    'user_name'     => $model->author->name, 
+                    'category'      => $model->category->name,
+                    'item'          => $model->item,
+                    'supplier_link' => $model->supplier_link,
+                    'subtotal'      => $model->subtotal,
+                    'hst'           => $model->hst,
+                    'ship'          => $model->ship,
+                    'total_cost'    => $model->total_cost,
+                    'type'          => 'purchased',
+                ];
+    
+                $this->sendEmail([$model->author->email], $data);
+            }
+
+        });        
     }
 
     public function approveProposal($id)
@@ -188,6 +286,34 @@ class ExpensesProposalRepository extends RepositoryService
 
         $proposal->save();  
 
+        if ($proposal->status_id === $approved_id) {
+           
+            $data = [
+                'user_name'     => $proposal->author->name, 
+                'category'      => $proposal->category->name,
+                'item'          => $proposal->item,
+                'supplier_link' => $proposal->supplier_link,
+                'subtotal'      => $proposal->subtotal,
+                'hst'           => $proposal->hst,
+                'ship'          => $proposal->ship,
+                'total_cost'    => $proposal->total_cost,
+                'type'          => 'approved',
+            ];
+
+            $this->sendEmail([$proposal->author->email], $data);
+
+            $data['type'] = 'buyer';
+
+            $buyers = User::whereHas('roles', function (Builder $query) {
+                $query->where('name', 'buyer')
+                    ->orWhere('code', 'buyer');
+            })->pluck('email')->get();
+
+            if($buyers) {
+                $this->sendEmail( $buyers, $data);
+            }
+        }
+
         return $proposal;
     }
 
@@ -197,7 +323,35 @@ class ExpensesProposalRepository extends RepositoryService
         $denied_id = Parameter::where('value', 'denied')->pluck('id')->first();      
         $proposal->status_id = $denied_id;
         $proposal->save();
+          
+        $data = [
+            'user_name'     => $proposal->author->name, 
+            'category'      => $proposal->category->name,
+            'item'          => $proposal->item,
+            'supplier_link' => $proposal->supplier_link,
+            'subtotal'      => $proposal->subtotal,
+            'hst'           => $proposal->hst,
+            'ship'          => $proposal->ship,
+            'total_cost'    => $proposal->total_cost,
+            'type'          => 'denied',
+        ];
+
+        $this->sendEmail([$proposal->author->email], $data);
 
         return $proposal;
+    }
+
+    public function sendEmail(array $to, $data)
+    {     
+        $beautymail = app()->make(Beautymail::class);
+        $beautymail->send('expenses_approval.email', $data, function($message) use ($to)
+        {
+            $message->from(config('mail.from.address'))
+                    ->subject('Expenses Proposal');
+
+            foreach ($to as $email) {
+                $message->bcc($email);
+            }
+        });
     }
 }

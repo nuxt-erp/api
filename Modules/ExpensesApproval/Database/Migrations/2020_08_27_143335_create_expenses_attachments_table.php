@@ -17,7 +17,6 @@ class CreateExpensesAttachmentsTable extends Migration
             $table->id();
             $table->foreignId('expenses_proposal_id')->constrained('exp_ap_proposals')->onDelete('cascade');
             $table->string('file_name');
-            $table->string('file_url');
             $table->timestamps();
         });
     }

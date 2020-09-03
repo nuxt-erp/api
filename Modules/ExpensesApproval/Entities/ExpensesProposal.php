@@ -8,6 +8,14 @@ use App\Models\User;
 
 class ExpensesProposal extends ModelService
 {
+
+    protected $casts = [
+        'subtotal' => 'decimal:2',
+        'hst' => 'decimal:2',
+        'ship' => 'decimal:2',
+        'total_cost' => 'decimal:2',
+    ];
+
     protected $table = 'exp_ap_proposals';
 
     protected $dates = [
@@ -81,8 +89,6 @@ class ExpensesProposal extends ModelService
     {
         $category = $this->category;
         $rule = $this->rule();
-        lad($category);
-        lad($rule);
 
         if ($category && $rule) {
             if($rule->team_leader_approval && $rule->director_approval){

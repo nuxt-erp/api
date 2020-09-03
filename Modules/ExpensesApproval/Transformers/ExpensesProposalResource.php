@@ -13,7 +13,7 @@ class ExpensesProposalResource extends JsonResource
         $user = auth()->user();
         $actions = collect([]);
 
-        if($user->hasRole('buyer')) {
+        if($user->hasRole('buyer') && !$this->purchased_at) {
             $actions->push(collect([
                 'name'  => 'Finish Purchase',
                 'code'  => 'finish_purchase',

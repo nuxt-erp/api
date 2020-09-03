@@ -41,6 +41,5 @@ class ExpensesProposalController extends ControllerService
     {
         $item = $this->repository->disapproveProposal($id);
         return $this->sendObjectResource($item, ExpensesProposalResource::class);
-    }
-    
+    }   
 }

@@ -10,7 +10,7 @@ class ExpensesAttachment extends Model
     protected $table = 'exp_ap_attachments';
     
     protected $fillable = [
-        'expenses_proposal_id', 'file_name', 'attachment_url'
+        'expenses_proposal_id', 'file_name'
     ];
 
     public function getRules($request, $item = null)
@@ -18,8 +18,6 @@ class ExpensesAttachment extends Model
         $rules = [
             'expenses_proposal_id'   => ['exists:exp_ap_expenses_proposals,id'], 
             'file_name'             => ['string', 'max:255'], 
-            'file_url'                   => ['string', 'max:255'], 
-
         ];
 
         // CREATE
@@ -27,7 +25,6 @@ class ExpensesAttachment extends Model
         {
             $rules['expenses_proposal_id'][]    = 'required';
             $rules['file_name'][]               = 'required';
-            $rules['file_url'][]                = 'required';
         } 
 
         return $rules;
