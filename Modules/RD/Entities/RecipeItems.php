@@ -17,17 +17,50 @@ class RecipeItems extends ModelService
     {
         // generic rules
         $rules = [
+            'project_id'             => ['exists:tenant.rd_projects,id'],
+            'recipe_id'              => ['exists:tenant.rd_recipes,id'],
+            'quantity'               => ['nullable', 'float'],
+            'percent'                => ['nullable', 'percent'],
+            'cost'                   => ['nullable', 'cost']
         ];
 
         // rules when creating the item
         if (is_null($item)) {
-            //$rules['field'][] = 'required';
+            $rules['project_id'][] = 'required';
+            $rules['recipe_id'][] = 'required';
+            $rules['status'][] = 'required';
+            $rules['comment'][] = 'required';
+            $rules['percent'][]     =
+                function ($attribute, $value, $fail) use ($request) {
+                    $sum = self::where('recipe_id', $request->input('recipe_id'))->sum('percent');
+                    if ((($sum * 100) + $value) > 100) {
+                        $fail('more100%');
+                    }
+                };
+            
         }
         // rules when updating the item
         else{
-
+            $rules['percent'][]     =
+            function ($attribute, $value, $fail) use ($item) {
+                $sum = self::where('id', '<>', $item->id)->where('recipe_id', $item->recipe_id)->sum('percent');
+                if ((($sum * 100) + $value) > 100) {
+                    $fail('more100%');
+                }
+            };
         }
 
         return $rules;
+
+    }
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class);
+    }
+
+    public function recipe()
+    {
+        return $this->belongsTo(Recipe::class);
     }
 }

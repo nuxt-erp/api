@@ -49,9 +49,6 @@ class CreateProductionsTable extends Migration
             $table->unsignedBigInteger('last_updater_id')->nullable();
             $table->foreign('last_updater_id')->references('id')->on('users');
 
-            $table->unsignedBigInteger('finished_size_id')->nullable();
-            $table->foreign('finished_size_id')->references('id')->on('parameters');
-
             $table->string('sku');
 
             $table->string('code');
@@ -62,7 +59,7 @@ class CreateProductionsTable extends Migration
 
             $table->unsignedInteger('volume')->nullable();
 
-            $table->unsignedInteger('finished_qty');
+            $table->unsignedInteger('finished_qty')->nullable();
 
             $table->unsignedInteger('requested_qty');
 
@@ -70,7 +67,7 @@ class CreateProductionsTable extends Migration
 
             $table->unsignedInteger('sequence')->nullable();
 
-            $table->tinyInteger('scheduled');
+            $table->tinyInteger('scheduled')->nullable();
 
             $table->date('finished_at')->nullable();
 

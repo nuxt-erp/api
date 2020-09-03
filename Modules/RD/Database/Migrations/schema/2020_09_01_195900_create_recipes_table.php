@@ -37,6 +37,8 @@ class CreateRecipesTable extends Migration
 
             $table->string('name');
 
+            $table->string('category');
+
             $table->string('total')->default(0);
 
             // Code for recipe history

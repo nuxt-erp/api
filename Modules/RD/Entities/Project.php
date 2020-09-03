@@ -17,11 +17,22 @@ class Project extends ModelService
     {
         // generic rules
         $rules = [
+            'author_id'             => ['exists:users,id'],
+            'customer_id'           => ['nullable', 'exists:customers,id'],
+            'status'                => ['max:255'],
+            'code'                  => ['max:255'],
+            'comments'              => ['max:255'],
+            'start_at'              => ['nullable', 'date'],
+            'closed_at'             => ['nullable', 'date']
         ];
 
         // rules when creating the item
         if (is_null($item)) {
-            //$rules['field'][] = 'required';
+            $rules['author_id'][] = 'required';
+            $rules['status'][] = 'required';
+            $rules['code'][] = 'required';
+            $rules['comments'][] = 'required';
+
         }
         // rules when updating the item
         else{
@@ -29,5 +40,13 @@ class Project extends ModelService
         }
 
         return $rules;
+    }
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'author_id', 'id');
+    }
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 }

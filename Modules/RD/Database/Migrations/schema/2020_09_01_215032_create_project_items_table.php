@@ -30,7 +30,7 @@ class CreateProjectItemsTable extends Migration
             $table->string('status');
             $table->float('target_cost', 10, 4)->nullable();
             $table->string('feedback')->nullable();
-            $table->string('comment');
+            $table->string('comment')->nullable();
 
             $table->timestamps();
         });

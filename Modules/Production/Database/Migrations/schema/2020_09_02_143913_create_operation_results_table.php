@@ -16,8 +16,8 @@ class CreateOperationResultsTable extends Migration
         Schema::connection('tenant')->create('prod_operation_results', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('production_order_id');
-            $table->foreign('production_order_id')->references('id')->on('prod_production_orders');
+            $table->unsignedBigInteger('production_id');
+            $table->foreign('production_id')->references('id')->on('prod_productions');
 
             $table->unsignedBigInteger('operation_id');
             $table->foreign('operation_id')->references('id')->on('prod_operations');
