@@ -16,15 +16,12 @@ class CreateProjectsTable extends Migration
         Schema::connection('tenant')->create('rd_projects', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('author_id');
-            $table->foreign('author_id')->references('id')->on('users');
-
-            $table->unsignedBigInteger('customer_id')->nullable();
-            $table->foreign('customer_id')->references('id')->on('customers');
+            $table->foreignId('author_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('set null');
 
             $table->string('status');
             $table->string('code');
-            $table->string('comments');
+            $table->string('comment');
             $table->date('start_at')->nullable();
             $table->date('closed_at')->nullable();
 

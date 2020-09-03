@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRecipeAttributesTable extends Migration
+class CreateProjectAttributesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateRecipeAttributesTable extends Migration
      */
     public function up()
     {
-        Schema::connection('tenant')->create('rd_recipe_attributes', function (Blueprint $table) {
+        Schema::connection('tenant')->create('rd_project_attributes', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->foreignId('recipe_id')->constrained('rd_recipes')->onDelete('cascade');
+            $table->foreignId('project_id')->constrained('rd_projects')->onDelete('cascade');
             $table->foreignId('attribute_id')->constrained('inv_attributes')->onDelete('cascade');
 
             $table->timestamps();
@@ -30,6 +30,6 @@ class CreateRecipeAttributesTable extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->dropIfExists('rd_recipe_attributes');
+        Schema::connection('tenant')->dropIfExists('rd_project_attributes');
     }
 }
