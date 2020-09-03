@@ -17,66 +17,44 @@ class CreateProductionsTable extends Migration
 
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('machine_id')->nullable();
-            $table->foreign('machine_id')->references('id')->on('prod_machines');
+            $table->foreignId('machine_id')->nullable()->constrained('prod_machines')->onDelete('set null');
+            $table->foreignId('phase_id')->nullable()->constrained('prod_phases')->onDelete('set null');
+            $table->foreignId('previous_phase_id')->nullable()->constrained('prod_phases')->onDelete('set null');
+            $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('set null');
+            $table->foreignId('product_id')->constrained('inv_products')->onDelete('cascade');
+            $table->foreignId('author_id')->constrained('users')->onDelete('set null');
+            $table->foreignId('last_updater_id')->nullable()->constrained('users')->onDelete('set null');
 
-            $table->unsignedBigInteger('phase_id')->nullable();
-            $table->foreign('phase_id')->references('id')->on('prod_phases');
-
-            $table->unsignedBigInteger('previous_phase_id')->nullable();
-            $table->foreign('previous_phase_id')->references('id')->on('prod_phases');
-
+            // can be related to a project/sales order/something else
             $table->unsignedBigInteger('relation_id')->nullable();
+            $table->string('relation_type')->nullable();
             $table->index(['relation_id', 'relation_type']);
 
-            $table->string('relation_type')->nullable();
-
-            $table->unsignedBigInteger('location_id')->nullable();
-            $table->foreign('location_id')->references('id')->on('locations');
-
-            $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('id')->on('inv_products');
-
-            $table->unsignedBigInteger('status_id');
-            $table->foreign('status_id')->references('id')->on('parameters');
-
-            $table->unsignedBigInteger('author_id');
-            $table->foreign('author_id')->references('id')->on('users');
-
+            // can be an employee/user/something else
             $table->unsignedBigInteger('requester_id')->nullable();
-            $table->foreign('requester_id')->references('id')->on('employees');
+            $table->string('requester_type')->nullable();
+            $table->index(['requester_id', 'requester_type']);
 
-            $table->unsignedBigInteger('last_updater_id')->nullable();
-            $table->foreign('last_updater_id')->references('id')->on('users');
-
-            $table->unsignedBigInteger('finished_size_id')->nullable();
-            $table->foreign('finished_size_id')->references('id')->on('parameters');
-
-            $table->string('sku');
-
+            $table->string('status');
             $table->string('code');
-
-            $table->string('digit');
-
             $table->string('reference_code')->nullable();
+            $table->unsignedInteger('sequence')->default(1);
+            $table->tinyInteger('scheduled')->default(0);
 
-            $table->unsignedInteger('volume')->nullable();
-
-            $table->unsignedInteger('finished_qty');
-
-            $table->unsignedInteger('requested_qty');
+            $table->unsignedInteger('requested_qty')->nullable();
+            $table->decimal('requested_volume', 10, 4)->nullable();
 
             $table->unsignedInteger('scheduled_qty')->nullable();
+            $table->decimal('scheduled_volume', 10, 4)->nullable();
 
-            $table->unsignedInteger('sequence')->nullable();
+            $table->unsignedInteger('finished_qty')->nullable();
+            $table->decimal('finished_volume', 10, 4)->nullable();
 
-            $table->tinyInteger('scheduled');
-
+            $table->date('started_at')->nullable();
             $table->date('finished_at')->nullable();
 
             $table->date('expected_start_date')->nullable();
-
-            $table->date('planned_date')->nullable();
+            $table->date('expected_finish_date')->nullable();
 
             $table->timestamps();
         });

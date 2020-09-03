@@ -1,10 +1,10 @@
 <?php
 
-namespace {{ namespace }};
+namespace $NAMESPACE$;
 
 use Illuminate\Contracts\Validation\Rule;
 
-class {{ class }} implements Rule
+class $CLASS$ implements Rule
 {
     /**
      * Create a new rule instance.

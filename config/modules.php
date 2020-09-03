@@ -26,7 +26,7 @@ return [
 
     'stubs' => [
         'enabled' => true,
-        'path' => base_path() . '/stubs',
+        'path' => base_path() . '/Modules/stubs',
         'files' => [
             'scaffold/auth-service-provider'=> 'Providers/AuthServiceProvider.php',
             'routes/api'                    => 'Routes/api.php',

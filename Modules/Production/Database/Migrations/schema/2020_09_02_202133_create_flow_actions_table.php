@@ -16,17 +16,10 @@ class CreateFlowActionsTable extends Migration
         Schema::connection('tenant')->create('prod_flow_actions', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('flow_id');
-            $table->foreign('flow_id')->references('id')->on('prod_flows');
-
-            $table->unsignedBigInteger('phase_id');
-            $table->foreign('phase_id')->references('id')->on('prod_phases');
-
-            $table->unsignedBigInteger('destination_phase_id')->nullable();
-            $table->foreign('destination_phase_id')->references('id')->on('prod_phases');
-
-            $table->unsignedBigInteger('destination_location_id')->nullable();
-            $table->foreign('destination_location_id')->references('id')->on('locations');
+            $table->foreignId('flow_id')->constrained('prod_flows')->onDelete('cascade');
+            $table->foreignId('phase_id')->constrained('prod_phases')->onDelete('set null');
+            $table->foreignId('destination_phase_id')->nullable()->constrained('prod_phases')->onDelete('set null');
+            $table->foreignId('destination_location_id')->nullable()->constrained('locations')->onDelete('set null');
 
             $table->string('name');
 

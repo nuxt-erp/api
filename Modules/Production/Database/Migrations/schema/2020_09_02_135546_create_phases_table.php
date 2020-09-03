@@ -17,14 +17,11 @@ class CreatePhasesTable extends Migration
 
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('operation_id');
-            $table->foreign('operation_id')->references('id')->on('prod_operations');
+            $table->foreignId('operation_id')->constrained('prod_operations')->onDelete('cascade');
 
             $table->string('name')->unique();
-
-            $table->tinyInteger('start')->nullable();
-
-            $table->tinyInteger('end')->nullable();
+            $table->boolean('will_start_counter')->nullable();
+            $table->boolean('will_end_counter')->nullable();
 
             $table->timestamps();
 
