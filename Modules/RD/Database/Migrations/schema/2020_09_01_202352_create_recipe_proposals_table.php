@@ -17,8 +17,8 @@ class CreateRecipeProposalsTable extends Migration
             $table->bigIncrements('id');
 
             $table->foreignId('recipe_id')->constrained('rd_recipes')->onDelete('cascade');
-            $table->foreignId('author_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('approver_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('author_id')->nullable()->constrained('public.users')->onDelete('set null');
+            $table->foreignId('approver_id')->nullable()->constrained('public.users')->onDelete('set null');
 
             $table->string('status');
             $table->string('comment')->nullable();
