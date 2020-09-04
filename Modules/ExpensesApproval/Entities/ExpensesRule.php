@@ -7,6 +7,8 @@ use Illuminate\Validation\Rule;
 
 class ExpensesRule extends ModelService
 {
+    protected $connection = 'tenant';
+    
     protected $table = 'exp_ap_rules';
 
     protected $fillable = [

@@ -16,6 +16,13 @@ class UserTableSeeder extends Seeder
     {
 
         $buyer = User::updateOrCreate([
+            'name'          => 'user',
+            'email'         => 'user@email.com',
+            'password'      => bcrypt('123456')
+        ]);       
+        $buyer->setRole('user');
+
+        $buyer = User::updateOrCreate([
             'name'          => 'buyer',
             'email'         => 'buyer@email.com',
             'password'      => bcrypt('123456')

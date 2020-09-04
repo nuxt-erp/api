@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateExpensesCategoriresTable extends Migration
+class CreateExpensesCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateExpensesCategoriresTable extends Migration
      */
     public function up()
     {
-        Schema::create('exp_ap_categories', function (Blueprint $table) {
+        Schema::connection('tenant')->create('exp_ap_categories', function (Blueprint $table) {
             $table->id(); 
             $table->string('name')->unique();
-            $table->foreignId('team_leader_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('director_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('team_leader_id')->nullable()->constrained('public.users')->onDelete('set null');
+            $table->foreignId('director_id')->nullable()->constrained('public.users')->onDelete('set null');
             $table->boolean('is_finished')->default(1);
             $table->timestamp('finished_at')->nullable(); 
             $table->timestamps();
@@ -31,6 +31,6 @@ class CreateExpensesCategoriresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('exp_ap_categories');
+        Schema::connection('tenant')->dropIfExists('exp_ap_categories');
     }
 }

@@ -13,13 +13,13 @@ class CreateExpensesRulesTable extends Migration
      */
     public function up()
     {
-        Schema::create('exp_ap_rules', function (Blueprint $table) {
+        Schema::connection('tenant')->create('exp_ap_rules', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
             $table->boolean('team_leader_approval')->default(0);
             $table->boolean('director_approval')->default(0);
-            $table->double('start_value', 10, 2)->default(0);
-            $table->double('end_value', 10, 2)->nullable();
+            $table->decimal('start_value', 10, 2)->default(0);
+            $table->decimal('end_value', 10, 2)->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ class CreateExpensesRulesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('exp_ap_rules');
+        Schema::connection('tenant')->dropIfExists('exp_ap_rules');
     }
 }

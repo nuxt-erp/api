@@ -6,6 +6,8 @@ use App\Models\ModelService;
 
 class ExpensesApproval extends ModelService
 {
+    protected $connection = 'tenant';
+    
     protected $table = 'exp_ap_approvals';
     
     protected $fillable = [

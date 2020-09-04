@@ -7,6 +7,8 @@ use Illuminate\Validation\Rule;
 
 class ExpensesAttachment extends Model
 {
+    protected $connection = 'tenant';
+    
     protected $table = 'exp_ap_attachments';
     
     protected $fillable = [

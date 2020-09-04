@@ -13,17 +13,17 @@ class CreateExpensesProposalsTable extends Migration
      */
     public function up()
     {
-        Schema::create('exp_ap_proposals', function (Blueprint $table) {
+        Schema::connection('tenant')->create('exp_ap_proposals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('expenses_category_id')->nullable()->constrained('exp_ap_categories')->onDelete('set null');
-            $table->foreignId('author_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('author_id')->nullable()->constrained('public.users')->onDelete('set null');
             $table->string('item');
             $table->text('reason');
             $table->text('supplier_link')->nullable();
-            $table->double('subtotal', 10, 2)->default(0);
-            $table->double('hst', 10, 2)->default(0);
-            $table->double('ship', 10, 2)->default(0);
-            $table->double('total_cost', 10, 2)->default(0);
+            $table->decimal('subtotal', 10, 2)->default(0);
+            $table->decimal('hst', 10, 2)->default(0);
+            $table->decimal('ship', 10, 2)->default(0);
+            $table->decimal('total_cost', 10, 2)->default(0);
             $table->foreignId('status_id')->constrained('parameters')->onDelete('restrict'); 
             $table->timestampTz('purchase_date', 0)->nullable();
             $table->timestamps();
@@ -37,6 +37,6 @@ class CreateExpensesProposalsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('exp_ap_proposals');
+        Schema::connection('tenant')->dropIfExists('exp_ap_proposals');
     }
 }
