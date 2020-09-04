@@ -41,7 +41,7 @@ class Category extends ModelService
 
         } else {
             //update
-            $rules['name'][] = Rule::unique('exp_ap_categories')->ignore($item->id);
+            $rules['name'][] = Rule::unique('tenant.exp_ap_categories')->ignore($item->id);
         }
 
         return $rules;

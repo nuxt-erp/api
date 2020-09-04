@@ -33,7 +33,7 @@ class ExpensesRule extends ModelService
             $rules['director_approval'][]       = 'required';
         } else {
             //update
-            $rules['name'][] = Rule::unique('exp_ap_rules')->ignore($item->id);
+            $rules['name'][] = Rule::unique('tenant.exp_ap_rules')->ignore($item->id);
         }
 
         return $rules;
