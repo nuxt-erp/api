@@ -21,8 +21,7 @@ class ExpensesProposalResource extends JsonResource
             ]));
         } else {
             if($this->status->value === 'pending') {
-
-                if($user->id === $this->author_id) {
+                if($user->id === $this->author_id && $this->approvals->isEmpty()) {
                     $actions->push(collect([
                         'name'  => 'Edit',
                         'code'  => 'edit_expense',

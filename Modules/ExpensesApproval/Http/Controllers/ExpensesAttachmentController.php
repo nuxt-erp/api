@@ -7,6 +7,7 @@ use Modules\ExpensesApproval\Repositories\ExpensesAttachmentRepository;
 use Modules\ExpensesApproval\Transformers\ExpensesAttachmentResource;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 class ExpensesAttachmentController extends ControllerService
 {
@@ -20,22 +21,23 @@ class ExpensesAttachmentController extends ControllerService
     }
 
     public function saveFile(Request $request)
-    {                   
+    {             
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $fileName = time() . '-' . $file->getClientOriginalName();
-            $filePath = 'expense-approval/attachments/' . $fileName;
-            // Storage::disk('s3')->put($filePath, file_get_contents($file));
+            $file->storeAs('attachments', $fileName, ['disk' => 's3']);
 
             return $this->setStatus(true)->sendObject($fileName);
         }
-    }
+    }    
 
     public function deleteFile($file_name)
     {                  
-        $filePath = 'expense-approval/attachments/' . $file_name;
-        // Storage::disk('s3')->delete($filePath);
+        $filePath = 'attachments/' . $file_name;
+        Storage::disk('s3')->delete($filePath);
 
-        return $this->setStatus(true)->sendObject('File deleted');
+        $this->repository->deleteFile($file_name);
+
+        return $this->setStatus(true)->sendObject(['file_name' => $file_name, 'hide' => true]);
     }
 }

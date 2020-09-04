@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 Route::middleware('auth:api')->group(function () {
 
     // EXPENSES APPROVAL
@@ -34,6 +33,7 @@ Route::middleware('auth:api')->group(function () {
 
         // save attachments to AWS S3
         Route::post('attachments/save', 'ExpensesAttachmentController@saveFile');
+        Route::delete('attachments/delete/{file_name}', 'ExpensesAttachmentController@deleteFile');
 
     });    
 });

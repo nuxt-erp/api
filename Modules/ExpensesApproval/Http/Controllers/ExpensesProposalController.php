@@ -17,7 +17,7 @@ class ExpensesProposalController extends ControllerService
     {
         $this->repository = $repository;
         $this->resource = $resource;
-    }
+    }    
 
     public function getPendingProposals(Request $request)
     {
@@ -41,5 +41,8 @@ class ExpensesProposalController extends ControllerService
     {
         $item = $this->repository->disapproveProposal($id);
         return $this->sendObjectResource($item, ExpensesProposalResource::class);
-    }   
+    }
+
+    
+
 }

@@ -102,6 +102,8 @@ class ExpensesProposalRepository extends RepositoryService
     {
         DB::transaction(function () use ($data)
         {
+            $attachments = $data['attachments_list'];
+
             // STATUS OF THE EXPENSE IS DEFINED BASED ON THE USER AND THE EXPENSES RULES
             $user = auth()->user();
             $data['author_id'] = $user->id;
@@ -157,7 +159,7 @@ class ExpensesProposalRepository extends RepositoryService
             parent::store($data);
 
             if($this->model) {
-
+                
                 // IF USER THAT CREATE THE EXPENSE IS ONE OF THE APPROVERS, HE DOESN'T NEED TO APPROVE AGAIN
                 if(($user->id === $category->team_leader_id && $team_leader_required) 
                 || ($user->id === $category->director_id && ($director_required || ($team_leader_required && !$director_required)))) {
@@ -167,6 +169,7 @@ class ExpensesProposalRepository extends RepositoryService
                     ]);
                 }
 
+                // SEND EMAIL TO APPROVERS
                 $to = [];
 
                 if ($team_leader_required && $user->id !== $category->team_leader_id) {
@@ -192,11 +195,14 @@ class ExpensesProposalRepository extends RepositoryService
 
                 $this->sendEmail($to, $data);
 
-                foreach($data['attachments_list'] as $attachment) {
-                    ExpensesAttachment::create([
-                        'expenses_proposal_id'  => $this->model->id,
-                        'file_name'           => $attachment->file_name
-                    ]);
+                // SAVE ATTCHMENTS
+                if($attachments) {
+                    foreach($attachments as $attachment) {
+                        ExpensesAttachment::create([
+                            'expenses_proposal_id'  => $this->model->id,
+                            'file_name'             => $attachment['file_name']
+                        ]);
+                    }
                 }
                 
 
@@ -209,33 +215,33 @@ class ExpensesProposalRepository extends RepositoryService
 
         DB::transaction(function () use ($data, $model)
         {   
+            $attachments = $data['attachments_list'];
+
             // BUYER FINISH PURCHASE - SAVE PURCHASE DATE
             if($data['buyer_role']) {
                 $purchased_id = Parameter::where('value', 'purchased')->pluck('id')->first();
                 $data['status_id'] = $purchased_id;
                 $data['purchase_date'] = now();
             }
+
+            // SAVE UPDATED EXPENSES PROPOSAL DATA
             parent::update($model, $data);
             
-            // $attachments = ExpensesAttachment::where('expenses_proposal_id', $model->id)->get();
+            // SAVE UPDATED EXPENSES PROPOSAL ATTACHMENTS
+            if($attachments) {
+                foreach($attachments as $attachment) {
 
-            // foreach($attachments as $attachment) {
-            //     foreach($data['attachments_list'] as $file) {
-            //         if($attachment)
-            //         ExpensesAttachment::create([
-            //             'expenses_proposal_id'  => $this->model->id,
-            //             'file_name'           => $attachment->file_name
-            //         ]);
-            //     }
-            // }
-
-            // foreach($data['attachments_list'] as ) {
-
-            //     ExpensesAttachment::create([
-            //         'expenses_proposal_id'  => $this->model->id,
-            //         'file_name'           => $attachment->file_name
-            //     ]);
-            // }    
+                    $item = ExpensesAttachment::where('expenses_proposal_id', $this->model->id)->where('file_name', $attachment['file_name'])->first();
+                    
+                    if(!$item){
+                        ExpensesAttachment::create([
+                            'expenses_proposal_id'  => $this->model->id,
+                            'file_name'             => $attachment['file_name']
+                        ]);
+                    }
+                }    
+            }
+            
             
             // BUYER FINISH PURCHASE - SEND PURCHASE CONFIRMATION EMAIL
             if($data['buyer_role']) {

@@ -8,14 +8,7 @@ use App\Models\User;
 
 class ExpensesProposal extends ModelService
 {
-
-    protected $casts = [
-        'subtotal' => 'decimal:2',
-        'hst' => 'decimal:2',
-        'ship' => 'decimal:2',
-        'total_cost' => 'decimal:2',
-    ];
-
+       
     protected $table = 'exp_ap_proposals';
 
     protected $dates = [
