@@ -22,8 +22,8 @@ class CreateProductionsTable extends Migration
             $table->foreignId('previous_phase_id')->nullable()->constrained('prod_phases')->onDelete('set null');
             $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('set null');
             $table->foreignId('product_id')->constrained('inv_products')->onDelete('cascade');
-            $table->foreignId('author_id')->constrained('users')->onDelete('set null');
-            $table->foreignId('last_updater_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('author_id')->constrained('public.users')->onDelete('set null');
+            $table->foreignId('last_updater_id')->nullable()->constrained('public.users')->onDelete('set null');
 
             // can be related to a project/sales order/something else
             $table->unsignedBigInteger('relation_id')->nullable();

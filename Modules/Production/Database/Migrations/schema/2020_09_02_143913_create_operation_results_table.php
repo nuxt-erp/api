@@ -18,7 +18,7 @@ class CreateOperationResultsTable extends Migration
 
             $table->foreignId('production_id')->constrained('prod_productions')->onDelete('cascade');
             $table->foreignId('operation_id')->nullable()->constrained('prod_operations')->onDelete('set null');
-            $table->foreignId('author_id')->constrained('users')->onDelete('set null');
+            $table->foreignId('author_id')->constrained('public.users')->onDelete('set null');
             $table->foreignId('machine_id')->nullable()->constrained('prod_machines')->onDelete('set null');
 
             $table->unsignedInteger('to_handle_qty')->default(0);
