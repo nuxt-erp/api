@@ -27,7 +27,7 @@ class ExpensesRule extends ModelService
 
         // CREATE
         if (is_null($item)) {
-            $rules['name'][]                    = 'unique:exp_ap_rules';
+            $rules['name'][]                    = 'unique:tenant.exp_ap_rules';
             $rules['name'][]                    = 'required';
             $rules['team_leader_approval'][]    = 'required';
             $rules['director_approval'][]       = 'required';

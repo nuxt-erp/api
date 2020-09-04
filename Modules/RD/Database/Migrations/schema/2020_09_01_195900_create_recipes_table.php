@@ -21,7 +21,7 @@ class CreateRecipesTable extends Migration
             $table->foreignId('approver_id')->nullable()->constrained('public.users')->onDelete('set null');
 
             // Added by me (recipe type: vape, syrup etc)
-            $table->foreignId('type_id')->nullable()->constrained('public.parameters')->onDelete('set null');
+            $table->foreignId('type_id')->nullable()->constrained('parameters')->onDelete('set null');
 
             // each recipe will produce a product
             $table->foreignId('product_id')->nullable()->constrained('inv_products')->onDelete('set null');

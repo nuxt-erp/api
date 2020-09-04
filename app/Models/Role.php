@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Validation\Rule;
+
 class Role extends ModelService
 {
 

@@ -18,7 +18,7 @@ class ExpensesAttachment extends Model
     public function getRules($request, $item = null)
     {
         $rules = [
-            'expenses_proposal_id'   => ['exists:exp_ap_expenses_proposals,id'], 
+            'expenses_proposal_id'   => ['exists:tenant.exp_ap_expenses_proposals,id'], 
             'file_name'             => ['string', 'max:255'], 
         ];
 

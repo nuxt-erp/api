@@ -17,7 +17,7 @@ class ExpensesApproval extends ModelService
     public function getRules($request, $item = null)
     {
         $rules = [
-            'expenses_proposal_id'   => ['exists:exp_ap_expenses_proposals,id'], 
+            'expenses_proposal_id'   => ['exists:tenant.exp_ap_expenses_proposals,id'], 
             'approver_id'           => ['exists:users,id'], 
         ];
 

@@ -25,8 +25,8 @@ class Category extends ModelService
     {
         $rules = [
             'name'              => ['string', 'max:255'],
-            'team_leader_id'    => ['nullable', 'exists:users,id'], 
-            'director_id'       => ['nullable', 'exists:users,id'], 
+            'team_leader_id'    => ['nullable', 'exists:public.users,id'], 
+            'director_id'       => ['nullable', 'exists:public.users,id'], 
             'is_finished'       => ['nullable', 'boolean'],
             'finished_at'       => ['nullable', 'date']
         ];
@@ -34,7 +34,7 @@ class Category extends ModelService
         // CREATE
         if (is_null($item))
         {
-            $rules['name'][]            = 'unique:exp_ap_categories';
+            $rules['name'][]            = 'unique:tenant.exp_ap_categories';
             $rules['name'][]            = 'required';
             $rules['team_leader_id'][]  = 'required';
             $rules['director_id'][]     = 'required';

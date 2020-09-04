@@ -85,7 +85,8 @@ class UserRepository extends RepositoryService
     
     public function store(array $data)
     {
-
+        $user = auth()->user();        
+        $data['company_id'] = $user->company_id;
         $data['password']   = bcrypt($data['password']);
         parent::store($data);
 
