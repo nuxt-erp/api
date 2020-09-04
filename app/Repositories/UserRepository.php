@@ -81,12 +81,15 @@ class UserRepository extends RepositoryService
         }
 
         return parent::findBy($searchCriteria);
-    }   
-    
+    }
+
     public function store(array $data)
     {
-        $user = auth()->user();        
-        $data['company_id'] = $user->company_id;
+        $user = auth()->user();
+        if($user) {
+            $data['company_id'] = $user->company_id;
+        }
+
         $data['password']   = bcrypt($data['password']);
         parent::store($data);
 
@@ -111,5 +114,5 @@ class UserRepository extends RepositoryService
         if (Arr::has($data, 'roles')) {
             $this->model->roles()->sync($data['roles']);
         }
-    }   
+    }
 }

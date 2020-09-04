@@ -8,6 +8,7 @@ class User extends LoginModel implements ModelInterface
 {
 
     protected $connection = 'public';
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
