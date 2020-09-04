@@ -8,7 +8,8 @@ use App\Models\User;
 
 class ExpensesProposal extends ModelService
 {
-       
+    protected $connection = 'tenant';
+    
     protected $table = 'exp_ap_proposals';
 
     protected $dates = [

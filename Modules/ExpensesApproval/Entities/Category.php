@@ -8,6 +8,8 @@ use Illuminate\Validation\Rule;
 
 class Category extends ModelService
 {
+    protected $connection = 'tenant';
+    
     protected $table = 'exp_ap_categories';
 
     protected $dates = [

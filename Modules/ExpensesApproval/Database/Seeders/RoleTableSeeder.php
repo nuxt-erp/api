@@ -14,6 +14,10 @@ class RoleTableSeeder extends Seeder
      */
     public function run()
     {
+        Role::updateOrCreate([
+            'code' => 'user',
+            'name' => 'User'
+        ]);
 
         Role::updateOrCreate([
             'code' => 'buyer',
