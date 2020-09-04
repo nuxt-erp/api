@@ -24,7 +24,7 @@ class ExpensesProposalRepository extends RepositoryService
 
             $this->queryBuilder
                 ->whereDate('created_at', '>=', $searchCriteria['date'][0])
-                ->whereDate('created_at', '<=', $searchCriteria['date'][1]);                
+                ->whereDate('created_at', '<=', $searchCriteria['date'][1]);
         }
 
         if (!empty($searchCriteria['status'])) {
@@ -32,14 +32,14 @@ class ExpensesProposalRepository extends RepositoryService
             $searchCriteria['status_id'] = $status_id;
         }
 
-        
+
 
         return parent::findBy($searchCriteria);
     }
 
     public function getPendingProposals(array $searchCriteria = [])
     {
-        $user = auth()->user();        
+        $user = auth()->user();
         // FOR BUYERS, GET ALL THE APPROVED PROPOSALS ONLY
         if($user->hasRole('buyer')) {
             $this->queryBuilder
@@ -47,7 +47,7 @@ class ExpensesProposalRepository extends RepositoryService
                     $query->where('value', 'approved');
                 });
         } else {
-            // GET ALL THE EXPENSES PROPOSALS CREATED BY THE USER 
+            // GET ALL THE EXPENSES PROPOSALS CREATED BY THE USER
             // OR THAT THE USER IS THE TEAM LEADER OR DIRECTOR APPROVER OF THE EXPENSE CATEGORY
             // THAT HAVE PENDING STATUS
             $this->queryBuilder
@@ -58,11 +58,11 @@ class ExpensesProposalRepository extends RepositoryService
                     $query->where('author_id', $user->id)
                         ->orWhereHas('category', function (Builder $query) use ($user) {
                             $query->where('team_leader_id', $user->id)
-                                ->orWhere('director_id', $user->id);                    
+                                ->orWhere('director_id', $user->id);
                         });
                 });
-                
-                
+
+
         }
 
         return $this->findBy($searchCriteria);
@@ -71,7 +71,7 @@ class ExpensesProposalRepository extends RepositoryService
     public function getProcessedProposals(array $searchCriteria = [])
     {
         $user = auth()->user();
-        
+
         // FOR BUYERS, GET ALL THE PURCHASED PROPOSALS ONLY
         if($user->hasRole('buyer')) {
             $this->queryBuilder
@@ -79,7 +79,7 @@ class ExpensesProposalRepository extends RepositoryService
                     $query->where('value', 'purchased');
                 });
         } else {
-            // GET ALL THE EXPENSES PROPOSALS CREATED BY THE USER 
+            // GET ALL THE EXPENSES PROPOSALS CREATED BY THE USER
             // OR THAT THE USER IS THE TEAM LEADER OR DIRECTOR APPROVER OF THE EXPENSE CATEGORY
             // THAT HAVE STATUS DIFFERENT FROM PENDING
             $this->queryBuilder
@@ -90,10 +90,10 @@ class ExpensesProposalRepository extends RepositoryService
                     $query->where('author_id', $user->id)
                         ->orWhereHas('category', function (Builder $query) use ($user) {
                             $query->where('team_leader_id', $user->id)
-                                ->orWhere('director_id', $user->id);                    
+                                ->orWhere('director_id', $user->id);
                         });
                 });
-                
+
         }
         return $this->findBy($searchCriteria);
     }
@@ -129,7 +129,7 @@ class ExpensesProposalRepository extends RepositoryService
                 else {
                     $data['status_id'] = $pending_id;
                 }
-            } 
+            }
             // ONLY TEAM LEADER APPROVAL REQUIRED
             else if($team_leader_required && !$director_required) {
                 // AUTHOR OF EXPENSE IS THE DIRECTOR OR TEAM LEADER OF THE CATEGORY, APPROVE DIRECTLY
@@ -150,18 +150,18 @@ class ExpensesProposalRepository extends RepositoryService
                 else {
                     $data['status_id'] = $pending_id;
                 }
-            } 
+            }
             // NO APPROVAL REQUIRED, APPROVE DIRECTLY
             else {
                 $data['status_id'] = $approved_id;
             }
-           
+
             parent::store($data);
 
             if($this->model) {
-                
+
                 // IF USER THAT CREATE THE EXPENSE IS ONE OF THE APPROVERS, HE DOESN'T NEED TO APPROVE AGAIN
-                if(($user->id === $category->team_leader_id && $team_leader_required) 
+                if(($user->id === $category->team_leader_id && $team_leader_required)
                 || ($user->id === $category->director_id && ($director_required || ($team_leader_required && !$director_required)))) {
                     ExpensesApproval::create([
                         'expenses_proposal_id'  => $this->model->id,
@@ -182,7 +182,7 @@ class ExpensesProposalRepository extends RepositoryService
                 }
 
                 $data = [
-                    'user_name'     => $user->name, 
+                    'user_name'     => $user->name,
                     'category'      => $category->name,
                     'item'          => $this->model->item,
                     'supplier_link' => $this->model->supplier_link,
@@ -204,7 +204,7 @@ class ExpensesProposalRepository extends RepositoryService
                         ]);
                     }
                 }
-                
+
 
             }
         });
@@ -214,7 +214,7 @@ class ExpensesProposalRepository extends RepositoryService
     {
 
         DB::transaction(function () use ($data, $model)
-        {   
+        {
             $attachments = $data['attachments_list'];
 
             // BUYER FINISH PURCHASE - SAVE PURCHASE DATE
@@ -226,28 +226,28 @@ class ExpensesProposalRepository extends RepositoryService
 
             // SAVE UPDATED EXPENSES PROPOSAL DATA
             parent::update($model, $data);
-            
+
             // SAVE UPDATED EXPENSES PROPOSAL ATTACHMENTS
             if($attachments) {
                 foreach($attachments as $attachment) {
 
                     $item = ExpensesAttachment::where('expenses_proposal_id', $this->model->id)->where('file_name', $attachment['file_name'])->first();
-                    
+
                     if(!$item){
                         ExpensesAttachment::create([
                             'expenses_proposal_id'  => $this->model->id,
                             'file_name'             => $attachment['file_name']
                         ]);
                     }
-                }    
+                }
             }
-            
-            
+
+
             // BUYER FINISH PURCHASE - SEND PURCHASE CONFIRMATION EMAIL
             if($data['buyer_role']) {
 
                 $data = [
-                    'user_name'     => $model->author->name, 
+                    'user_name'     => $model->author->name,
                     'category'      => $model->category->name,
                     'item'          => $model->item,
                     'supplier_link' => $model->supplier_link,
@@ -257,11 +257,11 @@ class ExpensesProposalRepository extends RepositoryService
                     'total_cost'    => $model->total_cost,
                     'type'          => 'purchased',
                 ];
-    
+
                 $this->sendEmail([$model->author->email], $data);
             }
 
-        });        
+        });
     }
 
     public function approveProposal($id)
@@ -290,12 +290,12 @@ class ExpensesProposalRepository extends RepositoryService
             $proposal->status_id = $approved_id;
         }
 
-        $proposal->save();  
+        $proposal->save();
 
         if ($proposal->status_id === $approved_id) {
-           
+
             $data = [
-                'user_name'     => $proposal->author->name, 
+                'user_name'     => $proposal->author->name,
                 'category'      => $proposal->category->name,
                 'item'          => $proposal->item,
                 'supplier_link' => $proposal->supplier_link,
@@ -326,12 +326,12 @@ class ExpensesProposalRepository extends RepositoryService
     public function disapproveProposal($id)
     {
         $proposal  = ExpensesProposal::find($id);
-        $denied_id = Parameter::where('value', 'denied')->pluck('id')->first();      
+        $denied_id = Parameter::where('value', 'denied')->pluck('id')->first();
         $proposal->status_id = $denied_id;
         $proposal->save();
-          
+
         $data = [
-            'user_name'     => $proposal->author->name, 
+            'user_name'     => $proposal->author->name,
             'category'      => $proposal->category->name,
             'item'          => $proposal->item,
             'supplier_link' => $proposal->supplier_link,
@@ -348,16 +348,16 @@ class ExpensesProposalRepository extends RepositoryService
     }
 
     public function sendEmail(array $to, $data)
-    {     
-        $beautymail = app()->make(Beautymail::class);
-        $beautymail->send('expenses_approval.email', $data, function($message) use ($to)
-        {
-            $message->from(config('mail.from.address'))
-                    ->subject('Expenses Proposal');
+    {
+        // $beautymail = app()->make(Beautymail::class);
+        // $beautymail->send('expenses_approval.email', $data, function($message) use ($to)
+        // {
+        //     $message->from(config('mail.from.address'))
+        //             ->subject('Expenses Proposal');
 
-            foreach ($to as $email) {
-                $message->bcc($email);
-            }
-        });
+        //     foreach ($to as $email) {
+        //         $message->bcc($email);
+        //     }
+        // });
     }
 }

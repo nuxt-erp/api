@@ -7,9 +7,9 @@ use App\Models\ModelService;
 class ExpensesApproval extends ModelService
 {
     protected $connection = 'tenant';
-    
+
     protected $table = 'exp_ap_approvals';
-    
+
     protected $fillable = [
         'expenses_proposal_id', 'approver_id'
     ];
@@ -17,8 +17,8 @@ class ExpensesApproval extends ModelService
     public function getRules($request, $item = null)
     {
         $rules = [
-            'expenses_proposal_id'   => ['exists:tenant.exp_ap_expenses_proposals,id'], 
-            'approver_id'           => ['exists:users,id'], 
+            //'expenses_proposal_id'   => ['exists:tenant.exp_ap_expenses_proposals,id'],
+            //'approver_id'           => ['exists:users,id'],
         ];
 
         // CREATE
@@ -36,7 +36,7 @@ class ExpensesApproval extends ModelService
     {
         return $this->belongsTo(ExpensesProposal::class, 'expense_proposal_id');
     }
-    
+
     public function team_leader()
     {
         return $this->belongsTo(User::class, 'approver_id');

@@ -34,14 +34,14 @@ class Category extends ModelService
         // CREATE
         if (is_null($item))
         {
-            $rules['name'][]            = 'unique:tenant.exp_ap_categories,id';
+            //$rules['name'][]            = 'unique:tenant.exp_ap_categories,id';
             $rules['name'][]            = 'required';
             $rules['team_leader_id'][]  = 'required';
             $rules['director_id'][]     = 'required';
 
         } else {
             //update
-            $rules['name'][] = Rule::unique('tenant.exp_ap_categories')->ignore($item->id);
+            //$rules['name'][] = Rule::unique('tenant.exp_ap_categories')->ignore($item->id);
         }
 
         return $rules;

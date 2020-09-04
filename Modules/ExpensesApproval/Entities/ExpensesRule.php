@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 class ExpensesRule extends ModelService
 {
     protected $connection = 'tenant';
-    
+
     protected $table = 'exp_ap_rules';
 
     protected $fillable = [
@@ -21,13 +21,13 @@ class ExpensesRule extends ModelService
         $rules = [
             'name'                  => ['string', 'max:255'],
             'team_leader_approval'  => ['nullable', 'boolean'],
-            'director_approval'     => ['nullable', 'boolean'],            
+            'director_approval'     => ['nullable', 'boolean'],
             'end_value'             => ['nullable'],
         ];
 
         // CREATE
         if (is_null($item)) {
-            $rules['name'][]                    = 'unique:tenant.exp_ap_rules';
+            //$rules['name'][]                    = 'unique:tenant.exp_ap_rules';
             $rules['name'][]                    = 'required';
             $rules['team_leader_approval'][]    = 'required';
             $rules['director_approval'][]       = 'required';
@@ -37,5 +37,5 @@ class ExpensesRule extends ModelService
         }
 
         return $rules;
-    }   
+    }
 }

@@ -9,7 +9,7 @@ use App\Models\User;
 class ExpensesProposal extends ModelService
 {
     protected $connection = 'tenant';
-    
+
     protected $table = 'exp_ap_proposals';
 
     protected $dates = [
@@ -17,19 +17,19 @@ class ExpensesProposal extends ModelService
     ];
 
     protected $fillable = [
-        'expenses_category_id', 'author_id', 'item', 
-        'reason', 'supplier_link', 'subtotal', 'hst', 
+        'expenses_category_id', 'author_id', 'item',
+        'reason', 'supplier_link', 'subtotal', 'hst',
         'ship', 'total_cost', 'status_id', 'purchase_date'
     ];
 
     public function getRules($request, $item = null)
     {
         $rules = [
-            'expenses_category_id'  => ['exists:tenant.exp_ap_categories,id'],
-            'author_id'             => ['exists:public.users,id'], 
+            //'expenses_category_id'  => ['exists:tenant.exp_ap_categories,id'],
+            //'author_id'             => ['exists:public.users,id'],
             'item'                  => ['string', 'max:255'],
             'supplier_link'         => ['nullable'],
-            'status_id'             => ['exists:tenant.parameters,id'], 
+            //'status_id'             => ['exists:tenant.parameters,id'],
             'purchase_date'         => ['nullable', 'date']
         ];
 
@@ -56,12 +56,12 @@ class ExpensesProposal extends ModelService
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');
-    } 
-    
+    }
+
     public function status()
     {
         return $this->belongsTo(Parameter::class, 'status_id');
-    } 
+    }
 
     public function approvals()
     {
@@ -89,7 +89,7 @@ class ExpensesProposal extends ModelService
                 return $category->director->name . ', ' . $category->team_leader->name;
             } else if($rule->team_leader_approval && !$rule->director_approval){
                 return $category->team_leader->name;
-            } 
+            }
         } else {
             return '';
         }
