@@ -12,7 +12,10 @@ class ModelService extends Model implements ModelInterface
 
     protected function newBaseQueryBuilder()
     {
+        lad('newBaseQueryBuilder');
         $user = auth()->user();
+        lad("user");
+        lad($user);
         if($user && empty(config('database.connections.tenant.schema'))){
             $company = DB::table('companies')->find($user->company_id);
             lad('new schema');

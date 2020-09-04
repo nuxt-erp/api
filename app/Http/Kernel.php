@@ -4,7 +4,6 @@ namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use App\Http\Middleware\JsonMiddleware;
-use App\Http\Middleware\SchemaMiddleware;
 
 class Kernel extends HttpKernel
 {
