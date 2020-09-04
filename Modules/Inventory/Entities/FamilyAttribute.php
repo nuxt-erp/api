@@ -6,7 +6,8 @@ use App\Models\ModelService;
 
 class ProductFamilyAttribute extends ModelService
 {
-    public $timestamps = false;
+
+    protected $connection = 'tenant';
 
     protected $fillable = [
         'value', 'family_id', 'attribute_id'
@@ -16,14 +17,14 @@ class ProductFamilyAttribute extends ModelService
     {
         $rules = [
             'value'         => ['string', 'max:60'],
-            'attribute_id'  => ['exists:attributes,id']
+            'attribute_id'  => ['exists:tenant.attributes,id']
         ];
 
         // CREATE
         if (is_null($item))
         {
             $rules['value'][]           = 'required';
-            $rules['family_id'][]      = 'required';
+            $rules['family_id'][]       = 'required';
             $rules['attribute_id'][]    = 'required';
         }
 

@@ -9,6 +9,8 @@ use App\Models\Supplier;
 class Product extends ModelService
 {
 
+    protected $connection = 'tenant';
+
     protected $table = 'inv_products';
 
     protected $dates = [
@@ -30,10 +32,10 @@ class Product extends ModelService
     {
         $rules = [
             'name'          => ['string', 'max:100'],
-            'brand_id'      => ['nullable', 'exists:inv_brands,id'],
-            'category_id'   => ['nullable', 'exists:inv_categories,id'],
-            'supplier_id'   => ['nullable', 'exists:suppliers,id'],
-            'family_id'     => ['nullable', 'exists:inv_families,id'],
+            'brand_id'      => ['nullable', 'exists:tenant.inv_brands,id'],
+            'category_id'   => ['nullable', 'exists:tenant.inv_categories,id'],
+            'supplier_id'   => ['nullable', 'exists:tenant.suppliers,id'],
+            'family_id'     => ['nullable', 'exists:tenant.inv_families,id'],
             //@todo add more validation
         ];
 

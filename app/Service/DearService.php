@@ -70,7 +70,7 @@ class DearService
 
             $dear_result        = $this->makeRequest('product', $filters);
 
-            if ($dear_result->status) {
+            if ($dear_result->status && $dear_result->Total > 0) {
                 $total = $dear_result->Total;
                 foreach ($dear_result->Products as $prod) {
 
@@ -221,7 +221,6 @@ class DearService
         return $final_item;
     }
 
-
     public function syncAvailability()
     {
         $result = FALSE;
@@ -278,6 +277,34 @@ class DearService
 
         return $final_item;
 
+    }
+
+    public function syncLocations()
+    {
+        $page = 1;
+        $final_item = FALSE;
+        $filters = [
+            'Page'              => $page,
+            'Limit'             => !empty($name) ? 1 : $this->limit
+        ];
+
+        if(!empty($name))
+        {
+            $filters['Name'] = $name;
+        }
+
+        $dear_result = $this->makeRequest('ref/location', $filters);
+
+        if ($dear_result->status)
+        {
+            foreach ($dear_result->LocationList as $item)
+            {
+                echo formatName($item->Name);
+                $final_item = Location::updateOrCreate(['company_id' => $this->user->company_id, 'name' => formatName($item->Name)]);
+            }
+        }
+
+        return $final_item;
     }
 
     public function makeRequest($uri, $params)
@@ -357,34 +384,6 @@ class DearService
         $new_product->dear = $product->ID;
 
         return $new_product;
-    }
-
-    public function syncLocations()
-    {
-        $page = 1;
-        $final_item = FALSE;
-        $filters = [
-            'Page'              => $page,
-            'Limit'             => !empty($name) ? 1 : $this->limit
-        ];
-
-        if(!empty($name))
-        {
-            $filters['Name'] = $name;
-        }
-
-        $dear_result = $this->makeRequest('ref/location', $filters);
-
-        if ($dear_result->status)
-        {
-            foreach ($dear_result->LocationList as $item)
-            {
-                echo formatName($item->Name);
-                $final_item = Location::updateOrCreate(['company_id' => $this->user->company_id, 'name' => formatName($item->Name)]);
-            }
-        }
-
-        return $final_item;
     }
 
 }

@@ -4,7 +4,7 @@ namespace App\Models;
 
 class Parameter extends ModelService
 {
-    public $timestamps = false;
+    protected $connection = 'tenant';
 
     protected $fillable = [
         'name', 'value', 'order',

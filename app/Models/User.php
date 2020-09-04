@@ -6,6 +6,9 @@ use Illuminate\Validation\Rule;
 
 class User extends LoginModel implements ModelInterface
 {
+
+    protected $connection = 'public';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -13,11 +16,11 @@ class User extends LoginModel implements ModelInterface
      */
     protected $fillable = [
         'name', 'email', 'password',
-        'is_enabled', 'disabled_at'
+        'is_enabled', 'disabled_at', 'company_id'
     ];
 
     protected $dates = [
-        'disabled_at',
+        'disabled_at'
     ];
 
     /**
@@ -40,6 +43,7 @@ class User extends LoginModel implements ModelInterface
     {
 
         $rules = [
+            'company_id'    => ['nullable', 'exists:companies,id'],
             'name'          => ['string', 'max:255'],
             'email'         => ['max:255', 'email'],
             'password'      => ['between:4,32'],
@@ -101,5 +105,10 @@ class User extends LoginModel implements ModelInterface
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'user_roles')->withTimestamps();
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 }

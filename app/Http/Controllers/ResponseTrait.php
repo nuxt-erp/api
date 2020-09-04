@@ -92,7 +92,6 @@ trait ResponseTrait
 
     public function sendArray($data)
     {
-
         return response()->json([
             'status'    => $this->status,
             'data'      => $data,

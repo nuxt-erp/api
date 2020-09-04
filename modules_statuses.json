@@ -1,7 +1,7 @@
 {
     "Inventory": true,
     "Accounting": false,
-    "Sale": true,
     "Sales": true,
-    "ExpensesApproval": true
+    "ExpensesApproval": true,
+    "RD": true
 }

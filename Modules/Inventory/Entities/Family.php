@@ -9,6 +9,8 @@ use Illuminate\Validation\Rule;
 
 class Family extends ModelService
 {
+    protected $connection = 'tenant';
+
     protected $table = 'inv_families';
 
     protected $dates = [
@@ -25,10 +27,10 @@ class Family extends ModelService
     public function getRules($request, $item = null)
     {
         $rules = [
-            'brand_id'      => ['nullable', 'exists:inv_brands,id'],
-            'category_id'   => ['nullable', 'exists:inv_categories,id'],
-            'supplier_id'   => ['nullable', 'exists:suppliers,id'],
-            'location_id'   => ['nullable', 'exists:locations,id'],
+            'brand_id'      => ['nullable', 'exists:tenant.inv_brands,id'],
+            'category_id'   => ['nullable', 'exists:tenant.inv_categories,id'],
+            'supplier_id'   => ['nullable', 'exists:tenant.suppliers,id'],
+            'location_id'   => ['nullable', 'exists:tenant.locations,id'],
             'dear_id'       => ['nullable', 'string', 'max:255'],
             'name'          => ['string', 'max:100'],
             'description'   => ['nullable', 'string', 'max:500'],
@@ -41,14 +43,14 @@ class Family extends ModelService
         if (is_null($item))
         {
             $rules['name'][]    = 'required';
-            $rules['dear_id'][] = 'unique:inv_families';
-            $rules['name'][]    = 'unique:inv_families';
-            $rules['sku'][]     = 'unique:inv_families';
+            $rules['dear_id'][] = 'unique:tenant.inv_families';
+            $rules['name'][]    = 'unique:tenant.inv_families';
+            $rules['sku'][]     = 'unique:tenant.inv_families';
         } else {
             //update
-            $rules['dear_id'][] = Rule::unique('inv_families')->ignore($item->id);
-            $rules['name'][]    = Rule::unique('inv_families')->ignore($item->id);
-            $rules['sku'][]     = Rule::unique('inv_families')->ignore($item->id);
+            $rules['dear_id'][] = Rule::unique('tenant.inv_families')->ignore($item->id);
+            $rules['name'][]    = Rule::unique('tenant.inv_families')->ignore($item->id);
+            $rules['sku'][]     = Rule::unique('tenant.inv_families')->ignore($item->id);
         }
 
         return $rules;

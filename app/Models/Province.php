@@ -6,6 +6,8 @@ use Illuminate\Validation\Rule;
 
 class Province extends ModelService
 {
+    protected $connection = 'tenant';
+
     protected $fillable = [
         'name', 'code', 'country_id'
     ];
@@ -15,7 +17,7 @@ class Province extends ModelService
         $rules = [
             'name'          => ['string', 'max:255'],
             'code'          => ['string', 'max:2'],
-            'country_id'    => ['exists:countries,id'],
+            'country_id'    => ['exists:tenant.countries,id'],
         ];
 
         // CREATE
@@ -23,13 +25,13 @@ class Province extends ModelService
         {
             $rules['name'][]        = 'required';
             $rules['code'][]        = 'required';
-            $rules['name'][]        = 'unique:provinces';
-            $rules['code'][]        = 'unique:provinces';
+            $rules['name'][]        = 'unique:tenant.provinces';
+            $rules['code'][]        = 'unique:tenant.provinces';
             $rules['country_id'][]  = 'required';
         }
         else{
-            $rules['name'][]    = Rule::unique('provinces')->ignore($item->id);
-            $rules['code'][]    = Rule::unique('provinces')->ignore($item->id);
+            $rules['name'][]    = Rule::unique('tenant.provinces')->ignore($item->id);
+            $rules['code'][]    = Rule::unique('tenant.provinces')->ignore($item->id);
         }
 
         return $rules;

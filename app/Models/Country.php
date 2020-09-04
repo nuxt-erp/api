@@ -6,6 +6,8 @@ use Illuminate\Validation\Rule;
 
 class Country extends ModelService
 {
+    protected $connection = 'tenant';
+
     protected $fillable = [
         'name'
     ];
@@ -19,12 +21,12 @@ class Country extends ModelService
         // CREATE
         if (is_null($item))
         {
-            $rules['name'][] = 'unique:countries';
+            $rules['name'][] = 'unique:tenant.countries';
             $rules['name'][] = 'required';
         }
         else {
             //update
-            $rules['name'][]    = Rule::unique('countries')->ignore($item->id);
+            $rules['name'][]    = Rule::unique('tenant.countries')->ignore($item->id);
         }
         return $rules;
     }

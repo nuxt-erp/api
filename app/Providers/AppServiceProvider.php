@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Service\DearService;
 use App\Service\ShopifyService;
+use App\Services\DearService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

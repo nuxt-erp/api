@@ -25,17 +25,19 @@ return [
     */
 
     'stubs' => [
-        'enabled' => false,
-        'path' => base_path() . '/stubs',
+        'enabled' => true,
+        'path' => base_path() . '/Modules/stubs',
         'files' => [
-            'routes/api'        => 'Routes/api.php',
-            'scaffold/config'   => 'Config/config.php',
-            'composer'          => 'composer.json',
+            'scaffold/auth-service-provider'=> 'Providers/AuthServiceProvider.php',
+            'routes/api'                    => 'Routes/api.php',
+            'scaffold/config'               => 'Config/config.php',
+            'composer'                      => 'composer.json',
         ],
         'replacements' => [
-            'routes/api' => ['LOWER_NAME'],
-            'json' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE', 'PROVIDER_NAMESPACE'],
-            'scaffold/config' => ['STUDLY_NAME'],
+            'routes/api'                    => ['LOWER_NAME'],
+            'json'                          => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE', 'PROVIDER_NAMESPACE'],
+            'scaffold/config'               => ['STUDLY_NAME'],
+            'scaffold/auth-service-provider'=> ['MODULE_NAMESPACE', 'LOWER_NAME', 'NAMESPACE', 'STUDLY_NAME', 'PROVIDER_NAMESPACE'],
             'composer' => [
                 'LOWER_NAME',
                 'STUDLY_NAME',
@@ -80,7 +82,7 @@ return [
         |
         */
 
-        'migration' => base_path('database/migrations'),
+        'migration' => base_path('database/migrations/schema'),
         /*
         |--------------------------------------------------------------------------
         | Generator path
@@ -91,7 +93,7 @@ return [
         'generator' => [
             'config' => ['path' => 'Config', 'generate' => true],
             'command' => ['path' => 'Console', 'generate' => true],
-            'migration' => ['path' => 'Database/Migrations', 'generate' => true],
+            'migration' => ['path' => 'Database/Migrations/schema', 'generate' => true],
             'seeder' => ['path' => 'Database/Seeders', 'generate' => true],
             'factory' => ['path' => 'Database/factories', 'generate' => false],
             'model' => ['path' => 'Entities', 'generate' => true],
@@ -100,8 +102,6 @@ return [
             'filter' => ['path' => 'Http/Middleware', 'generate' => true],
             'request' => ['path' => 'Http/Requests', 'generate' => false],
             'provider' => ['path' => 'Providers', 'generate' => true],
-            'assets' => ['path' => 'Resources/assets', 'generate' => false],
-            'lang' => ['path' => 'Resources/lang', 'generate' => false],
             'views' => ['path' => 'Resources/views', 'generate' => false],
             'test' => ['path' => 'Tests/Unit', 'generate' => true],
             'test-feature' => ['path' => 'Tests/Feature', 'generate' => true],
@@ -144,8 +144,8 @@ return [
     'composer' => [
         'vendor' => 'nwidart',
         'author' => [
-            'name' => 'Nicolas Widart',
-            'email' => 'n.widart@gmail.com',
+            'name' => 'Gabriel Fernandez',
+            'email' => 'contact@gfernandez.me',
         ],
     ],
     /*
@@ -169,7 +169,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'register' => [
-        'translations' => true,
+        'translations' => false,
         /**
          * load files on boot or register method
          *

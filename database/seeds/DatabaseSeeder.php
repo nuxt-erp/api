@@ -11,8 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(CountryProvinceSeeder::class);
-        $this->call(RoleSeeder::class);
-        $this->call(UserSeeder::class);
+        // only seeders for public schema
+        $this->call(ModuleSeeder::class);
     }
 }

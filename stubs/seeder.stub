@@ -1,11 +1,8 @@
 <?php
 
-namespace $NAMESPACE$;
-
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Model;
 
-class $NAME$ extends Seeder
+class {{ class }} extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,8 +11,6 @@ class $NAME$ extends Seeder
      */
     public function run()
     {
-        Model::unguard();
-
-        // $this->call("OthersTableSeeder");
+        //
     }
 }

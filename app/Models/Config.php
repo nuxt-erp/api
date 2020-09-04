@@ -7,6 +7,8 @@ use Illuminate\Validation\Rule;
 class Config extends ModelService
 {
 
+    protected $connection = 'tenant';
+
     protected $fillable = [
         'country_id', 'province_id', 'contact_name',
         'email', 'address1', 'address2',
@@ -19,8 +21,8 @@ class Config extends ModelService
     public function getRules($request, $item = null)
     {
         $rules = [
-            'country_id'        => ['nullable', 'exists:countries,id'],
-            'province_id'       => ['nullable', 'exists:provinces,id'],
+            'country_id'        => ['nullable', 'exists:tenant.countries,id'],
+            'province_id'       => ['nullable', 'exists:tenant.provinces,id'],
             'contact_name'      => ['nullable', 'string', 'max:255'],
             'email'             => ['max:255'],
             'address1'          => ['nullable', 'string', 'max:255'],
@@ -44,10 +46,10 @@ class Config extends ModelService
         if (is_null($item))
         {
             $rules['email'][] = 'required';
-            $rules['email'][] = 'unique:configs';
+            $rules['email'][] = 'unique:tenant.configs';
         }
         else{
-            $rules['email'][]    = Rule::unique('configs')->ignore($item->id);
+            $rules['email'][]    = Rule::unique('tenant.configs')->ignore($item->id);
         }
 
         return $rules;

@@ -1,0 +1,13 @@
+{
+    "name": "RD",
+    "alias": "rd",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\RD\\Providers\\RDServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

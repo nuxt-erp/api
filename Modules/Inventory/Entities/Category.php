@@ -6,6 +6,9 @@ use App\Models\ModelService as ModelsModelService;
 
 class Category extends ModelsModelService
 {
+
+    protected $connection = 'tenant';
+
     protected $table = 'inv_categories';
 
     protected $dates = [
@@ -29,13 +32,13 @@ class Category extends ModelsModelService
         // CREATE
         if (is_null($item))
         {
-            $rules['dear_id'][]     = 'unique:inv_categories';
-            $rules['name'][]        = 'unique:inv_categories';
+            $rules['dear_id'][]     = 'unique:tenant.inv_categories';
+            $rules['name'][]        = 'unique:tenant.inv_categories';
             $rules['name'][]        = 'required';
         } else {
             //update
-            $rules['dear_id'][]    = Rule::unique('inv_categories')->ignore($item->id);
-            $rules['name'][]       = Rule::unique('inv_categories')->ignore($item->id);
+            $rules['dear_id'][]    = Rule::unique('tenant.inv_categories')->ignore($item->id);
+            $rules['name'][]       = Rule::unique('tenant.inv_categories')->ignore($item->id);
         }
 
         return $rules;
