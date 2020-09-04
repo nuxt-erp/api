@@ -16,7 +16,7 @@ class CreateProjectsTable extends Migration
         Schema::connection('tenant')->create('rd_projects', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->foreignId('author_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('author_id')->nullable()->constrained('public.users')->onDelete('set null');
             $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('set null');
 
             $table->string('status');
