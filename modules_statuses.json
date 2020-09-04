@@ -2,5 +2,6 @@
     "Inventory": true,
     "Accounting": false,
     "Sales": true,
-    "RD": true
+    "RD": true,
+    "Production": true
 }

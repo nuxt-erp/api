@@ -20,12 +20,21 @@ class ModuleSeeder extends Seeder
             'name'  => 'Sales'
         ]);
 
+<<<<<<< HEAD
+        Module::updateOrCreate([
+            'name'  => 'RD'
+        ]);
+
+        Module::updateOrCreate([
+            'name'  => 'Production'
+=======
 
 
 
 
         Module::updateOrCreate([
             'name'  => 'RD'
+>>>>>>> origin/master
         ]);
     }
 }
