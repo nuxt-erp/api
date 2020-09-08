@@ -349,15 +349,15 @@ class ExpensesProposalRepository extends RepositoryService
 
     public function sendEmail(array $to, $data)
     {
-        // $beautymail = app()->make(Beautymail::class);
-        // $beautymail->send('expenses_approval.email', $data, function($message) use ($to)
-        // {
-        //     $message->from(config('mail.from.address'))
-        //             ->subject('Expenses Proposal');
+        $beautymail = app()->make(Beautymail::class);
+        $beautymail->send('expenses_approval.email', $data, function($message) use ($to)
+        {
+            $message->from(config('mail.from.address'))
+                    ->subject('Expenses Proposal');
 
-        //     foreach ($to as $email) {
-        //         $message->bcc($email);
-        //     }
-        // });
+            foreach ($to as $email) {
+                $message->bcc($email);
+            }
+        });
     }
 }
