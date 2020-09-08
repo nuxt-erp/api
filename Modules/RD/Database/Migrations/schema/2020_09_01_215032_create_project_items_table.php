@@ -13,7 +13,7 @@ class CreateProjectItemsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('tenant')->create('rd_project_items', function (Blueprint $table) {
+        Schema::connection('tenant')->create('rd_project_samples', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             // this should be nullable because sometimes we don't have the recipe for this
@@ -43,6 +43,6 @@ class CreateProjectItemsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->dropIfExists('rd_project_items');
+        Schema::connection('tenant')->dropIfExists('rd_project_samples');
     }
 }

@@ -21,10 +21,10 @@ class ProjectSamples extends ModelService
             'recipe_id'               => ['exists:tenant.rd_recipes,id'],
             'assignee_id'             => ['exists:users,id'],
             'name'                    => ['nullable', 'max:255'],
-            'status'                  => ['max:255'],
+            'status'                  => ['string', 'max:255'],
             'target_cost'             => ['nullable', 'float'],
-            'feedback'                => ['nullable', 'max:255'],
-            'comment'                 => ['nullable', 'max:255'],
+            'feedback'                => ['nullable', 'string', 'max:255'],
+            'comment'                 => ['nullable', 'string', 'max:255'],
 
         ];
 

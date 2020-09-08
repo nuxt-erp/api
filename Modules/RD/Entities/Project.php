@@ -11,17 +11,17 @@ class Project extends ModelService
 
     protected $table = 'rd_projects';
 
-    protected $fillable = ['customer_id', 'user_id', 'is_enable', 'comments', 'closed_at'];
+    protected $fillable = ['customer_id', 'author_id', 'status', 'code', 'comments', 'started_at', 'closed_at'];
 
     public function getRules($request, $item = null)
     {
         // generic rules
         $rules = [
-            'author_id'             => ['exists:users,id'],
-            'customer_id'           => ['nullable', 'exists:customers,id'],
-            'status'                => ['max:255'],
-            'code'                  => ['max:255'],
-            'comments'              => ['max:255'],
+            'author_id'             => ['exists:public.users,id'],
+            'customer_id'           => ['nullable', 'exists:public.customers,id'],
+            'status'                => ['string', 'max:255'],
+            'code'                  => ['string', 'max:255'],
+            'comments'              => ['string', 'max:255'],
             'start_at'              => ['nullable', 'date'],
             'closed_at'             => ['nullable', 'date']
         ];

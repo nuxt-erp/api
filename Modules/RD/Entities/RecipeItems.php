@@ -9,15 +9,15 @@ class RecipeItems extends ModelService
 {
     protected $connection = 'tenant';
 
-    protected $table = 'rd_recipes';
+    protected $table = 'rd_recipe_items';
 
-    protected $fillable = ['name', 'code', 'cost', 'status', 'version'];
+    protected $fillable = ['product_id', 'recipe_id', 'cost', 'percent', 'quantity' ];
 
     public function getRules($request, $item = null)
     {
         // generic rules
         $rules = [
-            'project_id'             => ['exists:tenant.rd_projects,id'],
+            'product_id'             => ['exists:public.inv_products,id'],
             'recipe_id'              => ['exists:tenant.rd_recipes,id'],
             'quantity'               => ['nullable', 'float'],
             'percent'                => ['nullable', 'percent'],
@@ -26,10 +26,8 @@ class RecipeItems extends ModelService
 
         // rules when creating the item
         if (is_null($item)) {
-            $rules['project_id'][] = 'required';
+            $rules['product_id'][] = 'required';
             $rules['recipe_id'][] = 'required';
-            $rules['status'][] = 'required';
-            $rules['comment'][] = 'required';
             $rules['percent'][]     =
                 function ($attribute, $value, $fail) use ($request) {
                     $sum = self::where('recipe_id', $request->input('recipe_id'))->sum('percent');

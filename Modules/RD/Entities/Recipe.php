@@ -12,21 +12,22 @@ class Recipe extends ModelService
 
     protected $table = 'rd_recipes';
 
-    protected $fillable = ['name', 'code', 'cost', 'status', 'version'];
+    protected $fillable = ['author_id', 'last_updater_id', 'apporver_id','type_id', 'product_id', 'status', 'name', 'category', 'total', 'code', 'cost', 'version', 'approved_at'];
 
     public function getRules($request, $item = null)
     {
         
         // generic rules
         $rules = [
-            'author_id'             => ['nullable', 'exists:users,id'],
-            'last_updater_id'       => ['nullable', 'exists:users,id'],
-            'approver_id'           => ['nullable', 'exists:users,id'],
-            'type_id'               => ['nullable', 'exists:parameters,id'],
+            'author_id'             => ['nullable', 'exists:public.users,id'],
+            'last_updater_id'       => ['nullable', 'exists:public.users,id'],
+            'approver_id'           => ['nullable', 'exists:public.users,id'],
+            'type_id'               => ['nullable', 'exists:public.parameters,id'],
             'product_id'            => ['nullable', 'exists:tenant.inv_products,id'],
-            'status'                => ['max:255'],
-            'name'                  => ['max:255'],
-            'total'                 => ['max:255'],
+            'status'                => ['string', 'max:255'],
+            'name'                  => ['string', 'max:255'],
+            'category'              => ['string', 'max:255'],
+            'total'                 => ['string', 'max:255'],
             'code'                  => ['nullable', 'max:255'],
             'cost'                  => ['float'],
             'version'               => ['integer'],
