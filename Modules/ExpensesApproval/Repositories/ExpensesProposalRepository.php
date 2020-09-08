@@ -14,6 +14,7 @@ use Modules\ExpensesApproval\Entities\ExpensesAttachment;
 use Modules\ExpensesApproval\Entities\ExpensesProposal;
 use Modules\ExpensesApproval\Entities\ExpensesRule;
 use Snowfire\Beautymail\Beautymail;
+use Throwable;
 
 class ExpensesProposalRepository extends RepositoryService
 {
@@ -182,6 +183,7 @@ class ExpensesProposalRepository extends RepositoryService
                 }
 
                 $data = [
+                    'id'            => $this->model->id,
                     'user_name'     => $user->name,
                     'category'      => $category->name,
                     'item'          => $this->model->item,
@@ -247,6 +249,7 @@ class ExpensesProposalRepository extends RepositoryService
             if($data['buyer_role']) {
 
                 $data = [
+                    'id'            => $model->id,
                     'user_name'     => $model->author->name,
                     'category'      => $model->category->name,
                     'item'          => $model->item,
@@ -295,6 +298,7 @@ class ExpensesProposalRepository extends RepositoryService
         if ($proposal->status_id === $approved_id) {
 
             $data = [
+                'id'            => $proposal->id,
                 'user_name'     => $proposal->author->name,
                 'category'      => $proposal->category->name,
                 'item'          => $proposal->item,
@@ -331,6 +335,7 @@ class ExpensesProposalRepository extends RepositoryService
         $proposal->save();
 
         $data = [
+            'id'            => $proposal->id,
             'user_name'     => $proposal->author->name,
             'category'      => $proposal->category->name,
             'item'          => $proposal->item,
@@ -348,16 +353,21 @@ class ExpensesProposalRepository extends RepositoryService
     }
 
     public function sendEmail(array $to, $data)
-    {
-        $beautymail = app()->make(Beautymail::class);
-        $beautymail->send('expenses_approval.email', $data, function($message) use ($to)
-        {
-            $message->from(config('mail.from.address'))
-                    ->subject('Expenses Proposal');
+    {   
+        try {
+            $beautymail = app()->make(Beautymail::class);
+            $beautymail->send('expenses_approval.email', $data, function($message) use ($data, $to)
+            {
+                $message->from(config('mail.from.address'))
+                        ->subject('Purchase Order Request #' . $data['id'] . ' - User ' . strtoupper($data['user_name']));
 
-            foreach ($to as $email) {
-                $message->bcc($email);
-            }
-        });
+                foreach ($to as $email) {
+                    $message->bcc($email);
+                }
+            });
+        } catch (\Throwable $th) {
+            lad('Error to send email');
+        }
+        
     }
 }
