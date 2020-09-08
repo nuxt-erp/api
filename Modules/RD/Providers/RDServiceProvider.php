@@ -4,6 +4,12 @@ namespace Modules\RD\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
+// REPOSITORY
+use Modules\RD\Repositories\ProjectRepository;
+// RESOURCES
+use Modules\RD\Transformers\ProjectResource;
+// MODELS
+use Modules\RD\Entities\Project;
 
 class RDServiceProvider extends ServiceProvider
 {
@@ -39,6 +45,14 @@ class RDServiceProvider extends ServiceProvider
     {
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(AuthServiceProvider::class);
+
+        $this->app->bind(ProjectRepository::class, function () {
+            return new ProjectRepository(new Project());
+        });
+
+        $this->app->bind(ProjectResource::class, function () {
+            return new ProjectResource(new Project());
+        });
     }
 
     /**
@@ -48,7 +62,9 @@ class RDServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return [];
+        return [
+            ProjectRepository::class
+        ];
     }
 
     /**

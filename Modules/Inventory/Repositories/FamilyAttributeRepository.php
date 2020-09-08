@@ -7,26 +7,17 @@ use Illuminate\Support\Arr;
 
 class ProductFamilyAttributeRepository extends RepositoryService
 {
-    public function getList(array $searchCriteria = [])
-    {
-        $searchCriteria['order_by'] = [
-            'field'         => 'attribute_id',
-            'direction'     => 'asc'
-        ];
-
-        $searchCriteria['per_page'] = 50;
-
-        if (!empty($searchCriteria['value'])) {
-            $value = '%' . Arr::pull($searchCriteria, 'value') . '%';
-            $this->queryBuilder
-            ->where('value', 'LIKE', $value);
-        }
-
-        return parent::getList($searchCriteria);
-    }
 
     public function findBy(array $searchCriteria = [])
     {
+        if(empty($searchCriteria['order_by'])){
+            $searchCriteria['order_by'] = [
+                'field'         => 'attribute_id',
+                'direction'     => 'asc'
+            ];
+        }
+
+
         if (!empty($searchCriteria['value'])) {
             $value = '%' . Arr::pull($searchCriteria, 'value') . '%';
             $searchCriteria['query_type'] = 'LIKE';

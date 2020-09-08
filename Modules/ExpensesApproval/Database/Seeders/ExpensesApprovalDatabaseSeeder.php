@@ -19,6 +19,5 @@ class ExpensesApprovalDatabaseSeeder extends Seeder
         $this->call(ExpensesRuleTableSeeder::class);
         $this->call(RoleTableSeeder::class);
         $this->call(ParameterTableSeeder::class);
-        $this->call(UserTableSeeder::class);
     }
 }
