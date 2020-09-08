@@ -12,6 +12,7 @@ class ExpensesProposalResource extends JsonResource
     {
         $user = auth()->user();
         $actions = collect([]);
+        $preview = false;
 
         if($user->hasRole('buyer') && !$this->purchased_at) {
             $actions->push(collect([
@@ -28,11 +29,42 @@ class ExpensesProposalResource extends JsonResource
                         'icon'  => 'edit',
                         'type'  => 'primary'
                     ]));
+
+                    $actions->push(collect([
+                        'name'  => 'Delete',
+                        'code'  => 'delete_expense',
+                        'icon'  => 'delete',
+                        'type'  => 'danger'
+                    ]));
+                } else if($user->id === $this->author_id && $user->id === $this->category->team_leader_id){
+                    $actions->push(collect([
+                        'name'  => 'Edit',
+                        'code'  => 'edit_expense',
+                        'icon'  => 'edit',
+                        'type'  => 'primary'
+                    ]));
+
+                    $actions->push(collect([
+                        'name'  => 'Delete',
+                        'code'  => 'delete_expense',
+                        'icon'  => 'delete',
+                        'type'  => 'danger'
+                    ]));                
                 } else if($user->id === $this->category->team_leader_id || $user->id === $this->category->director_id){
+
 
                     $user_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $user->id)->first();
 
                     if(!$user_approval) {
+                        $preview = true;
+
+                        $actions->push(collect([
+                            'name'  => 'View Expense',
+                            'code'  => 'view_expense',
+                            'icon'  => 'search-recipes',
+                            'type'  => 'info'
+                        ]));
+
                         $actions->push(collect([
                             'name'  => 'Approve Expense',
                             'code'  => 'approve_expense',
@@ -47,6 +79,16 @@ class ExpensesProposalResource extends JsonResource
                             'type'  => 'danger'
                         ]));
                     }                                        
+                }
+            } else if($this->status->value === 'approved') {
+                if (($user->id === $this->author_id && $user->id === $this->category->director_id)
+                    ||($user->id === $this->author_id && $user->id === $this->category->team_leader_id && !$this->rule()->director_approval))  {
+                    $actions->push(collect([
+                        'name'  => 'Delete',
+                        'code'  => 'delete_expense',
+                        'icon'  => 'delete',
+                        'type'  => 'danger'
+                    ]));
                 }
             }
         }
@@ -72,7 +114,8 @@ class ExpensesProposalResource extends JsonResource
             'created_at'                => optional($this->created_at)->format('Y-m-d'),
             'updated_at'                => optional($this->updated_at)->format('Y-m-d'),
             'actions'                   => $actions,
-            'hide'                      => $this->status->value != 'pending'
+            'hide'                      => $this->status->value != 'pending',
+            'preview'                   => $preview
         ];
     }
 }

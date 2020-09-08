@@ -58,28 +58,28 @@
 		        @if (!empty($supplier_link))
 		<tr>
 			<td class="paragraph">
-				Supplier link: <strong>{{ $supplier_link }} </strong>
+				Supplier link: <strong>{{ $supplier_link }}</strong>
 			</td>
 		</tr>
 		@endif
 		<tr>
 			<td class="paragraph">
-				Subtotal (CAD): <strong>${{ number_format($subtotal, 2) }} </strong>
+				Subtotal: <strong>CA${{ number_format($subtotal, 2) }} </strong>
 			</td>
 		</tr>
 		<tr>
 			<td class="paragraph">
-				HST (CAD): <strong>${{ number_format($hst, 2) }} </strong>
+				HST: <strong>CA${{ number_format($hst, 2) }} </strong>
 			</td>
 		</tr>
 		<tr>
 			<td class="paragraph">
-				Ship (CAD): <strong>${{ number_format($ship, 2) }} </strong>
+				Ship: <strong>CA${{ number_format($ship, 2) }} </strong>
 			</td>
 		</tr>
 		<tr>
 			<td class="paragraph">
-				Total Cost (CAD): <strong>${{ number_format($total_cost, 2) }}
+				Total Cost: <strong>CA${{ number_format($total_cost, 2) }}
 			</td>
 		</tr>
 		<tr>
