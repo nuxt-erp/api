@@ -18,6 +18,7 @@ class ExpensesAttachmentController extends ControllerService
     {
         $this->repository = $repository;
         $this->resource = $resource;
+        parent::__construct();
     }
 
     public function saveFile(Request $request)
