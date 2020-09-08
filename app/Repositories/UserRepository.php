@@ -80,6 +80,12 @@ class UserRepository extends RepositoryService
             $this->queryBuilder->whereIn('id', $user_ids);
         }
 
+        $user = auth()->user();
+        if($user){
+            $this->queryBuilder->where('company_id', $user->company_id);
+        }
+
+
         return parent::findBy($searchCriteria);
     }
 
