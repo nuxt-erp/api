@@ -8,6 +8,8 @@ class Province extends ModelService
 {
     protected $connection = 'tenant';
 
+    protected $table = 'provinces';
+
     protected $fillable = [
         'name', 'code', 'country_id'
     ];
@@ -30,7 +32,7 @@ class Province extends ModelService
             $rules['country_id'][]  = 'required';
         }
         else{
-            $rules['name'][]    = Rule::unique('tenant.provinces')->ignore($item->id);
+            $rules['name'][]    = Rule::unique('tenant.provinces')->ignore($item->id); //  Rule::unique('tenant.inv_brands')->ignore($item->id);
             $rules['code'][]    = Rule::unique('tenant.provinces')->ignore($item->id);
         }
 

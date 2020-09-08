@@ -18,6 +18,6 @@ class ProjectController extends ControllerService implements CheckPolicies
     {
         $this->repository = $repository;
         $this->resource = $resource;
+        parent::__construct();
     }
-
 }

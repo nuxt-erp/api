@@ -15,5 +15,7 @@ class CountryController extends ControllerService
     {
         $this->repository = $repository;
         $this->resource = $resource;
+
+        parent::__construct();
     }
 }

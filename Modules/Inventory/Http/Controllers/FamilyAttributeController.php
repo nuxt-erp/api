@@ -16,5 +16,6 @@ class ProductFamilyAttributeController extends ControllerService implements Chec
     {
         $this->repository = $repository;
         $this->resource = $resource;
+        parent::__construct();
     }
 }
