@@ -14,8 +14,9 @@ class ProductController extends ControllerService implements CheckPolicies
 
     public function __construct(ProductRepository $repository, ProductResource $resource)
     {
+       
         $this->repository = $repository;
         $this->resource = $resource;
+        parent::__construct();
     }
-
 }

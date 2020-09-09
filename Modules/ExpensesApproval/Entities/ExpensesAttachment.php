@@ -2,10 +2,10 @@
 
 namespace Modules\ExpensesApproval\Entities;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\ModelService;
 use Illuminate\Validation\Rule;
 
-class ExpensesAttachment extends Model
+class ExpensesAttachment extends ModelService
 {
     protected $connection = 'tenant';
 

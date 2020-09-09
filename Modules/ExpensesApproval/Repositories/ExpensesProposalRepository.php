@@ -14,6 +14,7 @@ use Modules\ExpensesApproval\Entities\ExpensesAttachment;
 use Modules\ExpensesApproval\Entities\ExpensesProposal;
 use Modules\ExpensesApproval\Entities\ExpensesRule;
 use Snowfire\Beautymail\Beautymail;
+use Throwable;
 
 class ExpensesProposalRepository extends RepositoryService
 {
@@ -40,8 +41,16 @@ class ExpensesProposalRepository extends RepositoryService
     public function getPendingProposals(array $searchCriteria = [])
     {
         $user = auth()->user();
+
+        // FOR ADMIN, GET ALL THE PENDING PROPOSALS
+        if($user->hasRole('admin')) {
+            $this->queryBuilder
+                ->whereHas('status', function (Builder $query) {
+                    $query->where('value', 'pending');
+                });
+        } 
         // FOR BUYERS, GET ALL THE APPROVED PROPOSALS ONLY
-        if($user->hasRole('buyer')) {
+        else if($user->hasRole('buyer')) {
             $this->queryBuilder
                 ->whereHas('status', function (Builder $query) {
                     $query->where('value', 'approved');
@@ -72,8 +81,15 @@ class ExpensesProposalRepository extends RepositoryService
     {
         $user = auth()->user();
 
+        // FOR ADMIN, GET ALL PROPOSALS THAT HAVE STATUS DIFFERENT FROM PENDING
+        if($user->hasRole('admin')) {
+            $this->queryBuilder
+                ->whereHas('status', function (Builder $query) {
+                    $query->where('value', '<>', 'pending');
+                });
+        } 
         // FOR BUYERS, GET ALL THE PURCHASED PROPOSALS ONLY
-        if($user->hasRole('buyer')) {
+        else if($user->hasRole('buyer')) {
             $this->queryBuilder
                 ->whereHas('status', function (Builder $query) {
                     $query->where('value', 'purchased');
@@ -182,6 +198,7 @@ class ExpensesProposalRepository extends RepositoryService
                 }
 
                 $data = [
+                    'id'            => $this->model->id,
                     'user_name'     => $user->name,
                     'category'      => $category->name,
                     'item'          => $this->model->item,
@@ -247,6 +264,7 @@ class ExpensesProposalRepository extends RepositoryService
             if($data['buyer_role']) {
 
                 $data = [
+                    'id'            => $model->id,
                     'user_name'     => $model->author->name,
                     'category'      => $model->category->name,
                     'item'          => $model->item,
@@ -295,6 +313,7 @@ class ExpensesProposalRepository extends RepositoryService
         if ($proposal->status_id === $approved_id) {
 
             $data = [
+                'id'            => $proposal->id,
                 'user_name'     => $proposal->author->name,
                 'category'      => $proposal->category->name,
                 'item'          => $proposal->item,
@@ -310,10 +329,12 @@ class ExpensesProposalRepository extends RepositoryService
 
             $data['type'] = 'buyer';
 
-            $buyers = User::whereHas('roles', function (Builder $query) {
-                $query->where('name', 'buyer')
-                    ->orWhere('code', 'buyer');
-            })->pluck('email')->get();
+            // $buyers = User::whereHas('roles', function (Builder $query) {
+            //     $query->where('name', 'buyer')
+            //         ->orWhere('code', 'buyer');
+            // })->pluck("email")->get();
+
+            $buyers = ['matthew.w@valordistributions.com'];
 
             if($buyers) {
                 $this->sendEmail( $buyers, $data);
@@ -331,6 +352,7 @@ class ExpensesProposalRepository extends RepositoryService
         $proposal->save();
 
         $data = [
+            'id'            => $proposal->id,
             'user_name'     => $proposal->author->name,
             'category'      => $proposal->category->name,
             'item'          => $proposal->item,
@@ -348,16 +370,21 @@ class ExpensesProposalRepository extends RepositoryService
     }
 
     public function sendEmail(array $to, $data)
-    {
-        $beautymail = app()->make(Beautymail::class);
-        $beautymail->send('expenses_approval.email', $data, function($message) use ($to)
-        {
-            $message->from(config('mail.from.address'))
-                    ->subject('Expenses Proposal');
+    {   
+        try {
+            $beautymail = app()->make(Beautymail::class);
+            $beautymail->send('expenses_approval.email', $data, function($message) use ($data, $to)
+            {
+                $message->from(config('mail.from.address'))
+                        ->subject('Purchase Order Request #' . $data['id'] . ' - User ' . strtoupper($data['user_name']));
 
-            foreach ($to as $email) {
-                $message->bcc($email);
-            }
-        });
+                foreach ($to as $email) {
+                    $message->bcc($email);
+                }
+            });
+        } catch (\Throwable $th) {
+            lad('Error to send email');
+        }
+        
     }
 }

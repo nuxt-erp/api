@@ -18,6 +18,7 @@ class ExpensesAttachmentController extends ControllerService
     {
         $this->repository = $repository;
         $this->resource = $resource;
+        parent::__construct();
     }
 
     public function saveFile(Request $request)
@@ -39,5 +40,17 @@ class ExpensesAttachmentController extends ControllerService
         $this->repository->deleteFile($file_name);
 
         return $this->setStatus(true)->sendObject(['file_name' => $file_name, 'hide' => true]);
+    }
+
+    public function viewFile($file_name)
+    {           
+        $filePath = 'attachments/' . $file_name; 
+        return Storage::disk('s3')->response($filePath);       
+    }
+
+    public function downloadFile($file_name)
+    {           
+        $filePath = 'attachments/' . $file_name; 
+        return Storage::disk('s3')->download($filePath);
     }
 }

@@ -4,16 +4,16 @@ namespace Modules\Inventory\Http\Controllers;
 
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
-use Modules\Inventory\Repositories\CategoryRepository;
-use Modules\Inventory\Transformers\CategoryResource;
+use Modules\Inventory\Repositories\StockLocatorRepository;
+use Modules\Inventory\Transformers\StockLocatorResource;
 
-class CategoryController extends ControllerService implements CheckPolicies
+class StockLocatorController extends ControllerService implements CheckPolicies
 {
 
     protected $repository;
     protected $resource;
 
-    public function __construct(CategoryRepository $repository, CategoryResource $resource)
+    public function __construct(StockLocatorRepository $repository, StockLocatorResource $resource)
     {
         $this->repository = $repository;
         $this->resource = $resource;
