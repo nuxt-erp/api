@@ -71,6 +71,8 @@ class RegisterController extends Controller
             } catch (\Throwable $th) {
                 echo 'Migration error for '.ucfirst($module->name).'!<br>';
                 dump(Artisan::output());
+                echo '<br>';
+                echo $th->getMessage();
             }
             try {
                 Artisan::call('module:seed '.ucfirst($module->name));
@@ -78,6 +80,8 @@ class RegisterController extends Controller
             } catch (\Throwable $th) {
                 echo 'Seed error for '.ucfirst($module->name).'!<br>';
                 dump(Artisan::output());
+                echo '<br>';
+                echo $th->getMessage();
             }
             echo '----- <br>';
         }

@@ -3,5 +3,6 @@
     "Accounting": false,
     "Sales": true,
     "RD": true,
-    "Production": true
+    "Production": true,
+    "ExpensesApproval": true
 }

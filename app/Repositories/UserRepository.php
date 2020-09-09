@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\UserRoles;
 use App\Models\Company;
 use App\Models\Role;
 use App\Models\User;
@@ -71,11 +72,29 @@ class UserRepository extends RepositoryService
             });
         }
 
+        if (!empty($searchCriteria['role'])) {
+            $role = strtolower(Arr::pull($searchCriteria, 'role'));
+            $role_id = Role::where('name', $role)->orWhere('code', $role)->pluck('id')->first();
+            $user_ids = UserRoles::where('role_id', $role_id)->pluck('user_id');
+
+            $this->queryBuilder->whereIn('id', $user_ids);
+        }
+
+        $user = auth()->user();
+        if($user){
+            $this->queryBuilder->where('company_id', $user->company_id);
+        }
+
+
         return parent::findBy($searchCriteria);
     }
 
     public function store(array $data)
     {
+        $user = auth()->user();
+        if($user) {
+            $data['company_id'] = $user->company_id;
+        }
 
         $data['password']   = bcrypt($data['password']);
         parent::store($data);

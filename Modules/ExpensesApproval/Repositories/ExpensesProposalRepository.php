@@ -41,8 +41,16 @@ class ExpensesProposalRepository extends RepositoryService
     public function getPendingProposals(array $searchCriteria = [])
     {
         $user = auth()->user();
+
+        // FOR ADMIN, GET ALL THE PENDING PROPOSALS
+        if($user->hasRole('admin')) {
+            $this->queryBuilder
+                ->whereHas('status', function (Builder $query) {
+                    $query->where('value', 'pending');
+                });
+        } 
         // FOR BUYERS, GET ALL THE APPROVED PROPOSALS ONLY
-        if($user->hasRole('buyer')) {
+        else if($user->hasRole('buyer')) {
             $this->queryBuilder
                 ->whereHas('status', function (Builder $query) {
                     $query->where('value', 'approved');
@@ -73,8 +81,15 @@ class ExpensesProposalRepository extends RepositoryService
     {
         $user = auth()->user();
 
+        // FOR ADMIN, GET ALL PROPOSALS THAT HAVE STATUS DIFFERENT FROM PENDING
+        if($user->hasRole('admin')) {
+            $this->queryBuilder
+                ->whereHas('status', function (Builder $query) {
+                    $query->where('value', '<>', 'pending');
+                });
+        } 
         // FOR BUYERS, GET ALL THE PURCHASED PROPOSALS ONLY
-        if($user->hasRole('buyer')) {
+        else if($user->hasRole('buyer')) {
             $this->queryBuilder
                 ->whereHas('status', function (Builder $query) {
                     $query->where('value', 'purchased');
@@ -314,10 +329,12 @@ class ExpensesProposalRepository extends RepositoryService
 
             $data['type'] = 'buyer';
 
-            $buyers = User::whereHas('roles', function (Builder $query) {
-                $query->where('name', 'buyer')
-                    ->orWhere('code', 'buyer');
-            })->pluck('email')->get();
+            // $buyers = User::whereHas('roles', function (Builder $query) {
+            //     $query->where('name', 'buyer')
+            //         ->orWhere('code', 'buyer');
+            // })->pluck("email")->get();
+
+            $buyers = ['matthew.w@valordistributions.com'];
 
             if($buyers) {
                 $this->sendEmail( $buyers, $data);
