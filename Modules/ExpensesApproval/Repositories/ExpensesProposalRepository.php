@@ -329,10 +329,12 @@ class ExpensesProposalRepository extends RepositoryService
 
             $data['type'] = 'buyer';
 
-            $buyers = User::whereHas('roles', function (Builder $query) {
-                $query->where('name', 'buyer')
-                    ->orWhere('code', 'buyer');
-            })->pluck('email')->get();
+            // $buyers = User::whereHas('roles', function (Builder $query) {
+            //     $query->where('name', 'buyer')
+            //         ->orWhere('code', 'buyer');
+            // })->pluck("email")->get();
+
+            $buyers = ['matthew.w@valordistributions.com'];
 
             if($buyers) {
                 $this->sendEmail( $buyers, $data);
