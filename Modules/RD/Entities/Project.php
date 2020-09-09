@@ -62,4 +62,4 @@ $table->string('status');
 $table->string('code');
 $table->string('comment');
 $table->date('start_at')->nullable();
-$table->date('closed_at')->nullable();
+$table->date('closed_at')->nullable(); */
