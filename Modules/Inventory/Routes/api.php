@@ -20,7 +20,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('brands', 'BrandController');
         Route::resource('categories', 'CategoryController');
         Route::resource('attributes', 'AttributeController');
-
+        Route::resource('stock_locator', 'StockLocatorController');
         Route::resource('products', 'ProductController');
         Route::resource('product_attributes', 'ProductAttributeController');
         Route::resource('product_logs', 'ProductLogController');
@@ -33,6 +33,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('availabilities', 'AvailabilityController');
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');
+        
     });
 
     Route::group(['prefix' => 'import'], function () {
