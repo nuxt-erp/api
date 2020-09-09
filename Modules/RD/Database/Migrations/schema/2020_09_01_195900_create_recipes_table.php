@@ -16,22 +16,15 @@ class CreateRecipesTable extends Migration
         Schema::connection('tenant')->create('rd_recipes', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('author_id')->nullable();
-            $table->foreign('author_id')->references('id')->on('users');
-
-            $table->unsignedBigInteger('last_updater_id')->nullable();
-            $table->foreign('last_updater_id')->references('id')->on('users');
-
-            $table->unsignedBigInteger('approver_id')->nullable();
-            $table->foreign('approver_id')->references('id')->on('users');
+            $table->foreignId('author_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('last_updater_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('approver_id')->nullable()->constrained('users')->onDelete('set null');
 
             // Added by me (recipe type: vape, syrup etc)
-            $table->unsignedBigInteger('type_id')->nullable();
-            $table->foreign('type_id')->references('id')->on('parameters');
+            $table->foreignId('type_id')->nullable()->constrained('parameters')->onDelete('set null');
 
             // each recipe will produce a product
-            $table->unsignedBigInteger('product_id')->nullable();
-            $table->foreign('product_id')->references('id')->on('inv_products');
+            $table->foreignId('product_id')->nullable()->constrained('inv_products')->onDelete('set null');
 
             $table->string('status');
 

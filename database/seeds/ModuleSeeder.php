@@ -21,6 +21,7 @@ class ModuleSeeder extends Seeder
         ]);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         Module::updateOrCreate([
             'name'  => 'RD'
         ]);
@@ -32,9 +33,15 @@ class ModuleSeeder extends Seeder
 
 
 
+=======
+>>>>>>> origin/master
         Module::updateOrCreate([
             'name'  => 'RD'
 >>>>>>> origin/master
+        ]);
+
+        Module::updateOrCreate([
+            'name'  => 'Production'
         ]);
     }
 }

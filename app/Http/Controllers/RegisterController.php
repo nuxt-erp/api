@@ -55,6 +55,8 @@ class RegisterController extends Controller
             echo $module->name . ' module added for: '.$user->company->name.'. <br>';
         }
 
+        echo '----- <br>';
+
         // 2 - run migrations and seeders for enabled modules
 
         DB::setDefaultConnection('tenant');
@@ -77,6 +79,7 @@ class RegisterController extends Controller
                 echo 'Seed error for '.ucfirst($module->name).'!<br>';
                 dump(Artisan::output());
             }
+            echo '----- <br>';
         }
     }
 

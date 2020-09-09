@@ -16,17 +16,11 @@ class CreateRecipesItemsTable extends Migration
         Schema::connection('tenant')->create('rd_recipe_items', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('id')->on('inv_products');
+            $table->foreignId('product_id')->constrained('inv_products')->onDelete('cascade');
+            $table->foreignId('recipe_id')->constrained('rd_recipes')->onDelete('cascade');
 
-            $table->unsignedBigInteger('recipe_id');
-            $table->foreign('recipe_id')->references('id')->on('rd_recipes');
-
-            //Added by me
             $table->unsignedDecimal('quantity', 10, 4)->nullable();
             $table->unsignedDecimal('percent', 10, 4)->nullable();
-
-            //Added by me
             $table->float('cost', 10, 4)->nullable();
 
             $table->timestamps();

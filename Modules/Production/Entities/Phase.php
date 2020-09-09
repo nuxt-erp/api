@@ -19,8 +19,8 @@ class Phase extends ModelService
         $rules = [
             'name'                       => ['string', 'max:255'],
             'operation_id'               => ['exists:tenant.prod_operations,id'],
-            'start'                      => ['nullable', 'boolean'],
-            'end'                        => ['nullable', 'boolean'],
+            'will_start_counter'                      => ['nullable', 'boolean'],
+            'will_end_counter'                        => ['nullable', 'boolean'],
 
         ];
 

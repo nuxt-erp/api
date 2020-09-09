@@ -1,11 +1,11 @@
 <?php
 
-namespace $NAMESPACE$;
+namespace {{ namespace }};
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class $CLASS$ implements ShouldQueue
+class {{ class }}
 {
     use Dispatchable, Queueable;
 

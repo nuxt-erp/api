@@ -17,14 +17,9 @@ class CreateProjectItemsTable extends Migration
             $table->bigIncrements('id');
 
             // this should be nullable because sometimes we don't have the recipe for this
-            $table->unsignedBigInteger('recipe_id')->nullable();
-            $table->foreign('recipe_id')->references('id')->on('rd_recipes');
-
-            $table->unsignedBigInteger('project_id');
-            $table->foreign('project_id')->references('id')->on('rd_projects');
-
-            $table->unsignedBigInteger('assignee_id')->nullable();
-            $table->foreign('assignee_id')->references('id')->on('users');
+            $table->foreignId('recipe_id')->nullable()->constrained('rd_recipes')->onDelete('set null');
+            $table->foreignId('project_id')->constrained('rd_projects')->onDelete('cascade');
+            $table->foreignId('assignee_id')->nullable()->constrained('users')->onDelete('set null');
 
             $table->string('name')->nullable();
             $table->string('status');

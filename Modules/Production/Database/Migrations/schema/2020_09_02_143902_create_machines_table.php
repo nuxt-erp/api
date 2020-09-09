@@ -16,8 +16,7 @@ class CreateMachinesTable extends Migration
         Schema::connection('tenant')->create('prod_machines', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('flow_id')->nullable();
-            $table->foreign('flow_id')->references('id')->on('prod_flows');
+            $table->foreignId('flow_id')->nullable()->constrained('prod_flows')->onDelete('set null');
 
             $table->string('name', 50)->unique();
             $table->unsignedBigInteger('capacity')->nullable();

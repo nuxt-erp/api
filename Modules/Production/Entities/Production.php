@@ -20,7 +20,7 @@ class Production extends ModelService
         'requested_qty', 'requested_volume','scheduled_qty', 
         'scheduled_volume', 'finished_qty', 'finished_volume', 
         'started_at', 'finished_at', 'expected_start_date', 
-        'expected_finish_date'
+        'expected_start_date'
     ];
 
 

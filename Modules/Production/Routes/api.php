@@ -18,5 +18,14 @@ Route::middleware('auth:api')->group(function () {
     // module prefix
     Route::group(['prefix' => 'production'], function () {
 
+        // CRUD manager
+        Route::resource('operations', 'OperationController');
+        Route::resource('phases', 'PhaseController');
+        Route::resource('flows', 'FlowController');
+        Route::resource('flow_actions', 'FlowActionsController');
+        Route::resource('actions', 'ActionController');
+        Route::resource('machines', 'MachineController');
+        Route::resource('productions', 'ProductionController');
+
     });
 });

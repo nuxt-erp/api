@@ -16,17 +16,11 @@ class CreateRecipeProposalsTable extends Migration
         Schema::connection('tenant')->create('rd_recipe_proposals', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('recipe_id');
-            $table->foreign('recipe_id')->references('id')->on('rd_recipes');
-
-            $table->unsignedBigInteger('author_id');
-            $table->foreign('author_id')->references('id')->on('users');
-
-            $table->unsignedBigInteger('approver_id')->nullable();
-            $table->foreign('approver_id')->references('id')->on('users');
+            $table->foreignId('recipe_id')->constrained('rd_recipes')->onDelete('cascade');
+            $table->foreignId('author_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('approver_id')->nullable()->constrained('users')->onDelete('set null');
 
             $table->string('status');
-
             $table->string('comment')->nullable();
             $table->date('approved_at')->nullable();
 

@@ -16,9 +16,7 @@ class CreateFlowsTable extends Migration
         Schema::connection('tenant')->create('prod_flows', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('first_phase_id')->nullable();
-            $table->foreign('first_phase_id')->references('id')->on('prod_phases');
-
+            $table->foreignId('first_phase_id')->nullable()->constrained('prod_phases')->onDelete('set null');
             $table->string('name')->unique();
 
             $table->timestamps();

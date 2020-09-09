@@ -16,11 +16,8 @@ class CreateRecipeAttributesTable extends Migration
         Schema::connection('tenant')->create('rd_recipe_attributes', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('recipe_id');
-            $table->foreign('recipe_id')->references('id')->on('rd_recipes');
-
-            $table->unsignedBigInteger('attribute_id');
-            $table->foreign('attribute_id')->references('id')->on('inv_attributes');
+            $table->foreignId('recipe_id')->constrained('rd_recipes')->onDelete('cascade');
+            $table->foreignId('attribute_id')->constrained('inv_attributes')->onDelete('cascade');
 
             $table->timestamps();
         });

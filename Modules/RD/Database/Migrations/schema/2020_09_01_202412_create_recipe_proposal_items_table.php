@@ -16,11 +16,8 @@ class CreateRecipeProposalItemsTable extends Migration
         Schema::connection('tenant')->create('rd_recipe_proposal_items', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('recipe_proposal_id');
-            $table->foreign('recipe_proposal_id')->references('id')->on('rd_recipe_proposals');
-
-            $table->unsignedBigInteger('recipe_item_id');
-            $table->foreign('recipe_item_id')->references('id')->on('rd_recipe_items');
+            $table->foreignId('recipe_proposal_id')->constrained('rd_recipe_proposals')->onDelete('cascade');
+            $table->foreignId('recipe_item_id')->constrained('rd_recipe_items')->onDelete('cascade');
 
             $table->unsignedDecimal('quantity', 10, 4)->nullable();
             $table->unsignedDecimal('percent', 10, 4)->nullable();
