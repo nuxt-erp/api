@@ -42,9 +42,15 @@ class ExpensesAttachmentController extends ControllerService
         return $this->setStatus(true)->sendObject(['file_name' => $file_name, 'hide' => true]);
     }
 
+    public function viewFile($file_name)
+    {           
+        $filePath = 'attachments/' . $file_name; 
+        return Storage::disk('s3')->response($filePath);       
+    }
+
     public function downloadFile($file_name)
     {           
-        $filePath = 'attachments/' . $file_name;        
+        $filePath = 'attachments/' . $file_name; 
         return Storage::disk('s3')->download($filePath);
     }
 }
