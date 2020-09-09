@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('expenses-approval/attachments/download/{file_name}', 'ExpensesAttachmentController@downloadFile');
+Route::get('expenses-approval/attachments/view/{file_name}', 'ExpensesAttachmentController@viewFile');
 
 Route::middleware('auth:api')->group(function () {
 

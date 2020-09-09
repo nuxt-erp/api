@@ -27,7 +27,6 @@ class ExpensesProposal extends ModelService
         $rules = [
             //'expenses_category_id'  => ['exists:tenant.exp_ap_categories,id'],
             //'author_id'             => ['exists:public.users,id'],
-            'item'                  => ['string', 'max:255'],
             'supplier_link'         => ['nullable'],
             //'status_id'             => ['exists:tenant.parameters,id'],
             'purchase_date'         => ['nullable', 'date']
