@@ -16,9 +16,9 @@ class CreateRecipesTable extends Migration
         Schema::connection('tenant')->create('rd_recipes', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->foreignId('author_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('last_updater_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('approver_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('author_id')->nullable()->constrained('public.users')->onDelete('set null');
+            $table->foreignId('last_updater_id')->nullable()->constrained('public.users')->onDelete('set null');
+            $table->foreignId('approver_id')->nullable()->constrained('public.users')->onDelete('set null');
 
             // Added by me (recipe type: vape, syrup etc)
             $table->foreignId('type_id')->nullable()->constrained('parameters')->onDelete('set null');

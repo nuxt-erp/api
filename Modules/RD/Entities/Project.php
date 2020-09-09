@@ -2,7 +2,9 @@
 
 namespace Modules\RD\Entities;
 
+use App\Models\Customer;
 use App\Models\ModelService;
+use App\Models\User;
 use Illuminate\Validation\Rule;
 
 class Project extends ModelService
@@ -11,28 +13,30 @@ class Project extends ModelService
 
     protected $table = 'rd_projects';
 
-    protected $fillable = ['customer_id', 'author_id', 'status', 'code', 'comments', 'started_at', 'closed_at'];
+    const STATUS_NEW    = 'new';
+    const STATUS_DONE   = 'done';
+
+    protected $dates = [
+        'start_at', 'closed_at'
+    ];
+
+    protected $fillable = [
+        'author_id','customer_id', 'status',
+        'code', 'comment', 'start_at',
+        'closed_at'
+    ];
 
     public function getRules($request, $item = null)
     {
         // generic rules
         $rules = [
-            'author_id'             => ['exists:public.users,id'],
-            'customer_id'           => ['nullable', 'exists:public.customers,id'],
-            'status'                => ['string', 'max:255'],
-            'code'                  => ['string', 'max:255'],
-            'comments'              => ['string', 'max:255'],
-            'start_at'              => ['nullable', 'date'],
-            'closed_at'             => ['nullable', 'date']
+            'author_id'     => ['nullable', 'exists:public.users,id'],
+            'customer_id'   => ['exists:tenant.customers,id'],
         ];
 
         // rules when creating the item
         if (is_null($item)) {
-            $rules['author_id'][] = 'required';
-            $rules['status'][] = 'required';
-            $rules['code'][] = 'required';
-            $rules['comments'][] = 'required';
-
+            $rules['customer_id'][] = 'required';
         }
         // rules when updating the item
         else{
@@ -41,12 +45,21 @@ class Project extends ModelService
 
         return $rules;
     }
+
     public function author()
     {
-        return $this->belongsTo(User::class, 'author_id', 'id');
+        return $this->belongsTo(User::class, 'author_id');
     }
+
     public function customer()
     {
-        return $this->belongsTo(Customer::class, 'customer_id', 'id');
+        return $this->belongsTo(Customer::class, 'customer_id');
     }
+
 }
+/*
+$table->string('status');
+$table->string('code');
+$table->string('comment');
+$table->date('start_at')->nullable();
+$table->date('closed_at')->nullable();

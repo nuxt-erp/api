@@ -19,11 +19,13 @@ Route::middleware('auth:api')->group(function () {
     Route::group(['prefix' => 'rd'], function () {
         Route::resource('recipes', 'RecipeController');
         Route::resource('recipe_items', 'RecipeItemsController');
+        Route::resource('recipe_attributes', 'RecipeAttributesController');
 
-        Route::resource('recipe_proposal', 'RecipeProposalController');
+        Route::resource('recipe_proposal', 'RecipeProposalsController');
         Route::resource('recipe_proposal_items', 'RecipeProposalItemsController');
 
         Route::resource('projects', 'ProjectController');
-        Route::resource('project_items', 'ProjectItemsController');
+        Route::resource('project_samples', 'ProjectSamplesController');
+        Route::resource('project_item_attributes', 'ProjectItemAttributesController');
     });
 });

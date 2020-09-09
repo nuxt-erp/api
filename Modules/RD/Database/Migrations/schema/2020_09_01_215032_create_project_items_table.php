@@ -19,7 +19,7 @@ class CreateProjectItemsTable extends Migration
             // this should be nullable because sometimes we don't have the recipe for this
             $table->foreignId('recipe_id')->nullable()->constrained('rd_recipes')->onDelete('set null');
             $table->foreignId('project_id')->constrained('rd_projects')->onDelete('cascade');
-            $table->foreignId('assignee_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('assignee_id')->nullable()->constrained('public.users')->onDelete('set null');
 
             $table->string('name')->nullable();
             $table->string('status');

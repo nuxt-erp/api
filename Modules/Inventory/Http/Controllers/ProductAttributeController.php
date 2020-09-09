@@ -17,5 +17,7 @@ class ProductAttributeController extends ControllerService implements CheckPolic
     {
         $this->repository = $repository;
         $this->resource = $resource;
+        parent::__construct();
     }
+
 }

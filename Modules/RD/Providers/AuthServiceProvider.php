@@ -4,6 +4,8 @@ namespace Modules\RD\Providers;
 
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Modules\RD\Entities\Project;
+use Modules\RD\Policies\ProjectPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -20,6 +22,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //Gate::policy(Entity::class, EntityPolicy::class);
+        Gate::policy(Project::class, ProjectPolicy::class);
     }
 }

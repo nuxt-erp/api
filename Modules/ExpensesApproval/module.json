@@ -1,0 +1,13 @@
+{
+    "name": "ExpensesApproval",
+    "alias": "expensesapproval",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\ExpensesApproval\\Providers\\ExpensesApprovalServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
