@@ -38,4 +38,5 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(ExpensesProposal::class, ExpensesProposalPolicy::class);
         Gate::policy(ExpensesRule::class, ExpensesRulePolicy::class);
        
+    }
 }
