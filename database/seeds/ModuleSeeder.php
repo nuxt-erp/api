@@ -31,5 +31,9 @@ class ModuleSeeder extends Seeder
         Module::updateOrCreate([
             'name'  => 'ExpensesApproval'
         ]);
+
+        Module::updateOrCreate([
+            'name'  => 'Purchase'
+        ]);
     }
 }

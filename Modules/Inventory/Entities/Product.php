@@ -67,7 +67,7 @@ class Product extends ModelService
     public function getInTransitAttribute($product_id)
     {
         return 0;
-        // $data = PurchaseDetails::where('product_id', $product_id)
+        // $data = PurchaseDetail::where('product_id', $product_id)
         //     ->selectRaw('SUM(qty) as tot')
         //     ->with('purchase')
         //     ->whereHas('purchase', function ($query) {
