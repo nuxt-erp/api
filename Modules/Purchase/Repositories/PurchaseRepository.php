@@ -159,6 +159,7 @@ class PurchaseRepository extends RepositoryService
 
                                     if ($qty == $qty_received) { // Update on hand qty when fulfilled (qty = qty received)
 
+                                        // We need to check update stock
                                         if ($data["status"] == 0) { // Do not update when the stock is already received
                                             // Increase stock quantity
                                             //$this->updateStock(Auth::user()->company_id, $product_id, $qty, $data["location_id"], "+", "Purchase", $id, 0, 0, "Add item");
