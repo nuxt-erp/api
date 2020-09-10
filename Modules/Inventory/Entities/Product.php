@@ -24,7 +24,7 @@ class Product extends ModelService
         'cost', 'price', 'barcode',
         'length', 'width', 'height',
         'weight', 'launch_at', 'is_enabled',
-        'disabled_at', 'sales_channel','stock_locator'
+        'disabled_at', 'sales_channel','stock_locator','measure_id'
     ];
 
 
@@ -37,6 +37,8 @@ class Product extends ModelService
             'supplier_id'   => ['nullable', 'exists:tenant.suppliers,id'],
             'family_id'     => ['nullable', 'exists:tenant.inv_families,id'],
             'stock_locator' => ['nullable', 'exists:tenant.inv_stock_locator,id'],
+            'measure' => ['nullable', 'exists:tenant.inv_measure,id'],
+
             //@todo add more validation
         ];
 
@@ -127,6 +129,10 @@ class Product extends ModelService
     public function stockLocator()
     {
         return $this->belongsTo(StockLocator::class);
+    }
+    public function measure()
+    {
+        return $this->belongsTo(Measure::class);
     }
 
 }
