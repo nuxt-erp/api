@@ -11,29 +11,29 @@ class ProjectAttributes extends ModelService
 
     protected $table = 'rd_project_attributes';
 
-    protected $fillable = ['recipe_id', 'attribute_id'];
+    protected $fillable = ['project_id', 'attribute_id'];
 
     public function getRules($request, $item = null)
     {
         // generic rules
         $rules = [
-            'recipe_id'               => ['exists:tenant.rd_recipes,id'],
-            'attribute_id'            => ['exists:inv_attributes,id']
+            'project_id'               => ['exists:tenant.rd_projects,id'],
+            'attribute_id'            => ['exists:tenant.inv_attributes,id']
 
         ];
 
         // rules when creating the item
         if (is_null($item)) {
-            $rules['recipe_id'][] = 'required';
+            $rules['project_id'][] = 'required';
             $rules['attribute_id'][] = 'required';
         }
       
 
         return $rules;
     }
-    public function recipe()
+    public function project()
     {
-        return $this->belongsTo(Recipe::class, 'recipe_id', 'id');
+        return $this->belongsTo(Project::class, 'project_id', 'id');
     }
     public function attribute()
     {

@@ -16,7 +16,7 @@ class ProjectAttributesResource extends ResourceService
     {
         return [
             'id'            => $this->id,
-            'recipe_id'     => $this->recipe_id,
+            'project_id'    => $this->project_id,
             'attribute_id'  => $this->attribute_id,
             'created_at'    => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'    => optional($this->updated_at)->format('Y-m-d H:i:s'),

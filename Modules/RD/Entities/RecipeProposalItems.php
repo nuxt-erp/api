@@ -26,24 +26,10 @@ class RecipeProposalItems extends ModelService
          if (is_null($item)) {
             $rules['recipe_proposal_id'][] = 'required';
             $rules['recipe_item_id'][] = 'required';
-            $rules['percent'][]     =
-                function ($attribute, $value, $fail) use ($request) {
-                    $sum = self::where('recipe_item_id', $request->input('recipe_item_id'))->sum('percent');
-                    if ((($sum * 100) + $value) > 100) {
-                        $fail('more100%');
-                    }
-                };
             
         }
         // rules when updating the item
         else{
-            $rules['percent'][]     =
-                function ($attribute, $value, $fail) use ($request) {
-                    $sum = self::where('recipe_item_id', $request->input('recipe_item_id'))->sum('percent');
-                    if ((($sum * 100) + $value) > 100) {
-                        $fail('more100%');
-                    }
-                };
         }
 
 
