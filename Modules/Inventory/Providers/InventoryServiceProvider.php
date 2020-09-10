@@ -14,24 +14,33 @@ use Modules\Inventory\Entities\Family;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductAttributes;
 use Modules\Inventory\Entities\ProductLog;
+use Modules\Inventory\Entities\StockLocator;
+use Modules\Inventory\Entities\Measure;
+
+
 // repositories
 use Modules\Inventory\Repositories\AttributeRepository;
 use Modules\Inventory\Repositories\AvailabilityRepository;
 use Modules\Inventory\Repositories\BrandRepository;
+use Modules\Inventory\Repositories\StockLocatorRepository;
 use Modules\Inventory\Repositories\CategoryRepository;
 use Modules\Inventory\Repositories\FamilyRepository;
 use Modules\Inventory\Repositories\ProductAttributeRepository;
 use Modules\Inventory\Repositories\ProductLogRepository;
 use Modules\Inventory\Repositories\ProductRepository;
+use Modules\Inventory\Repositories\MeasureRepository;
+
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
 use Modules\Inventory\Transformers\AvailabilityResource;
 use Modules\Inventory\Transformers\BrandResource;
+use Modules\Inventory\Transformers\StockLocatorResource;
 use Modules\Inventory\Transformers\CategoryResource;
 use Modules\Inventory\Transformers\FamilyResource;
 use Modules\Inventory\Transformers\ProductAttributeResource;
 use Modules\Inventory\Transformers\ProductLogResource;
 use Modules\Inventory\Transformers\ProductResource;
+use Modules\Inventory\Transformers\MeasureResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -81,7 +90,21 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(BrandResource::class, function () {
             return new BrandResource(new Brand());
         });
+        $this->app->bind(MeasureRepository::class, function () {
+            return new MeasureRepository(new Measure());
+        });
 
+        $this->app->bind(MeasureResource::class, function () {
+            return new MeasureResource(new Measure());
+        });
+        $this->app->bind(StockLocatorRepository::class, function () {
+            return new StockLocatorRepository(new StockLocator());
+        });
+
+        $this->app->bind(StockLocatorResource::class, function () {
+            return new StockLocatorResource(new StockLocator());
+        });
+        
         $this->app->bind(CategoryRepository::class, function () {
             return new CategoryRepository(new Category());
         });
@@ -154,7 +177,10 @@ class InventoryServiceProvider extends ServiceProvider
             FamilyRepository::class,
             AvailabilityRepository::class,
             ProductAttributeRepository::class,
-            ProductLogRepository::class
+            ProductLogRepository::class,
+            StockLocatorRepository::class,
+            MeasureRepository::class,
+
         ];
     }
 

@@ -13,6 +13,9 @@ use Modules\Inventory\Entities\Family;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductAttributes;
 use Modules\Inventory\Entities\ProductLog;
+use Modules\Inventory\Entities\StockLocator;
+use Modules\Inventory\Entities\Measure;
+
 // policies
 use Modules\Inventory\Policies\AttributePolicy;
 use Modules\Inventory\Policies\AvailabilityPolicy;
@@ -22,6 +25,9 @@ use Modules\Inventory\Policies\FamilyPolicy;
 use Modules\Inventory\Policies\ProductAttributesPolicy;
 use Modules\Inventory\Policies\ProductLogPolicy;
 use Modules\Inventory\Policies\ProductPolicy;
+use Modules\Inventory\Policies\StockLocatorPolicy;
+use Modules\Inventory\Policies\MeasurePolicy;
+
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -46,5 +52,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Product::class, ProductPolicy::class);
         Gate::policy(ProductLog::class, ProductLogPolicy::class);
         Gate::policy(ProductAttributes::class, ProductAttributesPolicy::class);
+        Gate::policy(StockLocator::class, StockLocatorPolicy::class);
+        Gate::policy(Measure::class, MeasurePolicy::class);
+
     }
 }

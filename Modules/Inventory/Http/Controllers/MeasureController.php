@@ -4,17 +4,17 @@ namespace Modules\Inventory\Http\Controllers;
 
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
-use Modules\Inventory\Repositories\ProductRepository;
-use Modules\Inventory\Transformers\ProductResource;
+use Modules\Inventory\Repositories\MeasureRepository;
+use Modules\Inventory\Transformers\MeasureResource;
 
-class ProductController extends ControllerService implements CheckPolicies
+class MeasureController extends ControllerService implements CheckPolicies
 {
+
     protected $repository;
     protected $resource;
 
-    public function __construct(ProductRepository $repository, ProductResource $resource)
+    public function __construct(MeasureRepository $repository, MeasureResource $resource)
     {
-       
         $this->repository = $repository;
         $this->resource = $resource;
         parent::__construct();
