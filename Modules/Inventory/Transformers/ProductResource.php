@@ -33,11 +33,19 @@ class ProductResource extends ResourceService
             'weight'                => $this->weight,
             'launch_at'             => $this->launch_at,
             'is_enabled'            => $this->is_enabled,
+<<<<<<< HEAD
             'sales_channel'         => $this->sales_channel,
             
             'stock_locator'         => $this->stock_locator,
             'stock_locator_name'    => optional($this->stock_locator)->name,
             
+=======
+            'sales_channel'         => $this->sales_channel,            
+            'stock_locator'         => $this->stock_locator_id,
+            'stock_locator_name'    => optional($this->stock_locator)->name,
+            'measure_id'            => $this->measure_id,
+            'measure_name'            => optional($this->measure)->name,
+>>>>>>> origin
             'name_full'             => $this->full_description,
             'product_attributes'    => $this->details,
             'in_transit_suppliers'  => $this->getInTransitAttribute($this->id),
