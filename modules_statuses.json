@@ -3,8 +3,5 @@
     "Accounting": false,
     "Sales": true,
     "ExpensesApproval": true,
-    "RD": true,
-    "CreatedStockLocatorTable": true,
-    "Migration": true,
-    "CreateStockLocatorTable": true
+    "RD": true
 }
