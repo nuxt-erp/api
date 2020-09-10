@@ -21,11 +21,11 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('recipe_items', 'RecipeItemsController');
         Route::resource('recipe_attributes', 'RecipeAttributesController');
 
-        Route::resource('recipe_proposal', 'RecipeProposalsController');
+        Route::resource('recipe_proposals', 'RecipeProposalsController');
         Route::resource('recipe_proposal_items', 'RecipeProposalItemsController');
 
         Route::resource('projects', 'ProjectController');
         Route::resource('project_samples', 'ProjectSamplesController');
-        Route::resource('project_item_attributes', 'ProjectItemAttributesController');
+        Route::resource('project_attributes', 'ProjectAttributesController');
     });
 });

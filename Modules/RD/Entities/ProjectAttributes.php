@@ -5,11 +5,11 @@ namespace Modules\RD\Entities;
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
 
-class ProjectItemAttributes extends ModelService
+class ProjectAttributes extends ModelService
 {
     protected $connection = 'tenant';
 
-    protected $table = 'rd_project_item_attributes';
+    protected $table = 'rd_project_attributes';
 
     protected $fillable = ['recipe_id', 'attribute_id'];
 

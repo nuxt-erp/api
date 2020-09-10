@@ -17,7 +17,7 @@ class Flow extends ModelService
     {
         $rules = [
             'name'              => ['string', 'max:255'],
-            'first_phase_id'    => ['nullable', 'exists:phases,id']
+            'first_phase_id'    => ['nullable', 'exists:tenant.prod_phases,id']
 
         ];
         //create

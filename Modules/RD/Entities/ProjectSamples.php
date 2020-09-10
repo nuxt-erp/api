@@ -11,7 +11,7 @@ class ProjectSamples extends ModelService
 
     protected $table = 'rd_project_samples';
 
-    protected $fillable = ['project_id', 'recipe_id'];
+    protected $fillable = ['project_id', 'recipe_id', 'assignee_id', 'name', 'status', 'target_cost','feedback', 'comment'];
 
     public function getRules($request, $item = null)
     {
@@ -22,7 +22,7 @@ class ProjectSamples extends ModelService
             'assignee_id'             => ['exists:users,id'],
             'name'                    => ['nullable', 'max:255'],
             'status'                  => ['string', 'max:255'],
-            'target_cost'             => ['nullable', 'float'],
+            'target_cost'             => ['nullable'],
             'feedback'                => ['nullable', 'string', 'max:255'],
             'comment'                 => ['nullable', 'string', 'max:255'],
 

@@ -33,8 +33,8 @@ class Production extends ModelService
             })],
             'phase_id'             => ['nullable', 'exists:tenant.prod_phases,id'],
             'previous_phase_id'    => ['nullable', 'exists:tenant.prod_phases,id'],
-            'location_id'          => ['nullable', 'exists:locations,id'],
-            'product_id'           => ['exists:inv_products,id'],
+            'location_id'          => ['nullable', 'exists:tenant.locations,id'],
+            'product_id'           => ['exists:tenant.inv_products,id'],
             'author_id'            => ['nullable', 'exists:users,id'],
             'last_updater_id'      => ['nullable', 'exists:users,id'],
             'relation_id'          => ['nullable'],
@@ -47,11 +47,11 @@ class Production extends ModelService
             'sequence'             => ['nullable', 'integer'],
             'scheduled'            => ['nullable', 'boolean'],
             'requested_qty'        => ['integer'],
-            'requested_volume'     => ['nullable', 'decimal'],
+            'requested_volume'     => ['nullable'],
             'scheduled_qty'        => ['integer'],
-            'scheduled_volume'     => ['nullable', 'decimal'],
+            'scheduled_volume'     => ['nullable'],
             'finished_qty'         => ['nullable', 'integer'],
-            'finished_volume'      => ['nullable', 'decimal'],
+            'finished_volume'      => ['nullable'],
             'started_at'           => ['nullable', 'date'],
             'finished_at'          => ['nullable', 'date'],
             'expected_start_date'  => ['nullable', 'date'],
@@ -63,7 +63,6 @@ class Production extends ModelService
             $rules['product_id'][]      = 'required';
             $rules['status'][]          = 'required';
             $rules['code'][]            = 'required';
-            $rules['digit'][]           = 'required';
             $rules['requested_qty'][]   = 'required';
             $rules['scheduled_qty'][]   = 'required';
         }

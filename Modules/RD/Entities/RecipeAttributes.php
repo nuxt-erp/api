@@ -18,7 +18,7 @@ class RecipeAttributes extends ModelService
          // generic rules
          $rules = [
             'recipe_id'               => ['exists:tenant.rd_recipes,id'],
-            'attribute_id'            => ['exists:public.inv_attributes,id']
+            'attribute_id'            => ['exists:tenant.inv_attributes,id']
 
         ];
 

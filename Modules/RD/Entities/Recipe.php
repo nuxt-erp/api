@@ -22,14 +22,13 @@ class Recipe extends ModelService
             'author_id'             => ['nullable', 'exists:public.users,id'],
             'last_updater_id'       => ['nullable', 'exists:public.users,id'],
             'approver_id'           => ['nullable', 'exists:public.users,id'],
-            'type_id'               => ['nullable', 'exists:public.parameters,id'],
+            'type_id'               => ['nullable', 'exists:tenant.parameters,id'],
             'product_id'            => ['nullable', 'exists:tenant.inv_products,id'],
             'status'                => ['string', 'max:255'],
             'name'                  => ['string', 'max:255'],
             'category'              => ['string', 'max:255'],
             'total'                 => ['string', 'max:255'],
             'code'                  => ['nullable', 'max:255'],
-            'cost'                  => ['float'],
             'version'               => ['integer'],
             'approved_at'           => ['nullable', 'date']
 

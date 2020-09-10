@@ -17,7 +17,6 @@ class FlowActionResource extends ResourceService
         return [
             'id'                       => $this->id,
             'flow_id'                  => $this->flow_id,
-            'previous_phase_id'        => $this->previous_phase_id,
             'destination_phase_id'     => $this->destination_phase_id,
             'destination_location_id'  => $this->destination_location_id,
             'name'                     => $this->name,

@@ -17,11 +17,11 @@ class RecipeItems extends ModelService
     {
         // generic rules
         $rules = [
-            'product_id'             => ['exists:public.inv_products,id'],
+            'product_id'             => ['exists:tenant.inv_products,id'],
             'recipe_id'              => ['exists:tenant.rd_recipes,id'],
-            'quantity'               => ['nullable', 'float'],
-            'percent'                => ['nullable', 'percent'],
-            'cost'                   => ['nullable', 'cost']
+            'quantity'               => ['nullable'],
+            'percent'                => ['nullable'],
+            'cost'                   => ['nullable']
         ];
 
         // rules when creating the item

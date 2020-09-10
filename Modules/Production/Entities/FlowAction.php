@@ -19,15 +19,17 @@ class FlowAction extends ModelService
     {
         // generic rules
         $rules = [
-            'flow_id'                    => ['nullable', 'exists:tenant.prod_flows, id'],
-            'previous_phase_id'          => ['nullable', 'exists:tenant.prod_phases,id'],
+            'flow_id'                    => ['exists:tenant.prod_flows,id'],
+            'phase_id'                   => ['exists:tenant.prod_phases,id'],
             'destination_phase_id'       => ['nullable', 'exists:tenant.prod_phases,id'],
-            'destination_location_id'    => ['nullable', 'exists:public.locations,id'],
+            'destination_location_id'    => ['nullable', 'exists:tenant.locations,id'],
             'name'                       => ['string', 'max:255'],
         ];
 
         // rules when creating the item
         if (is_null($item)) {
+            $rules['flow_id'][]    = 'required';
+            $rules['phase_id'][]    = 'required';
             $rules['name'][]    = 'required';
             $rules['name'][]    = 'unique:tenant.prod_flows';
 

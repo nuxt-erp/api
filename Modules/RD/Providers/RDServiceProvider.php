@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 // REPOSITORY
 use Modules\RD\Repositories\ProjectRepository;
-use Modules\RD\Repositories\ProjectItemAttributesRepository;
+use Modules\RD\Repositories\ProjectAttributesRepository;
 use Modules\RD\Repositories\ProjectSamplesRepository;
 use Modules\RD\Repositories\RecipeAttributesRepository;
 use Modules\RD\Repositories\RecipeItemsRepository;
@@ -15,7 +15,7 @@ use Modules\RD\Repositories\RecipeProposalsRepository;
 use Modules\RD\Repositories\RecipeRepository;
 // RESOURCES
 use Modules\RD\Transformers\ProjectResource;
-use Modules\RD\Transformers\ProjectItemAttributesResource;
+use Modules\RD\Transformers\ProjectAttributesResource;
 use Modules\RD\Transformers\ProjectSamplesResource;
 use Modules\RD\Transformers\RecipeAttributesResource;
 use Modules\RD\Transformers\RecipeItemsResource;
@@ -24,7 +24,7 @@ use Modules\RD\Transformers\RecipeProposalsResource;
 use Modules\RD\Transformers\RecipeResource;
 // MODELS
 use Modules\RD\Entities\Project;
-use Modules\RD\Entities\ProjectItemAttributes;
+use Modules\RD\Entities\ProjectAttributes;
 use Modules\RD\Entities\ProjectSamples;
 use Modules\RD\Entities\RecipeAttributes;
 use Modules\RD\Entities\RecipeItems;
@@ -75,12 +75,12 @@ class RDServiceProvider extends ServiceProvider
             return new ProjectResource(new Project());
         });
         
-        $this->app->bind(ProjectItemAttributesRepository::class, function () {
-            return new ProjectItemAttributesRepository(new ProjectItemAttributes());
+        $this->app->bind(ProjectAttributesRepository::class, function () {
+            return new ProjectAttributesRepository(new ProjectAttributes());
         });
 
-        $this->app->bind(ProjectItemAttributesResource::class, function () {
-            return new ProjectItemAttributesResource(new ProjectItemAttributes());
+        $this->app->bind(ProjectAttributesResource::class, function () {
+            return new ProjectAttributesResource(new ProjectAttributes());
         });
 
         $this->app->bind(ProjectSamplesRepository::class, function () {
@@ -141,7 +141,7 @@ class RDServiceProvider extends ServiceProvider
     {
         return [
             ProjectRepository::class,
-            ProjectItemAttributesRepository::class,
+            ProjectAttributesRepository::class,
             ProjectSamplesRepository::class,
             RecipeAttributesRepository::class,
             RecipeRepository::class,

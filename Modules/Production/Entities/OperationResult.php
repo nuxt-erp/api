@@ -35,8 +35,6 @@ class OperationResult extends ModelService
             'machine_id'            => ['nullable', 'exists:tenant.prod_machines,id'],
             'handled_qty'           => ['integer'],
             'to_handle_qty'         => ['integer'],
-            'handled_volume'        => ['integer'],
-            'to_handle_volume'      => ['integer'],
             'process_code'          => ['nullable', 'string', 'max:255'],
             'comment'               => ['nullable', 'string', 'max:255']
 
