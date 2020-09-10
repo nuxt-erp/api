@@ -9,16 +9,19 @@ use Modules\ExpensesApproval\Entities\ExpensesApproval;
 use Modules\ExpensesApproval\Entities\ExpensesAttachment;
 use Modules\ExpensesApproval\Entities\ExpensesProposal;
 use Modules\ExpensesApproval\Entities\ExpensesRule;
+use Modules\ExpensesApproval\Entities\Subcategory;
 use Modules\ExpensesApproval\Repositories\CategoryRepository;
 use Modules\ExpensesApproval\Repositories\ExpensesApprovalRepository;
 use Modules\ExpensesApproval\Repositories\ExpensesAttachmentRepository;
 use Modules\ExpensesApproval\Repositories\ExpensesProposalRepository;
 use Modules\ExpensesApproval\Repositories\ExpensesRuleRepository;
+use Modules\ExpensesApproval\Repositories\SubcategoryRepository;
 use Modules\ExpensesApproval\Transformers\CategoryResource;
 use Modules\ExpensesApproval\Transformers\ExpensesApprovalResource;
 use Modules\ExpensesApproval\Transformers\ExpensesAttachmentResource;
 use Modules\ExpensesApproval\Transformers\ExpensesProposalResource;
 use Modules\ExpensesApproval\Transformers\ExpensesRuleResource;
+use Modules\ExpensesApproval\Transformers\SubcategoryResource;
 
 class ExpensesApprovalServiceProvider extends ServiceProvider
 {
@@ -93,6 +96,14 @@ class ExpensesApprovalServiceProvider extends ServiceProvider
         $this->app->bind(ExpensesRuleResource::class, function () {
             return new ExpensesRuleResource(new ExpensesRule());
         });
+
+        $this->app->bind(SubcategoryRepository::class, function () {
+            return new SubcategoryRepository(new Subcategory());
+        });
+
+        $this->app->bind(SubcategoryResource::class, function () {
+            return new SubcategoryResource(new Subcategory());
+        });    
     }
 
     /**
@@ -107,7 +118,8 @@ class ExpensesApprovalServiceProvider extends ServiceProvider
             ExpensesApprovalRepository::class,
             ExpensesAttachmentRepository::class,
             ExpensesProposalRepository::class,
-            ExpensesRuleRepository::class
+            ExpensesRuleRepository::class,
+            SubcategoryRepository::class,
         ];
     }
 

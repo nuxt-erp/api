@@ -14,7 +14,7 @@ class ExpensesProposalResource extends JsonResource
         $actions = collect([]);
         $preview = false;
 
-        if($user->hasRole('buyer') && !$this->purchased_at) {
+        if($user->hasRole('buyer') && $this->status->value==='approved') {
             $actions->push(collect([
                 'name'  => 'Finish Purchase',
                 'code'  => 'finish_purchase',
@@ -36,20 +36,6 @@ class ExpensesProposalResource extends JsonResource
                         'icon'  => 'delete',
                         'type'  => 'danger'
                     ]));
-                } else if($user->id === $this->author_id && $user->id === $this->category->team_leader_id){
-                    $actions->push(collect([
-                        'name'  => 'Edit',
-                        'code'  => 'edit_expense',
-                        'icon'  => 'edit',
-                        'type'  => 'primary'
-                    ]));
-
-                    $actions->push(collect([
-                        'name'  => 'Delete',
-                        'code'  => 'delete_expense',
-                        'icon'  => 'delete',
-                        'type'  => 'danger'
-                    ]));                
                 } else if($user->id === $this->category->team_leader_id || $user->id === $this->category->director_id){
 
 
@@ -93,10 +79,50 @@ class ExpensesProposalResource extends JsonResource
             }
         }
 
+        $approvals = null;
+
+        if($this->status->value !== 'pending' && !$this->approvals->isEmpty()){
+            foreach($this->approvals as $item) {
+                if($approvals){
+                    $approvals .= ', ' . $item->approver->name;
+                } else {
+                    $approvals .= $item->approver->name;
+                }
+            }           
+        } else {
+            if($this->status->value !== 'denied') $approvals = 'pre-approved';
+        }
+
+        $approvers = null;
+        if($this->rule()->team_leader_approval) {
+            if($this->author_id !== $this->category->team_leader_id) {                
+                $team_leader_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->team_leader_id)->first();
+
+                if(!$team_leader_approval) {
+                    $approvers .= $this->category->team_leader->name;
+                }
+            }
+        } 
+
+        if($this->rule()->director_approval) {
+            if($this->author_id !== $this->category->director_id) {                
+                $director_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->director_id)->first();
+                if(!$director_approval) {
+                    if($approvers) {
+                        $approvers .= ', ' . $this->category->director->name;
+                    } else {
+                        $approvers .= $this->category->director->name;
+                    }
+                }
+            }
+        }
+
         return [
             'id'                        => $this->id,
             'expenses_category_id'      => $this->expenses_category_id,
-            'expenses_category_name'    => $this->category->name, 
+            'expenses_category_name'    => $this->category->name,
+            'subcategory_id'            => $this->subcategory_id,
+            'subcategory_name'          => $this->subcategory->name, 
             'author_id'                 => $this->author_id,
             'author_name'               => $this->author->name,
             'item'                      => $this->item,
@@ -107,8 +133,8 @@ class ExpensesProposalResource extends JsonResource
             'ship'                      => $this->ship,
             'total_cost'                => $this->total_cost,            
             'status'                    => $this->status->description,
-            'approvers'                 => $this->approvers(),
-            'approvals'                 => $this->approvals,
+            'approvers'                 => $user->hasRole('buyer') ? $approvals : $approvers,
+            'approvals'                 => $approvals,
             'attachments'               => $this->attachments,
             'purchase_date'             => optional($this->purchase_date)->format('Y-m-d'),
             'created_at'                => optional($this->created_at)->format('Y-m-d'),

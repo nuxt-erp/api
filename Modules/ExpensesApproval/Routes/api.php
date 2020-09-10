@@ -25,7 +25,8 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('attachments', 'ExpensesAttachmentController');
         Route::resource('proposals', 'ExpensesProposalController');
         Route::resource('rules', 'ExpensesRuleController');
-        
+        Route::resource('subcategories', 'SubcategoryController');
+
         // get Expenses Proposals
         Route::get('get_pending_proposals', 'ExpensesProposalController@getPendingProposals');        
         Route::get('get_processed_proposals', 'ExpensesProposalController@getProcessedProposals');
