@@ -5,16 +5,17 @@ namespace Modules\Production\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
-use Modules\Production\Repositories\ProductionRepository;
-use Modules\Production\Transformers\ProductionResource;
+use Modules\Production\Repositories\MachineRepository;
+use Modules\Production\Transformers\MachineResource;
 
-class ProductionController extends ControllerService implements CheckPolicies
+
+class MachineController extends ControllerService implements CheckPolicies
 {
 
     protected $repository;
     protected $resource;
 
-    public function __construct(ProductionRepository $repository, ProductionResource $resource)
+    public function __construct(MachineRepository $repository, MachineResource $resource)
     {
         $this->repository = $repository;
         $this->resource = $resource;
