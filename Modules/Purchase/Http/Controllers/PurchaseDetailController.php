@@ -10,7 +10,6 @@ use Modules\Purchase\Transformers\PurchaseDetailResource;
 
 class PurchaseDetailController extends ControllerService implements CheckPolicies
 {
-
     protected $repository;
     protected $resource;
 
@@ -18,6 +17,6 @@ class PurchaseDetailController extends ControllerService implements CheckPolicie
     {
         $this->repository = $repository;
         $this->resource = $resource;
+        parent::__construct();
     }
-
 }

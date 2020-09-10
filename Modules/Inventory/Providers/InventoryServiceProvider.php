@@ -5,6 +5,7 @@ namespace Modules\Inventory\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Console\Scheduling\Schedule;
+
 // models
 use Modules\Inventory\Entities\Attribute;
 use Modules\Inventory\Entities\Availability;
@@ -93,7 +94,7 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(StockLocatorResource::class, function () {
             return new StockLocatorResource(new StockLocator());
         });
-        
+
         $this->app->bind(CategoryRepository::class, function () {
             return new CategoryRepository(new Category());
         });

@@ -3,13 +3,15 @@
 namespace Modules\Purchase\Repositories;
 
 use Illuminate\Support\Arr;
-use Auth;
+use App\Repositories\RepositoryService;
+use Illuminate\Support\Facades\DB;
+
+use App\Models\Supplier;
 use Modules\Purchase\Entities\PurchaseDetail;
 use Modules\Purchase\Entities\Purchase;
-use App\Models\Supplier;
 use Modules\Inventory\Entities\Product;
-use Illuminate\Support\Facades\DB;
-use App\Repositories\RepositoryService;
+
+
 //use App\Traits\StockTrait;
 
 class PurchaseRepository extends RepositoryService

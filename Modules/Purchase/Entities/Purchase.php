@@ -5,7 +5,6 @@ namespace Modules\Purchase\Entities;
 use App\Models\ModelService;
 use App\Models\Location;
 use App\Models\Supplier;
-use Illuminate\Validation\Rule;
 
 class Purchase extends ModelService
 {
@@ -20,7 +19,6 @@ class Purchase extends ModelService
         // generic rules
         $rules = [
             'supplier_id'   => ['nullable', 'exists:tenant.suppliers,id'],
-            'author_id'     => ['nullable', 'exists:tenant.users,id'],
             'location_id'   => ['nullable', 'exists:tenant.locations,id'],
         ];
 
