@@ -10,6 +10,13 @@ class ExpensesRulePolicy
 {
     use HandlesAuthorization;
 
+    public function before($user, $ability)
+    {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+    }
+    
     public function list(User $currentUser)
     {
         return $currentUser->hasRole('director', 'team_leader');
