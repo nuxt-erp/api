@@ -3,7 +3,6 @@
 namespace Modules\RD\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
 // REPOSITORY
 use Modules\RD\Repositories\ProjectRepository;
 // RESOURCES
@@ -32,7 +31,6 @@ class RDServiceProvider extends ServiceProvider
     {
         $this->registerConfig();
         $this->registerViews();
-        $this->registerFactories();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
     }
 
@@ -98,17 +96,6 @@ class RDServiceProvider extends ServiceProvider
         ], ['views', $this->moduleNameLower . '-module-views']);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
-    }
-    /**
-     * Register an additional directory of factories.
-     *
-     * @return void
-     */
-    public function registerFactories()
-    {
-        if (! app()->environment('production') && $this->app->runningInConsole()) {
-            app(Factory::class)->load(module_path($this->moduleName, 'Database/factories'));
-        }
     }
 
     private function getPublishableViewPaths(): array

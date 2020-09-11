@@ -10,6 +10,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Artisan;
+use Illuminate\Database\Eloquent\Builder;
+
 class UserRepository extends RepositoryService
 {
 
@@ -72,13 +74,17 @@ class UserRepository extends RepositoryService
             });
         }
 
-        if (!empty($searchCriteria['role'])) {
-            $role = strtolower(Arr::pull($searchCriteria, 'role'));
-            $role_id = Role::where('name', $role)->orWhere('code', $role)->pluck('id')->first();
-            $user_ids = UserRoles::where('role_id', $role_id)->pluck('user_id');
+        //if (!empty($searchCriteria['role'])) {
 
-            $this->queryBuilder->whereIn('id', $user_ids);
-        }
+            $this->queryBuilder->whereHas('roles', function (Builder $query) {
+
+                //$schema = config('database.connections.tenant.schema');
+                //$query->from("$schema.roles");
+
+                $role = 'admin';//strtolower(Arr::pull($searchCriteria, 'role'));
+                $query->where('code', $role);
+            });
+        //}
 
         $user = auth()->user();
         if($user){

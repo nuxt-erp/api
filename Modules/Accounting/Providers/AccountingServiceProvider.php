@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
 
 class AccountingServiceProvider extends ServiceProvider
 {
@@ -27,7 +26,6 @@ class AccountingServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->registerFactories();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
     }
 
@@ -90,17 +88,7 @@ class AccountingServiceProvider extends ServiceProvider
         }
     }
 
-    /**
-     * Register an additional directory of factories.
-     *
-     * @return void
-     */
-    public function registerFactories()
-    {
-        if (! app()->environment('production') && $this->app->runningInConsole()) {
-            app(Factory::class)->load(module_path($this->moduleName, 'Database/factories'));
-        }
-    }
+
 
     /**
      * Get the services provided by the provider.

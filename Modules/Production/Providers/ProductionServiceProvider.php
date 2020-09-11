@@ -3,7 +3,6 @@
 namespace Modules\Production\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
 
 class ProductionServiceProvider extends ServiceProvider
 {
@@ -26,7 +25,6 @@ class ProductionServiceProvider extends ServiceProvider
     {
         $this->registerConfig();
         $this->registerViews();
-        $this->registerFactories();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations/schema'));
     }
 
@@ -83,17 +81,7 @@ class ProductionServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
     }
-    /**
-     * Register an additional directory of factories.
-     *
-     * @return void
-     */
-    public function registerFactories()
-    {
-        if (! app()->environment('production') && $this->app->runningInConsole()) {
-            app(Factory::class)->load(module_path($this->moduleName, 'Database/factories'));
-        }
-    }
+
 
     private function getPublishableViewPaths(): array
     {

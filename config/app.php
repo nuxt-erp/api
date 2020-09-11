@@ -168,7 +168,6 @@ return [
          */
 
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
-        Snowfire\Beautymail\BeautymailServiceProvider::class,
         Lanin\Laravel\ApiDebugger\ServiceProvider::class,
         //Barryvdh\DomPDF\ServiceProvider::class,
         //Intervention\Image\ImageServiceProvider::class,
