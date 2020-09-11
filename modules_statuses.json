@@ -4,7 +4,6 @@
     "Sales": true,
     "ExpensesApproval": true,
     "Purchase": true,
-    "RD": true,
-    "CreatedStockLocatorTable": true,
-    "Migration": true
+    "Migration": true,
+    "RD": true
 }

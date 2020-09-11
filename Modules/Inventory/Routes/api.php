@@ -21,6 +21,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('categories', 'CategoryController');
         Route::resource('attributes', 'AttributeController');
         Route::resource('stock_locator', 'StockLocatorController');
+        Route::resource('measure', 'MeasureController');
         Route::resource('products', 'ProductController');
         Route::resource('product_attributes', 'ProductAttributeController');
         Route::resource('product_logs', 'ProductLogController');

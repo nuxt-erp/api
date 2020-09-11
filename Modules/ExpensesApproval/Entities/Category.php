@@ -18,7 +18,7 @@ class Category extends ModelService
 
     protected $fillable = [
         'name', 'team_leader_id', 'director_id',
-        'is_finished', 'finished_at'
+        'buyer_id', 'is_finished', 'finished_at'
     ];
 
     public function getRules($request, $item = null)
@@ -27,6 +27,7 @@ class Category extends ModelService
             'name'              => ['string', 'max:255'],
             'team_leader_id'    => ['nullable', 'exists:public.users,id'],
             'director_id'       => ['nullable', 'exists:public.users,id'],
+            'buyer_id'          => ['nullable', 'exists:public.users,id'],
             'is_finished'       => ['nullable', 'boolean'],
             'finished_at'       => ['nullable', 'date']
         ];
@@ -34,14 +35,15 @@ class Category extends ModelService
         // CREATE
         if (is_null($item))
         {
-            //$rules['name'][]            = 'unique:tenant.exp_ap_categories,id';
+            // $rules['name'][]            = 'unique:tenant.exp_ap_categories,id';
             $rules['name'][]            = 'required';
             $rules['team_leader_id'][]  = 'required';
             $rules['director_id'][]     = 'required';
+            $rules['buyer_id'][]        = 'required';
 
         } else {
             //update
-            //$rules['name'][] = Rule::unique('tenant.exp_ap_categories')->ignore($item->id);
+            // $rules['name'][] = Rule::unique('tenant.exp_ap_categories')->ignore($item->id);
         }
 
         return $rules;
@@ -55,5 +57,10 @@ class Category extends ModelService
     public function director()
     {
         return $this->belongsTo(User::class, 'director_id');
+    }
+
+    public function buyer()
+    {
+        return $this->belongsTo(User::class, 'buyer_id');
     }
 }
