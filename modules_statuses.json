@@ -2,6 +2,7 @@
     "Inventory": true,
     "Accounting": false,
     "Sales": true,
-    "ExpensesApproval": true,
-    "RD": true
+    "RD": true,
+    "Production": true,
+    "ExpensesApproval": true
 }
