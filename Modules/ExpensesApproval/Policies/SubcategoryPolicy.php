@@ -4,18 +4,11 @@ namespace Modules\ExpensesApproval\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Modules\ExpensesApproval\Entities\Category;
+use Modules\ExpensesApproval\Entities\Subcategory;
 
-class CategoryPolicy
+class SubcategoryPolicy
 {
     use HandlesAuthorization;
-
-    public function before($user, $ability)
-    {
-        if ($user->isSuperAdmin()) {
-            return true;
-        }
-    }
 
     public function list(User $currentUser)
     {
@@ -27,7 +20,7 @@ class CategoryPolicy
         return $currentUser->hasRole('director', 'team_leader', 'user', 'buyer');
     }
 
-    public function show(User $currentUser, Category $target)
+    public function show(User $currentUser, Subcategory $target)
     {
         return $currentUser->hasRole('director', 'team_leader');
     }
@@ -37,12 +30,12 @@ class CategoryPolicy
         return $currentUser->hasRole('director', 'team_leader');
     }
 
-    public function update(User $currentUser, Category $target)
+    public function update(User $currentUser, Subcategory $target)
     {
         return $currentUser->hasRole('director', 'team_leader');
     }
 
-    public function destroy(User $currentUser, Category $target)
+    public function destroy(User $currentUser, Subcategory $target)
     {
         return $currentUser->hasRole('director', 'team_leader');
     }
