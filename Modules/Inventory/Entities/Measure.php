@@ -33,13 +33,13 @@ class Measure extends ModelService
         // CREATE
         if (is_null($item))
         {
-            $rules['dear_id'][]     = 'unique:tenant.inv_brands';
-            $rules['name'][]        = 'unique:tenant.inv_brands';
+            $rules['dear_id'][]     = 'unique:tenant.inv_measure';
+            $rules['name'][]        = 'unique:tenant.inv_measure';
             $rules['name'][]        = 'required';
         } else {
             //update
-            $rules['dear_id'][]    = Rule::unique('tenant.inv_brands')->ignore($item->id);
-            $rules['name'][]       = Rule::unique('tenant.inv_brands')->ignore($item->id);
+            $rules['dear_id'][]    = Rule::unique('tenant.inv_measure')->ignore($item->id);
+            $rules['name'][]       = Rule::unique('tenant.inv_measure')->ignore($item->id);
         }
 
         return $rules;
