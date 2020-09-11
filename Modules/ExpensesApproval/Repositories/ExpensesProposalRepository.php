@@ -133,7 +133,7 @@ class ExpensesProposalRepository extends RepositoryService
                     $this->sendEmailApproved($this->model);                    
                 } else {
                     // SEND EMAIL TO APPROVERS
-                    $this->sendEmailApprovers($this->model, $user);                    
+                    $this->sendEmailApprovers($this->model);                    
                 }
                 
 
@@ -199,7 +199,7 @@ class ExpensesProposalRepository extends RepositoryService
                     $this->sendEmailApproved($this->model);                      
                 } else {
                     // SEND EMAIL TO APPROVERS
-                    $this->sendEmailApprovers($this->model, $user);  
+                    $this->sendEmailApprovers($this->model);  
                 }
             }
 
@@ -381,7 +381,7 @@ class ExpensesProposalRepository extends RepositoryService
         $this->sendEmail( [$buyer], $data);
     }
 
-    public function sendEmailApprovers($proposal, $user)
+    public function sendEmailApprovers($proposal)
     {   
         $to = [];
        
