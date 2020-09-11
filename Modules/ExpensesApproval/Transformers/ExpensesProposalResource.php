@@ -64,15 +64,21 @@ class ExpensesProposalResource extends JsonResource
                             'icon'  => 'disapprove',
                             'type'  => 'danger'
                         ]));
-                    }                                        
+                    } else {
+                        $actions->push(collect([
+                            'name'  => 'Cancel Expense',
+                            'code'  => 'cancel_expense',
+                            'icon'  => 'undo',
+                            'type'  => 'danger'
+                        ]));
+                    }                                    
                 }
             } else if($this->status->value === 'approved') {
-                if (($user->id === $this->author_id && $user->id === $this->category->director_id)
-                    ||($user->id === $this->author_id && $user->id === $this->category->team_leader_id && !$this->rule()->director_approval))  {
+                if ($user->id === $this->category->director_id ||$user->id === $this->category->team_leader_id) {
                     $actions->push(collect([
-                        'name'  => 'Delete',
-                        'code'  => 'delete_expense',
-                        'icon'  => 'delete',
+                        'name'  => 'Cancel Expense',
+                        'code'  => 'cancel_expense',
+                        'icon'  => 'undo',
                         'type'  => 'danger'
                     ]));
                 }
@@ -140,7 +146,7 @@ class ExpensesProposalResource extends JsonResource
             'created_at'                => optional($this->created_at)->format('Y-m-d'),
             'updated_at'                => optional($this->updated_at)->format('Y-m-d'),
             'actions'                   => $actions,
-            'hide'                      => $this->status->value != 'pending',
+            'hide'                      => $this->hide ? $this->hide : $this->status->value != 'pending',
             'preview'                   => $preview
         ];
     }
