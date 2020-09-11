@@ -3,6 +3,7 @@
 namespace Modules\ExpensesApproval\Entities;
 
 use App\Models\ModelService;
+use App\Models\User;
 
 class ExpensesApproval extends ModelService
 {
@@ -17,8 +18,8 @@ class ExpensesApproval extends ModelService
     public function getRules($request, $item = null)
     {
         $rules = [
-            //'expenses_proposal_id'   => ['exists:tenant.exp_ap_expenses_proposals,id'],
-            //'approver_id'           => ['exists:users,id'],
+            'expenses_proposal_id'   => ['exists:tenant.exp_ap_expenses_proposals,id'],
+            'approver_id'           => ['exists:users,id'],
         ];
 
         // CREATE
@@ -37,7 +38,7 @@ class ExpensesApproval extends ModelService
         return $this->belongsTo(ExpensesProposal::class, 'expense_proposal_id');
     }
 
-    public function team_leader()
+    public function approver()
     {
         return $this->belongsTo(User::class, 'approver_id');
     }

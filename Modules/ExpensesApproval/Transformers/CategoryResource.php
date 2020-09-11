@@ -15,6 +15,8 @@ class CategoryResource extends JsonResource
             'team_leader_name'      => $this->team_leader->name,
             'director_id'           => $this->director_id,
             'director_name'         => $this->director->name,
+            'buyer_id'              => $this->buyer_id,
+            'buyer_name'            => $this->buyer->name,
             'is_finished'           => $this->is_finished ? 1 : 0,
             'finished_at'           => optional($this->finished_at)->format('Y-m-d H:i:s'),
             'created_at'            => optional($this->created_at)->format('Y-m-d H:i:s'),
