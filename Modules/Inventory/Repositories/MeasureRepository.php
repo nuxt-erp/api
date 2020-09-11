@@ -5,7 +5,7 @@ namespace Modules\Inventory\Repositories;
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Arr;
 
-class BrandRepository extends RepositoryService
+class MeasureRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {

@@ -50,7 +50,10 @@ class ProductRepository extends RepositoryService
             $this->queryBuilder
                 ->where('brand_id', $searchCriteria['brand_id']);
         }
-
+        if (!empty($searchCriteria['stock_locator'])) {
+            $this->queryBuilder
+                ->where('stock_locator', $searchCriteria['stock_locator']);
+        }
         if (!empty($searchCriteria['location_id'])) {
             $this->queryBuilder
                 ->where('location_id', $searchCriteria['location_id']);

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('expenses-approval/attachments/download/{file_name}', 'ExpensesAttachmentController@downloadFile');
+Route::get('expenses-approval/attachments/view/{file_name}', 'ExpensesAttachmentController@viewFile');
 
 Route::middleware('auth:api')->group(function () {
 
@@ -22,16 +23,18 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('categories', 'CategoryController');
         Route::resource('approvals', 'ExpensesApprovalController');
         Route::resource('attachments', 'ExpensesAttachmentController');
-        Route::resource('proposals', 'ExpensesProposalController');
+        Route::resource('requests', 'ExpensesProposalController');
         Route::resource('rules', 'ExpensesRuleController');
-        
+        Route::resource('subcategories', 'SubcategoryController');
+
         // get Expenses Proposals
-        Route::get('get_pending_proposals', 'ExpensesProposalController@getPendingProposals');        
-        Route::get('get_processed_proposals', 'ExpensesProposalController@getProcessedProposals');
+        Route::get('get_pending_requests', 'ExpensesProposalController@getPendingProposals');        
+        Route::get('get_processed_requests', 'ExpensesProposalController@getProcessedProposals');
 
         // approve or disapprove Expenses Proposal
-        Route::post('approve_proposal/{id}', 'ExpensesProposalController@approveProposal');    
-        Route::post('disapprove_proposal/{id}', 'ExpensesProposalController@disapproveProposal');
+        Route::post('approve_request/{id}', 'ExpensesProposalController@approveProposal');    
+        Route::post('disapprove_request/{id}', 'ExpensesProposalController@disapproveProposal');
+        Route::post('cancel_request/{id}', 'ExpensesProposalController@cancelProposal');
 
         // save attachments to AWS S3
         Route::post('attachments/save', 'ExpensesAttachmentController@saveFile');

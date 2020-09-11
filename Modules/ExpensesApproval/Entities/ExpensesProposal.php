@@ -19,24 +19,26 @@ class ExpensesProposal extends ModelService
     protected $fillable = [
         'expenses_category_id', 'author_id', 'item',
         'reason', 'supplier_link', 'subtotal', 'hst',
-        'ship', 'total_cost', 'status_id', 'purchase_date'
+        'ship', 'total_cost', 'status_id', 'purchase_date',
+        'subcategory_id'
     ];
 
     public function getRules($request, $item = null)
     {
         $rules = [
-            //'expenses_category_id'  => ['exists:tenant.exp_ap_categories,id'],
-            //'author_id'             => ['exists:public.users,id'],
-            'item'                  => ['string', 'max:255'],
+            'expenses_category_id'  => ['exists:tenant.exp_ap_categories,id'],
+            'author_id'             => ['exists:public.users,id'],
             'supplier_link'         => ['nullable'],
-            //'status_id'             => ['exists:tenant.parameters,id'],
-            'purchase_date'         => ['nullable', 'date']
+            'status_id'             => ['exists:tenant.parameters,id'],
+            'purchase_date'         => ['nullable', 'date'],
+            'subcategory_id'        => ['nullable'],
         ];
 
         // CREATE
         if (is_null($item))
         {
             $rules['expenses_category_id'][]    = 'required';
+            $rules['subcategory_id'][]          = 'required';
             $rules['item'][]                    = 'required';
             $rules['reason'][]                  = 'required';
             $rules['subtotal'][]                = 'required';
@@ -51,6 +53,11 @@ class ExpensesProposal extends ModelService
     public function category()
     {
         return $this->belongsTo(Category::class, 'expenses_category_id');
+    }
+
+    public function subcategory()
+    {
+        return $this->belongsTo(Subcategory::class, 'subcategory_id');
     }
 
     public function author()
@@ -77,22 +84,6 @@ class ExpensesProposal extends ModelService
     {
         $rule = ExpensesRule::where('start_value', '<', $this->total_cost)->where('end_value', '>=', $this->total_cost)->orWhereNull('end_value')->orderBy('start_value')->first();
         return $rule;
-    }
-
-    public function approvers()
-    {
-        $category = $this->category;
-        $rule = $this->rule();
-
-        if ($category && $rule) {
-            if($rule->team_leader_approval && $rule->director_approval){
-                return $category->director->name . ', ' . $category->team_leader->name;
-            } else if($rule->team_leader_approval && !$rule->director_approval){
-                return $category->team_leader->name;
-            }
-        } else {
-            return '';
-        }
     }
 
 }
