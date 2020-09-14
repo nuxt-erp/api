@@ -128,15 +128,12 @@ class ExpensesProposalRepository extends RepositoryService
             parent::store($data);
 
             if($this->model) {
-                if (!$this->model->rule()->team_leader_approval && $this->model->rule()->director_approval) {
-                    // IF EXPENSE DON'T NEED ANY APPROVAL, SEND EMAIL TO USER AND BUYER
-                    if ($this->model->status === 'Approved') {
-                        $this->sendEmailApproved($this->model);
-                    }
-
+                // IF EXPENSE IS AUTOMATICALLY APPROVED, SEND EMAIL
+                if ($this->model->status === 'Approved') {
+                    $this->sendEmailApproved($this->model);                    
                 } else {
                     // SEND EMAIL TO APPROVERS
-                    $this->sendEmailApprovers($this->model, $user);                    
+                    $this->sendEmailApprovers($this->model);                    
                 }
                 
 
@@ -197,14 +194,12 @@ class ExpensesProposalRepository extends RepositoryService
 
             // CHECK IF RULE CHANGED AND ANY APPROVAL EMAIL NEEDS TO BE SENT
             if($this->model->rule()->id !== $original_rule->id) {
-                if (!$this->model->rule()->team_leader_approval && $this->model->rule()->director_approval) {
-                    // IF EXPENSE DON'T NEED ANY APPROVAL, SEND EMAIL TO USER AND BUYER
-                    if ($this->model->status === 'Approved') {
-                        $this->sendEmailApproved($this->model);                        
-                    }
+                // IF EXPENSE IS AUTOMATICALLY APPROVED, SEND EMAIL
+                if ($this->model->status === 'Approved') {
+                    $this->sendEmailApproved($this->model);                      
                 } else {
                     // SEND EMAIL TO APPROVERS
-                    $this->sendEmailApprovers($this->model, $user);  
+                    $this->sendEmailApprovers($this->model);  
                 }
             }
 
@@ -386,17 +381,16 @@ class ExpensesProposalRepository extends RepositoryService
         $this->sendEmail( [$buyer], $data);
     }
 
-    public function sendEmailApprovers($proposal, $user)
+    public function sendEmailApprovers($proposal)
     {   
         $to = [];
-
-        if ($proposal->rule()->team_leader_approval && $user->id !== $proposal->category->team_leader_id) {
-            $team_leader_email = User::where('id', $proposal->category->team_leader_id)->pluck('email')->first();
-            $to[] = $team_leader_email;
+       
+        if ($proposal->rule()->team_leader_approval && $proposal->author_id !== $proposal->category->team_leader_id && $proposal->author_id !== $proposal->category->director_id) {
+            $to[] = $proposal->category->team_leader->email;
         }
-        if ($proposal->rule()->director_approval && $user->id !== $proposal->category->director_id) {
-            $director_email = User::where('id', $proposal->category->director_id)->pluck('email')->first();
-            $to[] = $director_email;
+
+        if ($proposal->rule()->director_approval && $proposal->author_id !== $proposal->category->director_id ) {
+            $to[] = $proposal->category->director->email;
         }
 
         $data = [
@@ -413,7 +407,6 @@ class ExpensesProposalRepository extends RepositoryService
         ];
 
         $this->sendEmail($to, $data);
-        
     }
 
     public function sendEmail(array $to, $data)
@@ -432,7 +425,6 @@ class ExpensesProposalRepository extends RepositoryService
         } catch (\Throwable $th) {
             lad('Error to send email');
         }
-        
     }
 
     

@@ -20,9 +20,10 @@ Route::middleware('auth:api')->group(function () {
 
         // CRUD manager
         Route::resource('operations', 'OperationController');
+        Route::resource('operation_results', 'OperationResultController');
         Route::resource('phases', 'PhaseController');
         Route::resource('flows', 'FlowController');
-        Route::resource('flow_actions', 'FlowActionsController');
+        Route::resource('flow_actions', 'FlowActionController');
         Route::resource('actions', 'ActionController');
         Route::resource('machines', 'MachineController');
         Route::resource('productions', 'ProductionController');

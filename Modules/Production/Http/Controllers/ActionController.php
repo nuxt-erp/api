@@ -1,0 +1,23 @@
+<?php
+
+namespace Modules\Production\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Concerns\CheckPolicies;
+use App\Http\Controllers\ControllerService;
+use Modules\Production\Repositories\ActionRepository;
+use Modules\Production\Transformers\ActionResource;
+
+class ActionController extends ControllerService implements CheckPolicies
+{
+
+    protected $repository;
+    protected $resource;
+
+    public function __construct(ActionRepository $repository, ActionResource $resource)
+    {
+        $this->repository = $repository;
+        $this->resource = $resource;
+        parent::__construct();
+    }
+}
