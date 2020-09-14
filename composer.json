@@ -27,7 +27,7 @@
         "nwidart/laravel-modules": "^7.2",
         "phpclassic/php-shopify": "^1.1",
         "rap2hpoutre/laravel-log-viewer": "^1.6",
-        "snowfire/beautymail": "^1.2"
+        "snowfire/beautymail": "^1.2.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.8",
