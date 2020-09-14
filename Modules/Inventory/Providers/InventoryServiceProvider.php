@@ -16,6 +16,7 @@ use Modules\Inventory\Entities\ProductAttributes;
 use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\StockLocator;
 use Modules\Inventory\Entities\Measure;
+use Modules\Inventory\Entities\ProductFamilyAttribute;
 
 
 // repositories
@@ -29,6 +30,7 @@ use Modules\Inventory\Repositories\ProductAttributeRepository;
 use Modules\Inventory\Repositories\ProductLogRepository;
 use Modules\Inventory\Repositories\ProductRepository;
 use Modules\Inventory\Repositories\MeasureRepository;
+use Modules\Inventory\Repositories\ProductFamilyAttributeRepository;
 
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
@@ -41,6 +43,7 @@ use Modules\Inventory\Transformers\ProductAttributeResource;
 use Modules\Inventory\Transformers\ProductLogResource;
 use Modules\Inventory\Transformers\ProductResource;
 use Modules\Inventory\Transformers\MeasureResource;
+use Modules\Inventory\Transformers\ProductFamilyAttributeResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -152,7 +155,13 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductAttributeResource::class, function () {
             return new ProductAttributeResource(new ProductAttributes());
         });
-
+        $this->app->bind(ProductFamilyAttributeRepository::class, function () {
+            return new ProductFamilyAttributeRepository(new ProductFamilyAttribute());
+        });
+        $this->app->bind(ProductFamilyAttributeResource::class, function () {
+            return new ProductFamilyAttributeResource(new ProductFamilyAttribute());
+        });
+        
         $this->app->bind(ProductLogRepository::class, function () {
             return new ProductLogRepository(new ProductLog());
         });
@@ -180,7 +189,7 @@ class InventoryServiceProvider extends ServiceProvider
             ProductLogRepository::class,
             StockLocatorRepository::class,
             MeasureRepository::class,
-
+            ProductFamilyAttributeRepository::class
         ];
     }
 

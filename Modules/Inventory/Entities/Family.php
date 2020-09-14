@@ -21,7 +21,11 @@ class Family extends ModelService
         'brand_id', 'category_id', 'supplier_id',
         'location_id', 'dear_id', 'name',
         'description', 'sku', 'launch_at',
-        'is_enabled', 'disabled_at'
+        'is_enabled', 'disabled_at','price', 'barcode',
+        'length', 'width', 'height',
+        'weight','stock_locator','measure_id',
+        'carton_length', 'carton_width', 'carton_height',
+        'carton_weight'
     ];
 
     public function getRules($request, $item = null)
@@ -36,7 +40,9 @@ class Family extends ModelService
             'description'   => ['nullable', 'string', 'max:500'],
             'sku'           => ['nullable', 'string', 'max:255'],
             'launch_at'     => ['nullable', 'date'],
-            'is_enabled'    => ['nullable', 'boolean']
+            'is_enabled'    => ['nullable', 'boolean'],
+            'stock_locator' => ['nullable', 'exists:tenant.inv_stock_locator,id'],
+            'measure'       => ['nullable', 'exists:tenant.inv_measure,id'],
         ];
 
         // CREATE
@@ -55,7 +61,13 @@ class Family extends ModelService
 
         return $rules;
     }
-
+    public function getFullDescriptionAttribute()
+    {
+        return $this->name . ' ' . $this->details;
+    }
+    public function family_attributes(){
+        return $this->hasMany(ProductFamilyAttribute::class, 'family_id');
+    }
     public function brand()
     {
         return $this->belongsTo(Brand::class, 'brand_id');
@@ -80,6 +92,13 @@ class Family extends ModelService
     {
         return $this->hasMany(Product::class, 'family_id', 'id');
     }
+    public function stockLocator()
+    {
+        return $this->belongsTo(StockLocator::class);
+    }
+    public function measure()
+    {
+        return $this->belongsTo(Measure::class);
+    }
 
 }
-
