@@ -74,17 +74,12 @@ class UserRepository extends RepositoryService
             });
         }
 
-        //if (!empty($searchCriteria['role'])) {
-
+        if (!empty($searchCriteria['role'])) {
             $this->queryBuilder->whereHas('roles', function (Builder $query) {
-
-                //$schema = config('database.connections.tenant.schema');
-                //$query->from("$schema.roles");
-
-                $role = 'admin';//strtolower(Arr::pull($searchCriteria, 'role'));
+                $role = strtolower(Arr::pull($searchCriteria, 'role'));
                 $query->where('code', $role);
             });
-        //}
+        }
 
         $user = auth()->user();
         if($user){
