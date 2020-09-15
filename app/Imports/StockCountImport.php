@@ -6,7 +6,7 @@ use App\Models\Import;
 use App\Models\StockTakeDetail;
 use App\Models\Product;
 use App\Models\Location;
-use App\Models\ProductAvailability;
+use App\Models\Availability;
 
 use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -41,7 +41,7 @@ class StockCountImport implements ToArray, WithHeadingRow
                 if ($product)
                 {
                     if ($row['warehouse'] != "") {
-                        $on_hand = ProductAvailability::where(['product_id' => $product->id, 'location_id' => Location::where('short_name', $row['warehouse'])->pluck('id')->first()])->pluck('on_hand')->first();
+                        $on_hand = Availability::where(['product_id' => $product->id, 'location_id' => Location::where('short_name', $row['warehouse'])->pluck('id')->first()])->pluck('on_hand')->first();
                     }
 
                     $array = [

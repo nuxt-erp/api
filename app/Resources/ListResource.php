@@ -24,10 +24,10 @@ class ListResource extends ResourceService
             case 'Product':
                 $resource['sku']    = $this->sku;
                 break;
-            case 'Parameter':
-                $resource['name']   = $this->parameter_name;
-                $resource['value']  = $this->parameter_value;
-                break;
+            /*case 'Parameter':
+                $resource['name']   = $this->value;
+                $resource['value']  = $this->value;
+                break;*/
         }
 
         return $resource;
