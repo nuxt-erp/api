@@ -2,6 +2,7 @@
 
 namespace Modules\ExpensesApproval\Http\Controllers;
 
+use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 use Modules\ExpensesApproval\Repositories\ExpensesRuleRepository;
 use Modules\ExpensesApproval\Transformers\ExpensesRuleResource;

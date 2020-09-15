@@ -13,7 +13,7 @@ class CreateProjectItemsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('tenant')->create('rd_project_items', function (Blueprint $table) {
+        Schema::connection('tenant')->create('rd_project_samples', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             // this should be nullable because sometimes we don't have the recipe for this
@@ -25,7 +25,7 @@ class CreateProjectItemsTable extends Migration
             $table->string('status');
             $table->float('target_cost', 10, 4)->nullable();
             $table->string('feedback')->nullable();
-            $table->string('comment');
+            $table->string('comment')->nullable();
 
             $table->timestamps();
         });
@@ -38,6 +38,6 @@ class CreateProjectItemsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->dropIfExists('rd_project_items');
+        Schema::connection('tenant')->dropIfExists('rd_project_samples');
     }
 }

@@ -5,6 +5,37 @@ namespace Modules\Production\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 
+// REPOSITORY
+use Modules\Production\Repositories\ActionRepository;
+use Modules\Production\Repositories\FlowRepository;
+use Modules\Production\Repositories\FlowActionRepository;
+use Modules\Production\Repositories\MachineRepository;
+use Modules\Production\Repositories\OperationRepository;
+use Modules\Production\Repositories\OperationResultRepository;
+use Modules\Production\Repositories\PhaseRepository;
+use Modules\Production\Repositories\ProductionRepository;
+
+// RESOURCES
+use Modules\Production\Transformers\ActionResource;
+use Modules\Production\Transformers\FlowResource;
+use Modules\Production\Transformers\FlowActionResource;
+use Modules\Production\Transformers\MachineResource;
+use Modules\Production\Transformers\OperationResource;
+use Modules\Production\Transformers\OperationResultResource;
+use Modules\Production\Transformers\PhaseResource;
+use Modules\Production\Transformers\ProductionResource;
+
+// MODELS
+use Modules\Production\Entities\Action;
+use Modules\Production\Entities\Flow;
+use Modules\Production\Entities\FlowAction;
+use Modules\Production\Entities\Machine;
+use Modules\Production\Entities\Operation;
+use Modules\Production\Entities\OperationResult;
+use Modules\Production\Entities\Phase;
+use Modules\Production\Entities\Production;
+
+
 class ProductionServiceProvider extends ServiceProvider
 {
     /**
@@ -27,7 +58,8 @@ class ProductionServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
-        $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations/schema'));
+        $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
+
     }
 
     /**
@@ -39,6 +71,55 @@ class ProductionServiceProvider extends ServiceProvider
     {
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(AuthServiceProvider::class);
+
+        $this->app->bind(ActionRepository::class, function () {
+            return new ActionRepository(new Action());
+        });
+        $this->app->bind(ActionResource::class, function () {
+            return new ActionResource(new Action());
+        });
+        $this->app->bind(FlowRepository::class, function () {
+            return new FlowRepository(new Flow());
+        });
+        $this->app->bind(FlowResource::class, function () {
+            return new FlowResource(new Flow());
+        });
+        $this->app->bind(FlowActionRepository::class, function () {
+            return new FlowActionRepository(new FlowAction());
+        });
+        $this->app->bind(FlowActionResource::class, function () {
+            return new FlowActionResource(new FlowAction());
+        });
+        $this->app->bind(MachineRepository::class, function () {
+            return new MachineRepository(new Machine());
+        });
+        $this->app->bind(MachineResource::class, function () {
+            return new MachineResource(new Machine());
+        });
+        $this->app->bind(OperationRepository::class, function () {
+            return new OperationRepository(new Operation());
+        });
+        $this->app->bind(OperationResource::class, function () {
+            return new OperationResource(new Operation());
+        });
+        $this->app->bind(OperationResultRepository::class, function () {
+            return new OperationResultRepository(new OperationResult());
+        });
+        $this->app->bind(OperationResultResource::class, function () {
+            return new OperationResultResource(new OperationResult());
+        });
+        $this->app->bind(PhaseRepository::class, function () {
+            return new PhaseRepository(new Phase());
+        });
+        $this->app->bind(PhaseResource::class, function () {
+            return new PhaseResource(new Phase());
+        });
+        $this->app->bind(ProductionRepository::class, function () {
+            return new ProductionRepository(new Production());
+        });
+        $this->app->bind(ProductionResource::class, function () {
+            return new ProductionResource(new Production());
+        });
     }
 
     /**
@@ -48,7 +129,16 @@ class ProductionServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return [];
+        return [
+            ActionRepository::class,
+            FlowRepository::class,
+            FlowActionRepository::class,
+            MachineRepository::class,
+            OperationRepository::class,
+            OperationResultRepository::class,
+            PhaseRepository::class,
+            ProductionRepository::class
+        ];
     }
 
     /**

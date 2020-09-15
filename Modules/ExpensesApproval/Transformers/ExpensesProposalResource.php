@@ -74,7 +74,7 @@ class ExpensesProposalResource extends JsonResource
                     }                                    
                 }
             } else if($this->status->value === 'approved') {
-                if ($user->id === $this->category->director_id ||$user->id === $this->category->team_leader_id) {
+                if ($user->id === $this->category->director_id || ($user->id === $this->category->team_leader_id && $this->author_id !== $this->category->director_id)) {
                     $actions->push(collect([
                         'name'  => 'Cancel Expense',
                         'code'  => 'cancel_expense',
