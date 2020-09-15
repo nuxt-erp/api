@@ -19,5 +19,7 @@ Route::middleware('auth:api')->group(function () {
     Route::group(['prefix' => 'purchases'], function () {
         Route::resource('purchases', 'PurchaseController');
         Route::resource('purchase_details', 'PurchaseDetailController');
+        Route::get('remove_item/{id?}', 'PurchaseDetailController@remove');
+        Route::get('purchase/delete/{id?}', 'PurchaseController@destroy');
     });
 });

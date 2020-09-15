@@ -185,7 +185,7 @@ class PurchaseRepository extends RepositoryService
         }
     }
 
-    public function remove($id)
+    public function destroy($id)
     {
         DB::transaction(function () use ($id)
         {
