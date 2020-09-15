@@ -16,7 +16,7 @@ use Modules\Inventory\Entities\ProductAttributes;
 use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\StockLocator;
 use Modules\Inventory\Entities\Measure;
-use Modules\Inventory\Entities\ProductFamilyAttribute;
+use Modules\Inventory\Entities\FamilyAttribute;
 
 
 // repositories
@@ -30,7 +30,7 @@ use Modules\Inventory\Repositories\ProductAttributeRepository;
 use Modules\Inventory\Repositories\ProductLogRepository;
 use Modules\Inventory\Repositories\ProductRepository;
 use Modules\Inventory\Repositories\MeasureRepository;
-use Modules\Inventory\Repositories\ProductFamilyAttributeRepository;
+use Modules\Inventory\Repositories\FamilyAttributeRepository;
 
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
@@ -43,7 +43,7 @@ use Modules\Inventory\Transformers\ProductAttributeResource;
 use Modules\Inventory\Transformers\ProductLogResource;
 use Modules\Inventory\Transformers\ProductResource;
 use Modules\Inventory\Transformers\MeasureResource;
-use Modules\Inventory\Transformers\ProductFamilyAttributeResource;
+use Modules\Inventory\Transformers\FamilyAttributeResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -155,11 +155,11 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductAttributeResource::class, function () {
             return new ProductAttributeResource(new ProductAttributes());
         });
-        $this->app->bind(ProductFamilyAttributeRepository::class, function () {
-            return new ProductFamilyAttributeRepository(new ProductFamilyAttribute());
+        $this->app->bind(FamilyAttributeRepository::class, function () {
+            return new FamilyAttributeRepository(new FamilyAttribute());
         });
-        $this->app->bind(ProductFamilyAttributeResource::class, function () {
-            return new ProductFamilyAttributeResource(new ProductFamilyAttribute());
+        $this->app->bind(FamilyAttributeResource::class, function () {
+            return new FamilyAttributeResource(new FamilyAttribute());
         });
         
         $this->app->bind(ProductLogRepository::class, function () {
@@ -189,7 +189,7 @@ class InventoryServiceProvider extends ServiceProvider
             ProductLogRepository::class,
             StockLocatorRepository::class,
             MeasureRepository::class,
-            ProductFamilyAttributeRepository::class
+            FamilyAttributeRepository::class
         ];
     }
 

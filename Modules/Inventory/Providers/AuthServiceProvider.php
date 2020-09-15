@@ -12,7 +12,7 @@ use Modules\Inventory\Entities\Category;
 use Modules\Inventory\Entities\Family;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductAttributes;
-use Modules\Inventory\Entities\ProductFamilyAttribute;
+use Modules\Inventory\Entities\FamilyAttribute;
 use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\StockLocator;
 use Modules\Inventory\Entities\Measure;
@@ -54,7 +54,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Product::class, ProductPolicy::class);
         Gate::policy(ProductLog::class, ProductLogPolicy::class);
         Gate::policy(ProductAttributes::class, ProductAttributesPolicy::class);
-        Gate::policy(ProductFamilyAttribute::class, ProductFamilyAttributePolicy::class);
+        Gate::policy(FamilyAttribute::class, ProductFamilyAttributePolicy::class);
 
         Gate::policy(StockLocator::class, StockLocatorPolicy::class);
         Gate::policy(Measure::class, MeasurePolicy::class);

@@ -27,7 +27,15 @@ class Family extends ModelService
         'carton_length', 'carton_width', 'carton_height',
         'carton_weight'
     ];
-
+    public function getDetailsAttribute()
+    {
+        $string = '';
+        foreach ($this->family_attributes as $key => $p_attribute) {
+            //lad($attribute);
+            $string .= ($key == 0  ? '' : ', ') . $p_attribute->attribute->name . ': ' . $p_attribute->value;
+        }
+        return $string;
+    }
     public function getRules($request, $item = null)
     {
         $rules = [
@@ -50,13 +58,13 @@ class Family extends ModelService
         {
             $rules['name'][]    = 'required';
             $rules['dear_id'][] = 'unique:tenant.inv_families';
-            $rules['name'][]    = 'unique:tenant.inv_families';
-            $rules['sku'][]     = 'unique:tenant.inv_families';
+          //  $rules['name'][]    = 'unique:tenant.inv_families';
+          //  $rules['sku'][]     = 'unique:tenant.inv_families';
         } else {
             //update
-            $rules['dear_id'][] = Rule::unique('tenant.inv_families')->ignore($item->id);
-            $rules['name'][]    = Rule::unique('tenant.inv_families')->ignore($item->id);
-            $rules['sku'][]     = Rule::unique('tenant.inv_families')->ignore($item->id);
+          //  $rules['dear_id'][] = Rule::unique('tenant.inv_families')->ignore($item->id);
+           // $rules['name'][]    = Rule::unique('tenant.inv_families')->ignore($item->id);
+          //  $rules['sku'][]     = Rule::unique('tenant.inv_families')->ignore($item->id);
         }
 
         return $rules;
@@ -66,7 +74,7 @@ class Family extends ModelService
         return $this->name . ' ' . $this->details;
     }
     public function family_attributes(){
-        return $this->hasMany(ProductFamilyAttribute::class, 'family_id');
+        return $this->hasMany(FamilyAttribute::class, 'family_id');
     }
     public function brand()
     {

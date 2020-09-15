@@ -10,7 +10,6 @@ use Modules\Inventory\Entities\FamilyAttribute;
 
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductAttributes;
-use Modules\Inventory\Entities\ProductFamilyAttribute;
 
 class ProductRepository extends RepositoryService
 {
@@ -84,31 +83,33 @@ class ProductRepository extends RepositoryService
     {
         try{
             \DB::beginTransaction();
-
             DB::transaction(function () use ($data) {
-
+               
                 $this->generate = !empty($data["generate_family"]);
-
+               
                 if ($this->generate == true) // It came from product family
                 {
                     $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
-                }
+                    
+                    $this->generateFamily($data, $data['family_id']);                    // GENERATE FAMILY
 
-                if ($this->generate == true) {
-                    $this->generateFamily($data, $data['family_id']); // GENERATE FAMILY
-                } else {
+                }else {
                     parent::store($data);
                     $this->createAttribute($data); // CREATE ATTRIBUTE
                 }
             });
-        }
+       }
         catch (\Throwable $th) {
 
             \DB::rollBack();
             \DB::commit();
         }
     }
-
+    public function update($model, array $data)
+    {      
+        parent::update($model,$data);                        
+        $this->createAttribute($data); 
+    }
     private function createAttribute($data)
     {
         if (!empty($data["prod_attributes"])) {
@@ -136,6 +137,7 @@ class ProductRepository extends RepositoryService
                         if (isset($attributes[$i])) {
                             if ($attributes[$i] != 0) {
                                 $get_array = $attributes[$i];
+                                lad($product_id);
                                 $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"]);
                             }
                         }
@@ -176,15 +178,7 @@ class ProductRepository extends RepositoryService
         return $new->id;
     }
 
-    public function update($model, array $data)
-    {
-        $this->generate = isset($data["generate_family"]) ? $data["generate_family"] : false;
-        parent::update($model, $data);
-
-        if ($this->generate != true) {
-            $this->createAttribute($data); // CREATE/EDIT ATTRIBUTES
-        }
-    }
+    
 
     private function saveProductAttribute($product_id, $attribute_id, $value)
     {
@@ -202,10 +196,10 @@ class ProductRepository extends RepositoryService
 
     public function generateFamily($data, $family_id = null)
     {
-        if (isset($data["prod_attributes"])) {
+        if (isset($data["family_attributes"])) {
 
             $all_products_id    = [];
-            $object             = $data["prod_attributes"];
+            $object             = $data["family_attributes"];
             $attrib             = array(array());
             $row                = 0;
             $tot                = 0;
@@ -229,7 +223,7 @@ class ProductRepository extends RepositoryService
                             if ($attributes[$i] != 0) {
                                 $get_array = $attributes[$i];
                                 // SAVING ALL FAMILY ATTRIBUTES
-                            FamilyAttribute::updateOrCreate(['family_id' => $family_id, 'attribute_id' => $get_array["id"], 'value' => $get_array["value"]]);
+                            FamilyAttribute::updateOrCreate(['family_id' => $data["family_id"], 'attribute_id' => $get_array["id"], 'value' => $get_array["value"]]);
 
                             }
                         }

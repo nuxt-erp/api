@@ -5,7 +5,7 @@ namespace Modules\Inventory\Repositories;
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Arr;
 
-class ProductFamilyAttributeRepository extends RepositoryService
+class FamilyAttributeRepository extends RepositoryService
 {
 
     public function findBy(array $searchCriteria = [])

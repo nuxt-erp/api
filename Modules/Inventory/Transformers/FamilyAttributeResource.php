@@ -4,7 +4,7 @@ namespace Modules\Inventory\Transformers;
 
 use App\Resources\ResourceService;
 
-class ProductFamilyAttributeResource extends ResourceService
+class FamilyAttributeResource extends ResourceService
 {
     public function toArray($request)
     {
