@@ -6,11 +6,6 @@ use Illuminate\Database\Migrations\Migration;
 
 class AddCartonDimentios extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::connection('tenant')->table('inv_products', function (Blueprint $table) {
@@ -21,11 +16,6 @@ class AddCartonDimentios extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::connection('tenant')->table('inv_products', function (Blueprint $table) {
@@ -33,7 +23,6 @@ class AddCartonDimentios extends Migration
             $table->dropColumn('carton_width');
             $table->dropColumn('carton_height');
             $table->dropColumn('carton_weight');
-
         });
     }
 }

@@ -5,15 +5,15 @@ namespace Modules\Inventory\Http\Controllers;
 
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
-use Modules\Inventory\Repositories\StockTakeDetailRepository;
-use Modules\Inventory\Transformers\StockTakeDetailResource;
+use Modules\Inventory\Repositories\StockCountDetailRepository;
+use Modules\Inventory\Transformers\StockCountDetailResource;
 
-class StockTakeDetailController extends ControllerService
+class StockCountDetailController extends ControllerService
 {
     protected $repository;
     protected $resource;
 
-    public function __construct(StockTakeDetailRepository $repository, StockTakeDetailResource $resource)
+    public function __construct(StockCountDetailRepository $repository, StockCountDetailResource $resource)
     {
         $this->repository = $repository;
         $this->resource = $resource;

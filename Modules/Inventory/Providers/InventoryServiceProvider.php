@@ -17,8 +17,8 @@ use Modules\Inventory\Entities\ProductAttributes;
 use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\StockLocator;
 use Modules\Inventory\Entities\Measure;
-use Modules\Inventory\Entities\StockTake;
-use Modules\Inventory\Entities\StockTakeDetail;
+use Modules\Inventory\Entities\StockCount;
+use Modules\Inventory\Entities\StockCountDetail;
 
 
 // repositories
@@ -32,8 +32,8 @@ use Modules\Inventory\Repositories\ProductAttributeRepository;
 use Modules\Inventory\Repositories\ProductLogRepository;
 use Modules\Inventory\Repositories\ProductRepository;
 use Modules\Inventory\Repositories\MeasureRepository;
-use Modules\Inventory\Repositories\StockTakeRepository;
-use Modules\Inventory\Repositories\StockTakeDetailRepository;
+use Modules\Inventory\Repositories\StockCountRepository;
+use Modules\Inventory\Repositories\StockCountDetailRepository;
 
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
@@ -46,8 +46,8 @@ use Modules\Inventory\Transformers\ProductAttributeResource;
 use Modules\Inventory\Transformers\ProductLogResource;
 use Modules\Inventory\Transformers\ProductResource;
 use Modules\Inventory\Transformers\MeasureResource;
-use Modules\Inventory\Transformers\StockTakeResource;
-use Modules\Inventory\Transformers\StockTakeDetailResource;
+use Modules\Inventory\Transformers\StockCountResource;
+use Modules\Inventory\Transformers\StockCountDetailResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -164,16 +164,24 @@ class InventoryServiceProvider extends ServiceProvider
             return new ProductLogRepository(new ProductLog());
         });
 
+        $this->app->bind(StockCountRepository::class, function () {
+            return new StockCountRepository(new StockCountDetail());
+        });
+
+        $this->app->bind(StockCountDetailRepository::class, function () {
+            return new StockCountDetailRepository(new StockCountDetail());
+        });
+
         $this->app->bind(ProductLogResource::class, function () {
             return new ProductLogResource(new ProductLog());
         });
 
-        $this->app->bind(StockTakeResource::class, function () {
-            return new StockTakeResource(new StockTake());
+        $this->app->bind(StockCountResource::class, function () {
+            return new StockCountResource(new StockCount());
         });
 
-        $this->app->bind(StockTakeDetailResource::class, function () {
-            return new StockTakeDetailResource(new StockTakeDetail());
+        $this->app->bind(StockCountDetailResource::class, function () {
+            return new StockCountDetailResource(new StockCountDetail());
         });
     }
 
@@ -195,8 +203,8 @@ class InventoryServiceProvider extends ServiceProvider
             ProductLogRepository::class,
             StockLocatorRepository::class,
             MeasureRepository::class,
-            StockTakeRepository::class,
-            StockTakeDetailRepository::class,
+            StockCountRepository::class,
+            StockCountDetailRepository::class,
 
         ];
     }

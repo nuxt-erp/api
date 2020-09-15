@@ -3,7 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Import;
-use App\Models\StockTakeDetail;
+use App\Models\StockCountDetail;
 use App\Models\Product;
 use App\Models\Location;
 use App\Models\Availability;

@@ -4,13 +4,13 @@ namespace Modules\Inventory\Transformers;
 
 use App\Resources\ResourceService;
 
-class StockTakeDetailResource extends ResourceService
+class StockCountDetailResource extends ResourceService
 {
     public function toArray($request)
     {
         return [
             'id'              => $this->id,
-            'stocktake_id'    => $this->stocktake_id,
+            'stockcount_id'    => $this->stockcount_id,
             'product_id'      => $this->product_id,
             'name'            => optional($this->product)->getConcatNameAttribute(),
             'sku'             => optional($this->product)->sku,

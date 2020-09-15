@@ -2,16 +2,14 @@
 
 namespace Modules\Inventory\Entities;
 
-use App\Models\Location;
 use App\Models\ModelService;
-use App\Models\Supplier;
 
-class StockTake extends Model
+class StockCount extends ModelService
 {
-    public $table       = "inv_stocktakes";
+    public $table       = "inv_stockcounts";
 
     protected $fillable = [
-        'name', 'date', 'brand_id', 'category_id', 'location_id', 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'company_id', 'status'
+        'name', 'date', 'brand_id', 'category_id', 'location_id', 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'status'
     ];
 
     public function getRules($request, $item = null)

@@ -5,18 +5,19 @@ namespace Modules\Inventory\Repositories;
 use Illuminate\Support\Arr;
 use Auth;
 use Modules\Inventory\Entities\Product;
-use Modules\Inventory\Entities\StockTakeDetails;
-use Modules\Inventory\Entities\StockTake;
+use Modules\Inventory\Entities\StockCountDetail;
+use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Repositories\AvailabilityRepository;
 use Illuminate\Support\Facades\DB;
 //use App\Traits\StockTrait;
 
-class StockTakeRepository extends RepositoryService
+class StockCountRepository extends RepositoryService
 {
     //use StockTrait;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->availabilityRepository = new AvailabilityRepository(new Availability());
     }
 
@@ -26,15 +27,15 @@ class StockTakeRepository extends RepositoryService
 
         // SUCCESS RATE CALCULATION
         $this->queryBuilder->addSelect(\DB::raw('
-        ROUND(((SELECT SUM(if(ABS(d.variance) <= stocktake.target, 1, 0)) FROM stocktake_details d WHERE stocktake_id = stocktake.id)
+        ROUND(((SELECT SUM(if(ABS(d.variance) <= stockcount.target, 1, 0)) FROM stockcount_details d WHERE stockcount_id = stockcount.id)
         /
-        (SELECT count(*) FROM stocktake_details d2 WHERE d2.stocktake_id = stocktake.id) * 100), 2)  as success_rate'));
+        (SELECT count(*) FROM stockcount_details d2 WHERE d2.stockcount_id = stockcount.id) * 100), 2)  as success_rate'));
 
         // SUM OF VARIANCE
-        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(variance) FROM stocktake_details sd WHERE sd.stocktake_id = stocktake.id) as net_variance'));
+        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(variance) FROM stockcount_details sd WHERE sd.stockcount_id = stockcount.id) as net_variance'));
 
         // SUM OF ABS VARIANCE
-        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(abs_variance) FROM stocktake_details sd2 WHERE sd2.stocktake_id = stocktake.id) as abs_variance'));
+        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(abs_variance) FROM stockcount_details sd2 WHERE sd2.stockcount_id = stockcount.id) as abs_variance'));
 
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
@@ -76,10 +77,10 @@ class StockTakeRepository extends RepositoryService
     public function destroy($id)
     {
 
-        $stocktake = StockTake::where('id', $id->id)->select('company_id', 'status')->get();
+        $stockcount = StockCount::where('id', $id->id)->select('company_id', 'status')->get();
 
         // GET ALL SAVED QTY FROM COUNTING
-        $stock = StockTakeDetails::where('stocktake_id', $id->id)->get();
+        $stock = StockCountDetails::where('stockcount_id', $id->id)->get();
 
         foreach ($stock as $value)
         {
@@ -95,15 +96,15 @@ class StockTakeRepository extends RepositoryService
             ]);*/
 
             // Undo stock when stock take is finished
-            if ($stocktake->status == 1) {
+            if ($stockcount->status == 1) {
                 // Decrement
-                $this->availabilityRepository->updateStock($stocktake->company_id, $value->product_id, $value->stock_on_hand, $value->location_id, "-", "Stock Count", $id, 0 , 0, "Remove item");
+                $this->availabilityRepository->updateStock($stockcount->company_id, $value->product_id, $value->stock_on_hand, $value->location_id, "-", "Stock Count", $id, 0 , 0, "Remove item");
             }
 
         }
 
         // parent::delete($id);
-        StockTake::where('id', $id->id)->delete();
+        StockCount::where('id', $id->id)->delete();
     }
 
     public function store($data)
@@ -115,7 +116,7 @@ class StockTakeRepository extends RepositoryService
             // SAVE STOCK TAKE
             parent::store($data);
             // SAVE STOCK TAKE PRODUCTS
-            $this->saveStockTakeDetails($data, $this->model->id);
+            $this->saveStockCountDetails($data, $this->model->id);
         });
     }
 
@@ -126,20 +127,20 @@ class StockTakeRepository extends RepositoryService
             $data["status"] = ($data["status"] == "In progress" ? 1 : 0);
             parent::update($model, $data);
             // UPDATE STOCK TAKE PRODUCTS
-            $this->saveStockTakeDetails($data, $this->model->id);
+            $this->saveStockCountDetails($data, $this->model->id);
         });
     }
 
     // ADJUST & FINISH STOCK COUNT
-    public function finish($stocktake_id)
+    public function finish($stockcount_id)
     {
-        DB::transaction(function () use ($stocktake_id)
+        DB::transaction(function () use ($stockcount_id)
         {
 
-            $company_id = StockTake::where('id', $stocktake_id)->pluck('company_id')->first();
+            $company_id = StockCount::where('id', $stockcount_id)->pluck('company_id')->first();
 
             // GET ALL SAVED QTY FROM COUNTING
-            $stock = StockTakeDetails::where('stocktake_id', $stocktake_id)->get();
+            $stock = StockCountDetails::where('stockcount_id', $stockcount_id)->get();
 
             foreach ($stock as $value)
             {
@@ -152,17 +153,17 @@ class StockTakeRepository extends RepositoryService
                     'available' => $value->stock_on_hand, //PREVIOUS QTY
                     'on_hand'   => $value->qty // QTY COUNTED
                 ]);*/
-                $this->availabilityRepository->updateStock($company_id, $value->product_id, $value->qty, $value->location_id, "+", "Stock Count", $stocktake_id, 0, 0, "Finished stock count - adding quantity");
+                $this->availabilityRepository->updateStock($company_id, $value->product_id, $value->qty, $value->location_id, "+", "Stock Count", $stockcount_id, 0, 0, "Finished stock count - adding quantity");
             }
 
             // SAVE STATUS AS FINISHED
-            StockTake::where('id', $stocktake_id)->update(['status' => true]);
+            StockCount::where('id', $stockcount_id)->update(['status' => true]);
             return true;
         });
     }
 
 
-    private function saveStockTakeDetails($data, $id)
+    private function saveStockCountDetails($data, $id)
     {
 
         if (isset($data["list_products"]))
@@ -172,7 +173,7 @@ class StockTakeRepository extends RepositoryService
             $tot    = 0;
 
             // DELETE ITEMS TO INSERT THEM AGAIN
-            StockTakeDetails::where('stocktake_id', $id)->delete();
+            StockCountDetails::where('stockcount_id', $id)->delete();
 
             foreach ($object as $attributes) // EACH ATTRIBUTE
             {
@@ -203,8 +204,8 @@ class StockTakeRepository extends RepositoryService
                                     $notes = "";
                                 }
 
-                                StockTakeDetails::updateOrCreate([
-                                    'stocktake_id'  => $id,
+                                StockCountDetails::updateOrCreate([
+                                    'stockcount_id'  => $id,
                                     'product_id'    => $get_array["product_id"],
                                     'location_id'   => $data["location_id"]
                                 ],[

@@ -4,9 +4,9 @@ namespace Modules\Inventory\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Modules\Inventory\Entities\StockTakeDetail;
+use Modules\Inventory\Entities\StockCountDetail;
 
-class StockTakeDetailPolicy
+class StockCountDetailPolicy
 {
     use HandlesAuthorization;
 
@@ -20,7 +20,7 @@ class StockTakeDetailPolicy
         return $currentUser->isAdmin();
     }
 
-    public function show(User $currentUser, StockTakeDetail $target)
+    public function show(User $currentUser, StockCountDetail $target)
     {
         return $currentUser->isAdmin();
     }
@@ -30,12 +30,12 @@ class StockTakeDetailPolicy
         return $currentUser->isAdmin();
     }
 
-    public function update(User $currentUser, StockTakeDetail $target)
+    public function update(User $currentUser, StockCountDetail $target)
     {
         return $currentUser->isAdmin();
     }
 
-    public function destroy(User $currentUser, StockTakeDetail $target)
+    public function destroy(User $currentUser, StockCountDetail $target)
     {
         return $currentUser->isAdmin();
     }

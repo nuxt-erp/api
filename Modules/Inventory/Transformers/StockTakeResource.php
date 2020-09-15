@@ -4,7 +4,7 @@ namespace Modules\Inventory\Transformers;
 
 use App\Resources\ResourceService;
 
-class StockTakeResource extends ResourceService
+class StockCountResource extends ResourceService
 {
     public function toArray($request)
     {

@@ -26,9 +26,9 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_attributes', 'ProductAttributeController');
         Route::resource('product_logs', 'ProductLogController');
 
-        Route::resource('stocktake', 'StockTakeController');
-        Route::resource('stocktake_details', 'StockTakeDetailController');
-        Route::get('stocktake/finish/{id?}', 'StockTakeController@finish'); // ADJUST AND FINISH STOCK TAKE
+        Route::resource('stockcount', 'StockCountController');
+        Route::resource('stockcount_details', 'StockCountDetailController');
+        Route::get('stockcount/finish/{id?}', 'StockCountController@finish'); // ADJUST AND FINISH STOCK TAKE
 
         //Route::resource('product_families', 'ProductFamilyController');
         //Route::get('families/remove/{id?}', 'ProductFamilyController@remove'); //@todo review this
