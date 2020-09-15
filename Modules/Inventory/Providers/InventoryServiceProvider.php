@@ -17,6 +17,8 @@ use Modules\Inventory\Entities\ProductAttributes;
 use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\StockLocator;
 use Modules\Inventory\Entities\Measure;
+use Modules\Inventory\Entities\StockTake;
+use Modules\Inventory\Entities\StockTakeDetail;
 
 
 // repositories
@@ -30,6 +32,8 @@ use Modules\Inventory\Repositories\ProductAttributeRepository;
 use Modules\Inventory\Repositories\ProductLogRepository;
 use Modules\Inventory\Repositories\ProductRepository;
 use Modules\Inventory\Repositories\MeasureRepository;
+use Modules\Inventory\Repositories\StockTakeRepository;
+use Modules\Inventory\Repositories\StockTakeDetailRepository;
 
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
@@ -42,6 +46,8 @@ use Modules\Inventory\Transformers\ProductAttributeResource;
 use Modules\Inventory\Transformers\ProductLogResource;
 use Modules\Inventory\Transformers\ProductResource;
 use Modules\Inventory\Transformers\MeasureResource;
+use Modules\Inventory\Transformers\StockTakeResource;
+use Modules\Inventory\Transformers\StockTakeDetailResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -161,6 +167,14 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductLogResource::class, function () {
             return new ProductLogResource(new ProductLog());
         });
+
+        $this->app->bind(StockTakeResource::class, function () {
+            return new StockTakeResource(new StockTake());
+        });
+
+        $this->app->bind(StockTakeDetailResource::class, function () {
+            return new StockTakeDetailResource(new StockTakeDetail());
+        });
     }
 
     /**
@@ -181,6 +195,8 @@ class InventoryServiceProvider extends ServiceProvider
             ProductLogRepository::class,
             StockLocatorRepository::class,
             MeasureRepository::class,
+            StockTakeRepository::class,
+            StockTakeDetailRepository::class,
 
         ];
     }

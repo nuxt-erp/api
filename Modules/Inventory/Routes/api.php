@@ -27,7 +27,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_logs', 'ProductLogController');
 
         Route::resource('stocktake', 'StockTakeController');
-        Route::resource('stocktake_details', 'StockTakeDetailsController');
+        Route::resource('stocktake_details', 'StockTakeDetailController');
         Route::get('stocktake/finish/{id?}', 'StockTakeController@finish'); // ADJUST AND FINISH STOCK TAKE
 
         //Route::resource('product_families', 'ProductFamilyController');
