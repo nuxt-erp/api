@@ -19,25 +19,39 @@ class UserRepository extends RepositoryService
     {
         //@todo we should use transaction here, the request is cancelling at the end of the request and is taking too much time to finish
 
-        // generate unique name for the schema
-        do {
-            $company = implode('_', explode(' ', $data['company']));
-            $hash = strtolower('s' . Str::random(7).'_'.substr($company, 0, 20));
-        } while (Company::where('schema', $hash)->exists());
+        $company = Company::where('name', $data['company'])->first();
 
-        // create schema for this company
-        $result = DB::unprepared('CREATE SCHEMA ' . $hash . ' AUTHORIZATION '.config('database.connections.public.username', 'postgres').';');
+        if(!$company){
+            // generate unique name for the schema
+            do {
+                $company_name = implode('_', explode(' ', $data['company']));
+                $hash = strtolower('s' . Str::random(7).'_'.substr($company_name, 0, 20));
+            } while (Company::where('schema', $hash)->exists());
+
+            // create schema for this company
+            $result = DB::unprepared('CREATE SCHEMA ' . $hash . ' AUTHORIZATION '.config('database.connections.public.username', 'postgres').';');
+            $this->store($data); // save user
+            $company = Company::create([
+                'name'      => $data['company'],
+                'schema'    => $hash,
+                'owner_id'  => $this->model->id
+            ]);
+            $this->model->company_id = $company->id; //update company information for the user
+            $this->model->save();
+        }
+        else{
+            $result = TRUE;
+            $hash = $company->schema;
+
+            $user = User::where('email', $data['email'])->first();
+
+            $data['company_id'] = $company->id;
+            $this->update($user, $data); // save user
+            $company->owner_id = $this->model->id;
+            $company->save();
+        }
 
         if ($result) {
-
-                $this->store($data); // save user
-                $company = Company::create([
-                    'name'      => $data['company'],
-                    'schema'    => $hash,
-                    'owner_id'  => $this->model->id
-                ]);
-                $this->model->company_id = $company->id; //update company information for the user
-                $this->model->save();
 
                 DB::setDefaultConnection('tenant');
                 config(['database.connections.tenant.schema' => $hash]);

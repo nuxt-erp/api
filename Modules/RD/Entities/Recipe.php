@@ -12,11 +12,17 @@ class Recipe extends ModelService
 
     protected $table = 'rd_recipes';
 
-    protected $fillable = ['author_id', 'last_updater_id', 'apporver_id','type_id', 'product_id', 'status', 'name', 'category', 'total', 'code', 'cost', 'version', 'approved_at'];
+    protected $fillable = [
+        'author_id', 'last_updater_id', 'approver_id',
+        'type_id', 'product_id', 'status',
+        'name', 'category', 'total',
+        'code', 'cost', 'version',
+        'approved_at'
+    ];
 
     public function getRules($request, $item = null)
     {
-        
+
         // generic rules
         $rules = [
             'author_id'             => ['nullable', 'exists:public.users,id'],
@@ -61,7 +67,7 @@ class Recipe extends ModelService
     {
         return $this->belongsTo(User::class, 'author_id', 'id');
     }
-    
+
     public function approver()
     {
         return $this->belongsTo(User::class, 'approver_id', 'id');
@@ -81,5 +87,5 @@ class Recipe extends ModelService
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
     }
-  
+
 }

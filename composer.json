@@ -54,12 +54,10 @@
         ],
         "psr-4": {
             "App\\": "app/",
-            "Modules\\": "Modules/"
-        },
-        "classmap": [
-            "database/seeds",
-            "database/factories"
-        ]
+            "Modules\\": "Modules/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
     },
     "autoload-dev": {
         "psr-4": {
@@ -75,8 +73,7 @@
         ],
         "post-install-cmd": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-            "@php artisan key:generate --ansi",
-            "@php artisan passport:install"
+            "@php artisan key:generate --ansi"
         ],
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",

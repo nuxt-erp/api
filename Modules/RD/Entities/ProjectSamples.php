@@ -11,7 +11,15 @@ class ProjectSamples extends ModelService
 
     protected $table = 'rd_project_samples';
 
-    protected $fillable = ['project_id', 'recipe_id', 'assignee_id', 'name', 'status', 'target_cost','feedback', 'comment'];
+    const STATUS_SENT   = 'sent';
+    const STATUS_PENDING= 'pending';
+    const STATUS_READY  = 'ready';
+
+    protected $fillable = [
+        'project_id', 'recipe_id', 'assignee_id',
+        'name', 'status', 'target_cost',
+        'feedback', 'comment'
+    ];
 
     public function getRules($request, $item = null)
     {
@@ -37,7 +45,7 @@ class ProjectSamples extends ModelService
         }
         // rules when updating the item
         else{
-            
+
         }
 
         return $rules;
