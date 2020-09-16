@@ -13,7 +13,7 @@ class CreateStockCountDetailTable extends Migration
      */
     public function up()
     {
-        Schema::connection('tenant')->create('stock_counts_detail', function (Blueprint $table) {
+        Schema::connection('tenant')->create('stock_count_details', function (Blueprint $table) {
             $table->id();
 
             $table->timestamps();
@@ -27,6 +27,6 @@ class CreateStockCountDetailTable extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->dropIfExists('stock_counts_detail');
+        Schema::connection('tenant')->dropIfExists('stock_count_details');
     }
 }

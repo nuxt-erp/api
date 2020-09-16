@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Repositories;
 
 use Illuminate\Support\Arr;
+use App\Repositories\RepositoryService;
 
 class StockCountDetailRepository extends RepositoryService
 {

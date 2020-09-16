@@ -1,16 +1,14 @@
 <?php
 
+
 namespace Modules\Inventory\Repositories;
 
 use Illuminate\Support\Arr;
-use Auth;
-use Modules\Inventory\Entities\Product;
-use Modules\Inventory\Entities\StockCountDetail;
-use Modules\Inventory\Entities\StockCount;
-use Modules\Inventory\Entities\Availability;
-use Modules\Inventory\Repositories\AvailabilityRepository;
+use App\Repositories\RepositoryService;
 use Illuminate\Support\Facades\DB;
-//use App\Traits\StockTrait;
+use Modules\Inventory\Entities\StockCount;
+use Modules\Inventory\Entities\StockCountDetail;
+
 
 class StockCountRepository extends RepositoryService
 {
@@ -80,7 +78,7 @@ class StockCountRepository extends RepositoryService
         $stockcount = StockCount::where('id', $id->id)->select('company_id', 'status')->get();
 
         // GET ALL SAVED QTY FROM COUNTING
-        $stock = StockCountDetails::where('stockcount_id', $id->id)->get();
+        $stock = StockCountDetail::where('stockcount_id', $id->id)->get();
 
         foreach ($stock as $value)
         {
@@ -116,7 +114,7 @@ class StockCountRepository extends RepositoryService
             // SAVE STOCK TAKE
             parent::store($data);
             // SAVE STOCK TAKE PRODUCTS
-            $this->saveStockCountDetails($data, $this->model->id);
+            $this->saveStockCountDetail($data, $this->model->id);
         });
     }
 
@@ -127,7 +125,7 @@ class StockCountRepository extends RepositoryService
             $data["status"] = ($data["status"] == "In progress" ? 1 : 0);
             parent::update($model, $data);
             // UPDATE STOCK TAKE PRODUCTS
-            $this->saveStockCountDetails($data, $this->model->id);
+            $this->saveStockCountDetail($data, $this->model->id);
         });
     }
 
@@ -140,7 +138,7 @@ class StockCountRepository extends RepositoryService
             $company_id = StockCount::where('id', $stockcount_id)->pluck('company_id')->first();
 
             // GET ALL SAVED QTY FROM COUNTING
-            $stock = StockCountDetails::where('stockcount_id', $stockcount_id)->get();
+            $stock = StockCountDetail::where('stockcount_id', $stockcount_id)->get();
 
             foreach ($stock as $value)
             {
@@ -163,7 +161,7 @@ class StockCountRepository extends RepositoryService
     }
 
 
-    private function saveStockCountDetails($data, $id)
+    private function saveStockCountDetail($data, $id)
     {
 
         if (isset($data["list_products"]))
@@ -173,7 +171,7 @@ class StockCountRepository extends RepositoryService
             $tot    = 0;
 
             // DELETE ITEMS TO INSERT THEM AGAIN
-            StockCountDetails::where('stockcount_id', $id)->delete();
+            StockCountDetail::where('stockcount_id', $id)->delete();
 
             foreach ($object as $attributes) // EACH ATTRIBUTE
             {
@@ -204,7 +202,7 @@ class StockCountRepository extends RepositoryService
                                     $notes = "";
                                 }
 
-                                StockCountDetails::updateOrCreate([
+                                StockCountDetail::updateOrCreate([
                                     'stockcount_id'  => $id,
                                     'product_id'    => $get_array["product_id"],
                                     'location_id'   => $data["location_id"]
