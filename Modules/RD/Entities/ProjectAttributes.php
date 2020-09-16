@@ -3,6 +3,8 @@
 namespace Modules\RD\Entities;
 
 use App\Models\ModelService;
+use App\Models\Parameter;
+
 use Illuminate\Validation\Rule;
 
 class ProjectAttributes extends ModelService
@@ -18,7 +20,7 @@ class ProjectAttributes extends ModelService
         // generic rules
         $rules = [
             'project_id'               => ['exists:tenant.rd_projects,id'],
-            'attribute_id'            => ['exists:tenant.inv_attributes,id']
+            'attribute_id'            => ['exists:tenant.parameters,id']
 
         ];
 
@@ -35,8 +37,9 @@ class ProjectAttributes extends ModelService
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
-    public function attribute()
+    public function parameter()
     {
-        return $this->belongsTo(Attribute::class, 'attribute_id', 'id');
+        return $this->belongsTo(Parameter::class, 'attribute_id', 'id');
+        
     }
 }
