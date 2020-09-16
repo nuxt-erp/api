@@ -30,7 +30,7 @@ Route::middleware('auth:api')->group(function () {
         //Route::get('families/remove/{id?}', 'ProductFamilyController@remove'); //@todo review this
         //Route::get('families/get_products', 'ProductFamilyController@getListProducts'); //@todo review this
         Route::resource('families', 'FamilyController');
-        //Route::resource('family_attributes', 'ProductFamilyAttributeController');
+        Route::resource('family_attributes', 'FamilyAttributeController');
         Route::resource('availabilities', 'AvailabilityController');
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');

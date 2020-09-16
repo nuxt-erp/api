@@ -17,7 +17,7 @@ class CreateProjectAttributesTable extends Migration
             $table->bigIncrements('id');
 
             $table->foreignId('project_id')->constrained('rd_projects')->onDelete('cascade');
-            $table->foreignId('attribute_id')->constrained('inv_attributes')->onDelete('cascade');
+            $table->foreignId('attribute_id')->constrained('parameters')->onDelete('cascade');
 
             $table->timestamps();
         });

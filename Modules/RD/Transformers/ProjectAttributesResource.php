@@ -15,11 +15,11 @@ class ProjectAttributesResource extends ResourceService
     public function toArray($request)
     {
         return [
-            'id'            => $this->id,
-            'project_id'    => $this->project_id,
-            'attribute_id'  => $this->attribute_id,
-            'created_at'    => optional($this->created_at)->format('Y-m-d H:i:s'),
-            'updated_at'    => optional($this->updated_at)->format('Y-m-d H:i:s'),
+            'id'             => $this->id,
+            'project_id'     => $this->project_id,
+            'attribute_id'   => $this->attribute_id,
+            'created_at'     => optional($this->created_at)->format('Y-m-d H:i:s'),
+            'updated_at'     => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];
     }
 }

@@ -39,7 +39,7 @@ class Product extends ModelService
             'supplier_id'   => ['nullable', 'exists:tenant.suppliers,id'],
             'family_id'     => ['nullable', 'exists:tenant.inv_families,id'],
             'stock_locator' => ['nullable', 'exists:tenant.inv_stock_locator,id'],
-            'measure' => ['nullable', 'exists:tenant.inv_measure,id'],
+            'measure'       => ['nullable', 'exists:tenant.inv_measure,id'],
 
             //@todo add more validation
         ];

@@ -32,7 +32,7 @@ class CreateRecipesTable extends Migration
 
             $table->string('category');
 
-            $table->string('total')->default(0);
+            $table->unsignedDecimal('total', 10, 4)->nullable();
 
             // Code for recipe history
             $table->string('code')->nullable(); // e.g. sku

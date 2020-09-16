@@ -4,10 +4,12 @@ namespace Modules\Inventory\Entities;
 
 use App\Models\ModelService;
 
-class ProductFamilyAttribute extends ModelService
+class FamilyAttribute extends ModelService
 {
 
     protected $connection = 'tenant';
+
+    protected $table = 'inv_family_attributes';
 
     protected $fillable = [
         'value', 'family_id', 'attribute_id'
@@ -17,14 +19,15 @@ class ProductFamilyAttribute extends ModelService
     {
         $rules = [
             'value'         => ['string', 'max:60'],
-            'attribute_id'  => ['exists:tenant.attributes,id']
+            'attribute_id'  => ['exists:tenant.inv_attributes,id'],
+            'family_id'    => ['exists:tenant.inv_family,id'],
         ];
 
         // CREATE
         if (is_null($item))
         {
             $rules['value'][]           = 'required';
-            $rules['family_id'][]       = 'required';
+            $rules['family_id'][]      = 'required';
             $rules['attribute_id'][]    = 'required';
         }
 
@@ -33,7 +36,7 @@ class ProductFamilyAttribute extends ModelService
 
     public function family()
     {
-        return $this->belongsTo(ProductFamily::class);
+        return $this->belongsTo(Family::class);
     }
 
     public function attribute()
@@ -42,4 +45,3 @@ class ProductFamilyAttribute extends ModelService
     }
 
 }
-
