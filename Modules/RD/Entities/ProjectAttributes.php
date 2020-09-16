@@ -37,6 +37,7 @@ class ProjectAttributes extends ModelService
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
+
     public function parameter()
     {
         return $this->belongsTo(Parameter::class, 'attribute_id', 'id');
