@@ -18,6 +18,7 @@ class FamilyController extends ControllerService implements CheckPolicies
     {
         $this->repository = $repository;
         $this->resource = $resource;
+        parent::__construct();
     }
 
     public function getListProducts(Request $request)

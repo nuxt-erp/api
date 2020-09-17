@@ -19,6 +19,7 @@ use Modules\Inventory\Entities\StockLocator;
 use Modules\Inventory\Entities\Measure;
 use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
+use Modules\Inventory\Entities\FamilyAttribute;
 
 
 // repositories
@@ -34,6 +35,7 @@ use Modules\Inventory\Repositories\ProductRepository;
 use Modules\Inventory\Repositories\MeasureRepository;
 use Modules\Inventory\Repositories\StockCountRepository;
 use Modules\Inventory\Repositories\StockCountDetailRepository;
+use Modules\Inventory\Repositories\FamilyAttributeRepository;
 
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
@@ -48,6 +50,7 @@ use Modules\Inventory\Transformers\ProductResource;
 use Modules\Inventory\Transformers\MeasureResource;
 use Modules\Inventory\Transformers\StockCountResource;
 use Modules\Inventory\Transformers\StockCountDetailResource;
+use Modules\Inventory\Transformers\FamilyAttributeResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -159,6 +162,12 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductAttributeResource::class, function () {
             return new ProductAttributeResource(new ProductAttributes());
         });
+        $this->app->bind(FamilyAttributeRepository::class, function () {
+            return new FamilyAttributeRepository(new FamilyAttribute());
+        });
+        $this->app->bind(FamilyAttributeResource::class, function () {
+            return new FamilyAttributeResource(new FamilyAttribute());
+        });
 
         $this->app->bind(ProductLogRepository::class, function () {
             return new ProductLogRepository(new ProductLog());
@@ -205,7 +214,7 @@ class InventoryServiceProvider extends ServiceProvider
             MeasureRepository::class,
             StockCountRepository::class,
             StockCountDetailRepository::class,
-
+            FamilyAttributeRepository::class
         ];
     }
 

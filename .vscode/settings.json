@@ -1,4 +1,5 @@
 {
+    "files.associations": { "*.module": "php" },
     "cSpell.words": [
         "phpredis"
     ]

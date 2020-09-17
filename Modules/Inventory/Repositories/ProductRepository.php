@@ -6,9 +6,10 @@ use Illuminate\Support\Arr;
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Entities\Family;
+use Modules\Inventory\Entities\FamilyAttribute;
+
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductAttributes;
-use Modules\Inventory\Entities\ProductFamilyAttribute;
 
 class ProductRepository extends RepositoryService
 {
@@ -80,24 +81,35 @@ class ProductRepository extends RepositoryService
 
     public function store($data)
     {
-        DB::transaction(function () use ($data) {
+        try{
+            \DB::beginTransaction();
+            DB::transaction(function () use ($data) {
+               
+                $this->generate = !empty($data["generate_family"]);
+               
+                if ($this->generate == true) // It came from product family
+                {
+                    $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
+                    
+                    $this->generateFamily($data, $data['family_id']);                    // GENERATE FAMILY
 
-            $this->generate = !empty($data["generate_family"]);
+                }else {
+                    parent::store($data);
+                    $this->createAttribute($data); // CREATE ATTRIBUTE
+                }
+            });
+       }
+        catch (\Throwable $th) {
 
-            if ($this->generate == true) // It came from product family
-            {
-                $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
-            }
-
-            if ($this->generate == true) {
-                $this->generateFamily($data, $data['family_id']); // GENERATE FAMILY
-            } else {
-                parent::store($data);
-                $this->createAttribute($data); // CREATE ATTRIBUTE
-            }
-        });
+            \DB::rollBack();
+            \DB::commit();
+        }
     }
-
+    public function update($model, array $data)
+    {      
+        parent::update($model,$data);                        
+        $this->createAttribute($data); 
+    }
     private function createAttribute($data)
     {
         if (!empty($data["prod_attributes"])) {
@@ -125,6 +137,7 @@ class ProductRepository extends RepositoryService
                         if (isset($attributes[$i])) {
                             if ($attributes[$i] != 0) {
                                 $get_array = $attributes[$i];
+                                lad($product_id);
                                 $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"]);
                             }
                         }
@@ -136,14 +149,28 @@ class ProductRepository extends RepositoryService
 
     private function createFamily($data)
     {
+       
         $new                = new Family();
-        $new->name          = $data["brand_id"];
-        $new->description   = $data["category_id"];
-        $new->status        = $data["supplier_id"];
-        $new->brand_id      = $data["location_id"];
-        $new->category_id   = $data["name"];
-        $new->supplier_id   = $data["description"];
+        $new->name          = $data["name"];
+        $new->description   = $data["description"];
+        $new->is_enabled    = $data["is_enabled"];
+        $new->brand_id      = $data["brand_id"];
+        $new->location_id   = $data["location_id"];
+        $new->category_id   = $data["category_id"];
+        $new->stock_locator = $data["stock_locator"];
+        $new->measure_id    = $data["measure_id"];
+        $new->supplier_id   = $data["supplier_id"];
         $new->sku           = $data["sku"];
+        $new->barcode       = $data["barcode"];
+        $new->price         = $data["price"];
+        $new->width         = $data["width"];
+        $new->height        = $data["height"];
+        $new->length        = $data["length"];
+        $new->weight        = $data["weight"];
+        $new->carton_width  = $data["carton_width"];
+        $new->carton_height = $data["carton_height"];
+        $new->carton_length = $data["carton_length"];
+        $new->carton_weight = $data["carton_weight"];
         $new->launch_at     = $data["launch_at"];
         $new->is_enabled    = $data["is_enabled"];
         $new->save();
@@ -151,15 +178,7 @@ class ProductRepository extends RepositoryService
         return $new->id;
     }
 
-    public function update($model, array $data)
-    {
-        $this->generate = isset($data["generate_family"]) ? $data["generate_family"] : false;
-        parent::update($model, $data);
-
-        if ($this->generate != true) {
-            $this->createAttribute($data); // CREATE/EDIT ATTRIBUTES
-        }
-    }
+    
 
     private function saveProductAttribute($product_id, $attribute_id, $value)
     {
@@ -177,10 +196,10 @@ class ProductRepository extends RepositoryService
 
     public function generateFamily($data, $family_id = null)
     {
-        if (isset($data["prod_attributes"])) {
+        if (isset($data["family_attributes"])) {
 
             $all_products_id    = [];
-            $object             = $data["prod_attributes"];
+            $object             = $data["family_attributes"];
             $attrib             = array(array());
             $row                = 0;
             $tot                = 0;
@@ -204,22 +223,21 @@ class ProductRepository extends RepositoryService
                             if ($attributes[$i] != 0) {
                                 $get_array = $attributes[$i];
                                 // SAVING ALL FAMILY ATTRIBUTES
-                                ProductFamilyAttribute::updateOrCreate(['family_id' => $family_id, 'attribute_id' => $get_array["id"], 'value' => $get_array["value"]]);
-                                $attributes_concat[$i] = $get_array["id"] . "|" . $get_array["value"];
+                            FamilyAttribute::updateOrCreate(['family_id' => $data["family_id"], 'attribute_id' => $get_array["id"], 'value' => $get_array["value"]]);
+
                             }
                         }
                     }
                 }
             }
 
-
-            $tot_attributes = DB::table('product_family_attributes')->distinct('attribute_id')->count('attribute_id');
+            $tot_attributes = FamilyAttribute::distinct('attribute_id')->count('attribute_id');
             $r              = $tot_attributes;
             $n              = sizeof($attributes_concat);
             $this->printCombination($attributes_concat, $n, $r);
             $my_array       = [];
             $my_array       = $this->result;
-
+          
             /* EXAMPLE
             Array
             (

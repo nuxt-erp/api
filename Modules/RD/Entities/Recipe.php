@@ -27,7 +27,6 @@ class Recipe extends ModelService
             'status'                => ['string', 'max:255'],
             'name'                  => ['string', 'max:255'],
             'category'              => ['string', 'max:255'],
-            'total'                 => ['string', 'max:255'],
             'code'                  => ['nullable', 'max:255'],
             'version'               => ['integer'],
             'approved_at'           => ['nullable', 'date']
