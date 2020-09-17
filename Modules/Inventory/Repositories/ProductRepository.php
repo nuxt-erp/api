@@ -81,34 +81,28 @@ class ProductRepository extends RepositoryService
 
     public function store($data)
     {
-        try{
-            \DB::beginTransaction();
-            DB::transaction(function () use ($data) {
-               
-                $this->generate = !empty($data["generate_family"]);
-               
-                if ($this->generate == true) // It came from product family
-                {
-                    $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
-                    
-                    $this->generateFamily($data, $data['family_id']);                    // GENERATE FAMILY
 
-                }else {
-                    parent::store($data);
-                    $this->createAttribute($data); // CREATE ATTRIBUTE
-                }
-            });
-       }
-        catch (\Throwable $th) {
+        DB::transaction(function () use ($data) {
 
-            \DB::rollBack();
-            \DB::commit();
-        }
+            $this->generate = !empty($data["generate_family"]);
+
+            if ($this->generate == true) // It came from product family
+            {
+                $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
+
+                $this->generateFamily($data, $data['family_id']);                    // GENERATE FAMILY
+
+            }else {
+                parent::store($data);
+                $this->createAttribute($data); // CREATE ATTRIBUTE
+            }
+        });
+
     }
     public function update($model, array $data)
-    {      
-        parent::update($model,$data);                        
-        $this->createAttribute($data); 
+    {
+        parent::update($model,$data);
+        $this->createAttribute($data);
     }
     private function createAttribute($data)
     {
@@ -149,7 +143,7 @@ class ProductRepository extends RepositoryService
 
     private function createFamily($data)
     {
-       
+
         $new                = new Family();
         $new->name          = $data["name"];
         $new->description   = $data["description"];
@@ -178,7 +172,7 @@ class ProductRepository extends RepositoryService
         return $new->id;
     }
 
-    
+
 
     private function saveProductAttribute($product_id, $attribute_id, $value)
     {
@@ -237,7 +231,7 @@ class ProductRepository extends RepositoryService
             $this->printCombination($attributes_concat, $n, $r);
             $my_array       = [];
             $my_array       = $this->result;
-          
+
             /* EXAMPLE
             Array
             (
