@@ -2,7 +2,9 @@
     "Inventory": true,
     "Accounting": false,
     "Sales": true,
+    "ExpensesApproval": true,
+    "Purchase": true,
+    "Migration": true,
     "RD": true,
-    "Production": true,
-    "ExpensesApproval": true
+    "Production": true
 }

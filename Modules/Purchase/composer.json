@@ -1,0 +1,23 @@
+{
+    "name": "nwidart/purchase",
+    "description": "",
+    "authors": [
+        {
+            "name": "Gabriel Fernandez",
+            "email": "contact@gfernandez.me"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Purchase\\": ""
+        }
+    }
+}
