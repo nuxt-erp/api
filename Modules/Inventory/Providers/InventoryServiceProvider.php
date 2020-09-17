@@ -165,7 +165,7 @@ class InventoryServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(StockCountRepository::class, function () {
-            return new StockCountRepository(new StockCountDetail());
+            return new StockCountRepository(new StockCount());
         });
 
         $this->app->bind(StockCountDetailRepository::class, function () {

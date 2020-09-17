@@ -8,7 +8,7 @@ use App\Http\Controllers\ControllerService;
 use Modules\Inventory\Repositories\StockCountDetailRepository;
 use Modules\Inventory\Transformers\StockCountDetailResource;
 
-class StockCountDetailController extends ControllerService
+class StockCountDetailController extends ControllerService implements CheckPolicies
 {
     protected $repository;
     protected $resource;

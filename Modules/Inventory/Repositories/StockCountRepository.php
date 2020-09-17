@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Modules\Inventory\Repositories;
 
 use Illuminate\Support\Arr;
@@ -8,7 +7,7 @@ use App\Repositories\RepositoryService;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
-
+use Modules\Inventory\Entities\Availability;
 
 class StockCountRepository extends RepositoryService
 {
@@ -16,24 +15,29 @@ class StockCountRepository extends RepositoryService
 
     public function __construct()
     {
-        $this->availabilityRepository = new AvailabilityRepository(new Availability());
+       // $this->availabilityRepository = new AvailabilityRepository(new Availability());
     }
 
     public function findBy(array $searchCriteria = [])
     {
-        $this->queryBuilder->select('id', 'name', 'date' , 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'company_id', 'status', 'brand_id',  'category_id', 'location_id');
+      /*  $this->queryBuilder->select('id', 'name', 'date' , 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'status', 'brand_id',  'category_id', 'location_id');
 
         // SUCCESS RATE CALCULATION
         $this->queryBuilder->addSelect(\DB::raw('
-        ROUND(((SELECT SUM(if(ABS(d.variance) <= stockcount.target, 1, 0)) FROM stockcount_details d WHERE stockcount_id = stockcount.id)
+        ROUND(((SELECT SUM(if(ABS(d.variance) <= inv_stock_counts.target, 1, 0)) FROM inv_stock_count_details d WHERE stockcount_id = inv_stock_counts.id)
         /
-        (SELECT count(*) FROM stockcount_details d2 WHERE d2.stockcount_id = stockcount.id) * 100), 2)  as success_rate'));
+        (SELECT count(*) FROM inv_stock_count_details d2 WHERE d2.stockcount_id = inv_stock_counts.id) * 100), 2)  as success_rate'));
 
         // SUM OF VARIANCE
-        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(variance) FROM stockcount_details sd WHERE sd.stockcount_id = stockcount.id) as net_variance'));
+        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(variance) FROM inv_stock_count_details sd WHERE sd.stockcount_id = inv_stock_counts.id) as net_variance'));
 
         // SUM OF ABS VARIANCE
-        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(abs_variance) FROM stockcount_details sd2 WHERE sd2.stockcount_id = stockcount.id) as abs_variance'));
+        $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(abs_variance) FROM inv_stock_count_details sd2 WHERE sd2.stockcount_id = inv_stock_counts.id) as abs_variance'));
+
+        $searchCriteria['order_by'] = [
+            'field'         => 'id',
+            'direction'     => 'asc'
+        ];
 
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
@@ -68,7 +72,7 @@ class StockCountRepository extends RepositoryService
             $searchCriteria['sku'] = $name;
         }
 
-        $this->queryBuilder->where('company_id', Auth::user()->company_id);
+*/
         return parent::findBy($searchCriteria);
     }
 

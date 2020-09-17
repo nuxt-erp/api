@@ -6,7 +6,9 @@ use App\Models\ModelService;
 
 class StockCount extends ModelService
 {
-    public $table       = "inv_stockcounts";
+    protected $connection = 'tenant';
+
+    public $table       = "inv_stock_counts";
 
     protected $fillable = [
         'name', 'date', 'brand_id', 'category_id', 'location_id', 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'status'
@@ -25,6 +27,11 @@ class StockCount extends ModelService
         }
 
         return $rules;
+    }
+
+    public function details()
+    {
+        return $this->hasMany(StockCountDetail::class, 'stockcount_id');
     }
 
     public function brand()

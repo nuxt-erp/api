@@ -6,8 +6,11 @@ use App\Models\ModelService;
 
 class StockCountDetail extends ModelService
 {
+    protected $connection = 'tenant';
+
     public $timestamps  = false;
-    public $table       = "stockcount_details";
+
+    public $table       = "inv_stock_count_details";
 
     protected $fillable = [
         'stockcount_id', 'product_id', 'qty', 'stock_on_hand', 'variance', 'notes', 'location_id', 'abs_variance'

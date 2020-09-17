@@ -123,7 +123,7 @@ class AvailabilityRepository extends RepositoryService
          if (!empty($searchCriteria['stockcount_id']))
          {
              $this->queryBuilder->addSelect('dt.qty as qty');
-             $this->queryBuilder->leftJoin('stockcount_details dt', 'dt.product_id', 'products.id');
+             $this->queryBuilder->leftJoin('inv_stock_count_details dt', 'dt.product_id', 'products.id');
          }
 
          if ($searchCriteria['location_id']) {

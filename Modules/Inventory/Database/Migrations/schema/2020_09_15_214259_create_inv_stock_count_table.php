@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateStockCountTable extends Migration
+class CreateInvStockCountTable extends Migration
 {
     public function up()
     {
-        Schema::connection('tenant')->create('stock_counts', function (Blueprint $table) {
+        Schema::connection('tenant')->create('inv_stock_counts', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('brand_id')->nullable()->constrained('inv_brands')->onDelete('set null');
@@ -35,6 +35,6 @@ class CreateStockCountTable extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->dropIfExists('stock_counts');
+        Schema::connection('tenant')->dropIfExists('inv_stock_counts');
     }
 }
