@@ -120,11 +120,10 @@ class AvailabilityRepository extends RepositoryService
         $this->queryBuilder->join('brands', 'brands.id', 'products.brand_id');
         $this->queryBuilder->join('categories', 'categories.id', 'products.category_id');
 
-         // EDITING STOCKTAKE
-         if (!empty($searchCriteria['stocktake_id']))
+         if (!empty($searchCriteria['stockcount_id']))
          {
              $this->queryBuilder->addSelect('dt.qty as qty');
-             $this->queryBuilder->leftJoin('stocktake_details dt', 'dt.product_id', 'products.id');
+             $this->queryBuilder->leftJoin('inv_stock_count_details dt', 'dt.product_id', 'products.id');
          }
 
          if ($searchCriteria['location_id']) {
@@ -143,9 +142,9 @@ class AvailabilityRepository extends RepositoryService
             ->where('products.status', Arr::pull($searchCriteria, 'add_discontinued'));
          }
 
-         if (!empty($searchCriteria['stocktake_id'])) {
+         if (!empty($searchCriteria['stockcount_id'])) {
              $this->queryBuilder
-             ->where('stocktake_id', Arr::pull($searchCriteria, 'stocktake_id'));
+             ->where('stockcount_id', Arr::pull($searchCriteria, 'stockcount_id'));
          }
 
          if (!empty($searchCriteria['category_id'])) {

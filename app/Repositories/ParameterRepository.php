@@ -8,6 +8,7 @@ class ParameterRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {
+        lad($searchCriteria);
         if (!empty($searchCriteria['text'])) {
             $text = '%' . Arr::pull($searchCriteria, 'text') . '%';
             $this->queryBuilder->where(function ($query) use($text) {
@@ -15,7 +16,7 @@ class ParameterRepository extends RepositoryService
                 ->orWhere('value', 'LIKE', $text);
             });
         }
-
+        lad(parent::findBy($searchCriteria));
         return parent::findBy($searchCriteria);
     }
 }

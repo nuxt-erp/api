@@ -19,6 +19,7 @@ class CreateRecipesTable extends Migration
             $table->foreignId('author_id')->nullable()->constrained('public.users')->onDelete('set null');
             $table->foreignId('last_updater_id')->nullable()->constrained('public.users')->onDelete('set null');
             $table->foreignId('approver_id')->nullable()->constrained('public.users')->onDelete('set null');
+            $table->foreignId('category_id')->nullable()->constrained('inv_categories')->onDelete('set null');
 
             // Added by me (recipe type: vape, syrup etc)
             $table->foreignId('type_id')->nullable()->constrained('parameters')->onDelete('set null');
@@ -29,8 +30,6 @@ class CreateRecipesTable extends Migration
             $table->string('status');
 
             $table->string('name');
-
-            $table->string('category');
 
             $table->unsignedDecimal('total', 10, 4)->nullable();
 

@@ -26,7 +26,12 @@ class ProjectRepository extends RepositoryService
                 unset($data['started']);
             }
             parent::store($data);
+            
         });
+    
+        if (Arr::has($data, 'attribute_ids')) {
+            $this->model->attributes()->sync($data['attribute_ids']);
+        }
 
     }
 
@@ -35,6 +40,11 @@ class ProjectRepository extends RepositoryService
         
         DB::transaction(function () use ($data, $model)
         {
+            lad($model);
+            if (Arr::has($data, 'attribute_ids')) {
+                $model->attributes()->sync($data['attribute_ids']);
+            }
+
             if ($model['closed_at'] !== null && $data['closed'] == null) {
                 $data['closed_at'] =  null;
             } else if($model['closed_at'] == null && $data['closed'] == 1) {
@@ -47,6 +57,8 @@ class ProjectRepository extends RepositoryService
                 $data['start_at'] = now();
             }
 
+            unset($data['attribute_names']);
+            unset($data['attribute_ids']);
             unset($data['closed']);
             unset($data['started']);
 

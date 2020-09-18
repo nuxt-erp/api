@@ -252,7 +252,7 @@ class DearService
 
                         if ($product)
                         {
-                            $final_item = ProductAvailability::updateOrCreate(
+                            $final_item = Availability::updateOrCreate(
                                 [
                                     'product_id' => $product->id,
                                     'company_id' => Auth::user()->company_id

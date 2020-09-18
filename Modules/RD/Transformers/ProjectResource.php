@@ -17,6 +17,7 @@ class ProjectResource extends ResourceService
             'customer_id'        => $this->customer_id,
             'customer_name'      => $this->customer->name,
             'attribute_names'    => $this->attributes->pluck('name'),
+            'attribute_ids'      => optional($this->attributes)->pluck('id')->toArray(),
             'status'             => $this->status,
             'code'               => $this->code,
             'comment'            => $this->comment,

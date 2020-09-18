@@ -37,8 +37,9 @@ class RecipeAttributes extends ModelService
     {
         return $this->belongsTo(Recipe::class, 'recipe_id', 'id');
     }
-    public function attribute()
+    public function parameter()
     {
-        return $this->belongsTo(Attribute::class, 'attribute_id', 'id');
+        return $this->belongsTo(Parameter::class, 'attribute_id', 'id');
+        
     }
 }

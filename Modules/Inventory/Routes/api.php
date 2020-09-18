@@ -26,6 +26,10 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_attributes', 'ProductAttributeController');
         Route::resource('product_logs', 'ProductLogController');
 
+        Route::resource('stockcount', 'StockCountController');
+        Route::resource('stockcount_details', 'StockCountDetailController');
+        Route::get('stockcount/finish/{id?}', 'StockCountController@finish'); // ADJUST AND FINISH STOCK TAKE
+
         //Route::resource('product_families', 'ProductFamilyController');
         //Route::get('families/remove/{id?}', 'ProductFamilyController@remove'); //@todo review this
         //Route::get('families/get_products', 'ProductFamilyController@getListProducts'); //@todo review this
@@ -34,7 +38,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('availabilities', 'AvailabilityController');
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');
-        
+
     });
 
     Route::group(['prefix' => 'import'], function () {
