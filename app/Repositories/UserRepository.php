@@ -25,15 +25,17 @@ class UserRepository extends RepositoryService
             // generate unique name for the schema
             do {
                 $company_name = implode('_', explode(' ', $data['company']));
-                $hash = strtolower('s' . Str::random(7).'_'.substr($company_name, 0, 20));
-            } while (Company::where('schema', $hash)->exists());
+                $schema = strtolower('s' . Str::random(7).'_'.substr($company_name, 0, 20));
+            } while (Company::where('schema', $schema)->exists());
 
             // create schema for this company
-            $result = DB::unprepared('CREATE SCHEMA ' . $hash . ' AUTHORIZATION '.config('database.connections.public.username', 'postgres').';');
-            $this->store($data); // save user
+            $result = DB::unprepared('CREATE SCHEMA ' . $schema . ' AUTHORIZATION '.config('database.connections.public.username', 'postgres').';');
+            // save user
+            $this->store($data);
+            // create company
             $company = Company::create([
                 'name'      => $data['company'],
-                'schema'    => $hash,
+                'schema'    => $schema,
                 'owner_id'  => $this->model->id
             ]);
             $this->model->company_id = $company->id; //update company information for the user
@@ -41,9 +43,9 @@ class UserRepository extends RepositoryService
         }
         else{
             $result = TRUE;
-            $hash = $company->schema;
+            $schema = $company->schema;
 
-            $user = User::where('email', $data['email'])->first();
+            $user = User::where('email', $data['email'])->firstOrFail();
 
             $data['company_id'] = $company->id;
             $this->update($user, $data); // save user
@@ -53,22 +55,22 @@ class UserRepository extends RepositoryService
 
         if ($result) {
 
-                DB::setDefaultConnection('tenant');
-                config(['database.connections.tenant.schema' => $hash]);
+            DB::setDefaultConnection('tenant');
+            config(['database.connections.tenant.schema' => $schema]);
 
-                // run specific migration files for the schema
-                Artisan::call('migrate', [
-                    '--path' => '/database/migrations/schema'
-                ]);
+            // run specific migration files for the schema
+            Artisan::call('migrate', [
+                '--path' => '/database/migrations/schema'
+            ]);
 
-                // add basic roles
-                Artisan::call('db:seed', [
-                    '--class' => 'RoleSeeder'
-                ]);
+            // add basic roles
+            Artisan::call('db:seed', [
+                '--class' => 'RoleSeeder'
+            ]);
 
-                // set user as admin
-                $role_admin = Role::where('code', 'admin')->first();
-                $this->model->roles()->sync([$role_admin->id]);
+            // set user as admin
+            $role_admin = Role::where('code', 'admin')->first();
+            $this->model->roles()->sync([$role_admin->id]);
         }
     }
 
