@@ -2,6 +2,8 @@
 
 namespace Modules\Inventory\Repositories;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Parameter;
+use Modules\Inventory\Entities\ProductLog;
 
 use Illuminate\Support\Arr;
 use App\Repositories\RepositoryService;
@@ -14,18 +16,18 @@ class StockCountRepository extends RepositoryService
 {
     //use StockTrait;
 
-  /*  public function __construct()
+    /*public function __construct()
     {
        // $this->availabilityRepository = new AvailabilityRepository(new Availability());
     }*/
 
     public function findBy(array $searchCriteria = [])
     {
-      /*  $this->queryBuilder->select('id', 'name', 'date' , 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'status', 'brand_id',  'category_id', 'location_id');
-
-        // SUCCESS RATE CALCULATION
+        $this->queryBuilder->select('id', 'name', 'date' , 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'status', 'brand_id',  'category_id', 'location_id');
+ 
+        // SUCCESS RATE CALCULATION    if(ABS(d.variance) <= inv_stock_counts.target, 1, 0)
         $this->queryBuilder->addSelect(\DB::raw('
-        ROUND(((SELECT SUM(if(ABS(d.variance) <= inv_stock_counts.target, 1, 0)) FROM inv_stock_count_details d WHERE stockcount_id = inv_stock_counts.id)
+        ROUND(((SELECT SUM(CASE WHEN (ABS(d.variance) <= inv_stock_counts.target) IN (true) THEN 1 ELSE 0 END) FROM inv_stock_count_details d WHERE stockcount_id = inv_stock_counts.id)
         /
         (SELECT count(*) FROM inv_stock_count_details d2 WHERE d2.stockcount_id = inv_stock_counts.id) * 100), 2)  as success_rate'));
 
@@ -34,7 +36,8 @@ class StockCountRepository extends RepositoryService
 
         // SUM OF ABS VARIANCE
         $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(abs_variance) FROM inv_stock_count_details sd2 WHERE sd2.stockcount_id = inv_stock_counts.id) as abs_variance'));
-*/
+
+
         $searchCriteria['order_by'] = [
             'field'         => 'id',
             'direction'     => 'asc'
@@ -99,6 +102,7 @@ class StockCountRepository extends RepositoryService
             ]);*/
 
             // Undo stock when stock take is finished
+           
             if ($stockcount->status == 1) {
                 // Decrement
                 $this->availabilityRepository->updateStock($stockcount->company_id, $value->product_id, $value->stock_on_hand, $value->location_id, "-", "Stock Count", $id, 0 , 0, "Remove item");
@@ -107,7 +111,7 @@ class StockCountRepository extends RepositoryService
         }
 
         // parent::delete($id);
-        StockCount::where('id', $id->id)->delete();
+         StockCount::where('id', $id->id)->delete();
     }
 
     public function store($data)
@@ -127,7 +131,7 @@ class StockCountRepository extends RepositoryService
     {
         DB::transaction(function () use ($data, $model)
         {
-            $data["status"] = ($data["status"] == "In progress" ? 1 : 0);
+            $data["status"] = ($data["status"] == "In progress" ? 0 : 1);
             parent::update($model, $data);
             // UPDATE STOCK TAKE PRODUCTS
             $this->saveStockCountDetail($data, $this->model->id);
@@ -139,12 +143,8 @@ class StockCountRepository extends RepositoryService
     {
         DB::transaction(function () use ($stockcount_id)
         {
-
-            $company_id = StockCount::where('id', $stockcount_id)->pluck('company_id')->first();
-
             // GET ALL SAVED QTY FROM COUNTING
             $stock = StockCountDetail::where('stockcount_id', $stockcount_id)->get();
-
             foreach ($stock as $value)
             {
                /* ProductAvailability::updateOrCreate([
@@ -156,7 +156,8 @@ class StockCountRepository extends RepositoryService
                     'available' => $value->stock_on_hand, //PREVIOUS QTY
                     'on_hand'   => $value->qty // QTY COUNTED
                 ]);*/
-                $this->availabilityRepository->updateStock($company_id, $value->product_id, $value->qty, $value->location_id, "+", "Stock Count", $stockcount_id, 0, 0, "Finished stock count - adding quantity");
+                $availability_repository = new AvailabilityRepository(new Availability());
+                $availability_repository->updateStock( $value->product_id, $value->qty, $value->location_id, "+", "Stock Count", $stockcount_id, 0, 0, "Finished stock count - adding quantity");
             }
 
             // SAVE STATUS AS FINISHED
@@ -164,7 +165,7 @@ class StockCountRepository extends RepositoryService
             return true;
         });
     }
-
+  
 
     private function saveStockCountDetail($data, $id)
     {
@@ -209,7 +210,7 @@ class StockCountRepository extends RepositoryService
 
                                 StockCountDetail::updateOrCreate([
                                     'stockcount_id'  => $id,
-                                    'product_id'    => $get_array["product_id"],
+                                    'product_id'    => isset($data["product_id"])?$data["product_id"]: $get_array["id"],
                                     'location_id'   => $data["location_id"]
                                 ],[
                                     'qty'           => $qty,

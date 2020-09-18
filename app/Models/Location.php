@@ -7,6 +7,7 @@ class Location extends ModelService
 {
 
     protected $connection = 'tenant';
+    protected $table = 'locations';
 
     protected $dates = [
         'disabled_at',

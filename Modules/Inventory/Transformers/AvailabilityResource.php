@@ -12,12 +12,12 @@ class AvailabilityResource extends ResourceService
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request) 
     {
         return [
             'id'                    => $this->product_id,
             'product_id'            => $this->id,
-            'product_name'          => optional($this->product)->getConcatNameAttribute(),
+            'product_name'          => optional($this->product)->getFullDescriptionAttribute(),
             'in_transit_suppliers'  => optional($this->product)->getInTransitAttribute($this->product_id),
             'in_transit_transfers'  => optional($this->product)->getInTransitTransferAttribute($this->product_id),
             'location_name'         => optional($this->location)->name,
@@ -28,9 +28,9 @@ class AvailabilityResource extends ResourceService
             'allocated'             => $this->allocated,
             'sku'                   => optional($this->product)->sku,
             'brand_id'              => $this->brand_id,
-            'brand_name'            => optional($this->brand)->name,
+            'brand_name'            => optional($this->product->brand)->name,
             'category_id'           => $this->category_id,
-            'category_name'         => optional($this->category)->name,
+            'category_name'         => optional($this->product->category)->name,
             'total'                 => $this->count()
         ];
     }

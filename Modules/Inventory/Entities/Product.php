@@ -40,6 +40,7 @@ class Product extends ModelService
             'family_id'     => ['nullable', 'exists:tenant.inv_families,id'],
             'stock_locator' => ['nullable', 'exists:tenant.inv_stock_locator,id'],
             'measure'       => ['nullable', 'exists:tenant.inv_measure,id'],
+            'location_id'       => ['nullable', 'exists:tenant.locations,id'],
 
             //@todo add more validation
         ];

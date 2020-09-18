@@ -37,7 +37,11 @@ class Availability extends ModelService
 
         return $rules;
     }
-
+    public function getConcatNameAttribute($product_id)
+    {
+        return 0;
+       
+    }
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
