@@ -39,6 +39,8 @@ Route::middleware('auth:api')->group(function () {
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');
 
+        
+
     });
 
     Route::group(['prefix' => 'import'], function () {

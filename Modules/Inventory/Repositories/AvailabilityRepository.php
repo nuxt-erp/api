@@ -13,22 +13,21 @@ class AvailabilityRepository extends RepositoryService
 {
 
     public function findBy(array $searchCriteria = [])
-    {
+    {  
         $searchCriteria['order_by'] = [
             'field'         => 'products.name',
             'direction'     => 'asc'
         ];
+       
+        $this->queryBuilder->join('products', 'inv_availabilities.product_id', 'products.id');
 
+        $this->queryBuilder->select('inv_availabilities.id', 'inv_availabilities.product_id', 'inv_availabilities.company_id', 'inv_availabilities.available', 'inv_availabilities.location_id', 'inv_availabilities.on_hand', 'inv_availabilities.on_order', 'inv_availabilities.allocated');
         if (!empty($searchCriteria['product_name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'product_name') . '%';
             $this->queryBuilder
             ->where('products.name', 'LIKE', $name)
             ->orWhere('products.sku', 'LIKE', $name);
         }
-
-        $this->queryBuilder->select('inv_availabilities.id', 'inv_availabilities.product_id', 'inv_availabilities.company_id', 'inv_availabilities.available', 'inv_availabilities.location_id', 'inv_availabilities.on_hand', 'inv_availabilities.on_order', 'inv_availabilities.allocated');
-        $this->queryBuilder->join('products', 'inv_availabilities.product_id', 'products.id');
-
         if (!empty($searchCriteria['category_id'])) {
             $this->queryBuilder
             ->where('products.category_id', Arr::pull($searchCriteria, 'category_id'));
@@ -105,21 +104,23 @@ class AvailabilityRepository extends RepositoryService
     }
 
      // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
+    
      public function productAvailabilities(array $searchCriteria = [])
      {
-        $searchCriteria['order_by'] = [
+
+       $searchCriteria['order_by'] = [
              'field'         => 'name',
              'direction'     => 'asc'
         ];
 
         $searchCriteria['per_page'] = 20;
 
-        $this->queryBuilder->select('brands.name as brand_name', 'categories.name as category_name', 'products.id', 'products.name', 'products.sku',
-         'inv_availabilities.location_id', 'inv_availabilities.on_hand', 'products.category_id', 'products.brand_id');
+        
         $this->queryBuilder->rightJoin('products', 'inv_availabilities.product_id', 'products.id');
         $this->queryBuilder->join('brands', 'brands.id', 'products.brand_id');
         $this->queryBuilder->join('categories', 'categories.id', 'products.category_id');
-
+        $this->queryBuilder->select('brands.name as brand_name', 'categories.name as category_name', 'products.id', 'products.name', 'products.sku',
+        'inv_availabilities.location_id', 'inv_availabilities.on_hand', 'products.category_id', 'products.brand_id');
          if (!empty($searchCriteria['stockcount_id']))
          {
              $this->queryBuilder->addSelect('dt.qty as qty');

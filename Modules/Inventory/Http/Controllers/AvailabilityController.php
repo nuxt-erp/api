@@ -27,4 +27,6 @@ class AvailabilityController extends ControllerService implements CheckPolicies
         return $this->sendFullCollectionResponse($items, AvailabilityStockCountResource::class);
 
     }
+   
+    
 }

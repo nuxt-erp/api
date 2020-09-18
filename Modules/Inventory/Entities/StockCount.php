@@ -41,7 +41,7 @@ class StockCount extends ModelService
 
     public function location()
     {
-        return $this->belongsTo(Location::class, 'location_id');
+        return $this->belongsTo(\App\Models\Location::class, 'location_id');
     }
 
     public function category()

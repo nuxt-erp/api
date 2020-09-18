@@ -1,6 +1,7 @@
 <?php
 
 namespace Modules\Inventory\Repositories;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Arr;
 use App\Repositories\RepositoryService;
@@ -13,10 +14,10 @@ class StockCountRepository extends RepositoryService
 {
     //use StockTrait;
 
-    public function __construct()
+  /*  public function __construct()
     {
        // $this->availabilityRepository = new AvailabilityRepository(new Availability());
-    }
+    }*/
 
     public function findBy(array $searchCriteria = [])
     {
@@ -33,7 +34,7 @@ class StockCountRepository extends RepositoryService
 
         // SUM OF ABS VARIANCE
         $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(abs_variance) FROM inv_stock_count_details sd2 WHERE sd2.stockcount_id = inv_stock_counts.id) as abs_variance'));
-
+*/
         $searchCriteria['order_by'] = [
             'field'         => 'id',
             'direction'     => 'asc'
@@ -72,7 +73,7 @@ class StockCountRepository extends RepositoryService
             $searchCriteria['sku'] = $name;
         }
 
-*/
+
         return parent::findBy($searchCriteria);
     }
 

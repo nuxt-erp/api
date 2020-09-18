@@ -4,16 +4,17 @@ namespace App\Imports;
 
 use App\Models\Import;
 use App\Models\StockCountDetail;
-use App\Models\Product;
+//use App\Models\Product;
 use App\Models\Location;
-use App\Models\Availability;
+//use App\Models\Availability;
 
 use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\Importable;
 use Illuminate\Support\Facades\DB;
 use App\Services\DearService;
-
+use Modules\Inventory\Entities\Product;
+use Modules\Inventory\Entities\Availability;
 class StockCountImport implements ToArray, WithHeadingRow
 {
 

@@ -10,7 +10,11 @@ use Modules\Inventory\Entities\Attribute;
 use Modules\Inventory\Entities\Brand;
 use Modules\Inventory\Entities\Category;
 use Modules\Inventory\Entities\Product;
+use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductAttributes;
+
+use App\Models\Location;
+use App\Models\Supplier;
 
 class DearService
 {

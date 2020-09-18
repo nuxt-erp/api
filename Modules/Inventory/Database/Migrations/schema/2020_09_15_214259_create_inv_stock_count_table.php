@@ -12,7 +12,7 @@ class CreateInvStockCountTable extends Migration
             $table->id();
 
             $table->foreignId('brand_id')->nullable()->constrained('inv_brands')->onDelete('set null');
-            $table->foreignId('category_id')->constrained('inv_categories')->onDelete('set null');
+            $table->foreignId('category_id')->nullable()->constrained('inv_categories')->onDelete('set null');
             $table->foreignId('supplier_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('set null');
             $table->foreignId('count_type_id')->nullable()->constrained('parameters')->onDelete('set null');

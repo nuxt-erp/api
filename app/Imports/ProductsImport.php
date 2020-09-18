@@ -6,6 +6,9 @@ use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\Importable;
 use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Entities\Product;
+use Modules\Inventory\Entities\Availability;
+use App\Models\Location;
 
 class ProductsImport implements ToArray, WithHeadingRow
 {
