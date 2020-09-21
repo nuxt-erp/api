@@ -11,6 +11,7 @@ use App\Resources\UserResource;
 use Artisan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 class RegisterController extends Controller
 {
@@ -38,9 +39,40 @@ class RegisterController extends Controller
 
     }
 
+    private function artisanResult(){
+        echo implode('<br>', explode(PHP_EOL, Artisan::output()));
+    }
+
     public function installModules($name){
         //$user = auth()->user(); // this is the right option after we make a page to install modules
-        $user = User::where('name', 'LIKE', '%'.$name.'%')->first();
+        $user = User::where('name', 'LIKE', '%'.$name.'%')->orWhere('email', 'LIKE', '%'.$name.'%')->first();
+
+        echo '<<<<<<<< SCRIPT START >>>>>>>><br><br>';
+
+        echo 'Company: '.$user->company->name.'<br><br>';
+
+        echo '----- <br>';
+        try {
+            echo 'Root migration: <br>';
+            Artisan::call('migrate');
+            $this->artisanResult();
+        } catch (\Throwable $th) {
+            echo 'Root migration error!<br>';
+            $this->artisanResult();
+            echo $th->getMessage();
+        }
+        echo '----- <br>';
+
+        try {
+            echo 'Root seeder: <br>';
+            Artisan::call('db:seed');
+            $this->artisanResult();
+        } catch (\Throwable $th) {
+            echo 'Root seeder error!<br>';
+            $this->artisanResult();
+            echo $th->getMessage();
+        }
+        echo '----- <br>';
 
         // run specific migration files for the schema
 
@@ -63,28 +95,32 @@ class RegisterController extends Controller
         config(['database.connections.tenant.schema' => $user->company->schema]); // we can remove this after we have a logged user
 
         foreach ($modules as $module){
+            echo '<strong>Module: '.$module->name.' => </strong><br>';
             try {
+                echo $module->name.' migration: <br>';
                 Artisan::call('migrate', [
                     '--path' => '/Modules/'.ucfirst($module->name).'/Database/Migrations/schema'
                 ]);
-                echo $module->name . ' migration done. <br>';
+                $this->artisanResult();
             } catch (\Throwable $th) {
                 echo 'Migration error for '.ucfirst($module->name).'!<br>';
-                dump(Artisan::output());
-                echo '<br>';
+                $this->artisanResult();
                 echo $th->getMessage();
             }
+            echo '-----<br>';
             try {
+                echo $module->name.' seeder: <br>';
                 Artisan::call('module:seed '.ucfirst($module->name));
-                echo $module->name . ' seeder done. <br>';
+                $this->artisanResult();
             } catch (\Throwable $th) {
                 echo 'Seed error for '.ucfirst($module->name).'!<br>';
-                dump(Artisan::output());
-                echo '<br>';
+                $this->artisanResult();
                 echo $th->getMessage();
             }
-            echo '----- <br>';
+            echo '-----<br>';
         }
+
+        echo '<br><br><<<<<<<< SCRIPT DONE >>>>>>>>';
     }
 
 }

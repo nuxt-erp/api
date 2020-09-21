@@ -16,18 +16,18 @@ class FamilyRepository extends RepositoryService
     private $result = [];
     private $generate = false; // GENERATE PRODUCT FAMILY
 
-    public function getListProducts(array $searchCriteria = [])
+    public function getListProducts($id)
     {
+        $searchCriteria =Array();
         $searchCriteria['order_by'] = [
             'field'         => 'attribute_id',
             'direction'     => 'asc'
         ];
-
         $searchCriteria['per_page'] = 50;
 
         $data = [];
-        if (!empty($searchCriteria['family_id'])) {
-            $data = Product::where('family_id', $searchCriteria['family_id'])->get();
+        if (isset($id)) {
+            $data = Product::where('family_id', $id)->get();
         }
 
         return $data;

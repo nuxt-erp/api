@@ -21,9 +21,10 @@ class FamilyController extends ControllerService implements CheckPolicies
         parent::__construct();
     }
 
-    public function getListProducts(Request $request)
+    public function getListProducts($id)
     {
-        $items = $this->repository->getListProducts($request->all());
+        $items = $this->repository->getListProducts($id);
+
         return $this->sendCollectionResponse($items, ProductResource::class);
     }
 
