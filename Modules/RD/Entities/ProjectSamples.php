@@ -39,8 +39,6 @@ class ProjectSamples extends ModelService
         // rules when creating the item
         if (is_null($item)) {
             $rules['project_id'][] = 'required';
-            $rules['recipe_id'][] = 'required';
-            $rules['assignee_id'][] = 'required';
             $rules['status'][] = 'required';
         }
         // rules when updating the item
@@ -61,5 +59,9 @@ class ProjectSamples extends ModelService
     public function assignee()
     {
         return $this->belongsTo(User::class, 'assignee_id', 'id');
+    }
+    public function project_sample_logs() 
+    {
+        return $this->hasMany(ProjectSampleLogs::class, 'rd_project_sample_logs', 'project_sample_id', 'id');    
     }
 }
