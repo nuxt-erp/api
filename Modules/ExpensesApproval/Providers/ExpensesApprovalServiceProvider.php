@@ -3,7 +3,6 @@
 namespace Modules\ExpensesApproval\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
 use Modules\ExpensesApproval\Entities\Category;
 use Modules\ExpensesApproval\Entities\ExpensesApproval;
 use Modules\ExpensesApproval\Entities\ExpensesAttachment;
@@ -43,7 +42,6 @@ class ExpensesApprovalServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerConfig();
-        $this->registerFactories();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
     }
 
@@ -138,15 +136,4 @@ class ExpensesApprovalServiceProvider extends ServiceProvider
         );
     }
 
-    /**
-     * Register an additional directory of factories.
-     *
-     * @return void
-     */
-    public function registerFactories()
-    {
-        if (! app()->environment('production') && $this->app->runningInConsole()) {
-            app(Factory::class)->load(module_path($this->moduleName, 'Database/factories'));
-        }
-    }
 }

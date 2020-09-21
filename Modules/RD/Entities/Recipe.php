@@ -14,14 +14,20 @@ class Recipe extends ModelService
 
     protected $table = 'rd_recipes';
 
-    protected $fillable = ['author_id', 'last_updater_id', 'apporver_id','type_id', 'product_id', 'status', 'name', 'category_id', 'total', 'code', 'cost', 'version', 'approved_at'];
+    protected $fillable = [
+        'author_id', 'last_updater_id', 'approver_id',
+        'type_id', 'product_id', 'status',
+        'name', 'category', 'total',
+        'code', 'cost', 'version',
+        'approved_at'
+    ];
 
     public function getRules($request, $item = null)
     {
-        
+
         // generic rules
         $rules = [
-            
+
             'author_id'             => ['nullable', 'exists:public.users,id'],
             'last_updater_id'       => ['nullable', 'exists:public.users,id'],
             'approver_id'           => ['nullable', 'exists:public.users,id'],
@@ -56,15 +62,15 @@ class Recipe extends ModelService
     {
         return $this->belongsTo(User::class, 'author_id');
     }
-    
+
     public function approver()
     {
         return $this->belongsTo(User::class, 'approver_id');
     }
-    public function attributes() 
+    public function attributes()
     {
         return $this->belongsToMany(Parameter::class, 'rd_recipe_attributes', 'recipe_id', 'attribute_id');
-        
+
     }
     public function category()
     {
@@ -75,14 +81,14 @@ class Recipe extends ModelService
         return $this->belongsTo(User::class, 'last_updater_id');
     }
 
-    public function type() 
+    public function type()
     {
         return $this->belongsTo(Parameter::class, 'type_id');
-        
+
     }
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
-  
+
 }

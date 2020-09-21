@@ -65,4 +65,3 @@ class Project extends ModelService
         
     }
 }
-
