@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Validation\Rule;
-
+use Illuminate\Support\Facades\DB;
 class User extends LoginModel implements ModelInterface
 {
 
     protected $connection = 'public';
-    protected $table = 'users';
 
+    use BelongsToManyTenantTrait;
     /**
      * The attributes that are mass assignable.
      *
@@ -95,8 +95,9 @@ class User extends LoginModel implements ModelInterface
     }
 
     public function hasRole(... $roles){
+        $user_roles = $this->roles;
         foreach ($roles as $role) {
-            if ($this->roles->contains('name', $role) || $this->roles->contains('code', $role)) {
+            if ($user_roles->contains('name', $role) || $user_roles->contains('code', $role)) {
                 return true;
             }
         }
@@ -105,7 +106,7 @@ class User extends LoginModel implements ModelInterface
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'user_roles')->withTimestamps();
+        return $this->setConnection('tenant')->belongsToManyTenant(Role::class, 'user_roles');
     }
 
     public function company()
