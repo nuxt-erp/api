@@ -20,9 +20,9 @@ class ProductRepository extends RepositoryService
     {
         $searchCriteria['order_by'] = [
             'field'         => 'name',
-            'direction'     => 'asc'
+            'field'         => 'is_enabled',
+            'direction'     => 'desc'
         ];
-
         if (!empty($searchCriteria['sku'])) {
             $sku = '%' . Arr::pull($searchCriteria, 'sku') . '%';
             $this->queryBuilder
