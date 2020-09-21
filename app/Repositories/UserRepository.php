@@ -10,6 +10,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Artisan;
+use Illuminate\Database\Eloquent\Builder;
+
 class UserRepository extends RepositoryService
 {
 
@@ -17,42 +19,58 @@ class UserRepository extends RepositoryService
     {
         //@todo we should use transaction here, the request is cancelling at the end of the request and is taking too much time to finish
 
-        // generate unique name for the schema
-        do {
-            $company = implode('_', explode(' ', $data['company']));
-            $hash = strtolower('s' . Str::random(7).'_'.substr($company, 0, 20));
-        } while (Company::where('schema', $hash)->exists());
+        $company = Company::where('name', $data['company'])->first();
 
-        // create schema for this company
-        $result = DB::unprepared('CREATE SCHEMA ' . $hash . ' AUTHORIZATION '.config('database.connections.public.username', 'postgres').';');
+        if(!$company){
+            // generate unique name for the schema
+            do {
+                $company_name = implode('_', explode(' ', $data['company']));
+                $schema = strtolower('s' . Str::random(7).'_'.substr($company_name, 0, 20));
+            } while (Company::where('schema', $schema)->exists());
+
+            // create schema for this company
+            $result = DB::unprepared('CREATE SCHEMA ' . $schema . ' AUTHORIZATION '.config('database.connections.public.username', 'postgres').';');
+            // save user
+            $this->store($data);
+            // create company
+            $company = Company::create([
+                'name'      => $data['company'],
+                'schema'    => $schema,
+                'owner_id'  => $this->model->id
+            ]);
+            $this->model->company_id = $company->id; //update company information for the user
+            $this->model->save();
+        }
+        else{
+            $result = TRUE;
+            $schema = $company->schema;
+
+            $user = User::where('email', $data['email'])->firstOrFail();
+
+            $data['company_id'] = $company->id;
+            $this->update($user, $data); // save user
+            $company->owner_id = $this->model->id;
+            $company->save();
+        }
 
         if ($result) {
 
-                $this->store($data); // save user
-                $company = Company::create([
-                    'name'      => $data['company'],
-                    'schema'    => $hash,
-                    'owner_id'  => $this->model->id
-                ]);
-                $this->model->company_id = $company->id; //update company information for the user
-                $this->model->save();
+            DB::setDefaultConnection('tenant');
+            config(['database.connections.tenant.schema' => $schema]);
 
-                DB::setDefaultConnection('tenant');
-                config(['database.connections.tenant.schema' => $hash]);
+            // run specific migration files for the schema
+            Artisan::call('migrate', [
+                '--path' => '/database/migrations/schema'
+            ]);
 
-                // run specific migration files for the schema
-                Artisan::call('migrate', [
-                    '--path' => '/database/migrations/schema'
-                ]);
+            // add basic roles
+            Artisan::call('db:seed', [
+                '--class' => 'RoleSeeder'
+            ]);
 
-                // add basic roles
-                Artisan::call('db:seed', [
-                    '--class' => 'RoleSeeder'
-                ]);
-
-                // set user as admin
-                $role_admin = Role::where('code', 'admin')->first();
-                $this->model->roles()->sync([$role_admin->id]);
+            // set user as admin
+            $role_admin = Role::where('code', 'admin')->first();
+            $this->model->roles()->sync([$role_admin->id]);
         }
     }
 
@@ -73,11 +91,10 @@ class UserRepository extends RepositoryService
         }
 
         if (!empty($searchCriteria['role'])) {
-            $role = strtolower(Arr::pull($searchCriteria, 'role'));
-            $role_id = Role::where('name', $role)->orWhere('code', $role)->pluck('id')->first();
-            $user_ids = UserRoles::where('role_id', $role_id)->pluck('user_id');
-
-            $this->queryBuilder->whereIn('id', $user_ids);
+            $this->queryBuilder->whereHas('roles', function (Builder $query) {
+                $role = strtolower(Arr::pull($searchCriteria, 'role'));
+                $query->where('code', $role);
+            });
         }
 
         $user = auth()->user();
