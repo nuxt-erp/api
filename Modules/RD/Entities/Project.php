@@ -49,6 +49,10 @@ class Project extends ModelService
         return $rules;
     }
 
+    public function getStatuses(){
+        return collect($this->getConstants());
+    }
+
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');

@@ -8,8 +8,14 @@ class ProjectResource extends ResourceService
 {
     public function toArray($request)
     {
-        lad($this->started_at);
-        lad($this->closed_at);
+        $actions = collect([
+            [
+                'name'  => 'editProject',
+                'code'  => 'editProject',
+                'icon'  => 'edit',
+                'type'  => 'primary'
+            ]
+        ]);
         $arrayData = [
             'id'                 => $this->id,
             'author_id'          => $this->author_id,
@@ -18,6 +24,7 @@ class ProjectResource extends ResourceService
             'customer_name'      => $this->customer->name,
             'attribute_names'    => $this->attributes->pluck('name'),
             'attribute_ids'      => optional($this->attributes)->pluck('id')->toArray(),
+            'actions'            => $actions,
             'status'             => $this->status,
             'code'               => $this->code,
             'comment'            => $this->comment,
