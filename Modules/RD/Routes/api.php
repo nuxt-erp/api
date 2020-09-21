@@ -27,5 +27,10 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('projects', 'ProjectController');
         Route::resource('project_samples', 'ProjectSamplesController');
         Route::resource('project_attributes', 'ProjectAttributesController');
+
+        Route::resource('project_logs', 'ProjectLogsController');
+        Route::resource('project_sample_logs', 'ProjectSampleLogsController');
+
+        Route::get('project_statuses', 'ProjectController@getStatuses');
     });
 });

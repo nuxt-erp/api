@@ -25,7 +25,6 @@ class ProjectController extends ControllerService implements CheckPolicies
     public function getStatuses(){
 
         $statuses = $this->repository->model->getStatuses();
-
-        return $this->sendCollectionResponse($statuses, ListResource::class);
+        return $this->sendObjectResource($statuses, ListResource::class);
     }
 }
