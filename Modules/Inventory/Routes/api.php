@@ -26,6 +26,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_attributes', 'ProductAttributeController');
         Route::resource('product_logs', 'ProductLogController');
         Route::resource('product_suppliers', 'ProductSuppliersController');
+        Route::resource('product_supplier_locations', 'ProductSupplierLocationsController');
 
         Route::resource('stockcount', 'StockCountController');
         Route::resource('stockcount_details', 'StockCountDetailController');

@@ -5,7 +5,6 @@ namespace Modules\Inventory\Entities;
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
 use App\Models\Supplier;
-use Modules\RD\Entities\ProjectSamples;
 
 class ProductSuppliers extends ModelService
 {
@@ -14,7 +13,7 @@ class ProductSuppliers extends ModelService
     protected $table = 'inv_suppliers';
     protected $fillable = [
         'name', 'product_id', 'supplier_id', 
-        'currency', 'last_price', 'last_supplied'
+        'currency', 'last_price', 'minimum_order', 'last_supplied'
     ];
 
     public function getRules($request, $item = null)
@@ -26,6 +25,7 @@ class ProductSuppliers extends ModelService
             'supplier_id'         => ['nullable', 'exists:tenant.suppliers,id'],
             'currency'            => ['string', 'max:255'],
             'last_price'          => ['nullable'],
+            'minimum_order'       => ['nullable'],
             'last_supplied'       => ['nullable', 'date']
         ];
 

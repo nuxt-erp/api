@@ -7,5 +7,10 @@ use Illuminate\Support\Arr;
 
 class ProductSuppliersRepository extends RepositoryService
 {
+    public function findBy(array $searchCriteria = [])
+    {        
+        lad($searchCriteria);
+        return parent::findBy($searchCriteria);
+    }
 
 }
