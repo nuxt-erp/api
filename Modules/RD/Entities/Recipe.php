@@ -17,7 +17,7 @@ class Recipe extends ModelService
     protected $fillable = [
         'author_id', 'last_updater_id', 'approver_id',
         'type_id', 'product_id', 'status',
-        'name', 'category', 'total',
+        'name', 'category_id', 'total',
         'code', 'cost', 'version',
         'approved_at'
     ];
@@ -27,7 +27,6 @@ class Recipe extends ModelService
 
         // generic rules
         $rules = [
-
             'author_id'             => ['nullable', 'exists:public.users,id'],
             'last_updater_id'       => ['nullable', 'exists:public.users,id'],
             'approver_id'           => ['nullable', 'exists:public.users,id'],
@@ -40,16 +39,11 @@ class Recipe extends ModelService
             'cost'                  => ['nullable'],
             'version'               => ['integer'],
             'approved_at'           => ['nullable', 'date']
-
         ];
 
         // rules when creating the item
         if (is_null($item)) {
-
-            $rules['status'][] = 'required';
             $rules['name'][] = 'required';
-            $rules['version'][] = 'required';
-            $rules['category_id'][] = 'required';
         }
         // rules when updating the item
         else{
@@ -76,7 +70,7 @@ class Recipe extends ModelService
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
-    public function lastUpdater()
+    public function last_updater()
     {
         return $this->belongsTo(User::class, 'last_updater_id');
     }
