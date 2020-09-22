@@ -18,6 +18,7 @@ use Modules\Inventory\Entities\StockLocator;
 use Modules\Inventory\Entities\Measure;
 use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
+use Modules\Inventory\Entities\Transfer;
 
 // policies
 use Modules\Inventory\Policies\AttributePolicy;
@@ -33,6 +34,7 @@ use Modules\Inventory\Policies\StockLocatorPolicy;
 use Modules\Inventory\Policies\MeasurePolicy;
 use Modules\Inventory\Policies\StockCountPolicy;
 use Modules\Inventory\Policies\StockCountDetailPolicy;
+use Modules\Inventory\Policies\TransferPolicy;
 
 
 class AuthServiceProvider extends ServiceProvider
@@ -59,6 +61,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(ProductLog::class, ProductLogPolicy::class);
         Gate::policy(ProductAttributes::class, ProductAttributesPolicy::class);
         Gate::policy(FamilyAttribute::class, FamilyAttributePolicy::class);
+        Gate::policy(Transfer::class, TransferPolicy::class);
 
         Gate::policy(StockLocator::class, StockLocatorPolicy::class);
         Gate::policy(Measure::class, MeasurePolicy::class);
