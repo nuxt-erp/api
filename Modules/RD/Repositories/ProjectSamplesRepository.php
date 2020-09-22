@@ -7,5 +7,8 @@ use Illuminate\Support\Arr;
 
 class ProjectSamplesRepository extends RepositoryService
 {
-
+    public function findBy(array $searchCriteria = [])
+    {        
+        return parent::findBy($searchCriteria);
+    }
 }

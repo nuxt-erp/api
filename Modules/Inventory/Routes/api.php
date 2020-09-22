@@ -34,6 +34,9 @@ Route::middleware('auth:api')->group(function () {
         //Route::resource('product_families', 'ProductFamilyController');
         //Route::get('families/remove/{id?}', 'ProductFamilyController@remove'); //@todo review this
         //Route::get('families/get_products', 'ProductFamilyController@getListProducts'); //@todo review this
+        
+        Route::get('getListProducts/{id?}', 'FamilyController@getListProducts');
+
         Route::resource('families', 'FamilyController');
         Route::resource('family_attributes', 'FamilyAttributeController');
         Route::resource('availabilities', 'AvailabilityController');

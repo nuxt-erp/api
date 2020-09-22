@@ -5,6 +5,7 @@ namespace Modules\RD\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
+use App\Resources\ListResource;
 use Modules\RD\Repositories\ProjectRepository;
 use Modules\RD\Transformers\ProjectResource;
 
@@ -19,5 +20,11 @@ class ProjectController extends ControllerService implements CheckPolicies
         $this->repository = $repository;
         $this->resource = $resource;
         parent::__construct();
+    }
+
+    public function getStatuses(){
+
+        $statuses = $this->repository->model->getStatuses();
+        return $this->sendObjectResource($statuses, ListResource::class);
     }
 }

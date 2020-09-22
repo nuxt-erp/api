@@ -4,9 +4,9 @@ namespace Modules\Inventory\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Modules\Inventory\Entities\ProductFamilyAttribute;
+use Modules\Inventory\Entities\FamilyAttribute;
 
-class ProductFamilyAttributePolicy
+class FamilyAttributePolicy
 {
     use HandlesAuthorization;
 
@@ -20,7 +20,7 @@ class ProductFamilyAttributePolicy
         return $currentUser->isAdmin();
     }
 
-    public function show(User $currentUser, ProductFamilyAttribute $target)
+    public function show(User $currentUser, FamilyAttribute $target)
     {
         return $currentUser->isAdmin();
     }
@@ -30,12 +30,12 @@ class ProductFamilyAttributePolicy
         return $currentUser->isAdmin();
     }
 
-    public function update(User $currentUser, ProductFamilyAttribute $target)
+    public function update(User $currentUser, FamilyAttribute $target)
     {
         return $currentUser->isAdmin();
     }
 
-    public function destroy(User $currentUser, ProductFamilyAttribute $target)
+    public function destroy(User $currentUser, FamilyAttribute $target)
     {
         return $currentUser->isAdmin();
     }

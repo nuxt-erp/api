@@ -12,6 +12,8 @@ use Modules\RD\Repositories\RecipeItemsRepository;
 use Modules\RD\Repositories\RecipeProposalItemsRepository;
 use Modules\RD\Repositories\RecipeProposalsRepository;
 use Modules\RD\Repositories\RecipeRepository;
+use Modules\RD\Repositories\ProjectLogsRepository;
+use Modules\RD\Repositories\ProjectSampleLogsRepository;
 // RESOURCES
 use Modules\RD\Transformers\ProjectResource;
 use Modules\RD\Transformers\ProjectAttributesResource;
@@ -21,9 +23,13 @@ use Modules\RD\Transformers\RecipeItemsResource;
 use Modules\RD\Transformers\RecipeProposalItemsResource;
 use Modules\RD\Transformers\RecipeProposalsResource;
 use Modules\RD\Transformers\RecipeResource;
+use Modules\RD\Transformers\ProjectLogsResource;
+use Modules\RD\Transformers\ProjectSampleLogsResource;
 // MODELS
 use Modules\RD\Entities\Project;
 use Modules\RD\Entities\ProjectAttributes;
+use Modules\RD\Entities\ProjectLogs;
+use Modules\RD\Entities\ProjectSampleLogs;
 use Modules\RD\Entities\ProjectSamples;
 use Modules\RD\Entities\RecipeAttributes;
 use Modules\RD\Entities\RecipeItems;
@@ -89,6 +95,22 @@ class RDServiceProvider extends ServiceProvider
             return new ProjectSamplesResource(new ProjectSamples());
         });
 
+        $this->app->bind(ProjectLogsRepository::class, function () {
+            return new ProjectLogsRepository(new ProjectLogs());
+        });
+
+        $this->app->bind(ProjectLogsResource::class, function () {
+            return new ProjectLogsResource(new ProjectLogs());
+        });
+
+        $this->app->bind(ProjectSampleLogsRepository::class, function () {
+            return new ProjectSampleLogsRepository(new ProjectSampleLogs());
+        });
+
+        $this->app->bind(ProjectSampleLogsResource::class, function () {
+            return new ProjectSampleLogsResource(new ProjectSampleLogs());
+        });
+
         $this->app->bind(RecipeAttributesRepository::class, function () {
             return new RecipeAttributesRepository(new RecipeAttributes());
         });
@@ -145,7 +167,9 @@ class RDServiceProvider extends ServiceProvider
             RecipeRepository::class,
             RecipeItemsRepository::class,
             RecipeProposalItemsRepository::class,
-            RecipeProposalsRepository::class
+            RecipeProposalsRepository::class,
+            ProjectLogsRepository::class,
+            ProjectSampleLogsRepository::class
         ];
     }
 

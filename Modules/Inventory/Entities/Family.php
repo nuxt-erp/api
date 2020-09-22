@@ -30,10 +30,11 @@ class Family extends ModelService
     public function getDetailsAttribute()
     {
         $string = '';
-        foreach ($this->family_attributes as $key => $p_attribute) {
+      /*  foreach ($this->family_attributes as $key => $p_attribute) {
             //lad($attribute);
             $string .= ($key == 0  ? '' : ', ') . $p_attribute->attribute->name . ': ' . $p_attribute->value;
-        }
+        }*/
+        $string=count($this->product);
         return $string;
     }
     public function getRules($request, $item = null)

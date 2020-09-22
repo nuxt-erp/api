@@ -3,7 +3,6 @@
 namespace Modules\Purchase\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Console\Scheduling\Schedule;
 
 // models
@@ -39,8 +38,6 @@ class PurchaseServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerConfig();
-        //$this->registerViews();
-        $this->registerFactories();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
     }
 
@@ -116,17 +113,7 @@ class PurchaseServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
     }*/
-    /**
-     * Register an additional directory of factories.
-     *
-     * @return void
-     */
-    public function registerFactories()
-    {
-        if (! app()->environment('production') && $this->app->runningInConsole()) {
-            app(Factory::class)->load(module_path($this->moduleName, 'Database/factories'));
-        }
-    }
+
 
     /*private function getPublishableViewPaths(): array
     {
