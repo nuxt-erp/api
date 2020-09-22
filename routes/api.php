@@ -16,8 +16,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', 'LoginController@issueToken');
 Route::post('register', 'RegisterController@create');
 
-Route::get('install_modules/{name}', 'RegisterController@installModules');
-
 Route::middleware('auth:api')->group(function () {
 
     // Route::get('dashboard', 'DashboardController@index');

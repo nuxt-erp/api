@@ -14,7 +14,7 @@ class Supplier extends ModelService
     ];
 
     protected $fillable = [
-        'supplier_type_id', 'name',
+        'supplier_type_id', 'name', 'brand_id',
         'lead_time', 'ordering_cycle',  'last_order_at',
         'is_enabled', 'disabled_at'
     ];
@@ -23,6 +23,7 @@ class Supplier extends ModelService
     {
         $rules = [
             'supplier_type_id'  => ['nullable', 'exists:tenant.parameters,id'],
+            'brand_id'          => ['nullable', 'exists:tenant.inv_brands,id'],
             'name'              => ['string', 'max:60'],
             'lead_time'         => ['nullable', 'integer'],
             'ordering_cycle'    => ['nullable', 'integer'],

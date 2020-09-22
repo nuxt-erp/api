@@ -46,8 +46,7 @@ class RegisterController extends Controller
     public function installModules($name){
         //$user = auth()->user(); // this is the right option after we make a page to install modules
         $user = User::where('name', 'LIKE', '%'.$name.'%')->orWhere('email', 'LIKE', '%'.$name.'%')->first();
-
-        echo '<<<<<<<< SCRIPT START >>>>>>>><br><br>';
+        echo '<<<<<<<<< SCRIPT START >>>>>>>><br><br>';
 
         echo 'Company: '.$user->company->name.'<br><br>';
 
@@ -78,21 +77,38 @@ class RegisterController extends Controller
 
         // 1 - add modules to the company
         $modules = Module::all();
-        foreach ($modules as $module){
-            //@todo change here to add only selected modules [this must come from the frontend]
-            CompanyModules::updateOrCreate([
-                'module_id'     => $module->id,
-                'company_id'    => $user->company_id
-            ]);
-            echo $module->name . ' module added for: '.$user->company->name.'. <br>';
+
+        if(count($user->company->modules) == 0){
+            echo 'Adding modules to the company: <br><br>';
+            foreach ($modules as $module){
+                //@todo change here to add only selected modules [this must come from the frontend]
+                CompanyModules::updateOrCreate([
+                    'module_id'     => $module->id,
+                    'company_id'    => $user->company_id
+                ]);
+                echo $module->name . ' module added for: '.$user->company->name.'. <br>';
+            }
+            echo '----- <br>';
         }
 
-        echo '----- <br>';
 
         // 2 - run migrations and seeders for enabled modules
 
         DB::setDefaultConnection('tenant');
         config(['database.connections.tenant.schema' => $user->company->schema]); // we can remove this after we have a logged user
+
+        try {
+            echo 'Tenant Root migration: <br>';
+            Artisan::call('migrate', [
+                '--path' => '/database/migrations/schema'
+            ]);
+            $this->artisanResult();
+        } catch (\Throwable $th) {
+            echo 'Tenant Root migration error!<br>';
+            $this->artisanResult();
+            echo $th->getMessage();
+        }
+        echo '----- <br>';
 
         foreach ($modules as $module){
             echo '<strong>Module: '.$module->name.' => </strong><br>';
