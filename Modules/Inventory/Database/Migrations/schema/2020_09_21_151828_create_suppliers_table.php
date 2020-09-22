@@ -17,6 +17,7 @@ class CreateSuppliersTable extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('product_id')->nullable()->constrained('inv_products')->onDelete('set null');
+            $table->foreignId('supplier_id')->nullable()->constrained('tenant.suppliers')->onDelete('set null');
             $table->string('currency');
             $table->decimal('last_price', 10, 4)->default(0);
             $table->timestampTz('last_supplied', 0)->nullable();
