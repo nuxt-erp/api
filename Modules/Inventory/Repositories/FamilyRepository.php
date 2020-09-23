@@ -97,7 +97,7 @@ class FamilyRepository extends RepositoryService
     }
     private function createFamily($data)
     {
-       
+       lad($data);
         $new                = new Family();
         $new->name          = $data["name"];
         $new->description   = $data["description"];
