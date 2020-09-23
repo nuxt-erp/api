@@ -13,7 +13,13 @@ class PurchaseDetail extends ModelService
 
     protected $table = 'pur_purchase_details';
 
-    protected $fillable = ['purchase_id', 'product_id', 'qty', 'price', 'sub_total', 'total', 'estimated_date', 'qty_received', 'received_date', 'ref', 'item_status', 'taxes', 'discounts'];
+    protected $fillable = [
+        'purchase_id', 'product_id', 'qty',
+        'price', 'sub_total', 'total',
+        'estimated_date', 'qty_received', 'received_date',
+        'ref', 'item_status', 'taxes',
+        'discounts'
+    ];
 
     public function getRules($request, $item = null)
     {

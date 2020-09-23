@@ -16,6 +16,6 @@ class PurchaseDatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        // $this->call("OthersTableSeeder");
+        $this->call(ParameterSeederTableSeeder::class);
     }
 }
