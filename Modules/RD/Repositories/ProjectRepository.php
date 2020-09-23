@@ -44,23 +44,15 @@ class ProjectRepository extends RepositoryService
             if (Arr::has($data, 'attribute_ids')) {
                 $model->attributes()->sync($data['attribute_ids']);
             }
-
-            if ($model['closed_at'] !== null && $data['closed'] == null) {
-                $data['closed_at'] =  null;
-            } else if($model['closed_at'] == null && $data['closed'] == 1) {
-                $data['closed_at'] = now();
+            
+            if(!empty($data['attribute_names ']))
+            {
+                unset($data['attribute_names']);
             }
-                
-            if ($model['start_at'] !== null && $data['started'] == null) {
-                $data['start_at'] =  null;
-            } else if($model['start_at'] == null && $data['started'] == 1) {
-                $data['start_at'] = now();
+            if(!empty($data['attribute_ids']))
+            {
+                unset($data['attribute_ids']);
             }
-
-            unset($data['attribute_names']);
-            unset($data['attribute_ids']);
-            unset($data['closed']);
-            unset($data['started']);
 
             parent::update($model, $data);
         });

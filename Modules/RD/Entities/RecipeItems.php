@@ -28,7 +28,6 @@ class RecipeItems extends ModelService
         if (is_null($item)) {
             $rules['product_id'][] = 'required';
             $rules['recipe_id'][] = 'required';
-            
         }
         // rules when updating the item
         else{

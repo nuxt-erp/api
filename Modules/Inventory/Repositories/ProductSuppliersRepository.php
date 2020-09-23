@@ -1,14 +1,16 @@
 <?php
 
-namespace Modules\RD\Repositories;
+namespace Modules\Inventory\Repositories;
 
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Arr;
 
-class ProjectSamplesRepository extends RepositoryService
+class ProductSuppliersRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {        
+        lad($searchCriteria);
         return parent::findBy($searchCriteria);
     }
+
 }
