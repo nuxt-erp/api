@@ -9,7 +9,7 @@ class SupplierResource extends ResourceService
         return [
             'id'                    => $this->id,
             'supplier_type_id'      => $this->supplier_type_id,
-            'supplier_type_name'    => optional($this->supplier_type)->description,
+            'supplier_type_name'    => optional($this->supplier_type)->value,
             'brand_id'              => $this->brand_id,
             'brand_name'            => optional($this->brand)->name,
             'name'                  => $this->name,
