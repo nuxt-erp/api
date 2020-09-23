@@ -20,6 +20,7 @@ class ProductSuppliersResource extends ResourceService
             'product_id'        => $this->product_id,
             'product_sku'       => optional($this->product)->sku,
             'product_name'      => optional($this->product)->name,
+            'supplier_name'       => optional($this->supplier)->name,
             'supplier_id'       => $this->supplier_id,
             'lead_time'         => optional($this->supplier)->lead_time,
             'currency'          => $this->currency,

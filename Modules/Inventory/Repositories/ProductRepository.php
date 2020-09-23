@@ -10,6 +10,7 @@ use Modules\Inventory\Entities\FamilyAttribute;
 
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductAttributes;
+use Modules\Inventory\Entities\ProductSuppliers;
 
 class ProductRepository extends RepositoryService
 {
@@ -85,7 +86,9 @@ class ProductRepository extends RepositoryService
         DB::transaction(function () use ($data) {
 
             $this->generate = !empty($data["generate_family"]);
-
+            $this->suppliers = !empty($data["suppliers"]);
+            $this->supplierLocations = !empty($data["supplier_locations"]);
+            
             if ($this->generate == true) // It came from product family
             {
                 $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
@@ -95,6 +98,9 @@ class ProductRepository extends RepositoryService
             }else {
                 parent::store($data);
                 $this->createAttribute($data); // CREATE ATTRIBUTE
+                // if($this->suppliers) {
+                //     $this->createSuppliers($data); // CREATE ATTRIBUTE
+                // }
             }
         });
 
@@ -171,6 +177,41 @@ class ProductRepository extends RepositoryService
 
         return $new->id;
     }
+
+    // private function createSuppliers($data)
+    // {
+    //     // $suppliers = $data['suppliers']
+    //     // foreach ($suppliers as $supplier) 
+    //     // {
+    //     //     $new                = new ProductSuppliers();
+    //     //     $new->name          = $data["name"];
+    //     //     $new->product_id   = $data["product_id"];
+    //     //     $new->is_enabled    = $data["is_enabled"];
+    //     //     $new->brand_id      = $data["brand_id"];
+    //     //     $new->location_id   = $data["location_id"];
+    //     //     $new->category_id   = $data["category_id"];
+    //     //     $new->stock_locator = $data["stock_locator"];
+    //     //     $new->measure_id    = $data["measure_id"];
+    //     //     $new->supplier_id   = $data["supplier_id"];
+    //     //     $new->sku           = $data["sku"];
+    //     //     $new->barcode       = $data["barcode"];
+    //     //     $new->price         = $data["price"];
+    //     //     $new->width         = $data["width"];
+    //     //     $new->height        = $data["height"];
+    //     //     $new->length        = $data["length"];
+    //     //     $new->weight        = $data["weight"];
+    //     //     $new->carton_width  = $data["carton_width"];
+    //     //     $new->carton_height = $data["carton_height"];
+    //     //     $new->carton_length = $data["carton_length"];
+    //     //     $new->carton_weight = $data["carton_weight"];
+    //     //     $new->launch_at     = $data["launch_at"];
+    //     //     $new->is_enabled    = $data["is_enabled"];
+    //     //     $new->save();
+    //     // }
+        
+
+    //     // return $new->id;
+    // }
 
 
 
