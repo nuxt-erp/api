@@ -20,8 +20,10 @@ class AvailabilityRepository extends RepositoryService
             'direction'     => 'asc'
         ];
            
-        $this->queryBuilder->join('inv_products', 'inv_availabilities.product_id', 'inv_products.id');
+        $this->queryBuilder->leftJoin('inv_products', 'inv_availabilities.product_id', 'inv_products.id');
         
+        // left join inv_av... on inv_availabilities.product_id = inv_products.id and inv_availabilities.location_id = Arr::pull($searchCriteria, 'location_id'
+
 
         $this->queryBuilder->select('inv_products.sku','inv_products.location_id','inv_products.brand_id','inv_products.category_id','inv_availabilities.id', 'inv_availabilities.product_id', 'inv_availabilities.available', 'inv_availabilities.on_hand', 'inv_availabilities.on_order', 'inv_availabilities.allocated');
       
@@ -29,10 +31,11 @@ class AvailabilityRepository extends RepositoryService
             $this->queryBuilder
             ->where('inv_products.category_id', Arr::pull($searchCriteria, 'category_id'));
         }
-        if (!empty($searchCriteria['location_id'])) {
+        /*if (!empty($searchCriteria['location_id'])) {
             $this->queryBuilder
             ->where('inv_availabilities.location_id', Arr::pull($searchCriteria, 'location_id'));
-        }
+        }*/
+        
        if (!empty($searchCriteria['product_name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'product_name') . '%';
             $this->queryBuilder

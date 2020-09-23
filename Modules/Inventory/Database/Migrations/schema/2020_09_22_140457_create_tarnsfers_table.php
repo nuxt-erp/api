@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTransfersTable extends Migration
+class CreateTarnsfersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class CreateTransfersTable extends Migration
     public function up()
     {
         Schema::connection('tenant')->create('inv_transfers', function (Blueprint $table) {
-            $table->id();
+            $table->id();          
             $table->integer('carrier_id')->nullable();
             $table->integer('shipment_type_id')->nullable();
             $table->string('tracking_number')->nullable();
@@ -24,8 +24,7 @@ class CreateTransfersTable extends Migration
             $table->float('total_qty')->nullable();            
             $table->boolean('is_enable')->default(1);
             $table->date('pu_date')->nullable();
-            $table->date('eta')->nullable();
-
+            $table->date('eta')->nullable();    
             $table->timestamps();
         });
     }

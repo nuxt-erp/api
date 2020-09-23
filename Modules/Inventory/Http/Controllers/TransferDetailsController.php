@@ -4,18 +4,16 @@ namespace Modules\Inventory\Http\Controllers;
 
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
-use Modules\Inventory\Repositories\TransferRepository;
-use Modules\Inventory\Transformers\TransferResource;
-use Illuminate\Http\Request;
-use Modules\Inventory\Entities\TransferDetails;
+use Modules\Inventory\Repositories\TransferDetailsRepository;
+use Modules\Inventory\Transformers\TransferDetailsResource;
 
-class TransferController extends ControllerService implements CheckPolicies
+class TransferDetailsController extends ControllerService implements CheckPolicies
 {
 
     protected $repository;
     protected $resource;
 
-    public function __construct(TransferRepository $repository, TransferResource $resource)
+    public function __construct(TransferDetailsRepository $repository, TransferDetailsResource $resource)
     {
         $this->repository = $repository;
         $this->resource = $resource;
@@ -47,12 +45,11 @@ class TransferController extends ControllerService implements CheckPolicies
             array_push($collection, $product);
         }
 
-        return $this->setStatusCode(201)->sendArray($collection);
+        return $this->setStatusCode(201)->respondWithArray($collection);
     }
 
     public function remove(Request $request) {
-        $this->repository->remove($request->id);     
-        return $this->sendArray(['ok' => true]);
-       
+        $this->repository->remove($request->id);
+        return $this->respond(['ok' => true]);
     }
 }

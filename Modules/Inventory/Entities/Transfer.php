@@ -3,6 +3,8 @@ namespace Modules\Inventory\Entities;
 
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
+use App\Models\Location;
+use App\Models\Parameter;
 
 class Transfer extends ModelService
 {
@@ -37,18 +39,18 @@ class Transfer extends ModelService
         return $this->belongsTo(Location::class, 'location_to_id');
     }
 
-    /*public function carrier()
+    public function parameter_carrier()
     {
         return $this->belongsTo(Parameter::class, 'carrier_id');
     }
 
-    public function shipment_type()
+    public function parameter_shipment()
     {
         return $this->belongsTo(Parameter::class, 'shipment_type_id');
     }
 
-    public function package_type()
+    public function parameter_package()
     {
         return $this->belongsTo(Parameter::class, 'package_type_id');
-    }*/
+    }
 }

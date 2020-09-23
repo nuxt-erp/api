@@ -30,6 +30,10 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('stockcount_details', 'StockCountDetailController');
         Route::get('stockcount/finish/{id?}', 'StockCountController@finish'); // ADJUST AND FINISH STOCK TAKE
         Route::resource('transfers', 'TransferController');
+        Route::get('transfer/remove/{id?}', 'TransferController@remove');
+        Route::get('transfer/packingSlip/{id?}', 'TransferController@exportPackingSlip'); // EXPORT PACKING SLIP
+
+        Route::resource('transfer_details', 'TransferDetailsController');
 
         //Route::resource('product_families', 'ProductFamilyController');
         //Route::get('families/remove/{id?}', 'ProductFamilyController@remove'); //@todo review this
