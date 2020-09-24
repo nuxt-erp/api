@@ -34,7 +34,7 @@ class ProductSupplierLocations extends ModelService
         }
         return $rules;
     }
-    public function supplier()
+    public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');
     }

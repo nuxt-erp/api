@@ -17,7 +17,7 @@ class ProductSupplierLocationsResource extends ResourceService
         return [
             'id'                   => $this->id,
             'product_supplier_id'  => $this->product_supplier_id,
-            'product_supplier_id'  => optional($this->product_supplier)->id,
+            'supplier_id'          => optional(optional($this->product_supplier)->supplier)->id,
             'location_id'          => $this->location_id,
             'location_name'        => optional($this->location)->name,
             'lead_time'            => $this->lead_time,
