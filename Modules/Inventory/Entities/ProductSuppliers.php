@@ -12,17 +12,19 @@ class ProductSuppliers extends ModelService
 
     protected $table = 'inv_suppliers';
     protected $fillable = [
-        'name', 'product_id', 'supplier_id', 
+        'product_id', 'supplier_id', 'product_name', 'product_sku',
         'currency', 'last_price', 'minimum_order', 'last_supplied'
     ];
 
     public function getRules($request, $item = null)
     {
+
         // generic rules
         $rules = [
-            'name'                => ['string', 'max:255'],
             'product_id'          => ['nullable', 'exists:tenant.inv_products,id'],
             'supplier_id'         => ['nullable', 'exists:tenant.suppliers,id'],
+            'product_name'        => ['string', 'max:255'],
+            'product_sku'         => ['string', 'max:255'],
             'currency'            => ['string', 'max:255'],
             'last_price'          => ['nullable'],
             'minimum_order'       => ['nullable'],
@@ -31,8 +33,9 @@ class ProductSuppliers extends ModelService
 
         // rules when creating the item
         if (is_null($item)) {
-            $rules['name'][] = 'required';
             $rules['currency'][] = 'required';
+            $rules['product_name'][] = 'required';
+            $rules['product_sku'][] = 'required';
         }
         // rules when updating the item
         else{
