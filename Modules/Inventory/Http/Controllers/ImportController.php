@@ -5,8 +5,8 @@ namespace Modules\Inventory\Http\Controllers;
 use App\Http\Controllers\ControllerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Modules\Inventory\Imports\StockCountImport;
 use stdClass;
-use App\Imports\StockCountImport;
 use Modules\Inventory\Transformers\ProductResource;
 
 class ImportController extends ControllerService
@@ -24,7 +24,7 @@ class ImportController extends ControllerService
             $this->setStatus(FALSE);
             $this->setMessage('No rows processed');
         }
-        return $this->respondWithNativeObject($import);
+        return $this->sendObject($import);
     }
 
     public function syncProduct($sku = null)

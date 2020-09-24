@@ -9,12 +9,12 @@ class StockCountDetail extends ModelService
 {
     protected $connection = 'tenant';
 
-    public $timestamps  = false;
-
     public $table       = "inv_stock_count_details";
 
     protected $fillable = [
-        'stockcount_id', 'product_id', 'qty', 'stock_on_hand', 'variance', 'notes', 'location_id', 'abs_variance'
+        'stockcount_id', 'product_id', 'qty',
+        'stock_on_hand', 'variance', 'notes',
+        'location_id', 'abs_variance'
     ];
 
     public function product()

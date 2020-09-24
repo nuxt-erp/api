@@ -11,8 +11,9 @@ class ProductSuppliers extends ModelService
     protected $connection = 'tenant';
 
     protected $table = 'inv_suppliers';
+
     protected $fillable = [
-        'name', 'product_id', 'supplier_id', 
+        'name', 'product_id', 'supplier_id',
         'currency', 'last_price', 'minimum_order', 'last_supplied'
     ];
 

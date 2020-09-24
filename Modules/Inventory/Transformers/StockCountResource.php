@@ -17,7 +17,7 @@ class StockCountResource extends ResourceService
             'skip_today_received'       => $this->skip_today_received,
             'add_discontinued'          => $this->add_discontinued,
             'variance_last_count_id'    => $this->variance_last_count_id,
-            'status'                    => $this->status == 1 ? "Completed" : "In progress",
+            'status'                    => $this->status,
             'brand_id'                  => $this->brand_id,
             'brand_name'                => optional($this->brand)->name,
             'category_id'               => $this->category_id,

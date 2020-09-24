@@ -2,6 +2,7 @@
 
 namespace Modules\Inventory\Entities;
 
+use App\Models\Location;
 use App\Models\ModelService;
 
 class StockCount extends ModelService
@@ -11,7 +12,10 @@ class StockCount extends ModelService
     public $table       = "inv_stock_counts";
 
     protected $fillable = [
-        'name', 'date', 'brand_id', 'category_id', 'location_id', 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'status'
+        'name', 'date', 'brand_id',
+        'category_id', 'location_id', 'target',
+        'count_type_id', 'skip_today_received', 'add_discontinued',
+        'variance_last_count_id', 'status'
     ];
 
     public function getRules($request, $item = null)
@@ -41,11 +45,11 @@ class StockCount extends ModelService
 
     public function location()
     {
-        return $this->belongsTo(\App\Models\Location::class, 'location_id');
+        return $this->belongsTo(Location::class, 'location_id');
     }
 
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }
