@@ -138,4 +138,9 @@ class Product extends ModelService
         return $this->belongsTo(Measure::class);
     }
 
+    public function images()
+    {
+        return $this->hasMany(ProductImages::class, 'product_id', 'id');
+    }
+
 }
