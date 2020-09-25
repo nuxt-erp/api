@@ -20,7 +20,8 @@ class Availability extends ModelService
     protected $table = 'inv_availabilities';
 
     protected $fillable = [
-        'product_id', 'location_id', 'available', 'on_hand', 'on_order', 'allocated'
+        'product_id', 'location_id', 'available',
+        'on_hand', 'on_order', 'allocated'
     ];
 
     public function getRules($request, $item = null)
@@ -40,7 +41,7 @@ class Availability extends ModelService
     public function getConcatNameAttribute($product_id)
     {
         return 0;
-       
+
     }
     public function product()
     {

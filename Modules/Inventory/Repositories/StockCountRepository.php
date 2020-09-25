@@ -50,6 +50,7 @@ class StockCountRepository extends RepositoryService
         if (!empty($searchCriteria['skip_today_received'])) {
             $this->queryBuilder
             ->whereDate('date', '<>', date("y-m-d"));
+            unset($searchCriteria['skip_today_received']);
         }
 
         if (!empty($searchCriteria['brand_id'])) {
@@ -134,20 +135,11 @@ class StockCountRepository extends RepositoryService
         DB::transaction(function () use ($stockcount_id)
         {
             // GET ALL SAVED QTY FROM COUNTING
-            $stock = StockCountDetail::where('stockcount_id', $stockcount_id)->get();
-            foreach ($stock as $value)
-            {
-               /* ProductAvailability::updateOrCreate([
-                    'product_id'  => $value->product_id,
-                    'company_id'  => Auth::user()->company_id,
-                    'location_id' => $value->location_id
-                ],
-                [
-                    'available' => $value->stock_on_hand, //PREVIOUS QTY
-                    'on_hand'   => $value->qty // QTY COUNTED
-                ]);*/
+            $stock_items = StockCountDetail::where('stockcount_id', $stockcount_id)->get();
+            foreach ($stock_items as $item){
                 $availability_repository = new AvailabilityRepository(new Availability());
-                $availability_repository->updateStock( $value->product_id, $value->qty, $value->location_id, "+", "Stock Count", $stockcount_id, 0, 0, "Finished stock count - adding quantity");
+                $availability_repository->updateStock($item->product_id, $item->qty, $item->location_id, "+", "Stock Count", $stockcount_id, 0, 0, "Finished stock count - adding quantity");
+                                                    //$product_id,       $qty,       $location_id,  $operator, $type,        $ref_code, $on_order_qty, $allocated_qty, $description = ''
             }
 
             // SAVE STATUS AS FINISHED

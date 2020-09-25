@@ -70,31 +70,33 @@ class AvailabilityRepository extends RepositoryService
     //  $product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty, $allocated_qty, $description
     public function updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
     {
-
         $field_to_update = 'on_hand'; // Default option
 
         // Check type of operation
-        if ($type == "Purchase" && $qty == 0 && $on_order_qty != 0) {  // Updating purchase (in transit quantity)
-            $field_to_update = 'on_order';
-            $qty = $on_order_qty;
-        } elseif ($type == "Sale" && $qty == 0 && $allocated_qty != 0) { // Updating Sale (reserved quantity)
-            $field_to_update = 'allocated';
-            $qty = $allocated_qty;
+        if($qty == 0 && $allocated_qty != 0){
+            // Updating purchase (in transit quantity) or Updating Sale (reserved quantity)
+            $field_to_update    = $type == 'Purchase' ? 'on_order' : ($type == 'Sale' ? 'allocated' : 'on_hand');
+            $qty                = $type == 'Purchase' ? $on_order_qty : ($type == 'Sale' ? $allocated_qty : $qty) ;
         }
 
-        // Update stock
+        $qb = Availability::where('product_id', $product_id);
+        if(!empty($location_id)){
+            $qb->where('location_id', $location_id);
+        }
+
+        $availability = $qb->first();
+        if(!$availability){
+            $availability = Availability::create([
+                'product_id'    => $product_id,
+                'location_id'   => $location_id
+            ]);
+        }
+
         if ($operator == "+") {
-            if ($location_id == null) {
-                Availability::where(['product_id' => $product_id])->increment($field_to_update, $qty);
-            } else {
-                Availability::where(['product_id' => $product_id, 'location_id' => $location_id])->increment($field_to_update, $qty);
-            }
-        } elseif ($operator == "-") {
-            if ($location_id == null) {
-                Availability::where(['product_id' => $product_id])->decrement($field_to_update, $qty);
-            } else {
-                Availability::where(['product_id' => $product_id, 'location_id' => $location_id])->decrement($field_to_update, $qty);
-            }
+            $availability->increment($field_to_update, $qty);
+        }
+        elseif ($operator == "-") {
+            $availability->decrement($field_to_update, $qty);
         }
 
         $type = Parameter::firstOrCreate(
