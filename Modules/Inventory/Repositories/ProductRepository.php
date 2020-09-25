@@ -110,6 +110,7 @@ class ProductRepository extends RepositoryService
         $this->suppliers = !empty($data["suppliers"]);
         parent::update($model,$data);
         $this->createAttribute($data);
+
         if($this->suppliers) {
             $this->updateSuppliers($data);
         }
@@ -141,7 +142,6 @@ class ProductRepository extends RepositoryService
                         if (isset($attributes[$i])) {
                             if ($attributes[$i] != 0) {
                                 $get_array = $attributes[$i];
-                                lad($product_id);
                                 $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"]);
                             }
                         }
@@ -185,7 +185,6 @@ class ProductRepository extends RepositoryService
         $product_id         = $data['id'] ?? $this->model->id;; //Get CURRENT PRODUCT ID
         $suppliers = $data['suppliers'];
         $supplierLocations = $data['supplierLocations'];
-        lad($data);
         $deleteSuppliers = $data['deleteSuppliers'];
         $deleteSupplierLocations = $data['deleteSupplierLocations'];
 
