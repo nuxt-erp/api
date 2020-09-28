@@ -34,10 +34,12 @@ class ProductSupplierLocations extends ModelService
         }
         return $rules;
     }
+
     public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');
     }
+    
     public function product_supplier()
     {
         return $this->belongsTo(ProductSuppliers::class, 'product_supplier_id');
