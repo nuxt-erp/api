@@ -30,7 +30,13 @@ class ProductImagesController extends ControllerService implements CheckPolicies
             $file->storeAs('c'.$user->company_id.'/product_images', $fileName, ['disk' => 's3']);
 
         }
-        return parent::store($request);
+        // return parent::store($request);
+
+        $request->merge(['path' => $fileName]);
+
+        // 'product_id', 'path', 'order'
+
+        return $this->sendArray($request->all());
     }
 
 }
