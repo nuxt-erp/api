@@ -61,20 +61,23 @@ class TransferRepository extends RepositoryService
             {
                 // DELETE ITEMS TO INSERT THEM AGAIN
                 TransferDetails::where('transfer_id', $id)->delete();
-
-                foreach ($data['list_products'] as $item) // EACH PRODUCT
+                $list_products = $data['list_products'];
+                lad($list_products);
+                foreach ($list_products as $key => $item) // EACH PRODUCT
                 {
                     $qty            = $item['qty'] ?? 0;
                     $qty_sent       = $item['qty_sent'] ?? 0;
                     $qty_received   = $item['qty_received'] ?? 0;
                     $product_id     = $item['product_id'] ?? $item['name'] ?? null;
-
                     if ($product_id) {
+                        
 
                         TransferDetails::updateOrCreate([
                             'transfer_id'    => $id,
                             'product_id'     => $product_id],
                         [
+                            'transfer_id'    => $id,
+                            'product_id'     => $product_id,
                             'qty'            => $qty,
                             'qty_sent'       => $qty_sent,
                             'qty_received'   => $qty_received,
