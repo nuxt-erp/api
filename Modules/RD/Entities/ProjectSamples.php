@@ -4,16 +4,17 @@ namespace Modules\RD\Entities;
 
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
-
+class Constants {
+    const PENDING    = 'pending';
+    const SENT       = 'sent';
+    const APPROVED   = 'approved';
+    const REWORK   = 'rework';
+}
 class ProjectSamples extends ModelService
 {
     protected $connection = 'tenant';
 
     protected $table = 'rd_project_samples';
-
-    const STATUS_SENT   = 'sent';
-    const STATUS_PENDING= 'pending';
-    const STATUS_READY  = 'ready';
 
     protected $fillable = [
         'project_id', 'recipe_id', 'assignee_id',
@@ -52,6 +53,16 @@ class ProjectSamples extends ModelService
         }
 
         return $rules;
+    }
+    static function getStatuses() {
+        $oClass = new \ReflectionClass(Constants::class);
+        return $oClass->getConstants();
+
+    }
+    public function attributes() 
+    {
+        return $this->belongsToMany(Parameter::class, 'rd_project_attributes', 'project_id', 'attribute_id');
+        
     }
     public function project()
     {

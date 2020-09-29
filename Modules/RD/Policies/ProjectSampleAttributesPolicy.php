@@ -4,9 +4,9 @@ namespace Modules\RD\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Modules\RD\Entities\ProjectAttributes;
+use Modules\RD\Entities\ProjectSampleAttributes;
 
-class ProjectAttributesPolicy
+class ProjectSampleAttributesPolicy
 {
     use HandlesAuthorization;
 
@@ -20,7 +20,7 @@ class ProjectAttributesPolicy
         return $currentUser->isAdmin();
     }
 
-    public function show(User $currentUser, ProjectAttributes $target)
+    public function show(User $currentUser, ProjectSampleAttributes $target)
     {
         return $currentUser->isAdmin();
     }
@@ -30,12 +30,12 @@ class ProjectAttributesPolicy
         return $currentUser->isAdmin();
     }
 
-    public function update(User $currentUser, ProjectAttributes $target)
+    public function update(User $currentUser, ProjectSampleAttributes $target)
     {
         return $currentUser->isAdmin();
     }
 
-    public function destroy(User $currentUser, ProjectAttributes $target)
+    public function destroy(User $currentUser, ProjectSampleAttributes $target)
     {
         return $currentUser->isAdmin();
     }

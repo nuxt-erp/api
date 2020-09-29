@@ -17,8 +17,6 @@ class Constants {
 }
 class Project extends ModelService
 {
-
-
     protected $connection = 'tenant';
 
     protected $table = 'rd_projects';
