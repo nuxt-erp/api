@@ -3,6 +3,8 @@
 namespace Modules\Inventory\Entities;
 
 use App\Models\Location;
+use App\Models\Parameter;
+
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
 
@@ -73,5 +75,23 @@ class ProductLog extends ModelService
         // }
     }
 
+    public function customer_supplier()
+    {
+        $string=$this->type->name;
+
+        if($string=="Purchase"){
+            $string="Supplier";
+        }
+        else if ($string=="Sales"){
+            $string="Customer";
+        }else{
+            $string="N/A";
+        }
+        return $string;
+    }
+    public function type()
+    {
+        return $this->belongsTo(Parameter::class);
+    }
 }
 
