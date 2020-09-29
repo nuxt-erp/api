@@ -4,7 +4,7 @@ namespace Modules\RD\Transformers;
 
 use App\Resources\ResourceService;
 
-class ProjectAttributesResource extends ResourceService
+class ProjectSampleAttributesResource extends ResourceService
 {
     /**
      * Transform the resource into an array.
