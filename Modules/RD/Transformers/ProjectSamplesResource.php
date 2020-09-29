@@ -15,18 +15,20 @@ class ProjectSamplesResource extends ResourceService
     public function toArray($request)
     {
         return [
-            'id'            => $this->id,
-            'project_id'    => $this->project_id,
-            'recipe_id'     => $this->recipe_id,
+            'id'              => $this->id,
+            'project_id'      => $this->project_id,
+            'recipe_id'       => $this->recipe_id,
             'recipe_name'     => optional($this->recipe)->name,
-            'assignee_id'   => $this->assignee_id,
-            'name'          => $this->name,
-            'status'        => $this->status,
-            'target_cost'   => $this->target_cost,
-            'feedback'      => $this->feedback,
-            'comment'       => $this->comment,
-            'created_at'    => optional($this->created_at)->format('Y-m-d H:i:s'),
-            'updated_at'    => optional($this->updated_at)->format('Y-m-d H:i:s'),
+            'assignee_id'     => $this->assignee_id,
+            'name'            => $this->name,
+            'internal_code'   => $this->internal_code,
+            'external_code'   => $this->external_code,
+            'status'          => $this->status,
+            'target_cost'     => $this->target_cost,
+            'feedback'        => $this->feedback,
+            'comment'         => $this->comment,
+            'created_at'      => optional($this->created_at)->format('Y-m-d H:i:s'),
+            'updated_at'      => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];
     }
 }

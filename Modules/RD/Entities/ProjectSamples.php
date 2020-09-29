@@ -17,6 +17,7 @@ class ProjectSamples extends ModelService
 
     protected $fillable = [
         'project_id', 'recipe_id', 'assignee_id',
+        'internal_code', 'external_code',
         'name', 'status', 'target_cost',
         'feedback', 'comment'
     ];
@@ -29,6 +30,8 @@ class ProjectSamples extends ModelService
             'recipe_id'               => ['exists:tenant.rd_recipes,id'],
             'assignee_id'             => ['exists:users,id'],
             'name'                    => ['nullable', 'max:255'],
+            'internal_code'           => ['string', 'max:255'],
+            'external_code'           => ['string', 'max:255'],
             'status'                  => ['string', 'max:255'],
             'target_cost'             => ['nullable'],
             'feedback'                => ['nullable', 'string', 'max:255'],
@@ -40,6 +43,8 @@ class ProjectSamples extends ModelService
         if (is_null($item)) {
             $rules['project_id'][] = 'required';
             $rules['status'][] = 'required';
+            $rules['internal_code'][] = 'required';
+            $rules['external_code'][] = 'required';
         }
         // rules when updating the item
         else{

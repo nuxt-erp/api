@@ -25,6 +25,7 @@ class ProjectResource extends ResourceService
             'attribute_names'    => $this->attributes->pluck('name'),
             'attribute_ids'      => optional($this->attributes)->pluck('id')->toArray(),
             'actions'            => $actions,
+            'iteration'          => $this->iteration,
             'status'             => $this->status,
             'code'               => $this->code,
             'comment'            => $this->comment,
