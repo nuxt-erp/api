@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Entities;
 
 use App\Models\ModelService;
+use App\Models\Location;
 
 class ProductReorderLevel extends ModelService
 {

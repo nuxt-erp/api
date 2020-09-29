@@ -129,6 +129,7 @@ class Product extends ModelService
     {
         return $this->belongsTo(Supplier::class);
     }
+
     public function stockLocator()
     {
         return $this->belongsTo(StockLocator::class);
@@ -136,6 +137,11 @@ class Product extends ModelService
     public function measure()
     {
         return $this->belongsTo(Measure::class);
+    }
+
+    public function reorderLevels()
+    {
+        return $this->hasMany(ProductReorderLevel::class, 'product_id', 'id');
     }
 
 }

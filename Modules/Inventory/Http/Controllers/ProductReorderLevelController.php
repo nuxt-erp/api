@@ -8,7 +8,7 @@ use App\Http\Controllers\ControllerService;
 use Modules\Inventory\Repositories\ProductReorderLevelRepository;
 use Modules\Inventory\Transformers\ProductReorderLevelResource;
 
-class ProductReordeLevelController extends ControllerService implements CheckPolicies
+class ProductReorderLevelController extends ControllerService implements CheckPolicies
 {
 
     protected $repository;
