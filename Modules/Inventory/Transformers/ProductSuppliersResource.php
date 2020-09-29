@@ -16,10 +16,10 @@ class ProductSuppliersResource extends ResourceService
     {
         return [
             'id'                => $this->id,
-            'name'              => $this->name,
             'product_id'        => $this->product_id,
-            'product_sku'       => optional($this->product)->sku,
-            'product_name'      => optional($this->product)->name,
+            'product_sku'       => $this->product_sku,
+            'product_name'      => $this->product_name,
+            'supplier_name'     => optional($this->supplier)->name,
             'supplier_id'       => $this->supplier_id,
             'lead_time'         => optional($this->supplier)->lead_time,
             'currency'          => $this->currency,

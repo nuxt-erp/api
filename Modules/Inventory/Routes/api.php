@@ -28,9 +28,9 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_suppliers', 'ProductSuppliersController');
         Route::resource('product_supplier_locations', 'ProductSupplierLocationsController');
 
-        Route::resource('stockcount', 'StockCountController');
-        Route::resource('stockcount_details', 'StockCountDetailController');
-        Route::get('stockcount/finish/{id?}', 'StockCountController@finish'); // ADJUST AND FINISH STOCK TAKE
+        Route::resource('stock_count', 'StockCountController');
+        Route::resource('stock_count_details', 'StockCountDetailController');
+        Route::get('stock_count/finish/{id?}', 'StockCountController@finish'); // ADJUST AND FINISH STOCK TAKE
         Route::resource('transfers', 'TransferController');
         Route::get('transfer/remove/{id?}', 'TransferController@remove');
         Route::get('transfer/packingSlip/{id?}', 'TransferController@exportPackingSlip'); // EXPORT PACKING SLIP
@@ -40,7 +40,7 @@ Route::middleware('auth:api')->group(function () {
         //Route::resource('product_families', 'ProductFamilyController');
         //Route::get('families/remove/{id?}', 'ProductFamilyController@remove'); //@todo review this
         //Route::get('families/get_products', 'ProductFamilyController@getListProducts'); //@todo review this
-        
+
         Route::get('getListProducts/{id?}', 'FamilyController@getListProducts');
 
         Route::resource('families', 'FamilyController');
@@ -49,7 +49,7 @@ Route::middleware('auth:api')->group(function () {
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');
 
-        
+
 
     });
 

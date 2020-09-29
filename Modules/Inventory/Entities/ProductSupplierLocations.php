@@ -10,7 +10,7 @@ class ProductSupplierLocations extends ModelService
 {
     protected $connection = 'tenant';
 
-    protected $table = 'inv_suppliers';
+    protected $table = 'inv_supplier_locations';
     protected $fillable = [
         'product_supplier_id', 'location_id', 
         'lead_time', 'safe_stock', 'reorder_qty'
@@ -21,7 +21,7 @@ class ProductSupplierLocations extends ModelService
         $rules = [
             'location_id'          => ['nullable', 'exists:tenant.locations,id'],
             'product_supplier_id'  => ['nullable', 'exists:tenant.inv_suppliers,id'],
-            'lead_time'            => ['string', 'max:255'],
+            'lead_time'            => ['string', 'max:255']
         ];
 
         // rules when creating the item
@@ -34,7 +34,7 @@ class ProductSupplierLocations extends ModelService
         }
         return $rules;
     }
-    public function supplier()
+    public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');
     }

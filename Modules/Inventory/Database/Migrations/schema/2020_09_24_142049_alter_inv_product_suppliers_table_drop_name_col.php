@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class $CLASS$ extends Migration
+class AlterInvProductSuppliersTableDropNameCol extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class $CLASS$ extends Migration
      */
     public function up()
     {
-        Schema::connection('tenant')->create('$TABLE$', function (Blueprint $table) {
-            $table->id();
-            $FIELDS$
-            $table->timestamps();
+        Schema::connection('tenant')->table('inv_suppliers', function (Blueprint $table) {
+            $table->dropColumn('name');
         });
     }
 
@@ -27,6 +25,8 @@ class $CLASS$ extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->dropIfExists('$TABLE$');
+        Schema::connection('tenant')->table('inv_suppliers', function (Blueprint $table) {
+            $table->string('name');
+        });
     }
 }

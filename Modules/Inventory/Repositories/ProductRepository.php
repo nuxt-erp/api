@@ -10,6 +10,8 @@ use Modules\Inventory\Entities\FamilyAttribute;
 
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductAttributes;
+use Modules\Inventory\Entities\ProductSupplierLocations;
+use Modules\Inventory\Entities\ProductSuppliers;
 
 class ProductRepository extends RepositoryService
 {
@@ -85,7 +87,8 @@ class ProductRepository extends RepositoryService
         DB::transaction(function () use ($data) {
 
             $this->generate = !empty($data["generate_family"]);
-
+            $this->suppliers = !empty($data["suppliers"]);
+            
             if ($this->generate == true) // It came from product family
             {
                 $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
@@ -95,14 +98,22 @@ class ProductRepository extends RepositoryService
             }else {
                 parent::store($data);
                 $this->createAttribute($data); // CREATE ATTRIBUTE
+                if($this->suppliers) {
+                    $this->createSuppliers($data); // CREATE ATTRIBUTE
+                }
             }
         });
 
     }
     public function update($model, array $data)
     {
+        $this->suppliers = !empty($data["suppliers"]);
         parent::update($model,$data);
         $this->createAttribute($data);
+
+        if($this->suppliers) {
+            $this->updateSuppliers($data);
+        }
     }
     private function createAttribute($data)
     {
@@ -131,7 +142,6 @@ class ProductRepository extends RepositoryService
                         if (isset($attributes[$i])) {
                             if ($attributes[$i] != 0) {
                                 $get_array = $attributes[$i];
-                                lad($product_id);
                                 $this->saveProductAttribute($product_id, $get_array["id"], $get_array["value"]);
                             }
                         }
@@ -143,7 +153,6 @@ class ProductRepository extends RepositoryService
 
     private function createFamily($data)
     {
-
         $new                = new Family();
         $new->name          = $data["name"];
         $new->description   = $data["description"];
@@ -169,6 +178,118 @@ class ProductRepository extends RepositoryService
         $new->is_enabled    = $data["is_enabled"];
         $new->save();
 
+        return $new->id;
+    }
+
+    private function updateSuppliers($data) {
+        $product_id         = $data['id'] ?? $this->model->id;; //Get CURRENT PRODUCT ID
+        $suppliers = $data['suppliers'];
+        $supplierLocations = $data['supplierLocations'];
+        $deleteSuppliers = $data['deleteSuppliers'];
+        $deleteSupplierLocations = $data['deleteSupplierLocations'];
+
+        foreach ($suppliers as $supplier) 
+        {
+            $supplierArray = [
+                'product_id'    => $product_id,
+                'supplier_id'   => $supplier['supplier_id'],
+                'product_name'  => $supplier['product_name'],
+                'product_sku'   => $supplier['product_sku'],
+                'currency'      => $supplier['currency'],
+                'last_price'    => $supplier['last_price'],
+                'last_supplied' => $supplier['last_supplied'],
+                'minimum_order' => $supplier['minimum_order']
+            ]; 
+            if(!empty($supplier['id'])) {
+                $new = ProductSuppliers::updateOrCreate(['id' =>  $supplier['id']], $supplierArray);
+            } else {
+                $new = ProductSuppliers::updateOrCreate($supplierArray);
+            }
+
+            if(!empty($supplierLocations)) {
+
+                foreach ($supplierLocations as $supplierLocation) {
+                    if($supplierLocation['supplier_id'] == $new['supplier_id']) {
+                        $supplierLocation['product_supplier_id'] = $new['id'];
+                    }
+                } 
+            }
+
+        }
+        if(!empty($supplierLocations)) {
+
+            foreach ($supplierLocations as $supplierLocation) {
+                if(empty($supplierLocation['product_supplier_id'])) {
+                    $allSups = ProductSuppliers::where('product_id', $product_id)->get();
+                    foreach ($allSups as $sup) {
+                        if($sup->supplier->id == $supplierLocation['supplier_id']) {
+                            $supplierLocation['product_supplier_id'] = $sup->id;
+                        }
+                    }
+
+
+                }
+                $supplierLocationsArray = [
+                    'product_supplier_id'  => $supplierLocation['product_supplier_id'],
+                    'location_id'          => $supplierLocation['location_id'],
+                    'lead_time'            => $supplierLocation['lead_time'],
+                    'safe_stock'           => $supplierLocation['safe_stock'],
+                    'reorder_qty'          => $supplierLocation['reorder_qty'],
+                ];
+
+                if(!empty($supplierLocation['id'])) {
+                    $new = ProductSupplierLocations::updateOrCreate(['id' =>  $supplierLocation['id']], $supplierLocationsArray);
+                } else {
+                    $new = ProductSupplierLocations::updateOrCreate($supplierLocationsArray);
+                }
+            }
+        }
+        if(!empty($deleteSuppliers)) {
+            foreach ($deleteSuppliers as $deleteSupplier) {
+                ProductSuppliers::where('id', $deleteSupplier['id'])->delete();
+            }
+        }
+        if(!empty($deleteSupplierLocations)) {
+            foreach ($deleteSupplierLocations as $deleteSupplierLocation) {
+                ProductSupplierLocations::where('id', $deleteSupplierLocation['id'])->delete();
+            }
+        }
+    }
+
+    private function createSuppliers($data)
+    {
+        $suppliers = $data['suppliers'];
+        $supplierLocations = $data['supplierLocations'];
+
+        foreach ($suppliers as $supplier) 
+        {
+            $new                = new ProductSuppliers();
+            $new->product_id    = $this->model->id;
+            $new->product_name  = $supplier["product_name"];
+            $new->product_sku   = $supplier["product_sku"];
+            $new->supplier_id   = $supplier["supplier_id"];
+            $new->currency      = $supplier["currency"];
+            $new->last_price    = $supplier["last_price"];
+            $new->last_supplied = $supplier["last_supplied"];
+            $new->minimum_order = $supplier["minimum_order"];
+            $new->save();
+            if(!empty($supplierLocations)) {
+
+                foreach ($supplierLocations as $supplierLocation) {
+                    if($supplierLocation['supplier_id'] == $new['supplier_id']) {
+                        $newLocation = new ProductSupplierLocations();
+                        $newLocation->product_supplier_id = $new["id"];
+                        $newLocation->location_id = $supplierLocation["location_id"];
+                        $newLocation->lead_time = $supplierLocation["lead_time"];
+                        $newLocation->safe_stock = $supplierLocation["safe_stock"];
+                        $newLocation->reorder_qty = $supplierLocation["reorder_qty"];
+                        $newLocation->save();
+                    }
+                } 
+            }
+
+        }
+    
         return $new->id;
     }
 
