@@ -22,6 +22,7 @@ use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
 use Modules\Inventory\Entities\FamilyAttribute;
 use Modules\Inventory\Entities\ProductImages;
+use Modules\Inventory\Entities\ProductPromo;
 use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\Transfer;
 use Modules\Inventory\Entities\TransferDetails;
@@ -44,6 +45,7 @@ use Modules\Inventory\Repositories\StockCountRepository;
 use Modules\Inventory\Repositories\StockCountDetailRepository;
 use Modules\Inventory\Repositories\FamilyAttributeRepository;
 use Modules\Inventory\Repositories\ProductImagesRepository;
+use Modules\Inventory\Repositories\ProductPromoRepository;
 use Modules\Inventory\Repositories\ProductReorderLevelRepository;
 use Modules\Inventory\Repositories\TransferRepository;
 use Modules\Inventory\Repositories\TransferDetailsRepository;
@@ -66,6 +68,7 @@ use Modules\Inventory\Transformers\StockCountResource;
 use Modules\Inventory\Transformers\StockCountDetailResource;
 use Modules\Inventory\Transformers\FamilyAttributeResource;
 use Modules\Inventory\Transformers\ProductImagesResource;
+use Modules\Inventory\Transformers\ProductPromoResource;
 use Modules\Inventory\Transformers\ProductReorderLevelResource;
 use Modules\Inventory\Transformers\TransferResource;
 use Modules\Inventory\Transformers\TransferDetailsResource;
@@ -169,6 +172,14 @@ class InventoryServiceProvider extends ServiceProvider
 
         $this->app->bind(ProductReorderLevelRepository::class, function () {
             return new ProductReorderLevelRepository(new ProductReorderLevel());
+        });
+
+        $this->app->bind(ProductPromoResource::class, function () {
+            return new ProductPromoResource(new ProductPromo());
+        });
+
+        $this->app->bind(ProductPromoRepository::class, function () {
+            return new ProductPromoRepository(new ProductPromo());
         });
 
         $this->app->bind(FamilyRepository::class, function () {
@@ -283,7 +294,9 @@ class InventoryServiceProvider extends ServiceProvider
             FamilyAttributeRepository::class,
             TransferRepository::class,
             TransferDetailsRepository::class,
-            ProductImagesRepository::class
+            ProductImagesRepository::class,
+            ProductReorderLevelRepository::class,
+            ProductPromoRepository::class
         ];
     }
 
