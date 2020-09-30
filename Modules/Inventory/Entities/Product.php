@@ -5,6 +5,7 @@ namespace Modules\Inventory\Entities;
 use App\Models\Location;
 use App\Models\ModelService;
 use App\Models\Supplier;
+use Modules\Purchase\Entities\PurchaseDetail;
 
 class Product extends ModelService
 {
@@ -72,33 +73,33 @@ class Product extends ModelService
     // GET TOTAL QTY IN TRANSIT (COMING FROM SUPPLIER - PURCHASE)
     public function getInTransitAttribute($product_id)
     {
-        return 0;
-        // $data = PurchaseDetail::where('product_id', $product_id)
-        //     ->selectRaw('SUM(qty) as tot')
-        //     ->with('purchase')
-        //     ->whereHas('purchase', function ($query) {
-        //         $query->where('status', '=', 0); // NOT RECEIVED YET
-        //     })->get();
+        $data = PurchaseDetail::where('product_id', $product_id)
+            ->selectRaw('SUM(qty) as tot')
+            ->with('purchase')
+            ->whereHas('purchase', function ($query) {
+                $query->where('pur_purchases.status', '=', 0); // NOT RECEIVED YET
+            })->first();
 
-        // if ($data) {
-        //     return ($data[0]->tot);
-        // }
+        if ($data) {
+            return ($data->tot);
+        }
+        return 0;
     }
 
     // GET TOTAL QTY IN TRANSIT (TRANSFERS)
     public function getInTransitTransferAttribute($product_id)
     {
-        return 0;
-        // $data = TransferDetails::where('product_id', $product_id)
-        //     ->selectRaw('SUM(qty_sent) as tot')
-        //     ->with('transfer')
-        //     ->whereHas('transfer', function ($query) {
-        //         $query->where('status', '=', 0); // NOT RECEIVED YET
-        //     })->get();
+        $data = TransferDetails::where('product_id', $product_id)
+            ->selectRaw('SUM(qty_sent) as tot')
+            ->with('transfer')
+            ->whereHas('transfer', function ($query) {
+                $query->where('inv_transfers.is_enable', '=', 0); // NOT RECEIVED YET
+            })->first();
 
-        // if ($data) {
-        //     return ($data[0]->tot);
-        // }
+        if ($data) {
+            return ($data->tot);
+        }
+        return 0;
     }
 
     public function product_attributes(){
@@ -129,6 +130,7 @@ class Product extends ModelService
     {
         return $this->belongsTo(Supplier::class);
     }
+
     public function stockLocator()
     {
         return $this->belongsTo(StockLocator::class);
@@ -136,6 +138,16 @@ class Product extends ModelService
     public function measure()
     {
         return $this->belongsTo(Measure::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(ProductImages::class, 'product_id', 'id');
+    }
+
+    public function reorderLevels()
+    {
+        return $this->hasMany(ProductReorderLevel::class, 'product_id', 'id');
     }
 
 }

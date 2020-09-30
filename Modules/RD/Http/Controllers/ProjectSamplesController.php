@@ -4,6 +4,7 @@ namespace Modules\RD\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Concerns\CheckPolicies;
+use App\Resources\ListResource;
 use App\Http\Controllers\ControllerService;
 use Modules\RD\Repositories\ProjectSamplesRepository;
 use Modules\RD\Transformers\ProjectSamplesResource;
@@ -20,4 +21,19 @@ class ProjectSamplesController extends ControllerService implements CheckPolicie
         $this->resource = $resource;
         parent::__construct();
     }
+
+    public function getStatuses(){
+
+        $statuses = $this->repository->model->getStatuses();
+        $keyValue = []; 
+        $i = 0;
+
+        foreach ($statuses as $key => $status) {
+            $keyValue[$i]['name'] = ucfirst($status);
+            $keyValue[$i]['value'] = ucfirst($status);
+            $i++;
+        }
+        return $this->sendArray($keyValue);
+    }
 }
+

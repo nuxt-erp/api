@@ -36,7 +36,6 @@ class TransferRepository extends RepositoryService
     {
         DB::transaction(function () use ($data)
         {
-
             parent::store($data);
             // SAVE Transfer DETAILS
             $this->saveTransferDetails($data, $this->model->id);
@@ -46,23 +45,27 @@ class TransferRepository extends RepositoryService
     {
         DB::transaction(function () use ($data, $model)
         {
+            
+            lad($model);
+            lad($data);
+
             parent::update($model, $data);
             // UPDATE STOCK TAKE PRODUCTS
+            lad($this->model);
             $this->saveTransferDetails($data, $this->model->id);
         });
     }
 
     private function saveTransferDetails($data, $id)
     {
-        lad('data', $data);
         DB::transaction(function () use ($data, $id){
             $availability_repository = new AvailabilityRepository(new Availability());
+
             if (!empty($data['list_products']))
             {
                 // DELETE ITEMS TO INSERT THEM AGAIN
                 TransferDetails::where('transfer_id', $id)->delete();
                 $list_products = $data['list_products'];
-                lad($list_products);
                 foreach ($list_products as $key => $item) // EACH PRODUCT
                 {
                     $qty            = $item['qty'] ?? 0;
@@ -71,7 +74,6 @@ class TransferRepository extends RepositoryService
                     $product_id     = $item['product_id'] ?? $item['name'] ?? null;
                     if ($product_id) {
                         
-
                         TransferDetails::updateOrCreate([
                             'transfer_id'    => $id,
                             'product_id'     => $product_id],
@@ -92,7 +94,7 @@ class TransferRepository extends RepositoryService
                             // Decrement stock from sender
                             $availability_repository->updateStock($product_id, $qty_received, $data['location_from_id'], '-', 'Transfer', $id, 0,0, 'Sending quantity');
 
-                            Transfer::where('id', $id)->update(['is_enable' => 1]); // Transfer status
+                            Transfer::where('id', $id)->update(['is_enable' => 0]); // Transfer status
                         }
                     }
                 }
