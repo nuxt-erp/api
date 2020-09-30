@@ -6,8 +6,6 @@ use App\Models\Customer;
 use App\Models\ModelService;
 use App\Models\User;
 use App\Models\Parameter;
-use Illuminate\Validation\Rule;
-use PHPShopify\Collect;
 class Project extends ModelService
 {
     protected $connection = 'tenant';

@@ -13,7 +13,10 @@ class Transfer extends ModelService
     public $table       = "inv_transfers";
 
     protected $fillable = [
-        'pu_date', 'created_at', 'updated_at', 'carrier_id', 'eta', 'shipment_type_id', 'tracking_number', 'location_from_id', 'location_to_id', 'package_type_id', 'total_qty', 'is_enable'
+        'pu_date', 'created_at', 'updated_at',
+        'carrier_id', 'eta', 'shipment_type_id',
+        'tracking_number', 'location_from_id', 'location_to_id',
+        'package_type_id', 'total_qty', 'is_enable'
     ];
 
     public function getRules($request, $item = null)

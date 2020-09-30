@@ -21,6 +21,8 @@ use Modules\Inventory\Entities\Measure;
 use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
 use Modules\Inventory\Entities\FamilyAttribute;
+use Modules\Inventory\Entities\ProductImages;
+use Modules\Inventory\Entities\ProductPromo;
 use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\Transfer;
 use Modules\Inventory\Entities\TransferDetails;
@@ -42,6 +44,8 @@ use Modules\Inventory\Repositories\MeasureRepository;
 use Modules\Inventory\Repositories\StockCountRepository;
 use Modules\Inventory\Repositories\StockCountDetailRepository;
 use Modules\Inventory\Repositories\FamilyAttributeRepository;
+use Modules\Inventory\Repositories\ProductImagesRepository;
+use Modules\Inventory\Repositories\ProductPromoRepository;
 use Modules\Inventory\Repositories\ProductReorderLevelRepository;
 use Modules\Inventory\Repositories\TransferRepository;
 use Modules\Inventory\Repositories\TransferDetailsRepository;
@@ -63,6 +67,8 @@ use Modules\Inventory\Transformers\MeasureResource;
 use Modules\Inventory\Transformers\StockCountResource;
 use Modules\Inventory\Transformers\StockCountDetailResource;
 use Modules\Inventory\Transformers\FamilyAttributeResource;
+use Modules\Inventory\Transformers\ProductImagesResource;
+use Modules\Inventory\Transformers\ProductPromoResource;
 use Modules\Inventory\Transformers\ProductReorderLevelResource;
 use Modules\Inventory\Transformers\TransferResource;
 use Modules\Inventory\Transformers\TransferDetailsResource;
@@ -168,6 +174,14 @@ class InventoryServiceProvider extends ServiceProvider
             return new ProductReorderLevelRepository(new ProductReorderLevel());
         });
 
+        $this->app->bind(ProductPromoResource::class, function () {
+            return new ProductPromoResource(new ProductPromo());
+        });
+
+        $this->app->bind(ProductPromoRepository::class, function () {
+            return new ProductPromoRepository(new ProductPromo());
+        });
+
         $this->app->bind(FamilyRepository::class, function () {
             return new FamilyRepository(new Family());
         });
@@ -240,12 +254,18 @@ class InventoryServiceProvider extends ServiceProvider
             return new StockCountResource(new StockCount());
         });
 
-       
         $this->app->bind(ProductLogResource::class, function () {
             return new ProductLogResource(new ProductLog());
         });
         $this->app->bind(AttributeResource::class, function () {
             return new AttributeResource(new Attribute());
+        });
+
+        $this->app->bind(ProductImagesRepository::class, function () {
+            return new ProductImagesRepository(new ProductImages());
+        });
+        $this->app->bind(ProductImagesResource::class, function () {
+            return new ProductImagesResource(new ProductImages());
         });
     }
 
@@ -273,8 +293,10 @@ class InventoryServiceProvider extends ServiceProvider
             StockCountDetailRepository::class,
             FamilyAttributeRepository::class,
             TransferRepository::class,
-            TransferDetailsRepository::class
-
+            TransferDetailsRepository::class,
+            ProductImagesRepository::class,
+            ProductReorderLevelRepository::class,
+            ProductPromoRepository::class
         ];
     }
 

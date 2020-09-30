@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "1f21e5ea53b8727fa1cde87af59d2f53",
+    "content-hash": "de97e44e7bf05f3f531ddf90cea87f74",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1206,6 +1206,76 @@
                 "url"
             ],
             "time": "2019-07-01T23:21:34+00:00"
+        },
+        {
+            "name": "intervention/image",
+            "version": "2.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Intervention/image.git",
+                "reference": "abbf18d5ab8367f96b3205ca3c89fb2fa598c69e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/abbf18d5ab8367f96b3205ca3c89fb2fa598c69e",
+                "reference": "abbf18d5ab8367f96b3205ca3c89fb2fa598c69e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "guzzlehttp/psr7": "~1.1",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9.2",
+                "phpunit/phpunit": "^4.8 || ^5.7"
+            },
+            "suggest": {
+                "ext-gd": "to use GD library based image processing.",
+                "ext-imagick": "to use Imagick based image processing.",
+                "intervention/imagecache": "Caching extension for the Intervention Image library"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.4-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Intervention\\Image\\ImageServiceProvider"
+                    ],
+                    "aliases": {
+                        "Image": "Intervention\\Image\\Facades\\Image"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Intervention\\Image\\": "src/Intervention/Image"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Vogel",
+                    "email": "oliver@olivervogel.com",
+                    "homepage": "http://olivervogel.com/"
+                }
+            ],
+            "description": "Image handling and manipulation library with support for Laravel integration",
+            "homepage": "http://image.intervention.io/",
+            "keywords": [
+                "gd",
+                "image",
+                "imagick",
+                "laravel",
+                "thumbnail",
+                "watermark"
+            ],
+            "time": "2019-11-02T09:15:47+00:00"
         },
         {
             "name": "laravel/framework",
@@ -2775,82 +2845,6 @@
             "time": "2018-07-02T15:55:56+00:00"
         },
         {
-            "name": "pelago/emogrifier",
-            "version": "v4.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/MyIntervals/emogrifier.git",
-                "reference": "f6fd679303c6e6861b5ff29af221f684729d8fd9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/MyIntervals/emogrifier/zipball/f6fd679303c6e6861b5ff29af221f684729d8fd9",
-                "reference": "f6fd679303c6e6861b5ff29af221f684729d8fd9",
-                "shasum": ""
-            },
-            "require": {
-                "ext-dom": "*",
-                "ext-libxml": "*",
-                "php": "~7.0 || ~7.1 || ~7.2 || ~7.3 || ~7.4",
-                "symfony/css-selector": "^3.4.32 || ^4.3.5 || ^5.0"
-            },
-            "require-dev": {
-                "grogy/php-parallel-lint": "^1.1.0",
-                "phpunit/phpunit": "^6.5.14",
-                "psalm/plugin-phpunit": "^0.5.8",
-                "slevomat/coding-standard": "^4.0.0",
-                "squizlabs/php_codesniffer": "^3.5.1",
-                "vimeo/psalm": "^3.2.12"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "5.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Pelago\\Emogrifier\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Oliver Klee",
-                    "email": "github@oliverklee.de"
-                },
-                {
-                    "name": "Zoli Szabó",
-                    "email": "zoli.szabo+github@gmail.com"
-                },
-                {
-                    "name": "John Reeve",
-                    "email": "jreeve@pelagodesign.com"
-                },
-                {
-                    "name": "Jake Hotson",
-                    "email": "jake@qzdesign.co.uk"
-                },
-                {
-                    "name": "Cameron Brooks"
-                },
-                {
-                    "name": "Jaime Prado"
-                }
-            ],
-            "description": "Converts CSS styles into inline style attributes in your HTML code",
-            "homepage": "https://www.myintervals.com/emogrifier.php",
-            "keywords": [
-                "css",
-                "email",
-                "pre-processing"
-            ],
-            "time": "2020-06-12T12:55:03+00:00"
-        },
-        {
             "name": "php-http/message-factory",
             "version": "v1.0.2",
             "source": {
@@ -3844,58 +3838,6 @@
                 "lumen"
             ],
             "time": "2020-09-08T12:21:27+00:00"
-        },
-        {
-            "name": "snowfire/beautymail",
-            "version": "v1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/gfernandez-me/Beautymail.git",
-                "reference": "9732be15eb759b2cf253cd5e085a9f65592f576d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/gfernandez-me/Beautymail/zipball/9732be15eb759b2cf253cd5e085a9f65592f576d",
-                "reference": "9732be15eb759b2cf253cd5e085a9f65592f576d",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "^8.0",
-                "pelago/emogrifier": "^4.0",
-                "php": ">=7.3.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Snowfire\\Beautymail\\BeautymailServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Snowfire\\Beautymail\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Emil Sundberg",
-                    "email": "emil@snowfire.net"
-                }
-            ],
-            "description": "Send beautiful html emails with Laravel",
-            "keywords": [
-                "email",
-                "html",
-                "laravel"
-            ],
-            "support": {
-                "source": "https://github.com/gfernandez-me/Beautymail/tree/v1.2.0"
-            },
-            "time": "2020-09-10T15:01:30+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -7084,6 +7026,82 @@
             "time": "2020-08-27T18:58:22+00:00"
         },
         {
+            "name": "pelago/emogrifier",
+            "version": "v4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MyIntervals/emogrifier.git",
+                "reference": "f6fd679303c6e6861b5ff29af221f684729d8fd9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MyIntervals/emogrifier/zipball/f6fd679303c6e6861b5ff29af221f684729d8fd9",
+                "reference": "f6fd679303c6e6861b5ff29af221f684729d8fd9",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-libxml": "*",
+                "php": "~7.0 || ~7.1 || ~7.2 || ~7.3 || ~7.4",
+                "symfony/css-selector": "^3.4.32 || ^4.3.5 || ^5.0"
+            },
+            "require-dev": {
+                "grogy/php-parallel-lint": "^1.1.0",
+                "phpunit/phpunit": "^6.5.14",
+                "psalm/plugin-phpunit": "^0.5.8",
+                "slevomat/coding-standard": "^4.0.0",
+                "squizlabs/php_codesniffer": "^3.5.1",
+                "vimeo/psalm": "^3.2.12"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pelago\\Emogrifier\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Klee",
+                    "email": "github@oliverklee.de"
+                },
+                {
+                    "name": "Zoli Szabó",
+                    "email": "zoli.szabo+github@gmail.com"
+                },
+                {
+                    "name": "John Reeve",
+                    "email": "jreeve@pelagodesign.com"
+                },
+                {
+                    "name": "Jake Hotson",
+                    "email": "jake@qzdesign.co.uk"
+                },
+                {
+                    "name": "Cameron Brooks"
+                },
+                {
+                    "name": "Jaime Prado"
+                }
+            ],
+            "description": "Converts CSS styles into inline style attributes in your HTML code",
+            "homepage": "https://www.myintervals.com/emogrifier.php",
+            "keywords": [
+                "css",
+                "email",
+                "pre-processing"
+            ],
+            "time": "2020-06-12T12:55:03+00:00"
+        },
+        {
             "name": "phar-io/manifest",
             "version": "1.0.3",
             "source": {
@@ -8506,6 +8524,58 @@
                 "phar"
             ],
             "time": "2020-07-07T18:42:57+00:00"
+        },
+        {
+            "name": "snowfire/beautymail",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gfernandez-me/Beautymail.git",
+                "reference": "ba861536526b406971272e42e50f0267251b439c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gfernandez-me/Beautymail/zipball/ba861536526b406971272e42e50f0267251b439c",
+                "reference": "ba861536526b406971272e42e50f0267251b439c",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^8.0",
+                "pelago/emogrifier": "^4.0",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Snowfire\\Beautymail\\BeautymailServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Snowfire\\Beautymail\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Emil Sundberg",
+                    "email": "emil@snowfire.net"
+                }
+            ],
+            "description": "Send beautiful html emails with Laravel",
+            "keywords": [
+                "email",
+                "html",
+                "laravel"
+            ],
+            "support": {
+                "source": "https://github.com/gfernandez-me/Beautymail/tree/master"
+            },
+            "time": "2020-09-10T14:45:49+00:00"
         },
         {
             "name": "symfony/filesystem",

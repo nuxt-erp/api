@@ -1,8 +1,11 @@
 <?php
 
 namespace Modules\Inventory\Entities;
+use Modules\Purchase\Entities\Purchase;
 
 use App\Models\Location;
+use App\Models\Parameter;
+use App\Models\Sale;
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
 
@@ -56,22 +59,28 @@ class ProductLog extends ModelService
     {
         return $this->belongsTo(Location::class);
     }
-
+    public function type()
+    {
+        return $this->belongsTo(Parameter::class);
+    }
     public function getSourceAttribute()
     {
-        return '';
-        // if ($this->type == self::TYPE_LOG_SALE) {
-        //     $get = Sale::where('id', $this->ref_code_id)->with('customer')->first();
-        //     if ($get) {
-        //         return $get->customer->name;
-        //     }
-        // }elseif ($this->type == self::TYPE_LOG_PURCHASE) {
-        //     $get = Purchase::where('id', $this->ref_code_id)->with('supplier')->first();
-        //     if ($get) {
-        //         return $get->supplier->name;
-        //     }
-        // }
+       
+        if ($this->type->name == self::TYPE_LOG_SALE) {
+            $get = Sale::where('id', $this->ref_code_id)->with('customer')->first();
+            if ($get) {
+                return $get->customer->name;
+            }
+        }elseif ($this->type->name == self::TYPE_LOG_PURCHASE) {
+            $get = Purchase::where('id', $this->ref_code_id)->with('supplier')->first();
+            if ($get) {
+                return $get->supplier->name;
+            }
+        }
+       
     }
 
+    
+   
 }
 

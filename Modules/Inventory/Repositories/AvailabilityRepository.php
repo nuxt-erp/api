@@ -102,7 +102,7 @@ class AvailabilityRepository extends RepositoryService
         $type = Parameter::firstOrCreate(
             ['name' => 'product_log_type', 'value' => $type]
         );
-
+      
         $log = new ProductLog();
         $log->product_id    = $product_id;
         $log->location_id   = $location_id;
@@ -125,17 +125,22 @@ class AvailabilityRepository extends RepositoryService
 
         $searchCriteria['per_page'] = 20;
 
-
         $this->queryBuilder->rightJoin('inv_products', 'inv_availabilities.product_id', 'inv_products.id');
-        $this->queryBuilder->join('brands', 'brands.id', 'inv_products.brand_id');
-        $this->queryBuilder->join('categories', 'categories.id', 'inv_products.category_id');
+        $this->queryBuilder->leftJoin('inv_brands', 'inv_brands.id', 'inv_products.brand_id');
+        $this->queryBuilder->leftJoin('inv_categories', 'inv_categories.id', 'inv_products.category_id');
         $this->queryBuilder->select(
-            'brands.name as brand_name',
-            'categories.name as category_name',
+            'inv_brands.name as brand_name',
+            'inv_categories.name as category_name',
             'inv_products.id',
             'inv_products.name',
             'inv_products.sku',
-            'inv_availabilities.location_id',
+
+            'inv_products.location_id',
+            'locations.name as location_name',
+
+            'l2.id as location_id2',
+            'l2.name as location_name2',
+
             'inv_availabilities.on_hand',
             'inv_products.category_id',
             'inv_products.brand_id'
@@ -143,39 +148,46 @@ class AvailabilityRepository extends RepositoryService
         if (!empty($searchCriteria['stockcount_id'])) {
             $this->queryBuilder->addSelect('dt.qty as qty');
             $this->queryBuilder->leftJoin('inv_stock_count_details dt', 'dt.product_id', 'inv_products.id');
-        }
-
-        if ($searchCriteria['location_id']) {
-            $this->queryBuilder->join('locations', 'locations.id', 'inv_availabilities.location_id')->where('inv_availabilities.location_id', $searchCriteria['location_id']);
-        } else {
-            $this->queryBuilder->join('locations', 'locations.id', 'inv_availabilities.location_id');
+            unset($searchCriteria['stockcount_id']);
         }
 
         if (!empty($searchCriteria['location_id'])) {
-            $this->queryBuilder
-                ->where('inv_availabilities.location_id', Arr::pull($searchCriteria, 'location_id'));
+            $this->queryBuilder->leftJoin('locations', 'locations.id', 'inv_products.location_id')
+            ->leftJoin('locations as l2', 'l2.id', 'inv_availabilities.location_id');
+
+            $this->queryBuilder->where(function($query) use($searchCriteria) {
+                $query->where('inv_products.location_id', $searchCriteria['location_id'])
+                      ->orWhere('inv_availabilities.location_id', $searchCriteria['location_id']);
+            });
+            unset($searchCriteria['location_id']);
+        } else {
+            $this->queryBuilder->leftJoin('locations', 'locations.id', 'inv_products.location_id');
         }
 
         if (!empty($searchCriteria['add_discontinued'])) {
             $this->queryBuilder
-                ->where('products.status', Arr::pull($searchCriteria, 'add_discontinued'));
+                ->where('inv_products.is_enabled', Arr::pull($searchCriteria, 'add_discontinued'));
+            unset($searchCriteria['add_discontinued']);
         }
 
         if (!empty($searchCriteria['stockcount_id'])) {
             $this->queryBuilder
                 ->where('stockcount_id', Arr::pull($searchCriteria, 'stockcount_id'));
+            unset($searchCriteria['stockcount_id']);
         }
 
         if (!empty($searchCriteria['category_id'])) {
             $this->queryBuilder
                 ->where('category_id', Arr::pull($searchCriteria, 'category_id'));
+            unset($searchCriteria['category_id']);
         }
 
         if (!empty($searchCriteria['brand_id'])) {
             $this->queryBuilder
                 ->where('brand_id', Arr::pull($searchCriteria, 'brand_id'));
+            unset($searchCriteria['brand_id']);
         }
 
-        return $this->findBy($searchCriteria);
+        return parent::findBy($searchCriteria);
     }
 }
