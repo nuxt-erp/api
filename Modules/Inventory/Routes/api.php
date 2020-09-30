@@ -28,6 +28,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_suppliers', 'ProductSuppliersController');
         Route::resource('product_supplier_locations', 'ProductSupplierLocationsController');
         Route::resource('product_reorder_levels', 'ProductReorderLevelController');
+        Route::resource('product_promos', 'ProductPromoController');
 
         Route::resource('stock_count', 'StockCountController');
         Route::resource('stock_count_details', 'StockCountDetailController');

@@ -10,6 +10,7 @@ use Modules\Inventory\Entities\FamilyAttribute;
 
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductAttributes;
+use Modules\Inventory\Entities\ProductPromo;
 use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\ProductSupplierLocations;
 use Modules\Inventory\Entities\ProductSuppliers;
@@ -97,11 +98,13 @@ class ProductRepository extends RepositoryService
                 $this->generateFamily($data, $data['family_id']);                    // GENERATE FAMILY
 
             }else {
+
                 parent::store($data);
                 $this->createAttribute($data); // CREATE ATTRIBUTE
                 if($this->suppliers) {
                     $this->createSuppliers($data); // CREATE ATTRIBUTE
                 }
+
                 if(!empty($data["reorder_levels"])) {
                     foreach($data["reorder_levels"] as $reorder_level) {
                         ProductReorderLevel::create([
@@ -109,6 +112,19 @@ class ProductRepository extends RepositoryService
                             'location_id'   => $reorder_level['location_id'],
                             'safe_stock'    => $reorder_level['safe_stock'],
                             'reorder_qty'   => $reorder_level['reorder_qty']
+                        ]);                 
+                    }
+                }
+
+                if(!empty($data["promos"])) {
+                    foreach($data["promos"] as $promo) {
+                        ProductPromo::create([
+                            'product_id'            => $this->model->id,
+                            'discount_percentage'   => $promo['discount_percentage'] ?? 0,
+                            'buy_qty'               => $promo['buy_qty'] ?? 0,
+                            'get_qty'               => $promo['get_qty'] ?? 0,
+                            'date_from'             => $promo['date_from'],
+                            'date_to'               => $promo['date_to']
                         ]);                 
                     }
                 }
@@ -145,6 +161,16 @@ class ProductRepository extends RepositoryService
         if(!empty($data["delete_reorder_levels"])) {
             foreach($data["delete_reorder_levels"] as $delete_reorder_level) {
                 ProductReorderLevel::where('id', $delete_reorder_level['id'])->delete();
+            }
+        }
+
+        if(!empty($data["promos"])) {
+            $this->updatePromos($data);
+        }
+
+        if(!empty($data["delete_promos"])) {
+            foreach($data["delete_promos"] as $delete_promo) {
+                ProductPromo::where('id', $delete_promo['id'])->delete();
             }
         }
     }
@@ -292,6 +318,26 @@ class ProductRepository extends RepositoryService
                 ProductReorderLevel::updateOrCreate(['id' =>  $reorder_level['id']], $reorderLevelData);
             } else {
                 ProductReorderLevel::create($reorderLevelData);
+            }            
+        }        
+    }
+
+    private function updatePromos($data) {
+        foreach($data["promos"] as $promo) {
+
+            $promoData = [
+                'product_id'            => $this->model->id,
+                'discount_percentage'   => $promo['discount_percentage'] ?? 0,
+                'buy_qty'               => $promo['buy_qty'] ?? 0,
+                'get_qty'               => $promo['get_qty'] ?? 0,
+                'date_from'             => $promo['date_from'],
+                'date_to'               => $promo['date_to']
+            ];
+
+            if(!empty($promo['id'])) {
+                ProductPromo::updateOrCreate(['id' =>  $promo['id']], $promoData);
+            } else {
+                ProductPromo::create($promoData);
             }            
         }        
     }
