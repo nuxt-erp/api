@@ -7,35 +7,35 @@ use App\Models\Parameter;
 
 use Illuminate\Validation\Rule;
 
-class ProjectAttributes extends ModelService
+class ProjectSampleAttributes extends ModelService
 {
     protected $connection = 'tenant';
 
-    protected $table = 'rd_project_attributes';
+    protected $table = 'rd_project_sample_attributes';
 
-    protected $fillable = ['project_id', 'attribute_id'];
+    protected $fillable = ['project_sample_id', 'attribute_id'];
 
     public function getRules($request, $item = null)
     {
         // generic rules
         $rules = [
-            'project_id'               => ['exists:tenant.rd_projects,id'],
+            'project_sample_id'               => ['exists:tenant.rd_project_samples,id'],
             'attribute_id'            => ['exists:tenant.parameters,id']
 
         ];
 
         // rules when creating the item
         if (is_null($item)) {
-            $rules['project_id'][] = 'required';
+            $rules['project_sample_id'][] = 'required';
             $rules['attribute_id'][] = 'required';
         }
       
 
         return $rules;
     }
-    public function project()
+    public function project_sample()
     {
-        return $this->belongsTo(Project::class, 'project_id', 'id');
+        return $this->belongsTo(ProjectSamples::class, 'project_sample_id', 'id');
     }
 
     public function parameter()

@@ -17,8 +17,6 @@ class Constants {
 }
 class Project extends ModelService
 {
-
-
     protected $connection = 'tenant';
 
     protected $table = 'rd_projects';
@@ -30,7 +28,7 @@ class Project extends ModelService
 
     protected $fillable = [
         'author_id','customer_id', 'status',
-        'code', 'comment', 'start_at',
+        'code', 'iteration', 'comment', 'start_at',
         'closed_at'
     ];
 
@@ -48,6 +46,7 @@ class Project extends ModelService
             $rules['status'][] = 'required';
             $rules['code'][] = 'required';
             $rules['comment'][] = 'required';
+            $rules['iteration'][] = 'required';
         }
         // rules when updating the item
         else{

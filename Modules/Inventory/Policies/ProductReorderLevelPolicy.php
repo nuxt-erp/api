@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\RD\Policies;
+namespace Modules\Inventory\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Modules\RD\Entities\ProjectAttributes;
+use Modules\Inventory\Entities\ProductReorderLevel;
 
-class ProjectAttributesPolicy
+class ProductReorderLevelPolicy
 {
     use HandlesAuthorization;
 
@@ -20,7 +20,7 @@ class ProjectAttributesPolicy
         return $currentUser->isAdmin();
     }
 
-    public function show(User $currentUser, ProjectAttributes $target)
+    public function show(User $currentUser, ProductReorderLevel $target)
     {
         return $currentUser->isAdmin();
     }
@@ -30,12 +30,12 @@ class ProjectAttributesPolicy
         return $currentUser->isAdmin();
     }
 
-    public function update(User $currentUser, ProjectAttributes $target)
+    public function update(User $currentUser, ProductReorderLevel $target)
     {
         return $currentUser->isAdmin();
     }
 
-    public function destroy(User $currentUser, ProjectAttributes $target)
+    public function destroy(User $currentUser, ProductReorderLevel $target)
     {
         return $currentUser->isAdmin();
     }

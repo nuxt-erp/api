@@ -10,6 +10,7 @@ use Modules\Inventory\Entities\FamilyAttribute;
 
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductAttributes;
+use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\ProductSupplierLocations;
 use Modules\Inventory\Entities\ProductSuppliers;
 
@@ -104,6 +105,16 @@ class ProductRepository extends RepositoryService
                 if(!empty($data['images'])) {
                     $this->syncImages($data['images']); // SYNC IMAGES
                 }
+                if(!empty($data["reorder_levels"])) {
+                    foreach($data["reorder_levels"] as $reorder_level) {
+                        ProductReorderLevel::create([
+                            'product_id'    => $this->model->id,
+                            'location_id'   => $reorder_level['location_id'],
+                            'safe_stock'    => $reorder_level['safe_stock'],
+                            'reorder_qty'   => $reorder_level['reorder_qty']
+                        ]);
+                    }
+                }
             }
         });
 
@@ -111,11 +122,33 @@ class ProductRepository extends RepositoryService
     public function update($model, array $data)
     {
         $this->suppliers = !empty($data["suppliers"]);
+
         parent::update($model,$data);
         $this->createAttribute($data);
 
         if($this->suppliers) {
             $this->updateSuppliers($data);
+        }
+
+        if(!empty($data['deleteSuppliers'])) {
+            foreach ($data['deleteSuppliers'] as $deleteSupplier) {
+                ProductSuppliers::where('id', $deleteSupplier['id'])->delete();
+            }
+        }
+        if(!empty($data['deleteSupplierLocations'])) {
+            foreach ($data['deleteSupplierLocations'] as $deleteSupplierLocation) {
+                ProductSupplierLocations::where('id', $deleteSupplierLocation['id'])->delete();
+            }
+        }
+
+        if(!empty($data["reorder_levels"])) {
+            $this->updateReorderLevels($data);
+        }
+
+        if(!empty($data["delete_reorder_levels"])) {
+            foreach($data["delete_reorder_levels"] as $delete_reorder_level) {
+                ProductReorderLevel::where('id', $delete_reorder_level['id'])->delete();
+            }
         }
     }
 
@@ -196,8 +229,7 @@ class ProductRepository extends RepositoryService
         $product_id         = $data['id'] ?? $this->model->id;; //Get CURRENT PRODUCT ID
         $suppliers = $data['suppliers'];
         $supplierLocations = $data['supplierLocations'];
-        $deleteSuppliers = $data['deleteSuppliers'];
-        $deleteSupplierLocations = $data['deleteSupplierLocations'];
+
 
         foreach ($suppliers as $supplier)
         {
@@ -255,14 +287,22 @@ class ProductRepository extends RepositoryService
                 }
             }
         }
-        if(!empty($deleteSuppliers)) {
-            foreach ($deleteSuppliers as $deleteSupplier) {
-                ProductSuppliers::where('id', $deleteSupplier['id'])->delete();
-            }
-        }
-        if(!empty($deleteSupplierLocations)) {
-            foreach ($deleteSupplierLocations as $deleteSupplierLocation) {
-                ProductSupplierLocations::where('id', $deleteSupplierLocation['id'])->delete();
+    }
+
+    private function updateReorderLevels($data) {
+        foreach($data["reorder_levels"] as $reorder_level) {
+
+            $reorderLevelData = [
+                'product_id'    => $this->model->id,
+                'location_id'   => $reorder_level['location_id'],
+                'safe_stock'    => $reorder_level['safe_stock'],
+                'reorder_qty'   => $reorder_level['reorder_qty']
+            ];
+
+            if(!empty($reorder_level['id'])) {
+                ProductReorderLevel::updateOrCreate(['id' =>  $reorder_level['id']], $reorderLevelData);
+            } else {
+                ProductReorderLevel::create($reorderLevelData);
             }
         }
     }
@@ -426,7 +466,7 @@ class ProductRepository extends RepositoryService
         // A temporary array to store all combination one by one
         $data = array();
 
-        // save all combination using temprary array 'data[]'
+        // save all combination using temporary array 'data[]'
         return $this->combinationUtil($arr, $n, $r, 0, $data, 0);
     }
 
@@ -443,7 +483,7 @@ class ProductRepository extends RepositoryService
         $qt_elements    = 0;
         $comb           = "";
 
-        // Current cobination is ready, save it
+        // Current combination is ready, save it
         if ($index == $r) {
             for ($j = 0; $j < $r; $j++) {
                 if (isset($data[$j - 1])) {
