@@ -4,19 +4,21 @@ namespace Modules\RD\Entities;
 
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
-
+class Constants {
+    const PENDING    = 'pending';
+    const SENT       = 'sent';
+    const APPROVED   = 'approved';
+    const REWORK   = 'rework';
+}
 class ProjectSamples extends ModelService
 {
     protected $connection = 'tenant';
 
     protected $table = 'rd_project_samples';
 
-    const STATUS_SENT   = 'sent';
-    const STATUS_PENDING= 'pending';
-    const STATUS_READY  = 'ready';
-
     protected $fillable = [
         'project_id', 'recipe_id', 'assignee_id',
+        'internal_code', 'external_code',
         'name', 'status', 'target_cost',
         'feedback', 'comment'
     ];
@@ -29,6 +31,8 @@ class ProjectSamples extends ModelService
             'recipe_id'               => ['exists:tenant.rd_recipes,id'],
             'assignee_id'             => ['exists:users,id'],
             'name'                    => ['nullable', 'max:255'],
+            'internal_code'           => ['string', 'max:255'],
+            'external_code'           => ['string', 'max:255'],
             'status'                  => ['string', 'max:255'],
             'target_cost'             => ['nullable'],
             'feedback'                => ['nullable', 'string', 'max:255'],
@@ -40,6 +44,8 @@ class ProjectSamples extends ModelService
         if (is_null($item)) {
             $rules['project_id'][] = 'required';
             $rules['status'][] = 'required';
+            $rules['internal_code'][] = 'required';
+            $rules['external_code'][] = 'required';
         }
         // rules when updating the item
         else{
@@ -47,6 +53,16 @@ class ProjectSamples extends ModelService
         }
 
         return $rules;
+    }
+    static function getStatuses() {
+        $oClass = new \ReflectionClass(Constants::class);
+        return $oClass->getConstants();
+
+    }
+    public function attributes() 
+    {
+        return $this->belongsToMany(Parameter::class, 'rd_project_attributes', 'project_id', 'attribute_id');
+        
     }
     public function project()
     {

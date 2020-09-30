@@ -12,11 +12,12 @@ class AvailabilityResource extends ResourceService
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function toArray($request) 
+    public function toArray($request)
     {
         return [
             'id'                    => $this->product_id,
             'product_id'            => $this->id,
+            'name'                  => optional($this->product)->getFullDescriptionAttribute(),
             'product_name'          => optional($this->product)->getFullDescriptionAttribute(),
             'in_transit_suppliers'  => optional($this->product)->getInTransitAttribute($this->product_id),
             'in_transit_transfers'  => optional($this->product)->getInTransitTransferAttribute($this->product_id),

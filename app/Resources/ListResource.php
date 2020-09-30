@@ -13,7 +13,6 @@ class ListResource extends ResourceService
     public function toArray($request)
     {
         // $this->model has the name of the model. e.g. Role, User
-
         $resource = [
             'id'            => $this->id,
             'value'         => $this->id,

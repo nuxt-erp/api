@@ -5,7 +5,7 @@ namespace Modules\RD\Providers;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Modules\RD\Entities\Project;
-use Modules\RD\Entities\ProjectAttributes;
+use Modules\RD\Entities\ProjectSampleAttributes;
 use Modules\RD\Entities\ProjectLogs;
 use Modules\RD\Entities\ProjectSampleLogs;
 use Modules\RD\Entities\ProjectSamples;
@@ -15,7 +15,7 @@ use Modules\RD\Entities\RecipeItems;
 use Modules\RD\Entities\RecipeProposalItems;
 use Modules\RD\Entities\RecipeProposals;
 use Modules\RD\Policies\ProjectPolicy;
-use Modules\RD\Policies\ProjectAttributesPolicy;
+use Modules\RD\Policies\ProjectSampleAttributesPolicy;
 use Modules\RD\Policies\ProjectLogsPolicy;
 use Modules\RD\Policies\ProjectSampleLogsPolicy;
 use Modules\RD\Policies\ProjectSamplesPolicy;
@@ -41,7 +41,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::policy(Project::class, ProjectPolicy::class);
-        Gate::policy(ProjectAttributes::class, ProjectAttributesPolicy::class);
+        Gate::policy(ProjectSampleAttributes::class, ProjectSampleAttributesPolicy::class);
         Gate::policy(ProjectSamples::class, ProjectSamplesPolicy::class);
         Gate::policy(ProjectLogs::class, ProjectLogsPolicy::class);
         Gate::policy(ProjectSampleLogs::class, ProjectSampleLogsPolicy::class);
