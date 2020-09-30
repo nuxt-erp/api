@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Transformers;
 
 use App\Resources\ResourceService;
+use Illuminate\Support\Facades\Storage;
 
 class ProductImagesResource extends ResourceService
 {
@@ -14,6 +15,7 @@ class ProductImagesResource extends ResourceService
      */
     public function toArray($request)
     {
+
         return [
             'id'            => $this->id,
             'product_id'    => $this->product_id,

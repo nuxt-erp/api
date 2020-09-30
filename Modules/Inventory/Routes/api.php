@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('product_images/{path}', 'ProductImagesController@getImage');
+
 Route::middleware('auth:api')->group(function () {
 
     // INVENTORY

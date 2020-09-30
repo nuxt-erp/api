@@ -88,7 +88,7 @@ class ProductRepository extends RepositoryService
 
             $this->generate = !empty($data["generate_family"]);
             $this->suppliers = !empty($data["suppliers"]);
-            
+
             if ($this->generate == true) // It came from product family
             {
                 $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
@@ -100,6 +100,9 @@ class ProductRepository extends RepositoryService
                 $this->createAttribute($data); // CREATE ATTRIBUTE
                 if($this->suppliers) {
                     $this->createSuppliers($data); // CREATE ATTRIBUTE
+                }
+                if(!empty($data['images'])) {
+                    $this->syncImages($data['images']); // SYNC IMAGES
                 }
             }
         });
@@ -115,6 +118,14 @@ class ProductRepository extends RepositoryService
             $this->updateSuppliers($data);
         }
     }
+
+    private function syncImages($images){
+        // the model need to exist before sync images
+        if($this->model){
+            lad($images);
+        }
+    }
+
     private function createAttribute($data)
     {
         if (!empty($data["prod_attributes"])) {
@@ -188,7 +199,7 @@ class ProductRepository extends RepositoryService
         $deleteSuppliers = $data['deleteSuppliers'];
         $deleteSupplierLocations = $data['deleteSupplierLocations'];
 
-        foreach ($suppliers as $supplier) 
+        foreach ($suppliers as $supplier)
         {
             $supplierArray = [
                 'product_id'    => $product_id,
@@ -199,7 +210,7 @@ class ProductRepository extends RepositoryService
                 'last_price'    => $supplier['last_price'],
                 'last_supplied' => $supplier['last_supplied'],
                 'minimum_order' => $supplier['minimum_order']
-            ]; 
+            ];
             if(!empty($supplier['id'])) {
                 $new = ProductSuppliers::updateOrCreate(['id' =>  $supplier['id']], $supplierArray);
             } else {
@@ -212,7 +223,7 @@ class ProductRepository extends RepositoryService
                     if($supplierLocation['supplier_id'] == $new['supplier_id']) {
                         $supplierLocation['product_supplier_id'] = $new['id'];
                     }
-                } 
+                }
             }
 
         }
@@ -261,7 +272,7 @@ class ProductRepository extends RepositoryService
         $suppliers = $data['suppliers'];
         $supplierLocations = $data['supplierLocations'];
 
-        foreach ($suppliers as $supplier) 
+        foreach ($suppliers as $supplier)
         {
             $new                = new ProductSuppliers();
             $new->product_id    = $this->model->id;
@@ -285,15 +296,13 @@ class ProductRepository extends RepositoryService
                         $newLocation->reorder_qty = $supplierLocation["reorder_qty"];
                         $newLocation->save();
                     }
-                } 
+                }
             }
 
         }
-    
+
         return $new->id;
     }
-
-
 
     private function saveProductAttribute($product_id, $attribute_id, $value)
     {

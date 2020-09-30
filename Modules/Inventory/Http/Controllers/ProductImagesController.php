@@ -7,8 +7,9 @@ use App\Http\Controllers\ControllerService;
 use Modules\Inventory\Repositories\ProductImagesRepository;
 use Modules\Inventory\Transformers\ProductImagesResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
-class ProductImagesController extends ControllerService implements CheckPolicies
+class ProductImagesController extends ControllerService
 {
 
     protected $repository;
@@ -21,22 +22,33 @@ class ProductImagesController extends ControllerService implements CheckPolicies
         parent::__construct();
     }
 
+    public function getImage($filePath)
+    {
+        if(Storage::disk('s3')->exists(urldecode($filePath))){
+            return Storage::disk('s3')->response(urldecode($filePath));
+        }
+    }
+
     public function store(Request $request)
     {
         $user = auth()->user();
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $fileName = $request->product_id;
-            $file->storeAs('c'.$user->company_id.'/product_images', $fileName, ['disk' => 's3']);
-
+        lad('store');
+        if ($request->hasFile('files') && $request->filled('product_id')) {
+            lad('has file');
+            $x = 0;
+            $files = [];
+            foreach ($request->file('files') as $file) {
+                $x++;
+                $path = $file->store('company_'.$user->company_id.'/product_'.$request->product_id.'/images', ['disk' => 's3']);
+                $files[] = $path;
+                lad('path', $path);
+            }
+            $request->merge(['paths' => $files]);
         }
-        // return parent::store($request);
 
-        $request->merge(['path' => $fileName]);
+        //@todo delete files if something goes wrong
 
-        // 'product_id', 'path', 'order'
-
-        return $this->sendArray($request->all());
+        return parent::store($request);
     }
 
 }

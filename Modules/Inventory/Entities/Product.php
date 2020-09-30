@@ -77,7 +77,7 @@ class Product extends ModelService
             ->selectRaw('SUM(qty) as tot')
             ->with('purchase')
             ->whereHas('purchase', function ($query) {
-                $query->where('status', '=', 0); // NOT RECEIVED YET
+                $query->where('pur_purchases.status', '=', 0); // NOT RECEIVED YET
             })->first();
 
         if ($data) {
@@ -93,7 +93,7 @@ class Product extends ModelService
             ->selectRaw('SUM(qty_sent) as tot')
             ->with('transfer')
             ->whereHas('transfer', function ($query) {
-                $query->where('status', '=', 0); // NOT RECEIVED YET
+                $query->where('inv_transfers.is_enable', '=', 0); // NOT RECEIVED YET
             })->first();
 
         if ($data) {
