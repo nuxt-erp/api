@@ -115,13 +115,13 @@ class PurchaseRepository extends RepositoryService
                         // We need to check update stock
                         if ($data['status']) { // Do not update when the stock is already received
                             // Increase stock quantity
-                            $availability_repository->updateStock($product_id, $qty, $data['location_id'], '+', 'Purchase', $id, 0, 0, 'Recieved');
+                            $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], '+', 'Purchase', $id, 0, 0, 'Recieved');
 
                             // Decrease on order quantity
                           //  $availability_repository->updateStock($product_id, 0, $data['location_id'], '-', 'Purchase', $id, $qty, 0, 'Add item');
                         }
                         else{ // Not fulfilled, update on order quantity
-                            $availability_repository->updateStock($product_id, $qty, $data['location_id'], '+', 'Purchase', $id, $qty, 0, 'Add Order');
+                            $availability_repository->updateStock($product_id, $qty, $data['location_id'], '+', 'Purchase', $id, $qty, 0, ' Ordered');
                         }
                     }
                 }
