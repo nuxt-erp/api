@@ -15,17 +15,17 @@ class ProductLogResource extends ResourceService
     public function toArray($request)
     {
         return [
-            'id'            => $this->id,
-            'product_id'    => $this->product_id,
-            'location_id'   => $this->location_id,
-            'location_name' => optional($this->location)->name,
-            'type_id'       => $this->type_id,
-            'type_name'     => optional($this->type)->name,
-            'quantity'      => $this->quantity,
-            'description'   => $this->description,
-            'source'        => $this->source,
-            'created_at'    => optional($this->created_at)->format('Y-m-d H:i:s'),
-            'updated_at'    => optional($this->updated_at)->format('Y-m-d H:i:s'),
+            'id'                => $this->id,
+            'product_id'        => $this->product_id,
+            'location_id'       => $this->location_id,
+            'location_name'     => optional($this->location)->name,
+            'type_id'           => $this->type_id,
+            'type_name'         => optional($this->type)->name,
+            'quantity'          => $this->quantity,
+            'customer_supplier' => $this->getSourceAttribute(),
+            'description'       => $this->description,
+            'created_at'        => optional($this->created_at)->format('Y-m-d H:i:s'),
+            'updated_at'        => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];
     }
 }

@@ -102,7 +102,7 @@ class AvailabilityRepository extends RepositoryService
         $type = Parameter::firstOrCreate(
             ['name' => 'product_log_type', 'value' => $type]
         );
-
+      
         $log = new ProductLog();
         $log->product_id    = $product_id;
         $log->location_id   = $location_id;
