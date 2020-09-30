@@ -27,7 +27,7 @@ class TransferResource extends ResourceService
             'location_to_name'      => optional($this->location_to)->name,
             'eta'                   => $this->eta,
             'is_enable'             => $this->is_enable,
-            'status_label'          => ($this->is_enable == true ? "In Progress" : "Recieved"),
+            'status_label'          => ($this->is_enable == true ? "In Progress" : "Received"),
             'can_be_deleted'        => false
         ];
     }

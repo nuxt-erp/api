@@ -8,13 +8,6 @@ use App\Models\User;
 use App\Models\Parameter;
 use Illuminate\Validation\Rule;
 use PHPShopify\Collect;
-class Constants {
-    const STATUS_PENDING    = 'Pending';
-    const STATUS_READY      = 'Ready';
-    const STATUS_SENT       = 'Sent';
-    const STATUS_UPDATED    = 'Updated';
-    const STATUS_APPROVED   = 'Approved';
-}
 class Project extends ModelService
 {
     protected $connection = 'tenant';
@@ -54,10 +47,8 @@ class Project extends ModelService
 
         return $rules;
     }
-    static function getStatuses() {
-        $oClass = new \ReflectionClass(Constants::class);
-        return $oClass->getConstants();
-    }
+   
+    
 
     public function author()
     {
@@ -74,8 +65,11 @@ class Project extends ModelService
         return $this->belongsToMany(Parameter::class, 'rd_project_attributes', 'project_id', 'attribute_id');
         
     }
+    public function samples() {
+        return $this->hasMany(ProjectSamples::class, 'project_id', 'id');    
+    }
     public function project_logs() 
     {
-        return $this->hasMany(ProjectLogs::class, 'rd_project_logs', 'project_id', 'id');    
+        return $this->hasMany(ProjectLogs::class, 'project_id', 'id');    
     }
 }

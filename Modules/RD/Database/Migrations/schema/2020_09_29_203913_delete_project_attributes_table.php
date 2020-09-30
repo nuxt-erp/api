@@ -13,7 +13,7 @@ class DeleteProjectAttributesTable extends Migration
      */
     public function up()
     {
-        Schema::connection('tenant')->dropIfExists('rd_project_sample_attributes');
+        Schema::connection('tenant')->dropIfExists('rd_project_attributes');
     }
 
     /**
@@ -23,10 +23,10 @@ class DeleteProjectAttributesTable extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->create('rd_project_sample_attributes', function (Blueprint $table) {
+        Schema::connection('tenant')->create('rd_project_attributes', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->foreignId('project_sample_id')->constrained('rd_project_samples')->onDelete('cascade');
+            $table->foreignId('project_id')->constrained('rd_projects')->onDelete('cascade');
             $table->foreignId('attribute_id')->constrained('parameters')->onDelete('cascade');
 
             $table->timestamps();

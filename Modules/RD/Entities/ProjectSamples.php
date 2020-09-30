@@ -1,6 +1,7 @@
 <?php
 
 namespace Modules\RD\Entities;
+use App\Models\Parameter;
 
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
@@ -61,8 +62,7 @@ class ProjectSamples extends ModelService
     }
     public function attributes() 
     {
-        return $this->belongsToMany(Parameter::class, 'rd_project_attributes', 'project_id', 'attribute_id');
-        
+        return $this->belongsToMany(Parameter::class, 'rd_project_sample_attributes', 'project_id', 'attribute_id');
     }
     public function project()
     {
