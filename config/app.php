@@ -169,6 +169,7 @@ return [
 
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
         Lanin\Laravel\ApiDebugger\ServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
         //Barryvdh\DomPDF\ServiceProvider::class,
         //Intervention\Image\ImageServiceProvider::class,
 
@@ -233,7 +234,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Debugger' => Lanin\Laravel\ApiDebugger\Facade::class,
+        'Debugger'  => Lanin\Laravel\ApiDebugger\Facade::class,
+        'Image'     => Intervention\Image\Facades\Image::class
         //'PDF' => Barryvdh\DomPDF\Facade::class,
         //'Image' => Intervention\Image\Facades\Image::class,
 

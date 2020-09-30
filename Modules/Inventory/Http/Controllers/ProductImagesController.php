@@ -8,6 +8,7 @@ use Modules\Inventory\Repositories\ProductImagesRepository;
 use Modules\Inventory\Transformers\ProductImagesResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class ProductImagesController extends ControllerService
 {
@@ -33,22 +34,71 @@ class ProductImagesController extends ControllerService
     {
         $user = auth()->user();
         lad('store');
+        $files = [];
         if ($request->hasFile('files') && $request->filled('product_id')) {
             lad('has file');
             $x = 0;
-            $files = [];
+
             foreach ($request->file('files') as $file) {
                 $x++;
+
+                // save original file
                 $path = $file->store('company_'.$user->company_id.'/product_'.$request->product_id.'/images', ['disk' => 's3']);
-                $files[] = $path;
-                lad('path', $path);
+
+                // Intervention image trick
+                $img = Image::make($file);
+                // Resize
+                $img->resize(null, 150, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+                // Secret to get the image back
+                $resource       = $img->stream()->detach();
+
+                // Generate thumbnail path
+                $path_explode   = explode('/', $path);
+                $path_explode[3]= 'small_'.$path_explode[3]; // e.g: small_4WqmiVAgOLnYZ8bbEclVnuor3HM2iAenCBnJfnmh.png
+                $thumb_path     = implode('/', $path_explode);
+
+                // save thumbnail
+                Storage::disk('s3')->put($thumb_path, $resource);
+
+                $files[] = ['path' => $path, 'thumb_path' => $thumb_path];
             }
             $request->merge(['paths' => $files]);
         }
 
-        //@todo delete files if something goes wrong
+        if($this instanceof CheckPolicies){
+            $this->authorize('store', get_class($this->repository->model));
+        }
 
-        return parent::store($request);
+        // Validation
+        $validatorResponse = $this->validateRequest($request);
+
+        // Send failed response if empty request
+        if (empty($request->all())) {
+            return $this->emptyResponse();
+        }
+
+        // Send failed response if validation fails and return array of errors
+        if (!empty($validatorResponse)) {
+            return $this->validationResponse($validatorResponse);
+        }
+
+        $this->repository->store($request->all());
+        if($this->repository->model){
+            return $this->setStatusCode(201)->sendObjectResource($this->repository->model, $this->resource);
+        }
+        else{
+            foreach ($files as $file) {
+                Storage::disk('s3')->delete($file['path']);
+                Storage::disk('s3')->delete($file['thumb_path']);
+            }
+            return $this->setStatus(FALSE)
+                ->setStatusCode(500)
+                ->setMessage('Upload failed!')
+                ->send();
+        }
+
     }
 
 }
