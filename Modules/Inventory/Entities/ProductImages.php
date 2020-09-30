@@ -12,7 +12,8 @@ class ProductImages extends ModelService
     protected $table = 'inv_product_images';
 
     protected $fillable = [
-        'product_id', 'path', 'order'
+        'product_id', 'path', 'thumb_path',
+        'order'
     ];
 
     public function getRules($request, $item = null)
@@ -20,7 +21,6 @@ class ProductImages extends ModelService
         $rules = [
             'product_id'    => ['exists:tenant.inv_products,id'],
             'order'         => ['integer'],
-
         ];
 
         // CREATE

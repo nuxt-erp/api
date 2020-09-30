@@ -21,6 +21,7 @@ class ProductImagesResource extends ResourceService
             'product_id'    => $this->product_id,
             'product'       => $this->product,
             'path'          => $this->path,
+            'thumb_path'    => $this->thumb_path,
             'order'         => $this->order
         ];
     }
