@@ -22,9 +22,8 @@ class ProductLogResource extends ResourceService
             'type_id'           => $this->type_id,
             'type_name'         => optional($this->type)->name,
             'quantity'          => $this->quantity,
-            'customer_supplier' =>$this->customer_supplier(),
+            'customer_supplier' => $this->getSourceAttribute(),
             'description'       => $this->description,
-            'source'            => $this->source,
             'created_at'        => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'        => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];

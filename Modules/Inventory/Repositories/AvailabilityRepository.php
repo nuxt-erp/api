@@ -102,10 +102,7 @@ class AvailabilityRepository extends RepositoryService
         $type = Parameter::firstOrCreate(
             ['name' => 'product_log_type', 'value' => $type]
         );
-        lad('qty', $qty);
-        lad('$on_order_qty', $on_order_qty);
-        lad('$allocated_qty', $allocated_qty);
-        lad('$type', $type);
+      
         $log = new ProductLog();
         $log->product_id    = $product_id;
         $log->location_id   = $location_id;
