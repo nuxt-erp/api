@@ -30,8 +30,8 @@ class RoleTableSeeder extends Seeder
         ]);
 
         Role::updateOrCreate([
-            'code' => 'rd_flavourist',
-            'name' => 'RD Flavourist'
+            'code' => 'rd_flavorist',
+            'name' => 'RD Flavorist'
         ]);
     }
 }

@@ -6,10 +6,10 @@ use App\Models\Parameter;
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
 class Constants {
-    const PENDING    = 'pending';
-    const SENT       = 'sent';
-    const APPROVED   = 'approved';
-    const REWORK   = 'rework';
+    const PENDING   = 'pending';
+    const SENT      = 'sent';
+    const APPROVED  = 'approved';
+    const REWORK    = 'rework';
 }
 class ProjectSamples extends ModelService
 {
@@ -55,15 +55,21 @@ class ProjectSamples extends ModelService
 
         return $rules;
     }
+
     static function getStatuses() {
         $oClass = new \ReflectionClass(Constants::class);
         return $oClass->getConstants();
-
     }
+
+    public function getRecipeVersionQtyAttribute(){
+        return 0;
+    }
+
     public function attributes()
     {
         return $this->belongsToMany(Parameter::class, 'rd_project_sample_attributes', 'project_sample_id', 'attribute_id');
     }
+
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
