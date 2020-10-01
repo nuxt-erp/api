@@ -1,23 +1,22 @@
 <?php
 
 namespace Modules\Inventory\Repositories;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Parameter;
-use Modules\Inventory\Entities\ProductLog;
 
+use App\Models\Parameter;
 use Illuminate\Support\Arr;
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
 use Modules\Inventory\Entities\Availability;
+use Modules\Inventory\Entities\ProductLog;
 
 class StockCountRepository extends RepositoryService
 {
 
     public function findBy(array $searchCriteria = [])
     {
-        $this->queryBuilder->select('id', 'name', 'date' , 'target', 'count_type_id', 'skip_today_received', 'add_discontinued', 'variance_last_count_id', 'status', 'brand_id',  'category_id', 'location_id');
+        $this->queryBuilder->select('id', 'name', 'date' , 'target', 'count_type_id', 'add_discontinued', 'status', 'brand_id',  'category_id', 'location_id');
 
         // SUCCESS RATE CALCULATION    if(ABS(d.variance) <= inv_stock_counts.target, 1, 0)
         $this->queryBuilder->addSelect(\DB::raw('
@@ -45,12 +44,6 @@ class StockCountRepository extends RepositoryService
         if (!empty($searchCriteria['category_id'])) {
             $this->queryBuilder
             ->where('category_id', Arr::pull($searchCriteria, 'category_id'));
-        }
-
-        if (!empty($searchCriteria['skip_today_received'])) {
-            $this->queryBuilder
-            ->whereDate('date', '<>', date("y-m-d"));
-            unset($searchCriteria['skip_today_received']);
         }
 
         if (!empty($searchCriteria['brand_id'])) {
@@ -137,9 +130,33 @@ class StockCountRepository extends RepositoryService
             // GET ALL SAVED QTY FROM COUNTING
             $stock_items = StockCountDetail::where('stockcount_id', $stockcount_id)->get();
             foreach ($stock_items as $item){
-                $availability_repository = new AvailabilityRepository(new Availability());
-                $availability_repository->updateStock($item->product_id, $item->qty, $item->location_id, "+", "Stock Count", $stockcount_id, 0, 0, "Finished stock count - adding quantity");
-                                                    //$product_id,       $qty,       $location_id,  $operator, $type,        $ref_code, $on_order_qty, $allocated_qty, $description = ''
+
+                // update availability
+                if($item->location_id){
+
+                    Availability::updateOrCreate([
+                        'product_id'  => $item->product_id,
+                        'location_id' => $item->location_id
+                    ],
+                    [
+                        'on_hand'   => $item->qty
+                    ]);
+
+                    // add movement
+                    $type = Parameter::firstOrCreate(
+                        ['name' => 'product_log_type', 'value' => 'Stock Count']
+                    );
+                    $log                = new ProductLog();
+                    $log->product_id    = $item->product_id;
+                    $log->location_id   = $item->location_id;
+                    $log->quantity      = $item->qty;
+                    $log->ref_code_id   = $stockcount_id;
+                    $log->type_id       = $type->id;
+                    $log->description   = 'Finished stock count - changing quantity';
+                    $log->save();
+
+                }
+
             }
 
             // SAVE STATUS AS FINISHED

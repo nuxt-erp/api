@@ -23,6 +23,7 @@ class CreateProjectSampleAttributesTable extends Migration
         });
     }
 
+    
     /**
      * Reverse the migrations.
      *

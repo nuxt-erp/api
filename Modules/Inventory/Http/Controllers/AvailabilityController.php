@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Repositories\AvailabilityRepository;
 use Modules\Inventory\Transformers\AvailabilityResource;
-use Modules\Inventory\Transformers\AvailabilityStockCountResource;
 
 class AvailabilityController extends ControllerService implements CheckPolicies
 {

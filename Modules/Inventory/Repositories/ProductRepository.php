@@ -4,12 +4,14 @@ namespace Modules\Inventory\Repositories;
 
 use Illuminate\Support\Arr;
 use App\Repositories\RepositoryService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Entities\Family;
 use Modules\Inventory\Entities\FamilyAttribute;
 
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductAttributes;
+use Modules\Inventory\Entities\ProductPromo;
 use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\ProductSupplierLocations;
 use Modules\Inventory\Entities\ProductSuppliers;
@@ -99,6 +101,7 @@ class ProductRepository extends RepositoryService
                 $this->generateFamily($data, $data['family_id']);                    // GENERATE FAMILY
 
             }else {
+
                 parent::store($data);
                 $this->createAttribute($data); // CREATE ATTRIBUTE
                 if($this->suppliers) {
@@ -117,6 +120,19 @@ class ProductRepository extends RepositoryService
                             'location_id'   => $reorder_level['location_id'],
                             'safe_stock'    => $reorder_level['safe_stock'],
                             'reorder_qty'   => $reorder_level['reorder_qty']
+                        ]);
+                    }
+                }
+
+                if(!empty($data["promos"])) {
+                    foreach($data["promos"] as $promo) {
+                        ProductPromo::create([
+                            'product_id'            => $this->model->id,
+                            'discount_percentage'   => $promo['discount_percentage'] ?? 0,
+                            'buy_qty'               => $promo['buy_qty'] ?? 0,
+                            'get_qty'               => $promo['get_qty'] ?? 0,
+                            'date_from'             => $promo['date_from'],
+                            'date_to'               => $promo['date_to']
                         ]);
                     }
                 }
@@ -160,6 +176,16 @@ class ProductRepository extends RepositoryService
         if(!empty($data["delete_reorder_levels"])) {
             foreach($data["delete_reorder_levels"] as $delete_reorder_level) {
                 ProductReorderLevel::where('id', $delete_reorder_level['id'])->delete();
+            }
+        }
+
+        if(!empty($data["promos"])) {
+            $this->updatePromos($data);
+        }
+
+        if(!empty($data["delete_promos"])) {
+            foreach($data["delete_promos"] as $delete_promo) {
+                ProductPromo::where('id', $delete_promo['id'])->delete();
             }
         }
     }
@@ -336,6 +362,26 @@ class ProductRepository extends RepositoryService
                 ProductReorderLevel::updateOrCreate(['id' =>  $reorder_level['id']], $reorderLevelData);
             } else {
                 ProductReorderLevel::create($reorderLevelData);
+            }
+        }
+    }
+
+    private function updatePromos($data) {
+        foreach($data["promos"] as $promo) {
+
+            $promoData = [
+                'product_id'            => $this->model->id,
+                'discount_percentage'   => $promo['discount_percentage'] ?? 0,
+                'buy_qty'               => $promo['buy_qty'] ?? 0,
+                'get_qty'               => $promo['get_qty'] ?? 0,
+                'date_from'             => $promo['date_from'],
+                'date_to'               => $promo['date_to']
+            ];
+
+            if(!empty($promo['id'])) {
+                ProductPromo::updateOrCreate(['id' =>  $promo['id']], $promoData);
+            } else {
+                ProductPromo::create($promoData);
             }
         }
     }
@@ -581,5 +627,29 @@ class ProductRepository extends RepositoryService
 
         // current is excluded, replace it with next (Note that i+1 is passed, but index is not changed)
         $this->combinationUtil($arr, $n, $r, $index, $data, $i + 1);
+    }
+
+    // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
+    public function productAvailabilities(array $searchCriteria = [])
+    {
+
+        $searchCriteria['order_by'] = [
+            'field'         => 'name',
+            'direction'     => 'asc'
+        ];
+
+        $searchCriteria['per_page'] = 20;
+
+        $this->queryBuilder->with('brand')
+        ->with('category');
+
+        if (!empty($searchCriteria['location_id'])) {
+            $this->queryBuilder->with(['availabilities' => function ($query) use($searchCriteria) {
+                $query->where('location_id', $searchCriteria['location_id']);
+            }]);
+            unset($searchCriteria['location_id']);
+        }
+
+        return parent::findBy($searchCriteria);
     }
 }

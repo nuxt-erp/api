@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('product_images/{path}', 'ProductImagesController@getImage');
+
 Route::middleware('auth:api')->group(function () {
 
     // INVENTORY
@@ -27,6 +29,11 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_logs', 'ProductLogController');
         Route::resource('product_suppliers', 'ProductSuppliersController');
         Route::resource('product_supplier_locations', 'ProductSupplierLocationsController');
+        Route::resource('product_reorder_levels', 'ProductReorderLevelController');
+        Route::resource('product_promos', 'ProductPromoController');
+
+        Route::resource('product_images', 'ProductImagesController');
+
         Route::resource('stock_count', 'StockCountController');
         Route::resource('stock_count_details', 'StockCountDetailController');
         Route::get('stock_count/finish/{id?}', 'StockCountController@finish'); // ADJUST AND FINISH STOCK TAKE
@@ -41,6 +48,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('families', 'FamilyController');
         Route::resource('family_attributes', 'FamilyAttributeController');
         Route::resource('availabilities', 'AvailabilityController');
+        Route::get('products_availabilities', 'ProductController@productAvailabilities');
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');
         Route::resource('customer_discounts', 'CustomerDiscountController');

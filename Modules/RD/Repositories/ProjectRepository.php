@@ -40,20 +40,6 @@ class ProjectRepository extends RepositoryService
         
         DB::transaction(function () use ($data, $model)
         {
-            lad($model);
-            if (Arr::has($data, 'attribute_ids')) {
-                $model->attributes()->sync($data['attribute_ids']);
-            }
-            
-            if(!empty($data['attribute_names ']))
-            {
-                unset($data['attribute_names']);
-            }
-            if(!empty($data['attribute_ids']))
-            {
-                unset($data['attribute_ids']);
-            }
-
             parent::update($model, $data);
         });
 
