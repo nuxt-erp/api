@@ -106,7 +106,7 @@ class Product extends ModelService
         return $this->hasMany(ProductAttributes::class, 'product_id', 'id');
     }
 
-    public function availability()
+    public function availabilities()
     {
         return $this->hasMany(Availability::class, 'product_id');
     }

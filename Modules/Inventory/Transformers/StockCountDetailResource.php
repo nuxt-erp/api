@@ -19,9 +19,9 @@ class StockCountDetailResource extends ResourceService
             'variance'      => $this->variance,
             'notes'         => $this->notes,
             'brand_id'      => optional($this->product)->brand_id,
-            'brand_name'    => optional($this->product)->brand->name,
+            'brand_name'    => optional($this->product->brand)->name,
             'category_id'   => optional($this->product)->category_id,
-            'category_name' => optional($this->product)->category->name,
+            'category_name' => optional($this->product->category)->name,
             'location_id'   => $this->location_id,
             'location_name' => optional($this->location)->name
         ];
