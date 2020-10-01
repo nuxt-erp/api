@@ -37,6 +37,6 @@ class ProjectPolicy
 
     public function destroy(User $currentUser, Project $target)
     {
-        return $currentUser->hasRole('admin');
+        return $currentUser->hasRole('rd_requester', 'admin');
     }
 }
