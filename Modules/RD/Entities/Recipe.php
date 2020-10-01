@@ -30,7 +30,7 @@ class Recipe extends ModelService
             'author_id'             => ['nullable', 'exists:public.users,id'],
             'last_updater_id'       => ['nullable', 'exists:public.users,id'],
             'approver_id'           => ['nullable', 'exists:public.users,id'],
-            'type_id'               => ['nullable', 'exists:tenant.parameters,id'],
+            'type_id'               => ['nullable', 'exists:tenant.parameters,id'], // recipe_type
             'product_id'            => ['nullable', 'exists:tenant.inv_products,id'],
             'category_id'           => ['exists:tenant.inv_categories,id'],
             'status'                => ['string', 'max:255'],
