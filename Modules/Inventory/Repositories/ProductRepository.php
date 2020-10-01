@@ -35,7 +35,7 @@ class ProductRepository extends RepositoryService
                 ->orWhere('name', 'LIKE', $sku);
         }
 
-        if (!empty($searchCriteria['id'])) {
+        if (!empty($searchCriteria['id']) && empty($searchCriteria['list'])) {
             $this->queryBuilder
                 ->where('id', $searchCriteria['id']);
         }
@@ -129,8 +129,9 @@ class ProductRepository extends RepositoryService
                             'buy_qty'               => $promo['buy_qty'] ?? 0,
                             'get_qty'               => $promo['get_qty'] ?? 0,
                             'date_from'             => $promo['date_from'],
-                            'date_to'               => $promo['date_to']
-                        ]);
+                            'date_to'               => $promo['date_to'],
+                            'gift_product_id'       => $promo['gift_product_id'] ?? $this->model->id,
+                        ]);                 
                     }
                 }
             }
@@ -344,7 +345,8 @@ class ProductRepository extends RepositoryService
                 'buy_qty'               => $promo['buy_qty'] ?? 0,
                 'get_qty'               => $promo['get_qty'] ?? 0,
                 'date_from'             => $promo['date_from'],
-                'date_to'               => $promo['date_to']
+                'date_to'               => $promo['date_to'],
+                'gift_product_id'       => $promo['gift_product_id'] ?? $this->model->id
             ];
 
             if(!empty($promo['id'])) {

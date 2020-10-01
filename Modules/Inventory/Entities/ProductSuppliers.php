@@ -35,8 +35,7 @@ class ProductSuppliers extends ModelService
         // rules when creating the item
         if (is_null($item)) {
             $rules['currency'][] = 'required';
-            $rules['product_name'][] = 'required';
-            $rules['product_sku'][] = 'required';
+            $rules['supplier_id'][] = 'required';
         }
         // rules when updating the item
         else{
