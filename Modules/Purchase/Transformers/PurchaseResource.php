@@ -31,7 +31,7 @@ class PurchaseResource extends JsonResource
             'discount'          => $this->discount,
             'location_id'       => $this->location_id,
             'location_name'     => optional($this->location)->name,
-            //'eta'               => $this->getEarliestEtaAttribute(),
+            'eta'               => $this->getEarliestEtaAttribute(),
             'can_be_deleted'    => true
         ];
 
