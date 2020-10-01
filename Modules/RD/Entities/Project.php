@@ -19,7 +19,7 @@ class Project extends ModelService
 
     protected $fillable = [
         'author_id','customer_id', 'status',
-        'code', 'iteration', 'comment', 'start_at',
+        'iteration', 'comment', 'start_at',
         'closed_at'
     ];
 
