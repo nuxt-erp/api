@@ -4,6 +4,7 @@ namespace Modules\Inventory\Repositories;
 
 use Illuminate\Support\Arr;
 use App\Repositories\RepositoryService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Entities\Family;
 use Modules\Inventory\Entities\FamilyAttribute;
@@ -104,7 +105,7 @@ class ProductRepository extends RepositoryService
                 if($this->suppliers) {
                     $this->createSuppliers($data); // CREATE ATTRIBUTE
                 }
-                
+
                 if(!empty($data['images'])) {
                     $this->syncImages($data['images']); // SYNC IMAGES
                 }
@@ -129,7 +130,7 @@ class ProductRepository extends RepositoryService
                             'get_qty'               => $promo['get_qty'] ?? 0,
                             'date_from'             => $promo['date_from'],
                             'date_to'               => $promo['date_to']
-                        ]);                 
+                        ]);
                     }
                 }
             }
@@ -350,8 +351,8 @@ class ProductRepository extends RepositoryService
                 ProductPromo::updateOrCreate(['id' =>  $promo['id']], $promoData);
             } else {
                 ProductPromo::create($promoData);
-            }            
-        }        
+            }
+        }
     }
 
     private function createSuppliers($data)
@@ -577,5 +578,29 @@ class ProductRepository extends RepositoryService
 
         // current is excluded, replace it with next (Note that i+1 is passed, but index is not changed)
         $this->combinationUtil($arr, $n, $r, $index, $data, $i + 1);
+    }
+
+    // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
+    public function productAvailabilities(array $searchCriteria = [])
+    {
+
+        $searchCriteria['order_by'] = [
+            'field'         => 'name',
+            'direction'     => 'asc'
+        ];
+
+        $searchCriteria['per_page'] = 20;
+
+        $this->queryBuilder->with('brand')
+        ->with('category');
+
+        if (!empty($searchCriteria['location_id'])) {
+            $this->queryBuilder->with(['availabilities' => function ($query) use($searchCriteria) {
+                $query->where('location_id', $searchCriteria['location_id']);
+            }]);
+            unset($searchCriteria['location_id']);
+        }
+
+        return parent::findBy($searchCriteria);
     }
 }

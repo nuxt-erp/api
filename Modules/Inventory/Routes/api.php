@@ -52,7 +52,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('families', 'FamilyController');
         Route::resource('family_attributes', 'FamilyAttributeController');
         Route::resource('availabilities', 'AvailabilityController');
-        Route::get('products_availabilities', 'AvailabilityController@productAvailabilities');
+        Route::get('products_availabilities', 'ProductController@productAvailabilities');
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');
 
