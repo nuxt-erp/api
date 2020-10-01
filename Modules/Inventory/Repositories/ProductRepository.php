@@ -13,6 +13,8 @@ use Modules\Inventory\Entities\ProductAttributes;
 use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\ProductSupplierLocations;
 use Modules\Inventory\Entities\ProductSuppliers;
+use Modules\Inventory\Entities\CustomerDiscount;
+
 
 class ProductRepository extends RepositoryService
 {
@@ -89,7 +91,7 @@ class ProductRepository extends RepositoryService
 
             $this->generate = !empty($data["generate_family"]);
             $this->suppliers = !empty($data["suppliers"]);
-
+            
             if ($this->generate == true) // It came from product family
             {
                 $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
@@ -122,14 +124,17 @@ class ProductRepository extends RepositoryService
     public function update($model, array $data)
     {
         $this->suppliers = !empty($data["suppliers"]);
-
+        $this->discounts = !empty($data["discounts"]);
+       
         parent::update($model,$data);
         $this->createAttribute($data);
-
+        lad($data);
         if($this->suppliers) {
             $this->updateSuppliers($data);
         }
-
+        if($this->discounts) {
+            $this->updateDiscounts($data);
+        }
         if(!empty($data['deleteSuppliers'])) {
             foreach ($data['deleteSuppliers'] as $deleteSupplier) {
                 ProductSuppliers::where('id', $deleteSupplier['id'])->delete();
@@ -288,7 +293,28 @@ class ProductRepository extends RepositoryService
             }
         }
     }
+    private function updateDiscounts($data) {
+        $product_id         = $data['id'] ?? $this->model->id;; //Get CURRENT PRODUCT ID
+        $discounts = $data['discounts'];
 
+
+        foreach ($discounts as $discount)
+        {
+            $discountsArray = [
+                'product_id'    => $product_id,
+                'customer_id'   => $discount['customer_id'],
+                'reason'        => $discount['reason'],
+                'perc_value'    => $discount['perc_value'],
+                'start_date'    => $discount['start_date'],
+                'end_date'      => $discount['end_date']
+            ];
+            if(!empty($discount['id'])) {
+                $new = CustomerDiscount::updateOrCreate(['id' =>  $discount['id']], $discountsArray);
+            } else {
+                $new = CustomerDiscount::updateOrCreate($discountsArray);
+            }
+        }        
+    }
     private function updateReorderLevels($data) {
         foreach($data["reorder_levels"] as $reorder_level) {
 

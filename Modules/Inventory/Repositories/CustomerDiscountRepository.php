@@ -11,7 +11,7 @@ class CustomerDiscountRepository extends RepositoryService
     public function findBy(array $searchCriteria = [])
     {
 
-        $searchCriteria['order_by'] = [
+      /*  $searchCriteria['order_by'] = [
             'field'         => 'id',
             'direction'     => 'asc'
         ];
@@ -21,7 +21,8 @@ class CustomerDiscountRepository extends RepositoryService
             $searchCriteria['query_type'] = 'LIKE';
             $searchCriteria['id'] = '%' . Arr::pull($searchCriteria, 'id') . '%';
         }
-
+*/
+        lad($searchCriteria);
         return parent::findBy($searchCriteria);
     }
 

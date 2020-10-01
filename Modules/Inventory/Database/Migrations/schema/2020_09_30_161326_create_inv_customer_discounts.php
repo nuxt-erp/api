@@ -13,8 +13,9 @@ class CreateInvCustomerDiscounts extends Migration
      */
     public function up()
     {
-        Schema::connection('tenant')->create('customer_discounts', function (Blueprint $table) {
+        Schema::connection('tenant')->create('inv_customer_discounts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('product_id')->constrained('inv_products')->onDelete('cascade');
             $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('set null');
             $table->float('perc_value')->nullable();   
             $table->string('reason')->nullable();   
@@ -31,6 +32,6 @@ class CreateInvCustomerDiscounts extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->dropIfExists('customer_discounts');
+        Schema::connection('tenant')->dropIfExists('inv_customer_discounts');
     }
 }

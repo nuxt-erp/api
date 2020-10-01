@@ -11,10 +11,10 @@ class CustomerDiscount extends ModelService
 
     protected $connection = 'tenant';
 
-    protected $table = 'customer_discounts';
+    protected $table = 'inv_customer_discounts';
    
     protected $fillable = [
-        'customer_id', 'reason', 'perc_value','start_date','end_date'
+        'product_id','customer_id', 'reason', 'perc_value','start_date','end_date'
     ];
 
     public function getRules($request, $item = null)
@@ -22,7 +22,8 @@ class CustomerDiscount extends ModelService
         $rules = [
          
             'customer_id'      => ['nullable', 'exists:tenant.customers,id'],
-           
+            'product_id '      => ['nullable', 'exists:tenant.inv_products,id'],
+
 
             //@todo add more validation
         ];
@@ -30,7 +31,7 @@ class CustomerDiscount extends ModelService
         // CREATE
         if (is_null($item))
         {
-          //  $rules['customer_id'][]     = 'unique:tenant.customers';         
+            $rules['product_id'][]         = 'required';         
             $rules['customer_id'][]        = 'required';
         } else {
             //update
@@ -43,6 +44,10 @@ class CustomerDiscount extends ModelService
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 
 }

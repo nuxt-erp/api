@@ -10,6 +10,7 @@ class CustomerDiscountResource extends ResourceService
     {
         return [
             'id'            => $this->id,
+            'product_id'    =>$this->product_id,
             'customer_id'   => $this->customer_id,
             'customer_name' => optional($this->customer)->name,
             'perc_value'    => $this->perc_value,
