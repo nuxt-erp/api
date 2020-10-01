@@ -26,7 +26,7 @@ use Modules\Inventory\Entities\ProductPromo;
 use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\Transfer;
 use Modules\Inventory\Entities\TransferDetails;
-
+use Modules\Inventory\Entities\CustomerDiscount;
 
 // repositories
 use Modules\Inventory\Repositories\AttributeRepository;
@@ -49,6 +49,7 @@ use Modules\Inventory\Repositories\ProductPromoRepository;
 use Modules\Inventory\Repositories\ProductReorderLevelRepository;
 use Modules\Inventory\Repositories\TransferRepository;
 use Modules\Inventory\Repositories\TransferDetailsRepository;
+use Modules\Inventory\Repositories\CustomerDiscountRepository;
 
 
 // resources
@@ -72,6 +73,7 @@ use Modules\Inventory\Transformers\ProductPromoResource;
 use Modules\Inventory\Transformers\ProductReorderLevelResource;
 use Modules\Inventory\Transformers\TransferResource;
 use Modules\Inventory\Transformers\TransferDetailsResource;
+use Modules\Inventory\Transformers\CustomerDiscountResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -102,6 +104,7 @@ class InventoryServiceProvider extends ServiceProvider
 
 
     }
+    
 
     /**
      * Register the service provider.
@@ -113,6 +116,13 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(AuthServiceProvider::class);
 
+        $this->app->bind(CustomerDiscountRepository::class, function () {
+            return new CustomerDiscountRepository(new CustomerDiscount());
+        });
+
+        $this->app->bind(CustomerDiscountResource::class, function () {
+            return new CustomerDiscountResource(new CustomerDiscount());
+        });
         $this->app->bind(BrandRepository::class, function () {
             return new BrandRepository(new Brand());
         });
@@ -294,6 +304,7 @@ class InventoryServiceProvider extends ServiceProvider
             FamilyAttributeRepository::class,
             TransferRepository::class,
             TransferDetailsRepository::class,
+            CustomerDiscountRepository::class,
             ProductImagesRepository::class,
             ProductReorderLevelRepository::class,
             ProductPromoRepository::class

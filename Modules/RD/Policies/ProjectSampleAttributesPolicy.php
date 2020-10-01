@@ -12,31 +12,31 @@ class ProjectSampleAttributesPolicy
 
     public function list(User $currentUser)
     {
-        return TRUE;
+        return $currentUser->hasRole('rd_requester', 'admin');
     }
 
     public function index(User $currentUser)
     {
-        return $currentUser->isAdmin();
+        return $currentUser->hasRole('rd_requester', 'admin');
     }
 
     public function show(User $currentUser, ProjectSampleAttributes $target)
     {
-        return $currentUser->isAdmin();
+        return $currentUser->hasRole('rd_requester', 'admin');
     }
 
     public function store(User $currentUser)
     {
-        return $currentUser->isAdmin();
+        return $currentUser->hasRole('rd_requester', 'admin');
     }
 
     public function update(User $currentUser, ProjectSampleAttributes $target)
     {
-        return $currentUser->isAdmin();
+        return $currentUser->hasRole('rd_requester', 'admin');
     }
 
     public function destroy(User $currentUser, ProjectSampleAttributes $target)
     {
-        return $currentUser->isAdmin();
+        return $currentUser->hasRole('rd_requester', 'admin');
     }
 }

@@ -17,6 +17,10 @@ class AvailabilityStockCountResource extends ResourceService
         return [
             'product_id'            => $this->id,
             'name'                  => $this->name,
+            'location_name'         => $this->location_name2 ?? $this->location_name,
+            'location_id'           => $this->location_id2 ?? $this->location_id,
+            'qty'                   => $this->available,
+            'on_hand'               => $this->on_hand,
             'sku'                   => $this->sku,
             // usually we filter by location, so will be the qty of the location, the sum just guarantee the information makes sense even you don't inform a location to filter
             'qty'                   => optional($this->availabilities)->sum('available') ?? 0,

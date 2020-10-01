@@ -62,7 +62,7 @@ class ProjectSamples extends ModelService
     }
     public function attributes()
     {
-        return $this->belongsToMany(Parameter::class, 'rd_project_sample_attributes', 'project_id', 'attribute_id');
+        return $this->belongsToMany(Parameter::class, 'rd_project_sample_attributes', 'project_sample_id', 'attribute_id');
     }
     public function project()
     {
