@@ -34,9 +34,8 @@ class Project extends ModelService
         // rules when creating the item
         if (is_null($item)) {
             $rules['customer_id'][] = 'required';
+            $rules['start_at'][] = 'required';
             $rules['status'][] = 'required';
-            $rules['code'][] = 'required';
-            $rules['comment'][] = 'required';
             $rules['iteration'][] = 'required';
         }
         // rules when updating the item
