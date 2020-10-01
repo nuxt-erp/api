@@ -18,7 +18,7 @@ class ProjectSamples extends ModelService
     protected $table = 'rd_project_samples';
 
     protected $fillable = [
-        'project_id', 'recipe_id', 'assignee_id',
+        'project_id', 'recipe_id', 'assignee_id', 'author_id',
         'internal_code', 'external_code',
         'name', 'status', 'target_cost',
         'feedback', 'comment'
@@ -31,6 +31,7 @@ class ProjectSamples extends ModelService
             'project_id'              => ['exists:tenant.rd_projects,id'],
             'recipe_id'               => ['exists:tenant.rd_recipes,id'],
             'assignee_id'             => ['exists:users,id'],
+            'author_id'               => ['nullable', 'exists:public.users,id'],
             'name'                    => ['nullable', 'max:255'],
             'internal_code'           => ['string', 'max:255'],
             'external_code'           => ['string', 'max:255'],

@@ -174,4 +174,15 @@ class ControllerService extends LaravelController implements ControllerInterface
 
         return $result;
     }
+    public function getStatuses(){
+        $statuses = $this->repository->model->getStatuses();
+        $keyValue = []; 
+        $i = 0;
+        foreach ($statuses as $key => $status) {
+            $keyValue[$i]['name'] = ucfirst($status);
+            $keyValue[$i]['value'] = ucfirst($status);
+            $i++;
+        }
+        return $this->sendArray($keyValue);
+    }
 }
