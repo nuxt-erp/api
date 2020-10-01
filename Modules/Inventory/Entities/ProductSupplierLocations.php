@@ -26,7 +26,7 @@ class ProductSupplierLocations extends ModelService
 
         // rules when creating the item
         if (is_null($item)) {
-            $rules['lead_time'][] = 'required';
+            $rules['location_id'][] = 'required';
         }
         // rules when updating the item
         else{
