@@ -72,6 +72,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(ProductAttributes::class, ProductAttributesPolicy::class);
         Gate::policy(ProductSuppliers::class, ProductSuppliersPolicy::class);
         Gate::policy(ProductSupplierLocations::class, ProductSupplierLocationsPolicy::class);
+        Gate::policy(ProductReorderLevel::class, ProductReorderLevelPolicy::class);
         Gate::policy(FamilyAttribute::class, FamilyAttributePolicy::class);
         Gate::policy(Transfer::class, TransferPolicy::class);
         Gate::policy(TransferDetails::class, TransferDetailsPolicy::class);

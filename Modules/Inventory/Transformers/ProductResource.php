@@ -50,6 +50,7 @@ class ProductResource extends ResourceService
             'disabled_at'           => optional($this->disabled_at)->format('Y-m-d H:i:s'),
             'created_at'            => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'            => optional($this->updated_at)->format('Y-m-d H:i:s'),
+            'can_be_deleted'        => true
         ];
     }
 }

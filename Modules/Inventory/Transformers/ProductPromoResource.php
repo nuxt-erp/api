@@ -21,6 +21,8 @@ class ProductPromoResource extends ResourceService
             'discount_percentage'   => $this->discount_percentage,
             'buy_qty'               => $this->buy_qty,
             'get_qty'               => $this->get_qty,
+            'gift_product_id'       => $this->gift_product_id,
+            'gift_product_name'     => optional($this->gift_product)->name,
             'date_from'             => optional($this->date_from)->format('Y-m-d'),
             'date_to'               => optional($this->date_to)->format('Y-m-d'),
             'created_at'            => optional($this->created_at)->format('Y-m-d H:i:s'),
