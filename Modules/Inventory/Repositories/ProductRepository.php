@@ -91,7 +91,7 @@ class ProductRepository extends RepositoryService
 
             $this->generate = !empty($data["generate_family"]);
             $this->suppliers = !empty($data["suppliers"]);
-            
+            $this->discounts = !empty($data["discounts"]);
             if ($this->generate == true) // It came from product family
             {
                 $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
@@ -103,6 +103,9 @@ class ProductRepository extends RepositoryService
                 $this->createAttribute($data); // CREATE ATTRIBUTE
                 if($this->suppliers) {
                     $this->createSuppliers($data); // CREATE ATTRIBUTE
+                }
+                if($this->discounts) {
+                    $this->createDiscounts($data); // CREATE ATTRIBUTE
                 }
                 if(!empty($data['images'])) {
                     $this->syncImages($data['images']); // SYNC IMAGES
@@ -128,12 +131,16 @@ class ProductRepository extends RepositoryService
        
         parent::update($model,$data);
         $this->createAttribute($data);
-        lad($data);
         if($this->suppliers) {
             $this->updateSuppliers($data);
         }
         if($this->discounts) {
             $this->updateDiscounts($data);
+        }
+        if(!empty($data['deleteDiscounts'])) {
+            foreach ($data['deleteDiscounts'] as $deleteDiscount) {
+                CustomerDiscount::where('id', $deleteDiscount['id'])->delete();
+            }
         }
         if(!empty($data['deleteSuppliers'])) {
             foreach ($data['deleteSuppliers'] as $deleteSupplier) {
@@ -333,11 +340,29 @@ class ProductRepository extends RepositoryService
         }
     }
 
+    private function createDiscounts ($data)
+    {
+     
+        $discounts = $data['discounts'];
+
+        foreach ($discounts as $discount)
+        {
+            $new                = new CustomerDiscount();
+            $new->product_id    = $this->model->id;
+            $new->customer_id   = $discount["customer_id"];
+            $new->reason        = $discount["reason"];
+            $new->perc_value    = $discount["perc_value"];
+            $new->start_date    = $discount["start_date"];
+            $new->end_date      = $discount["end_date"];           
+            $new->save();  
+        }
+
+        return $new->id;
+    }
     private function createSuppliers($data)
     {
         $suppliers = $data['suppliers'];
         $supplierLocations = $data['supplierLocations'];
-
         foreach ($suppliers as $supplier)
         {
             $new                = new ProductSuppliers();

@@ -15,8 +15,8 @@ class CustomerDiscountResource extends ResourceService
             'customer_name' => optional($this->customer)->name,
             'perc_value'    => $this->perc_value,
             'reason'        => $this->reason,
-            'end_date'      => optional($this->end_date)->format('Y-m-d '),
-            'start_date'    => optional($this->start_date)->format('Y-m-d '),
+            'end_date'      => ($this->end_date),
+            'start_date'    => ($this->start_date),
         ];
     }
 }
