@@ -31,7 +31,7 @@ class ProjectSamplesController extends ControllerService implements CheckPolicie
 
         foreach ($statuses as $key => $status) {
             $keyValue[$i]['name'] = ucfirst($status);
-            $keyValue[$i]['value'] = ucfirst($status);
+            $keyValue[$i]['value'] = $status;
             $i++;
         }
         return $this->sendArray($keyValue);
