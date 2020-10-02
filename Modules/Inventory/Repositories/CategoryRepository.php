@@ -16,6 +16,11 @@ class CategoryRepository extends RepositoryService
             'direction'     => 'asc'
         ];
 
+        if (!empty($searchCriteria['list']))
+        {
+            $this->queryBuilder->where('is_enabled', true);
+        }
+
         if (!empty($searchCriteria['name']))
         {
             $searchCriteria['query_type'] = 'LIKE';

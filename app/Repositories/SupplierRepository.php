@@ -9,6 +9,11 @@ class SupplierRepository extends RepositoryService
 
     public function findBy(array $searchCriteria = [])
     {
+        if (!empty($searchCriteria['list']))
+        {
+            $this->queryBuilder->where('is_enabled', true);
+        }
+        
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
             $searchCriteria['query_type'] = 'LIKE';
