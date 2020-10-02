@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Entities;
 
 use App\Models\ModelService as ModelsModelService;
+use Illuminate\Validation\Rule;
 
 class Category extends ModelsModelService
 {
