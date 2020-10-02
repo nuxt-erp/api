@@ -25,6 +25,11 @@ class FamilyRepository extends RepositoryService
         ];
         $searchCriteria['per_page'] = 50;
 
+        if (!empty($searchCriteria['list']))
+        {
+            $this->queryBuilder->where('is_enabled', true);
+        }
+        
         $data = [];
         if (isset($id)) {
             $data = Product::where('family_id', $id)->get();

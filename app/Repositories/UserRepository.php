@@ -76,7 +76,11 @@ class UserRepository extends RepositoryService
 
     public function findBy(array $searchCriteria = [])
     {
-
+        if (!empty($searchCriteria['list']))
+        {
+            $this->queryBuilder->where('is_enabled', true);
+        }
+        
         if (empty($searchCriteria['order_by'])) {
             $searchCriteria['order_by']['field']        = 'name';
             $searchCriteria['order_by']['direction']    = 'asc';
