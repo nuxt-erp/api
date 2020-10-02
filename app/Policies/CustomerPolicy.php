@@ -17,26 +17,26 @@ class CustomerPolicy
 
     public function index(User $currentUser)
     {
-        return $currentUser->isAdmin();
+        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'admin');
     }
 
     public function show(User $currentUser, Customer $target)
     {
-        return $currentUser->isAdmin();
+        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'admin');
     }
 
     public function store(User $currentUser)
     {
-        return $currentUser->isAdmin();
+        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'admin');
     }
 
     public function update(User $currentUser, Customer $target)
     {
-        return $currentUser->isAdmin();
+        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'admin');
     }
 
     public function destroy(User $currentUser, Customer $target)
     {
-        return $currentUser->isAdmin();
+        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'admin');
     }
 }

@@ -59,7 +59,7 @@ class ProjectRepository extends RepositoryService
                         'recipe_id'             => $sample['recipe_id'],
                         'assignee_id'           => $sample['assignee_id'],
                         'name'                  => $sample['name'],
-                        'status'                => $sample['status'],
+                        'status'                => strtolower($sample['status']),
                         'target_cost'           => $sample['target_cost'],
                         'feedback'              => $sample['feedback'],
                         'comment'               => $sample['comment'],
