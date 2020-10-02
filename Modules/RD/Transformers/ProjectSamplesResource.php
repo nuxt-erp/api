@@ -14,11 +14,19 @@ class ProjectSamplesResource extends ResourceService
      */
     public function toArray($request)
     {
+        $actions = collect([
+            [
+                'name'  => 'Approve Sample',
+                'code'  => 'approveSample',
+                'type'  => 'primary'
+            ]
+        ]);
         return [
             'id'              => $this->id,
             'project_id'      => $this->project_id,
             'recipe_id'       => $this->recipe_id,
             'recipe_name'     => optional($this->recipe)->name,
+            'actions'         => $actions,
             'attribute_names' => $this->attributes->pluck('name'),
             'attribute_ids'   => optional($this->attributes)->pluck('id')->toArray(),
             'assignee_id'     => $this->assignee_id,

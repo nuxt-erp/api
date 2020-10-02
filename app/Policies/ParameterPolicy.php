@@ -17,26 +17,26 @@ class ParameterPolicy
 
     public function index(User $currentUser)
     {
-        return $currentUser->hasRole('rd_requester', 'admin');
+        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'admin');
     }
 
     public function show(User $currentUser, Parameter $target)
     {
-        return $currentUser->hasRole('rd_requester', 'admin');
+        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'admin');
     }
 
     public function store(User $currentUser)
     {
-        return $currentUser->hasRole('rd_requester', 'admin');
+        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'admin');
     }
 
     public function update(User $currentUser, Parameter $target)
     {
-        return $currentUser->hasRole('rd_requester', 'admin');
+        return $currentUser->hasRole('admin');
     }
 
     public function destroy(User $currentUser, Parameter $target)
     {
-        return $currentUser->hasRole('rd_requester', 'admin');
+        return $currentUser->hasRole('admin');
     }
 }

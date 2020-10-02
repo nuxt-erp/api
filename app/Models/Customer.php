@@ -23,7 +23,7 @@ class Customer extends ModelService
             'province_id'       => ['nullable', 'exists:tenant.provinces,id'],
             'shopify_id'        => ['nullable', 'string', 'max:255'],
             'name'              => ['nullable', 'string', 'max:255'],
-            'email'             => ['max:255'],
+            'email'             => ['nullable', 'max:255'],
             'address1'          => ['nullable', 'string', 'max:255'],
             'address2'          => ['nullable', 'string', 'max:255'],
             'city'              => ['nullable', 'string', 'max:60'],
@@ -36,7 +36,7 @@ class Customer extends ModelService
         // CREATE
         if (is_null($item))
         {
-            $rules['email'][] = 'required';
+            // $rules['email'][] = 'required';
             $rules['email'][] = 'unique:tenant.customers';
         }
         else{

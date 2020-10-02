@@ -32,6 +32,6 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('project_sample_logs', 'ProjectSampleLogsController');
 
         Route::get('project_statuses', 'ProjectController@getStatuses');
-        Route::get('project_samples_statuses', 'ProjectSamplesController@getStatuses');
+        Route::get('project_samples_statuses', 'ProjectSamplesController@getSampleStatuses');
     });
 });

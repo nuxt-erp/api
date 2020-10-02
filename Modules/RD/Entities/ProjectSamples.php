@@ -6,10 +6,14 @@ use App\Models\Parameter;
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
 class Constants {
-    const PENDING   = 'pending';
-    const SENT      = 'sent';
-    const APPROVED  = 'approved';
-    const REWORK    = 'rework';
+    const PENDING             = ['rd_requester'  => 'pending'];
+    const IN_PROGRESS         = ['rd_supervisor' => 'in progress'];
+    const WAITING_APPROVAL    = ['rd_supervisor' => 'waiting approval'];
+    const WAITING_QC          = ['rd_supervisor' => 'waiting qc'];
+    const SENT                = ['rd_requester'  => 'sent'];
+    const APPROVED            = ['rd_requester'  => 'approved'];
+    const REWORK              = ['rd_requester'  => 'rework'];
+    const READY               = ['rd_supervisor' => 'ready'];
 }
 class ProjectSamples extends ModelService
 {

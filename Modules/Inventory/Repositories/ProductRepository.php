@@ -30,6 +30,12 @@ class ProductRepository extends RepositoryService
             'field'         => 'is_enabled',
             'direction'     => 'desc'
         ];
+
+        if (!empty($searchCriteria['list']))
+        {
+            $this->queryBuilder->where('is_enabled', true);
+        }
+        
         if (!empty($searchCriteria['sku'])) {
             $sku = '%' . Arr::pull($searchCriteria, 'sku') . '%';
             $this->queryBuilder
