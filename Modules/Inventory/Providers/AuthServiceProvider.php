@@ -21,6 +21,8 @@ use Modules\Inventory\Entities\Measure;
 use Modules\Inventory\Entities\ProductCustomPrice;
 use Modules\Inventory\Entities\ProductPromo;
 use Modules\Inventory\Entities\ProductReorderLevel;
+use Modules\Inventory\Entities\StockAdjustment;
+use Modules\Inventory\Entities\StockAdjustmentDetail;
 use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
 use Modules\Inventory\Entities\Transfer;
@@ -43,6 +45,8 @@ use Modules\Inventory\Policies\MeasurePolicy;
 use Modules\Inventory\Policies\ProductCustomPricePolicy;
 use Modules\Inventory\Policies\ProductPromoPolicy;
 use Modules\Inventory\Policies\ProductReorderLevelPolicy;
+use Modules\Inventory\Policies\StockAdjustmentDetailPolicy;
+use Modules\Inventory\Policies\StockAdjustmentPolicy;
 use Modules\Inventory\Policies\StockCountPolicy;
 use Modules\Inventory\Policies\StockCountDetailPolicy;
 use Modules\Inventory\Policies\TransferPolicy;
@@ -86,6 +90,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Measure::class, MeasurePolicy::class);
         Gate::policy(StockCount::class, StockCountPolicy::class);
         Gate::policy(StockCountDetail::class, StockCountDetailPolicy::class);
-
+        Gate::policy(StockAdjustment::class, StockAdjustmentPolicy::class);
+        Gate::policy(StockAdjustmentDetail::class, StockAdjustmentDetailPolicy::class);
     }
 }

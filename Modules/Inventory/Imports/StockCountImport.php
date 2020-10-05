@@ -51,7 +51,7 @@ class StockCountImport implements ToArray, WithHeadingRow
                         'product_id'    => $product->id,
                         'qty'           => $row['qty'],
                         'sku'           => $row['sku'],
-                        'variance'      => !empty($on_hand) ? $on_hand - $row['qty'] : 0
+                        'variance'      => !empty($on_hand) ? $row['qty'] - $on_hand : 0
                     ];
 
                     array_push($this->products, $array);
