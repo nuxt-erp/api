@@ -57,7 +57,7 @@ class StockAdjustmentImport implements ToArray, WithHeadingRow
                         'location_name' => $location->short_name,
                         'on_hand'       => $on_hand,
                         'qty'           => $new_qty,
-                        'variance'      => !empty($on_hand) ? $row['new_qty'] - $on_hand : 0
+                        'variance'      => !empty($on_hand) ? $new_qty - $on_hand : 0
                     ];
 
                     array_push($this->products, $array);
