@@ -25,6 +25,7 @@ class ProjectSamplesResource extends ResourceService
             'id'              => $this->id,
             'project_id'      => $this->project_id,
             'recipe_id'       => $this->recipe_id,
+            'phase_id'        => $this->phase_id,
             'recipe_name'     => optional($this->recipe)->name,
             'actions'         => $actions,
             'attribute_names' => $this->attributes->pluck('name'),

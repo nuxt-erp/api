@@ -6,14 +6,19 @@ use App\Models\Parameter;
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
 class Constants {
-    const PENDING             = ['rd_requester'  => 'pending'];
-    const IN_PROGRESS         = ['rd_supervisor' => 'in progress'];
-    const WAITING_APPROVAL    = ['rd_supervisor' => 'waiting approval'];
-    const WAITING_QC          = ['rd_supervisor' => 'waiting qc'];
-    const SENT                = ['rd_requester'  => 'sent'];
-    const APPROVED            = ['rd_requester'  => 'approved'];
-    const REWORK              = ['rd_requester'  => 'rework'];
-    const READY               = ['rd_supervisor' => 'ready'];
+    const rd_requester        = [
+        'pending',
+        'waiting approval',
+        'waiting qc',
+        'ready'
+
+    ];
+    const rd_supervisor       = [
+        'in progress',
+        'sent',
+        'approved',
+        'rework',
+    ];
 }
 class ProjectSamples extends ModelService
 {
@@ -22,8 +27,8 @@ class ProjectSamples extends ModelService
     protected $table = 'rd_project_samples';
 
     protected $fillable = [
-        'project_id', 'recipe_id', 'assignee_id', 'author_id',
-        'internal_code', 'external_code',
+        'project_id', 'recipe_id', 'flow_id', 'assignee_id', 
+        'internal_code', 'external_code', 'author_id',
         'name', 'status', 'target_cost',
         'feedback', 'comment'
     ];
@@ -34,6 +39,7 @@ class ProjectSamples extends ModelService
         $rules = [
             'project_id'              => ['exists:tenant.rd_projects,id'],
             'recipe_id'               => ['exists:tenant.rd_recipes,id'],
+            'flow_id'                 => ['exists:tenant.rd_flows,id'],
             'assignee_id'             => ['exists:users,id'],
             'author_id'               => ['nullable', 'exists:public.users,id'],
             'name'                    => ['nullable', 'max:255'],
@@ -72,6 +78,10 @@ class ProjectSamples extends ModelService
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
+    public function flow()
+    {
+        return $this->belongsTo(Flow::class, 'flow_id', 'id');
     }
     public function recipe()
     {

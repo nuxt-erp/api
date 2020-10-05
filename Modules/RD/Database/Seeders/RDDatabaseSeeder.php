@@ -16,7 +16,9 @@ class RDDatabaseSeeder extends Seeder
     public function run()
     {
         Model::unguard();
-        $this->call(RoleTableSeeder::class);
+        $this->call(PhaseTableSeeder::class);
+        $this->call(FlowTableSeeder::class);
+        $this->call(PhaseRoleSeeder::class);
         
     }
 }

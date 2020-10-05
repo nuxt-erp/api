@@ -47,6 +47,7 @@ class ProjectRepository extends RepositoryService
     {
         lad($data);
         lad($model);
+
         DB::transaction(function () use ($data, $model)
         {
             parent::update($model, $data);

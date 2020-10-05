@@ -4,6 +4,9 @@ namespace Modules\RD\Providers;
 
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Modules\RD\Entities\Flow;
+use Modules\RD\Entities\Phase;
+use Modules\RD\Entities\PhaseRole;
 use Modules\RD\Entities\Project;
 use Modules\RD\Entities\ProjectSampleAttributes;
 use Modules\RD\Entities\ProjectLogs;
@@ -14,6 +17,9 @@ use Modules\RD\Entities\RecipeAttributes;
 use Modules\RD\Entities\RecipeItems;
 use Modules\RD\Entities\RecipeProposalItems;
 use Modules\RD\Entities\RecipeProposals;
+use Modules\RD\Policies\FlowPolicy;
+use Modules\RD\Policies\PhasePolicy;
+use Modules\RD\Policies\PhaseRolePolicy;
 use Modules\RD\Policies\ProjectPolicy;
 use Modules\RD\Policies\ProjectSampleAttributesPolicy;
 use Modules\RD\Policies\ProjectLogsPolicy;
@@ -50,5 +56,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(RecipeItems::class, RecipeItemsPolicy::class);
         Gate::policy(RecipeProposalItems::class, RecipeProposalItemsPolicy::class);
         Gate::policy(RecipeProposals::class, RecipeProposalsPolicy::class);
+        Gate::policy(Phase::class, PhasePolicy::class);
+        Gate::policy(Flow::class, FlowPolicy::class);
+        Gate::policy(PhaseRole::class, PhaseRolePolicy::class);
     }
 }

@@ -31,25 +31,33 @@ class ProjectSamplesController extends ControllerService implements CheckPolicie
         {
             
             $sample = ProjectSamples::find($sample_id);  
-            
-            lad($sample->status);
             $statuses = $this->repository->model->getStatuses();
+
             $i = 0;
-            $user = auth()->user();                   
-            foreach ($statuses as $key => $status) {
-                foreach ($status as $key => $value) {
-                    if($key === 'rd_requester' && $user->hasRole('rd_requester')) {
-                        $keyValue[$i]['is_default'] = ucfirst($value) === 'pending' ? 1 : 0;
-                        $keyValue[$i]['name'] = ucfirst($value);
-                        $keyValue[$i]['value'] = ucfirst($value);
-                    } else if($key === 'rd_supervisor' && $user->hasRole('rd_supervisor')) {
-                        $keyValue[$i]['is_default'] = 0;
-                        $keyValue[$i]['name'] = ucfirst($value);
-                        $keyValue[$i]['value'] = ucfirst($value);
-                    }
-                }
+            $user = auth()->user();
+            $role = '';   
+
+            if($user->hasRole('rd_requester')) {
+                $role = 'rd_requester';
+            } else if($user->hasRole('rd_supervisor')) {
+                $role = 'rd_supervisor';
+            }
+
+            $filtered = array_filter(
+                $statuses,
+                function ($key) use ($role) {
+                    return $key === $role;
+                },
+                ARRAY_FILTER_USE_KEY
+            );                
+
+            foreach ($filtered[$role] as $status) {
+                $keyValue[$i]['is_default'] = ucfirst($status) === 'pending' ? 1 : 0;
+                $keyValue[$i]['name'] = ucfirst($status);
+                $keyValue[$i]['value'] = ucfirst($status);       
                 $i++;
             }
+
         }
 
         

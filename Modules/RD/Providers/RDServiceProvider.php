@@ -3,6 +3,7 @@
 namespace Modules\RD\Providers;
 
 use Illuminate\Support\ServiceProvider;
+
 // REPOSITORY
 use Modules\RD\Repositories\ProjectRepository;
 use Modules\RD\Repositories\ProjectSampleAttributesRepository;
@@ -14,6 +15,9 @@ use Modules\RD\Repositories\RecipeProposalsRepository;
 use Modules\RD\Repositories\RecipeRepository;
 use Modules\RD\Repositories\ProjectLogsRepository;
 use Modules\RD\Repositories\ProjectSampleLogsRepository;
+use Modules\RD\Repositories\FlowRepository;
+use Modules\RD\Repositories\PhaseRepository;
+use Modules\RD\Repositories\PhaseRoleRepository;
 // RESOURCES
 use Modules\RD\Transformers\ProjectResource;
 use Modules\RD\Transformers\ProjectSampleAttributesResource;
@@ -25,6 +29,10 @@ use Modules\RD\Transformers\RecipeProposalsResource;
 use Modules\RD\Transformers\RecipeResource;
 use Modules\RD\Transformers\ProjectLogsResource;
 use Modules\RD\Transformers\ProjectSampleLogsResource;
+use Modules\RD\Transformers\FlowResource;
+use Modules\RD\Transformers\PhaseResource;
+use Modules\RD\Transformers\PhaseRoleResource;
+
 // MODELS
 use Modules\RD\Entities\Project;
 use Modules\RD\Entities\ProjectSampleAttributes;
@@ -36,6 +44,9 @@ use Modules\RD\Entities\RecipeItems;
 use Modules\RD\Entities\RecipeProposalItems;
 use Modules\RD\Entities\RecipeProposals;
 use Modules\RD\Entities\Recipe;
+use Modules\RD\Entities\Flow;
+use Modules\RD\Entities\Phase;
+use Modules\RD\Entities\PhaseRole;
 
 class RDServiceProvider extends ServiceProvider
 {
@@ -150,6 +161,30 @@ class RDServiceProvider extends ServiceProvider
         $this->app->bind(RecipeProposalsResource::class, function () {
             return new RecipeProposalsResource(new RecipeProposals());
         });
+
+        $this->app->bind(PhaseRepository::class, function () {
+            return new PhaseRepository(new Phase());
+        });
+
+        $this->app->bind(PhaseResource::class, function () {
+            return new PhaseResource(new Phase());
+        });
+
+        $this->app->bind(PhaseRoleRepository::class, function () {
+            return new PhaseRoleRepository(new PhaseRole());
+        });
+
+        $this->app->bind(PhaseRoleResource::class, function () {
+            return new PhaseRoleResource(new PhaseRole());
+        });
+
+        $this->app->bind(FlowRepository::class, function () {
+            return new FlowRepository(new Flow());
+        });
+
+        $this->app->bind(FlowResource::class, function () {
+            return new FlowResource(new Flow());
+        });
     }
 
     /**
@@ -169,7 +204,10 @@ class RDServiceProvider extends ServiceProvider
             RecipeProposalItemsRepository::class,
             RecipeProposalsRepository::class,
             ProjectLogsRepository::class,
-            ProjectSampleLogsRepository::class
+            ProjectSampleLogsRepository::class,
+            PhaseRepository::class,
+            FlowRepository::class,
+            PhaseRoleRepository::class
         ];
     }
 
