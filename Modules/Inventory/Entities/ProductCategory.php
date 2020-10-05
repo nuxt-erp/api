@@ -9,6 +9,7 @@ class ProductCategory extends ModelService
 {
 
     protected $connection = 'tenant';
+    protected $table = 'inv_categories';
     /**
      * The attributes that are mass assignable.
      *

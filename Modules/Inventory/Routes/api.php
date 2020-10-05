@@ -34,6 +34,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_custom_prices', 'ProductCustomPriceController');
 
         Route::resource('product_images', 'ProductImagesController');
+        Route::get('carrier_products', 'ProductController@findCarriers');
 
         Route::resource('stock_count', 'StockCountController');
         Route::resource('stock_count_details', 'StockCountDetailController');

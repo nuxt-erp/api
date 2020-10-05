@@ -14,6 +14,8 @@ class Recipe extends ModelService
 
     protected $table = 'rd_recipes';
 
+    const NEW_RECIPE        = 'new';
+
     protected $fillable = [
         'author_id', 'last_updater_id', 'approver_id',
         'type_id', 'product_id', 'status',

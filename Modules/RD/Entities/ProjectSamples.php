@@ -21,11 +21,15 @@ class ProjectSamples extends ModelService
 
     protected $table = 'rd_project_samples';
 
+    protected $dates = [
+        'finished_at',
+    ];
+
     protected $fillable = [
         'project_id', 'recipe_id', 'assignee_id', 'author_id',
         'internal_code', 'external_code',
         'name', 'status', 'target_cost',
-        'feedback', 'comment'
+        'feedback', 'comment', 'finished_at'
     ];
 
     public function getRules($request, $item = null)

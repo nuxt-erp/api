@@ -18,8 +18,8 @@ class ProjectSamplesFlavoristResource extends ResourceService
 
         $actions = collect([
             [
-                'name'  => $this->status == Constants::PENDING ? 'Develop' : 'Edit / Preview',
-                'code'  => $this->status == Constants::PENDING ? 'develop' : 'edit',
+                'name'  => $this->status == 'pending' ? 'Develop' : 'Edit / Preview',
+                'code'  => $this->status == 'pending' ? 'develop' : 'edit',
                 'type'  => 'primary'
             ]
         ]);
