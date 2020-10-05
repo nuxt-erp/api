@@ -16,8 +16,8 @@ class ProductCustomPrice extends ModelService
     ];
     
     protected $fillable = [
-        'product_id', 'customer_id', 'price', 
-        'is_enabled', 'disabled_at'
+        'product_id', 'customer_id', 'currency',
+        'custom_price','is_enabled', 'disabled_at'
     ];
 
     public function getRules($request, $item = null)
@@ -32,6 +32,8 @@ class ProductCustomPrice extends ModelService
         {
             $rules['product_id'][]    = 'required';
             $rules['customer_id'][]   = 'required';
+            $rules['currency'][]      = 'required';
+            $rules['custom_price'][]  = 'required';
         }        
 
         return $rules;
