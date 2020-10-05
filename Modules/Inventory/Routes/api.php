@@ -31,9 +31,13 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_supplier_locations', 'ProductSupplierLocationsController');
         Route::resource('product_reorder_levels', 'ProductReorderLevelController');
         Route::resource('product_promos', 'ProductPromoController');
+        Route::resource('product_custom_prices', 'ProductCustomPriceController');
 
         Route::resource('product_images', 'ProductImagesController');
+        Route::get('carrier_products', 'ProductController@findCarriers');
 
+        Route::resource('stock_adjustments', 'StockAdjustmentController');
+        Route::resource('stock_adjustment_details', 'StockAdjustmentDetailController');
         Route::resource('stock_count', 'StockCountController');
         Route::resource('stock_count_details', 'StockCountDetailController');
         Route::get('stock_count/finish/{id?}', 'StockCountController@finish'); // ADJUST AND FINISH STOCK TAKE
@@ -66,6 +70,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('availabilities', 'ImportController@dearSyncAvailabilities');
         Route::get('products/{sku}', 'ImportController@syncProduct'); // sync in DEAR only one product
         Route::post('xls/stock_count', 'ImportController@xlsInsertStock');
+        Route::post('xls/stock_adjustments', 'ImportController@xlsAdjustStock');
     });
 
 });

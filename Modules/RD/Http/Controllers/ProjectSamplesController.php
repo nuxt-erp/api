@@ -8,6 +8,7 @@ use App\Resources\ListResource;
 use App\Http\Controllers\ControllerService;
 use Modules\RD\Entities\ProjectSamples;
 use Modules\RD\Repositories\ProjectSamplesRepository;
+use Modules\RD\Transformers\ProjectSamplesFlavoristResource;
 use Modules\RD\Transformers\ProjectSamplesResource;
 
 class ProjectSamplesController extends ControllerService implements CheckPolicies
@@ -24,7 +25,7 @@ class ProjectSamplesController extends ControllerService implements CheckPolicie
     }
 
     public function getSampleStatuses(array $searchCriteria = []){
-        $keyValue = []; 
+        $keyValue = [];
         $sample_id = request()->query('sample_id');
 
         if(!is_null($sample_id))
@@ -60,8 +61,39 @@ class ProjectSamplesController extends ControllerService implements CheckPolicie
 
         }
 
-        
+
         return $this->sendArray($keyValue);
+    }
+
+    public function index(Request $request)
+    {
+        $isList = $request->has('list') && $request->list;
+
+        if($this instanceof CheckPolicies){
+            // call the police associated with this model
+            if($isList){
+                $this->authorize('list', get_class($this->repository->model));
+            }
+            else{
+                $this->authorize('index', get_class($this->repository->model));
+            }
+        }
+
+        $items = $this->repository->findBy($request->all());
+        if($isList){
+            return $this->sendCollectionResponse($items, ListResource::class);
+        }
+        else{
+            // $user = auth()->user();
+            // if($user->hasRole('admin')){
+            //     return $this->sendFullCollectionResponse($items, $this->resource);
+            // }
+            // else{
+                //rd_flavorist
+                return $this->sendFullCollectionResponse($items, ProjectSamplesFlavoristResource::class);
+            // }
+
+        }
     }
 }
 

@@ -4,6 +4,7 @@ namespace Modules\RD\Repositories;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Arr;
+use Modules\RD\Entities\Recipe;
 
 class RecipeRepository extends RepositoryService
 {
@@ -12,12 +13,13 @@ class RecipeRepository extends RepositoryService
         DB::transaction(function () use ($data)
         {
             $user = auth()->user();
-            $data['author_id'] = $user->id;
+            $data['author_id']  = $user->id;
+            $data['status']     = Recipe::NEW_RECIPE;
 
             parent::store($data);
-            
+
         });
-    
+
         if (Arr::has($data, 'attribute_ids')) {
             $this->model->attributes()->sync($data['attribute_ids']);
         }
@@ -26,7 +28,7 @@ class RecipeRepository extends RepositoryService
 
     public function update($model, array $data)
     {
-        
+
         DB::transaction(function () use ($data, $model)
         {
             if (Arr::has($data, 'attribute_ids')) {

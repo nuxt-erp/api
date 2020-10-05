@@ -26,11 +26,15 @@ class ProjectSamples extends ModelService
 
     protected $table = 'rd_project_samples';
 
+    protected $dates = [
+        'finished_at',
+    ];
+
     protected $fillable = [
         'project_id', 'recipe_id', 'flow_id', 'assignee_id', 
         'internal_code', 'external_code', 'author_id',
         'name', 'status', 'target_cost',
-        'feedback', 'comment'
+        'feedback', 'comment', 'finished_at'
     ];
 
     public function getRules($request, $item = null)
@@ -66,15 +70,21 @@ class ProjectSamples extends ModelService
 
         return $rules;
     }
+
     static function getStatuses() {
         $oClass = new \ReflectionClass(Constants::class);
         return $oClass->getConstants();
-
     }
+
+    public function getRecipeVersionQtyAttribute(){
+        return 0;
+    }
+
     public function attributes()
     {
         return $this->belongsToMany(Parameter::class, 'rd_project_sample_attributes', 'project_sample_id', 'attribute_id');
     }
+
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');

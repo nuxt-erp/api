@@ -44,6 +44,9 @@ class RegisterController extends Controller
     }
 
     public function installModules($name){
+
+        DB::setDefaultConnection('public');
+
         //$user = auth()->user(); // this is the right option after we make a page to install modules
         $user = User::where('name', 'LIKE', '%'.$name.'%')->orWhere('email', 'LIKE', '%'.$name.'%')->first();
         echo '<<<<<<<<< SCRIPT START >>>>>>>><br><br>';
