@@ -16,7 +16,7 @@ use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\ProductSupplierLocations;
 use Modules\Inventory\Entities\ProductSuppliers;
 use Modules\Inventory\Entities\CustomerDiscount;
-
+use Modules\Inventory\Entities\ProductCustomPrice;
 
 class ProductRepository extends RepositoryService
 {
@@ -143,6 +143,19 @@ class ProductRepository extends RepositoryService
                         ]);                 
                     }
                 }
+
+                if(!empty($data["custom_prices"])) {
+                    foreach($data["custom_prices"] as $price) {
+                        ProductCustomPrice::create([
+                            'product_id'            => $this->model->id,
+                            'customer_id'           => $price['customer_id'],
+                            'currency'              => strtoupper($price['currency']),
+                            'custom_price'          => $price['custom_price'] ?? 0,
+                            'is_enabled'            => $price['is_enabled'],
+                            'disabled_at'           => !$price['is_enabled'] ? now() : null,
+                        ]);                 
+                    }
+                }
             }
         });
 
@@ -193,6 +206,16 @@ class ProductRepository extends RepositoryService
         if(!empty($data["delete_promos"])) {
             foreach($data["delete_promos"] as $delete_promo) {
                 ProductPromo::where('id', $delete_promo['id'])->delete();
+            }
+        }
+
+        if(!empty($data["custom_prices"])) {
+            $this->updateCustomPrices($data);
+        }
+
+        if(!empty($data["delete_custom_prices"])) {
+            foreach($data["delete_custom_prices"] as $delete_custom_price) {
+                ProductCustomPrice::where('id', $delete_custom_price['id'])->delete();
             }
         }
     }
@@ -393,6 +416,28 @@ class ProductRepository extends RepositoryService
             }
         }
     }
+
+    private function updateCustomPrices($data) {
+        foreach($data["custom_prices"] as $price) {
+
+            $customPriceDate = [
+                'product_id'            => $this->model->id,
+                'customer_id'           => $price['customer_id'],
+                'currency'              => strtoupper($price['currency']),
+                'custom_price'          => $price['custom_price'] ?? 0,
+                'is_enabled'            => $price['is_enabled'],
+                'disabled_at'           => !$price['is_enabled'] ? now() : null,
+            ];
+
+            if(!empty($price['id'])) {
+                ProductCustomPrice::updateOrCreate(['id' =>  $price['id']], $customPriceDate);
+            } else {
+                ProductCustomPrice::create($customPriceDate);
+            }
+        }
+    }
+
+
 
     private function createDiscounts ($data)
     {

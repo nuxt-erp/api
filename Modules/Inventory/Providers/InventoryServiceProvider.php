@@ -27,7 +27,7 @@ use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\Transfer;
 use Modules\Inventory\Entities\TransferDetails;
 use Modules\Inventory\Entities\CustomerDiscount;
-
+use Modules\Inventory\Entities\ProductCustomPrice;
 // repositories
 use Modules\Inventory\Repositories\AttributeRepository;
 use Modules\Inventory\Repositories\AvailabilityRepository;
@@ -50,8 +50,7 @@ use Modules\Inventory\Repositories\ProductReorderLevelRepository;
 use Modules\Inventory\Repositories\TransferRepository;
 use Modules\Inventory\Repositories\TransferDetailsRepository;
 use Modules\Inventory\Repositories\CustomerDiscountRepository;
-
-
+use Modules\Inventory\Repositories\ProductCustomPriceRepository;
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
 use Modules\Inventory\Transformers\AvailabilityResource;
@@ -74,6 +73,7 @@ use Modules\Inventory\Transformers\ProductReorderLevelResource;
 use Modules\Inventory\Transformers\TransferResource;
 use Modules\Inventory\Transformers\TransferDetailsResource;
 use Modules\Inventory\Transformers\CustomerDiscountResource;
+use Modules\Inventory\Transformers\ProductCustomPriceResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -277,6 +277,13 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductImagesResource::class, function () {
             return new ProductImagesResource(new ProductImages());
         });
+
+        $this->app->bind(ProductCustomPriceRepository::class, function () {
+            return new ProductCustomPriceRepository(new ProductCustomPrice());
+        });
+        $this->app->bind(ProductCustomPriceResource::class, function () {
+            return new ProductCustomPriceResource(new ProductCustomPrice());
+        });
     }
 
     /**
@@ -307,7 +314,8 @@ class InventoryServiceProvider extends ServiceProvider
             CustomerDiscountRepository::class,
             ProductImagesRepository::class,
             ProductReorderLevelRepository::class,
-            ProductPromoRepository::class
+            ProductPromoRepository::class,
+            ProductCustomPriceRepository::class
         ];
     }
 
