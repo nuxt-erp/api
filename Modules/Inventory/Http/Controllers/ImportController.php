@@ -5,6 +5,7 @@ namespace Modules\Inventory\Http\Controllers;
 use App\Http\Controllers\ControllerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Modules\Inventory\Imports\StockAdjustmentImport;
 use Modules\Inventory\Imports\StockCountImport;
 use stdClass;
 use Modules\Inventory\Transformers\ProductResource;
@@ -18,6 +19,21 @@ class ImportController extends ControllerService
         if ($request->hasFile('excel') && $request->file('excel')->isValid()) {
             $path = $request->excel->store('imports');
             $import = new StockCountImport;
+            $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
+        }
+        if(!isset($import->rows) || $import->rows < 1){
+            $this->setStatus(FALSE);
+            $this->setMessage('No rows processed');
+        }
+        return $this->sendObject($import);
+    }
+
+    public function xlsAdjustStock(Request $request)
+    {
+        $import = new stdClass;
+        if ($request->hasFile('excel') && $request->file('excel')->isValid()) {
+            $path = $request->excel->store('imports');
+            $import = new StockAdjustmentImport;
             $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
         }
         if(!isset($import->rows) || $import->rows < 1){

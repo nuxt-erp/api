@@ -15,8 +15,8 @@ class AvailabilityResource extends ResourceService
     public function toArray($request)
     {
         return [
-            'id'                    => $this->product_id,
-            'product_id'            => $this->id,
+            'id'                    => $this->id,
+            'product_id'            => $this->product_id,
             'name'                  => optional($this->product)->getFullDescriptionAttribute(),
             'product_name'          => optional($this->product)->getFullDescriptionAttribute(),
             'in_transit_suppliers'  => optional($this->product)->getInTransitAttribute($this->product_id),

@@ -4,6 +4,7 @@ namespace Modules\Inventory\Repositories;
 
 use App\Models\Parameter;
 use App\Repositories\RepositoryService;
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Arr;
 use Modules\Inventory\Entities\Availability;
@@ -47,6 +48,27 @@ class AvailabilityRepository extends RepositoryService
         }
 
         return parent::findBy($searchCriteria);
+    }
+
+    public function update($model, array $data)
+    {
+        DB::transaction(function () use ($data, $model){
+           
+            parent::update($model, $data);
+
+            // ADD MOVEMENT TO PRODUCT LOG  
+            $type = Parameter::firstOrCreate(
+                ['name' => 'product_log_type', 'value' => 'Stock Update']
+            );
+            $log                = new ProductLog();
+            $log->product_id    = $data['product_id'];
+            $log->location_id   = $data['location_id'];
+            $log->quantity      = $data['on_hand'];
+            $log->ref_code_id   = null;
+            $log->type_id       = $type->id;
+            $log->description   = 'Finished stock update - changing quantity';
+            $log->save();
+        });
     }
 
     /*

@@ -28,6 +28,8 @@ use Modules\Inventory\Entities\Transfer;
 use Modules\Inventory\Entities\TransferDetails;
 use Modules\Inventory\Entities\CustomerDiscount;
 use Modules\Inventory\Entities\ProductCustomPrice;
+use Modules\Inventory\Entities\StockAdjustment;
+use Modules\Inventory\Entities\StockAdjustmentDetail;
 // repositories
 use Modules\Inventory\Repositories\AttributeRepository;
 use Modules\Inventory\Repositories\AvailabilityRepository;
@@ -51,6 +53,8 @@ use Modules\Inventory\Repositories\TransferRepository;
 use Modules\Inventory\Repositories\TransferDetailsRepository;
 use Modules\Inventory\Repositories\CustomerDiscountRepository;
 use Modules\Inventory\Repositories\ProductCustomPriceRepository;
+use Modules\Inventory\Repositories\StockAdjustmentDetailRepository;
+use Modules\Inventory\Repositories\StockAdjustmentRepository;
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
 use Modules\Inventory\Transformers\AvailabilityResource;
@@ -74,6 +78,8 @@ use Modules\Inventory\Transformers\TransferResource;
 use Modules\Inventory\Transformers\TransferDetailsResource;
 use Modules\Inventory\Transformers\CustomerDiscountResource;
 use Modules\Inventory\Transformers\ProductCustomPriceResource;
+use Modules\Inventory\Transformers\StockAdjustmentDetailResource;
+use Modules\Inventory\Transformers\StockAdjustmentResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -284,6 +290,20 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductCustomPriceResource::class, function () {
             return new ProductCustomPriceResource(new ProductCustomPrice());
         });
+
+        $this->app->bind(StockAdjustmentRepository::class, function () {
+            return new StockAdjustmentRepository(new StockAdjustment());
+        });
+        $this->app->bind(StockAdjustmentResource::class, function () {
+            return new StockAdjustmentResource(new StockAdjustment());
+        });
+
+        $this->app->bind(StockAdjustmentDetailRepository::class, function () {
+            return new StockAdjustmentDetailRepository(new StockAdjustmentDetail());
+        });
+        $this->app->bind(StockAdjustmentDetailResource::class, function () {
+            return new StockAdjustmentDetailResource(new StockAdjustmentDetail());
+        });
     }
 
     /**
@@ -315,7 +335,9 @@ class InventoryServiceProvider extends ServiceProvider
             ProductImagesRepository::class,
             ProductReorderLevelRepository::class,
             ProductPromoRepository::class,
-            ProductCustomPriceRepository::class
+            ProductCustomPriceRepository::class,
+            StockAdjustmentRepository::class,
+            StockAdjustmentDetailRepository::class,
         ];
     }
 
