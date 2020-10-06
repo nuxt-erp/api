@@ -50,7 +50,11 @@ class ProjectRepository extends RepositoryService
 
         DB::transaction(function () use ($data, $model)
         {
+            $user = auth()->user();
+            
+            
             parent::update($model, $data);
+            
             ProjectSamples::where('project_id', $model->id)->delete();
             if(!empty($data["samples"])) {
                 foreach ($data["samples"] as $sample)
