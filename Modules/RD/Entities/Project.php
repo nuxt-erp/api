@@ -12,17 +12,16 @@ class Project extends ModelService
 
     protected $table = 'rd_projects';
 
-    const STATUS_PENDING    = 'pending';
-    const STATUS_READY      = 'ready';
-    const STATUS_SENT       = 'sent';
+    const STATUS_PENDING    = 'active';
+    const STATUS_AWAITING   = 'awaiting feedback';
     const STATUS_UPDATED    = 'updated';
-    const STATUS_APPROVED   = 'approved';
+    const STATUS_FINISHED   = 'finished';
 
 
     protected $dates = [
         'start_at', 'closed_at'
     ];
-    
+
     protected $fillable = [
         'author_id','customer_id', 'status',
         'iteration', 'comment', 'start_at',

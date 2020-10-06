@@ -8,9 +8,9 @@ use App\Http\Controllers\ControllerService;
 use Modules\RD\Entities\PhaseRole;
 use Modules\RD\Entities\Flow;
 use Modules\RD\Entities\Phase;
-use Modules\RD\Entities\ProjectSamples;
 use Modules\RD\Repositories\FlowRepository;
 use Modules\RD\Transformers\FlowResource;
+use App\Resources\ListResource;
 
 class FlowController extends ControllerService implements CheckPolicies
 {
@@ -36,7 +36,6 @@ class FlowController extends ControllerService implements CheckPolicies
 
         $current_phase = Phase::find($phase_id);
         $phases[$i] = $current_phase;
-        $phases[$i] = $current_phase;
         $i++;
 
         foreach($flows as $flow) {
@@ -44,13 +43,11 @@ class FlowController extends ControllerService implements CheckPolicies
             foreach($phase_roles as $phase_role) {
                 if($next->id === $phase_role->phase_id) {
                     $phases[$i] = $next;
-                    $phases[$i] = $next;
                     $i++;
                 }
             }         
-        }      
+        }        
         
-        
-        return $this->sendArray($phases);
+        return $this->sendCollectionResponse($phases, ListResource::class);
     }
 }

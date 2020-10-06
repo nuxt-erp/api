@@ -5,9 +5,30 @@ use Illuminate\Support\Facades\DB;
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Arr;
 use Modules\RD\Entities\ProjectSamples;
+use Modules\RD\Entities\Phase;
 
 class ProjectRepository extends RepositoryService
 {
+    public function findBy(array $searchCriteria = [])
+    {
+        $user = auth()->user();
+
+        if(!empty($searchCriteria['start_at'])){
+            $this->queryBuilder->whereBetween('start_at', $searchCriteria['start_at']);
+        }
+
+        if(!empty($searchCriteria['status'])){
+            $text = '%' . Arr::pull($searchCriteria, 'status') . '%';
+            $this->queryBuilder->where('status', 'ILIKE', $text);
+        }
+
+        if(!empty($searchCriteria['comment'])){
+            $text = '%' . Arr::pull($searchCriteria, 'comment') . '%';
+            $this->queryBuilder->where('comment', 'ILIKE', $text);
+        }
+
+        return parent::findBy($searchCriteria);
+    }
 
     public function store(array $data)
     {
@@ -26,6 +47,7 @@ class ProjectRepository extends RepositoryService
                 $new = ProjectSamples::create([
                     'project_id'            => $this->model->id,
                     'recipe_id'             => $sample['recipe_id'],
+                    'phase_id'              => Phase::where('name', strtolower($sample['status']))->get()->first()->id,
                     'assignee_id'           => $sample['assignee_id'],
                     'name'                  => $sample['name'],
                     'status'                => $sample['status'],
@@ -45,8 +67,6 @@ class ProjectRepository extends RepositoryService
 
     public function update($model, array $data)
     {
-        lad($data);
-        lad($model);
 
         DB::transaction(function () use ($data, $model)
         {
@@ -65,6 +85,7 @@ class ProjectRepository extends RepositoryService
                         'assignee_id'           => $sample['assignee_id'],
                         'name'                  => $sample['name'],
                         'status'                => strtolower($sample['status']),
+                        'phase_id'              => Phase::where('name', strtolower($sample['status']))->get()->first()->id,
                         'target_cost'           => $sample['target_cost'],
                         'feedback'              => $sample['feedback'],
                         'comment'               => $sample['comment'],
