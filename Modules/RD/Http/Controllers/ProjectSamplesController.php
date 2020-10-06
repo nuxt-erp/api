@@ -84,14 +84,14 @@ class ProjectSamplesController extends ControllerService implements CheckPolicie
             return $this->sendCollectionResponse($items, ListResource::class);
         }
         else{
-            // $user = auth()->user();
-            // if($user->hasRole('admin')){
-            //     return $this->sendFullCollectionResponse($items, $this->resource);
-            // }
-            // else{
+            $user = auth()->user();
+            if($user->hasRole('admin', 'rd_supervisor', 'rd_requester')){
+                return $this->sendFullCollectionResponse($items, $this->resource);
+            }
+            else{
                 //rd_flavorist
                 return $this->sendFullCollectionResponse($items, ProjectSamplesFlavoristResource::class);
-            // }
+            }
 
         }
     }

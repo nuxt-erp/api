@@ -12,6 +12,11 @@ class Project extends ModelService
 
     protected $table = 'rd_projects';
 
+    const STATUS_PENDING    = 'active';
+    const STATUS_AWAITING   = 'awaiting feedback';
+    const STATUS_UPDATED    = 'updated';
+    const STATUS_FINISHED   = 'finished';
+
 
     protected $dates = [
         'start_at', 'closed_at'
@@ -46,6 +51,10 @@ class Project extends ModelService
     }
    
     
+    static function getStatuses() {
+        $oClass = new \ReflectionClass(Project::class);
+        return $oClass->getConstants();
+    }
 
     public function author()
     {

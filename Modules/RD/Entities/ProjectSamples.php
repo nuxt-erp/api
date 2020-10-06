@@ -31,7 +31,7 @@ class ProjectSamples extends ModelService
     ];
 
     protected $fillable = [
-        'project_id', 'recipe_id', 'flow_id', 'assignee_id', 
+        'project_id', 'recipe_id', 'phase_id', 'assignee_id', 
         'internal_code', 'external_code', 'author_id',
         'name', 'status', 'target_cost',
         'feedback', 'comment', 'finished_at'
@@ -43,7 +43,7 @@ class ProjectSamples extends ModelService
         $rules = [
             'project_id'              => ['exists:tenant.rd_projects,id'],
             'recipe_id'               => ['exists:tenant.rd_recipes,id'],
-            'flow_id'                 => ['exists:tenant.rd_flows,id'],
+            'phase_id'                 => ['exists:tenant.rd_phases,id'],
             'assignee_id'             => ['exists:users,id'],
             'author_id'               => ['nullable', 'exists:public.users,id'],
             'name'                    => ['nullable', 'max:255'],
@@ -89,9 +89,9 @@ class ProjectSamples extends ModelService
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
-    public function flow()
+    public function phase()
     {
-        return $this->belongsTo(Flow::class, 'flow_id', 'id');
+        return $this->belongsTo(Phase::class, 'phase_id', 'id');
     }
     public function recipe()
     {

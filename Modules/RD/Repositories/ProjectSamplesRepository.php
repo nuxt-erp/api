@@ -11,7 +11,7 @@ class ProjectSamplesRepository extends RepositoryService
     public function findBy(array $searchCriteria = [])
     {
         $user = auth()->user();
-        if(!$user->hasRole('admin')){
+        if(!$user->hasRole('admin', 'rd_requester', 'rd_supervisor')){
             $this->queryBuilder->where('assignee_id', $user->id);
         }
 

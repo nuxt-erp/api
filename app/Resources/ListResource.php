@@ -19,6 +19,7 @@ class ListResource extends ResourceService
             'name'          => $this->description ?? $this->name ?? '',
             'is_default'    => isset($this->is_default) ? $this->is_default : 0
         ];
+        lad($this->model);
         switch ($this->model) {
             case 'Product':
                 $resource['name']   = $this->sku . ' - ' . $this->name;
@@ -27,6 +28,10 @@ class ListResource extends ResourceService
             case 'Parameter':
                 $resource['name']   = $this->name;
                 $resource['value']  = $this->value;
+            case 'Phase':
+                $resource['name']   = ucwords($this->name);
+                $resource['value']  = $this->name;
+
                 break;
         }
 

@@ -10,9 +10,10 @@ class ProjectResource extends ResourceService
     {
         $actions = collect([
             [
-                'name'  => 'editProject',
+                'name'  => 'Edit Project',
                 'code'  => 'editProject',
                 'icon'  => 'edit',
+                'plain' =>  false,
                 'type'  => 'primary'
             ]
         ]);

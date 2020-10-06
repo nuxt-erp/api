@@ -31,4 +31,12 @@ class Phase extends ModelService
 
         return $rules;
     }
+    public function flows()
+    {
+        return $this->hasMany(Flow::class, 'phase_id', 'id');
+    }
+    public function phase_roles() {
+        return $this->hasMany(PhaseRole::class, 'phase_id', 'id');
+    }
+
 }
