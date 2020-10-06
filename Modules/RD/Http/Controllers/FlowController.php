@@ -35,16 +35,16 @@ class FlowController extends ControllerService implements CheckPolicies
         $phases = [];
 
         $current_phase = Phase::find($phase_id);
-        $phases[$i]['name'] = ucfirst($current_phase->name);
-        $phases[$i]['value'] = $current_phase->name;
+        $phases[$i] = $current_phase;
+        $phases[$i] = $current_phase;
         $i++;
 
         foreach($flows as $flow) {
             $next = $flow->next_phase()->get()->first();
             foreach($phase_roles as $phase_role) {
                 if($next->id === $phase_role->phase_id) {
-                    $phases[$i]['name'] = ucfirst($next->name);
-                    $phases[$i]['value'] = $next->name;
+                    $phases[$i] = $next;
+                    $phases[$i] = $next;
                     $i++;
                 }
             }         
