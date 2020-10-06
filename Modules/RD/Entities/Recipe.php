@@ -21,7 +21,7 @@ class Recipe extends ModelService
         'type_id', 'product_id', 'status',
         'name', 'category_id', 'total',
         'code', 'cost', 'version',
-        'approved_at'
+        'approved_at', 'last_version'
     ];
 
     public function getRules($request, $item = null)
@@ -52,6 +52,14 @@ class Recipe extends ModelService
         }
         return $rules;
 
+    }
+    // public function getDescriptionAttribute(){
+    //     return $this->name . ' - v'.$this->version;
+    // }
+
+    public function ingredients()
+    {
+        return $this->belongsToMany(RecipeItems::class);
     }
 
     public function author()

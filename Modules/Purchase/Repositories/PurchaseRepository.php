@@ -63,7 +63,7 @@ class PurchaseRepository extends RepositoryService
 
     private function savePurchaseDetails($data, $id)
     {
-
+        //@todo update product cost?
         DB::transaction(function () use ($data, $id)
         {
             if (!empty($data["list_products"]))

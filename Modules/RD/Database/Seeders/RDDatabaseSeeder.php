@@ -2,10 +2,10 @@
 
 namespace Modules\RD\Database\Seeders;
 
-use App\Models\Parameter;
+
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
-
+use Modules\Inventory\Entities\Category;
 
 class RDDatabaseSeeder extends Seeder
 {
@@ -17,49 +17,17 @@ class RDDatabaseSeeder extends Seeder
     public function run()
     {
         Model::unguard();
+        $this->call(ParameterTableSeeder::class);
         $this->call(PhaseTableSeeder::class);
         $this->call(FlowTableSeeder::class);
         $this->call(PhaseRoleSeeder::class);
-        
-
-        Parameter::updateOrCreate([
-            'name'  => 'recipe_sample_size',
-            'value' => '100',
-            'order' => 1,
-            'description' => 'Recipe Sample Size for making calculations',
-            'is_internal' => true,
-            'is_default' => false,
-        ]);
-
-        Parameter::updateOrCreate([
-            'name'  => 'recipe_type',
-            'value' => 'key',
-            'order' => 1,
-            'description' => 'Key',
-            'is_internal' => true,
-            'is_default' => false,
-        ]);
-
-        Parameter::updateOrCreate([
-            'name'  => 'recipe_type',
-            'value' => 'flavor',
-            'order' => 2,
-            'description' => 'Flavor',
-            'is_internal' => true,
-            'is_default' => false,
-        ]);
-
-        Parameter::updateOrCreate([
-            'name'  => 'recipe_type',
-            'value' => 'solution',
-            'order' => 3,
-            'description' => 'Solution',
-            'is_internal' => true,
-            'is_default' => false,
-        ]);
-
-
         $this->call(RoleTableSeeder::class);
+
+        // for the recipe page
+        Category::updateOrCreate([
+            'name'      => 'Carrier',
+            'is_enabled'=> 1
+        ]);
 
     }
 }

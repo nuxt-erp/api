@@ -48,4 +48,24 @@ class ProductController extends ControllerService implements CheckPolicies
             return $this->sendFullCollectionResponse($items, $this->resource);
         }
     }
+
+    public function findRawMaterials(Request $request)
+    {
+        $isList = $request->has('list') && $request->list;
+        $category = ProductCategory::where('name', 'LIKE', '%Raw Material%')->first();
+        if($category){
+            $request->merge(['category_id' => $category->id]);
+            $items = $this->repository->findBy($request->all());
+        }
+        else{
+            $items = null;
+        }
+
+        if($isList){
+            return $this->sendCollectionResponse($items, ListResource::class);
+        }
+        else{
+            return $this->sendFullCollectionResponse($items, $this->resource);
+        }
+    }
 }

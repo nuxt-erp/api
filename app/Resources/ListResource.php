@@ -21,7 +21,7 @@ class ListResource extends ResourceService
         ];
         switch ($this->model) {
             case 'Product':
-                $resource['name']   = $this->name;
+                $resource['name']   = $this->sku . ' - ' . $this->name;
                 $resource['sku']    = $this->sku;
                 break;
             case 'Parameter':

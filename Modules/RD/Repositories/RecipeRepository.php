@@ -8,8 +8,10 @@ use Modules\RD\Entities\Recipe;
 
 class RecipeRepository extends RepositoryService
 {
+
     public function store(array $data)
     {
+        //@todo update last_version = false in the old recipes
         DB::transaction(function () use ($data)
         {
             $user = auth()->user();

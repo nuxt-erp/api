@@ -17,10 +17,12 @@ class RecipeItemsResource extends ResourceService
         return [
             'id'               => $this->id,
             'product_id'       => $this->product_id,
+            'product_name'     => optional($this->product)->name,
+            'product_sku'      => optional($this->product)->sku,
             'recipe_id'        => $this->recipe_id,
-            'quantity'         => $this->quantity,
-            'percent'          => $this->percent,
-            'cost'             => $this->cost,
+            'quantity'         => $this->quantity ?? 0,
+            'percent'          => $this->percent ?? 0,
+            'product_cost'     => optional($this->product)->cost ?? 0,
             'created_at'       => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'       => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];

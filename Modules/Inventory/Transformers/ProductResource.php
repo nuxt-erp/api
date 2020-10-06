@@ -24,7 +24,7 @@ class ProductResource extends ResourceService
             'name'                  => $this->name,
             'sku'                   => $this->sku,
             'description'           => $this->description,
-            'cost'                  => $this->cost,
+            'cost'                  => $this->cost ?? 0,
             'price'                 => $this->price,
             'barcode'               => $this->barcode,
             'length'                => $this->length,
