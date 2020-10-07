@@ -51,4 +51,8 @@ class ProductSuppliers extends ModelService
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+
+    public function locations(){
+        return $this->hasMany(ProductSupplierLocations::class, 'product_supplier_id', 'id');
+    }
 }

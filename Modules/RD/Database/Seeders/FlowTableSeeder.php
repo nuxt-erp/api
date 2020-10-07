@@ -3,6 +3,7 @@
 namespace Modules\RD\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Modules\RD\Entities\Flow;
+use Modules\RD\Entities\Phase;
 
 class FlowTableSeeder extends Seeder
 {
@@ -14,99 +15,108 @@ class FlowTableSeeder extends Seeder
 
     public function run()
     {
+        $phases = [
+            'pending'            => Phase::updateOrCreate(['name' => 'pending'], ['name' => 'pending']),
+            'in_progress'        => Phase::updateOrCreate(['name' => 'in progress'],  ['name' => 'in progress']),
+            'waiting_approval'   => Phase::updateOrCreate(['name' => 'waiting approval'], ['name' => 'waiting approval']),
+            'waiting_qc'         => Phase::updateOrCreate(['name' => 'waiting qc'], ['name' => 'waiting qc']),
+            'sent'               => Phase::updateOrCreate(['name' => 'sent'], ['name' => 'sent']),
+            'approved'           => Phase::updateOrCreate(['name' => 'approved'], ['name' => 'approved']),
+            'rework'             => Phase::updateOrCreate(['name' => 'rework'], ['name' => 'rework']),
+        ];
         Flow::updateOrCreate([
-            'phase_id' => 1,
-            'next_phase_id' => 2,
+            'phase_id' => $phases['pending']->id,
+            'next_phase_id' => $phases['in_progress']->id,
             'start' => 1,
             'end' => null
         ], [
-            'phase_id' => 1,
-            'next_phase_id' => 2,
+            'phase_id' => $phases['pending']->id,
+            'next_phase_id' => $phases['in_progress']->id,
             'start' => 1,
             'end' => null
         ]);
 
         Flow::updateOrCreate([
-            'phase_id' => 2,
-            'next_phase_id' => 3,
+            'phase_id' => $phases['in_progress']->id,
+            'next_phase_id' => $phases['waiting_approval']->id,
             'start' => null,
             'end' => null
         ], [
-            'phase_id' => 2,
-            'next_phase_id' => 3,
-            'start' => null,
+            'phase_id' => $phases['in_progress']->id,
+            'next_phase_id' => $phases['waiting_approval']->id,
+            'start' => 1,
             'end' => null
         ]);
 
         Flow::updateOrCreate([
-            'phase_id' => 3,
-            'next_phase_id' => 4,
+            'phase_id' => $phases['waiting_approval']->id,
+            'next_phase_id' => $phases['waiting_qc']->id,
             'start' => null,
             'end' => null
         ], [
-            'phase_id' => 3,
-            'next_phase_id' => 4,
-            'start' => null,
+            'phase_id' => $phases['waiting_approval']->id,
+            'next_phase_id' => $phases['waiting_qc']->id,
+            'start' => 1,
             'end' => null
         ]);
 
         Flow::updateOrCreate([
-            'phase_id' => 3,
-            'next_phase_id' => 2,
+            'phase_id' => $phases['waiting_approval']->id,
+            'next_phase_id' => $phases['in_progress']->id,
             'start' => null,
             'end' => null
         ], [
-            'phase_id' => 3,
-            'next_phase_id' => 2,
-            'start' => null,
+            'phase_id' => $phases['waiting_approval']->id,
+            'next_phase_id' => $phases['in_progress']->id,
+            'start' => 1,
             'end' => null
         ]);
 
         Flow::updateOrCreate([
-            'phase_id' => 4,
-            'next_phase_id' => 5,
+            'phase_id' => $phases['waiting_qc']->id,
+            'next_phase_id' => $phases['sent']->id,
             'start' => null,
             'end' => null
         ], [
-            'phase_id' => 4,
-            'next_phase_id' => 5,
-            'start' => null,
+            'phase_id' => $phases['waiting_qc']->id,
+            'next_phase_id' => $phases['sent']->id,
+            'start' => 1,
             'end' => null
         ]);
 
         Flow::updateOrCreate([
-            'phase_id' => 5,
-            'next_phase_id' => 6,
+            'phase_id' => $phases['sent']->id,
+            'next_phase_id' => $phases['approved']->id,
             'start' => null,
             'end' => 1
         ], [
-            'phase_id' => 5,
-            'next_phase_id' => 6,
-            'start' => null,
-            'end' => 1
-        ]);
-
-        Flow::updateOrCreate([
-            'phase_id' => 5,
-            'next_phase_id' => 7,
-            'start' => null,
-            'end' => null
-        ], [
-            'phase_id' => 5,
-            'next_phase_id' => 7,
-            'start' => null,
+            'phase_id' => $phases['sent']->id,
+            'next_phase_id' => $phases['approved']->id,
+            'start' => 1,
             'end' => null
         ]);
 
         Flow::updateOrCreate([
-            'phase_id' => 7,
-            'next_phase_id' => 2,
+            'phase_id' => $phases['sent']->id,
+            'next_phase_id' => $phases['rework']->id,
             'start' => null,
             'end' => null
-        ], [
-            'phase_id' => 7,
-            'next_phase_id' => 2,
+        ],  [
+            'phase_id' => $phases['sent']->id,
+            'next_phase_id' => $phases['rework']->id,
+            'start' => 1,
+            'end' => null
+        ]);
+
+        Flow::updateOrCreate([
+            'phase_id' => $phases['rework']->id,
+            'next_phase_id' => $phases['in_progress']->id,
             'start' => null,
+            'end' => null
+        ],  [
+            'phase_id' => $phases['rework']->id,
+            'next_phase_id' => $phases['in_progress']->id,
+            'start' => 1,
             'end' => null
         ]);
 

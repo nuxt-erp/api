@@ -33,10 +33,10 @@ class ProjectRepository extends RepositoryService
     public function store(array $data)
     {
         $this->samples = !empty($data["samples"]);
+        $user = auth()->user();
 
-        DB::transaction(function () use ($data)
+        DB::transaction(function () use ($data, $user)
         {
-            $user = auth()->user();
             $data['author_id'] = $user->id;
             lad($data);
             parent::store($data);
@@ -49,6 +49,7 @@ class ProjectRepository extends RepositoryService
                     'recipe_id'             => $sample['recipe_id'],
                     'phase_id'              => Phase::where('name', strtolower($sample['status']))->get()->first()->id,
                     'assignee_id'           => $sample['assignee_id'],
+                    'author_id'             => $user->id,
                     'name'                  => $sample['name'],
                     'status'                => $sample['status'],
                     'target_cost'           => $sample['target_cost'],
@@ -72,11 +73,11 @@ class ProjectRepository extends RepositoryService
         {
             $user = auth()->user();
             
-            
             parent::update($model, $data);
             
             ProjectSamples::where('project_id', $model->id)->delete();
             if(!empty($data["samples"])) {
+                $approved = true;
                 foreach ($data["samples"] as $sample)
                 {
                     $sampleArray = [
@@ -92,6 +93,14 @@ class ProjectRepository extends RepositoryService
                         'internal_code'         => $sample['internal_code'],
                         'external_code'         => $sample['external_code'],
                     ];
+                    if(strtolower($sample['status']) === 'sent' && $model['status'] !== 'awaiting feedback') {
+                        $model->update(array('status' => 'awaiting feedback'));
+                    } else if(strtolower($sample['status']) === 'rework' && $model['status'] !== 'updated') {
+                        $model->update(array('status' => 'updated'));
+                    }
+                    if(strtolower($sample['status']) !== 'approved') {
+                        $approved = false;    
+                    }
                     if(!empty($sample['id'])) {
                         $new = ProjectSamples::updateOrCreate(['id' =>  $sample['id']], $sampleArray);
                     } else {
@@ -100,6 +109,9 @@ class ProjectRepository extends RepositoryService
                     if (Arr::has($sample, 'attribute_ids')) {
                         $new->attributes()->sync($sample['attribute_ids']);
                     }
+                }
+                if($approved) {
+                    $model->update(array('status' => 'finished'));
                 }
             }
         });

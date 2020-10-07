@@ -16,12 +16,17 @@ class RDDatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $env = env('APP_ENV');
+
         Model::unguard();
         $this->call(ParameterTableSeeder::class);
         $this->call(PhaseTableSeeder::class);
         $this->call(FlowTableSeeder::class);
         $this->call(PhaseRoleSeeder::class);
         $this->call(RoleTableSeeder::class);
+        if($env === 'local') {
+            $this->call(ProjectAndSamplesSeeder::class);
+        }
 
         // for the recipe page
         Category::updateOrCreate([
