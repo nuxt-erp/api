@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 use App\Models\Company;
+use App\Models\User;
 use Modules\RD\Entities\Recipe;
 use Modules\RD\Repositories\RecipeRepository;
 use Modules\RD\Transformers\RecipeResource;
@@ -25,12 +26,12 @@ class RecipeController extends ControllerService implements CheckPolicies
         parent::__construct();
     }
 
-    public function print($company_id, $recipe_id){
+    public function print($user_id, $recipe_id){
 
-        $company = Company::find($company_id);
+        $user = User::find($user_id);
 
         DB::setDefaultConnection('tenant');
-        config(['database.connections.tenant.schema' => $company->schema]);
+        config(['database.connections.tenant.schema' => $user->company->schema]);
         DB::reconnect('tenant');
 
         $recipe = Recipe::with(['ingredients', 'type', 'attributes'])->find($recipe_id);
