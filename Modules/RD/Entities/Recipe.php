@@ -21,7 +21,7 @@ class Recipe extends ModelService
         'type_id', 'product_id', 'status',
         'name', 'category_id', 'total',
         'code', 'cost', 'version',
-        'approved_at', 'last_version'
+        'approved_at', 'last_version', 'carrier_id'
     ];
 
     public function getRules($request, $item = null)
@@ -33,6 +33,7 @@ class Recipe extends ModelService
             'last_updater_id'       => ['nullable', 'exists:public.users,id'],
             'approver_id'           => ['nullable', 'exists:public.users,id'],
             'type_id'               => ['nullable', 'exists:tenant.parameters,id'], // recipe_type
+            'carrier_id'            => ['nullable', 'exists:tenant.inv_products,id'], // category = Carrier
             'product_id'            => ['nullable', 'exists:tenant.inv_products,id'],
             'category_id'           => ['exists:tenant.inv_categories,id'],
             'status'                => ['string', 'max:255'],
@@ -93,6 +94,11 @@ class Recipe extends ModelService
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function carrier()
+    {
+        return $this->belongsTo(Product::class, 'carrier_id');
     }
 
 }

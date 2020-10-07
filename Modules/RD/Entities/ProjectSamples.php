@@ -31,7 +31,7 @@ class ProjectSamples extends ModelService
     ];
 
     protected $fillable = [
-        'project_id', 'recipe_id', 'phase_id', 'assignee_id', 
+        'project_id', 'recipe_id', 'phase_id', 'assignee_id',
         'internal_code', 'external_code', 'author_id',
         'name', 'status', 'target_cost',
         'feedback', 'comment', 'finished_at'
@@ -43,29 +43,31 @@ class ProjectSamples extends ModelService
         $rules = [
             'project_id'              => ['exists:tenant.rd_projects,id'],
             'recipe_id'               => ['exists:tenant.rd_recipes,id'],
-            'phase_id'                 => ['exists:tenant.rd_phases,id'],
+            'phase_id'                => ['exists:tenant.rd_phases,id'],
             'assignee_id'             => ['exists:users,id'],
             'author_id'               => ['nullable', 'exists:public.users,id'],
             'name'                    => ['nullable', 'max:255'],
             'internal_code'           => ['string', 'max:255'],
             'external_code'           => ['string', 'max:255'],
-            'status'                  => ['string', 'max:255'],
             'target_cost'             => ['nullable'],
             'feedback'                => ['nullable', 'string', 'max:255'],
             'comment'                 => ['nullable', 'string', 'max:255'],
-
         ];
 
         // rules when creating the item
         if (is_null($item)) {
-            $rules['project_id'][] = 'required';
-            $rules['status'][] = 'required';
-            $rules['internal_code'][] = 'required';
-            $rules['external_code'][] = 'required';
+            $rules['project_id'][]      = 'required';
+            $rules['status'][]          = 'required';
+            $rules['internal_code'][]   = 'required';
+            $rules['external_code'][]   = 'required';
         }
         // rules when updating the item
         else{
-
+            $rules['recipe_id'][]       = 'nullable';
+            $rules['project_id'][]      = 'nullable';
+            $rules['status'][]          = 'nullable';
+            $rules['internal_code'][]   = 'nullable';
+            $rules['external_code'][]   = 'nullable';
         }
 
         return $rules;

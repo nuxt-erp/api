@@ -56,12 +56,14 @@ class ProjectSamplesRepository extends RepositoryService
         // FLAVORIST UPDATE
         if(!empty($data['recipe'])){
 
-            $recipe_id  = null;
             $user       = auth()->user();
 
             // existing recipe
             if(!empty($data['recipe']['id'])){
-                if($data['new_version']){
+
+                // create the next version
+                if($data['recipe']['new_version']){
+                    // get current recipe
                     $recipe = Recipe::find($data['recipe']['id']);
 
                     $new_recipe                     = $recipe->replicate();
@@ -77,28 +79,34 @@ class ProjectSamplesRepository extends RepositoryService
                     $new_recipe->version++;
                     $new_recipe->push();
 
-                    // copy ingredients?
-                    //$new_recipe->ingredients()->sync($model->ingredients);
-                }
-                else{
-                    $recipe_id = $data['recipe']['id'];
+                    // copy ingredients
+                    $new_recipe->ingredients()->sync($data['recipe']['ingredients']);
+
+                    // update sample recipe id
+                    $data['recipe_id'] = $new_recipe->id;
                 }
             }
             else{
                 // new recipe
+                // 1 add the recipe
+                // 2 add ingredients to the recipe
+                // 3 update sample with recipe id
+
+                //$data['recipe']['ingredients']
                 // $recipe = Recipe::create([
 
                 // ]);
-                //$recipe_id= $recipe->id;
+                //$data['recipe_id'] = $recipe->id;
             }
+        }
+
+        // FINISH
+        if(!empty($data['flavorist_finish']) && $data['flavorist_finish']){
+
+        }
+
+        parent::update($model, $data);
 
 
-            parent::update($model, [
-                'recipe_id' => $recipe_id
-            ]);
-        }
-        else{
-            parent::update($model, $data);
-        }
     }
 }
