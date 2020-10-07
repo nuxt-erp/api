@@ -41,6 +41,10 @@ class RecipeItems extends ModelService
 
     }
 
+    public function getNameAttribute(){
+        return $this->product->sku . ' - '. $this->product->name;
+    }
+
     public function recipe()
     {
         return $this->belongsTo(Recipe::class);

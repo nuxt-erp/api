@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::get('recipe_print/{company_id}/{recipe_id}', 'RecipeController@print');
+
 Route::middleware('auth:api')->group(function () {
 
     // module prefix

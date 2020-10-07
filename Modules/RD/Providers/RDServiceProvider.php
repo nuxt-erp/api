@@ -89,7 +89,7 @@ class RDServiceProvider extends ServiceProvider
         $this->app->bind(ProjectResource::class, function () {
             return new ProjectResource(new Project());
         });
-        
+
         $this->app->bind(ProjectSampleAttributesRepository::class, function () {
             return new ProjectSampleAttributesRepository(new ProjectSampleAttributes());
         });
@@ -240,6 +240,10 @@ class RDServiceProvider extends ServiceProvider
         $this->publishes([
             $sourcePath => $viewPath
         ], ['views', $this->moduleNameLower . '-module-views']);
+
+        lad('register views');
+        lad('$sourcePath', $sourcePath);
+        lad($this->getPublishableViewPaths());
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
     }

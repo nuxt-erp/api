@@ -60,7 +60,7 @@ class Recipe extends ModelService
 
     public function ingredients()
     {
-        return $this->belongsToMany(RecipeItems::class);
+        return $this->hasMany(RecipeItems::class);
     }
 
     public function author()

@@ -5,8 +5,12 @@ namespace Modules\RD\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
+use App\Models\Company;
+use Modules\RD\Entities\Recipe;
 use Modules\RD\Repositories\RecipeRepository;
 use Modules\RD\Transformers\RecipeResource;
+use PDF;
+use Illuminate\Support\Facades\DB;
 
 class RecipeController extends ControllerService implements CheckPolicies
 {
@@ -19,5 +23,23 @@ class RecipeController extends ControllerService implements CheckPolicies
         $this->repository = $repository;
         $this->resource = $resource;
         parent::__construct();
+    }
+
+    public function print($company_id, $recipe_id){
+
+        $company = Company::find($company_id);
+
+        DB::setDefaultConnection('tenant');
+        config(['database.connections.tenant.schema' => $company->schema]);
+        DB::reconnect('tenant');
+
+        $recipe = Recipe::with(['ingredients', 'type', 'attributes'])->find($recipe_id);
+
+        if($recipe){
+            //return view('rd::recipe', ['recipe' => $recipe]);
+            $pdf = PDF::loadView('rd::recipe', ['recipe' => $recipe]);
+            return $pdf->download('recipe.pdf');
+        }
+
     }
 }

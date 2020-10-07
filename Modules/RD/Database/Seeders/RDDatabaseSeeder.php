@@ -16,7 +16,7 @@ class RDDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $env = env('APP_ENV');
+        $env = env('APP_ENV', 'local');
 
         Model::unguard();
         $this->call(ParameterTableSeeder::class);
