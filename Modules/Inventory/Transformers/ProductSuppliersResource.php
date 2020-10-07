@@ -26,6 +26,7 @@ class ProductSuppliersResource extends ResourceService
             'last_price'        => $this->last_price,
             'last_supplied'     => $this->last_supplied,
             'minimum_order'     => $this->minimum_order,
+            'locations'         => ProductSupplierLocationsResource::collection($this->locations),
             'created_at'        => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'        => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];

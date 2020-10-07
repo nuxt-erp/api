@@ -34,5 +34,10 @@ class RDDatabaseSeeder extends Seeder
             'is_enabled'=> 1
         ]);
 
+        Category::updateOrCreate([
+            'name'      => 'Raw Material',
+            'is_enabled'=> 1
+        ]);
+
     }
 }
