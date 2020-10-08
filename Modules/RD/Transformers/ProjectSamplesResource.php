@@ -19,14 +19,14 @@ class ProjectSamplesResource extends ResourceService
         if($this->status == 'pending'){
             $actions[] = [
                 'name'  => !$this->recipe_id ? 'Develop' : 'Edit / Preview',
-                'code'  => 'develop',
+                'code'  => 'sample',
                 'type'  => 'primary'
             ];
         }
         else{
             $actions[] = [
                 'name'  => 'Approve Sample',
-                'code'  => 'approveSample',
+                'code'  => 'sample',
                 'type'  => 'primary'
             ];
         }

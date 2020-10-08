@@ -58,6 +58,7 @@ class ProjectSamplesRepository extends RepositoryService
 
     public function update($model, array $data)
     {
+        $approval        = !empty($data['supervisor_approval']) && $data['supervisor_approval'];
         $finish          = !empty($data['flavorist_finish']) && $data['flavorist_finish'];
         $recipe_update   = !empty($data['recipe']);
 
@@ -89,7 +90,7 @@ class ProjectSamplesRepository extends RepositoryService
                         $new_recipe->push();
 
                         // copy ingredients
-                        $new_recipe->ingredients()->sync($data['recipe']['ingredients']);
+                        $new_recipe->ingredients->sync($data['recipe']['ingredients']);
                         // update sample recipe id
                         $data['recipe_id'] = $new_recipe->id;
                     });
@@ -101,24 +102,23 @@ class ProjectSamplesRepository extends RepositoryService
                 // 2 add ingredients to the recipe
                 // 3 update sample with recipe id
 
-                //$data['recipe']['ingredients']
-                // $recipe = Recipe::create([
-
-                // ]);
-                //$data['recipe_id'] = $recipe->id;
+                $recipe = Recipe::create($data['recipe']);
+                $recipe->ingredients->sync($data['recipe']['ingredients']);
+                $data['recipe_id'] = $recipe->id;
             }
 
         }
 
         // FINISH
-        if($finish){
+        if($finish || $approval){
             $flow = Flow::where('phase_id', $model->phase_id)->first();
-            //$phase              = Phase::where('name', 'ILIKE', '%waiting approval%')->firstOrFail();
-            $data['phase_id']   = $flow->next_phase_id; //$phase->id;
-            $data['finished_at']= now();
-            $data['status']     = $flow->next_phase->name; //@todo fix sample status
-
+            $data['phase_id']   = $flow->next_phase_id;
+            if($finish){
+                $data['finished_at']= now();
+            }
+            $data['status']     = $flow->next_phase->name;
         }
+
 
         // option 1 - recipe update without start
         // option 2 - finish without start
