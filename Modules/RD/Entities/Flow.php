@@ -35,6 +35,24 @@ class Flow extends ModelService
 
         return $rules;
     }
+   
+    public function scopePhaseRole($query, $type)
+    {
+
+        $user_roles = auth()->user()->roles->pluck('id');
+        $phase_roles = PhaseRole::whereIn('role_id', $user_roles)->get();
+        $flows = Flow::where('phase_id', $type)->get();
+        $phases = [Phase::find($type)];
+        foreach($flows as $flow) {
+            foreach($phase_roles as $phase_role) {
+                if($flow->next_phase->id === $phase_role->phase_id) {
+                    $phases[] = $flow->next_phase;
+                }
+            }
+        }
+
+        return $phases;
+    }
     public function phase()
     {
         return $this->belongsTo(Phase::class, 'phase_id', 'id');

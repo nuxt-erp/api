@@ -38,6 +38,10 @@ class PhaseRole extends ModelService
     {
         return $this->belongsTo(Phase::class, 'phase_id', 'id');
     }
+    public function flows()
+    {
+        return $this->hasMany(Flow::class, 'phase_id', 'id');
+    }
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id', 'id');
