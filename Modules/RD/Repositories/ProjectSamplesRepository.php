@@ -41,6 +41,10 @@ class ProjectSamplesRepository extends RepositoryService
 
             $user = auth()->user();
             $data['author_id'] = $user->id;
+            //@todo
+            //1 - get the first phase_id from the flow
+            //2 - get status
+            // $data['status']     = ;
 
             parent::store($data);
 
@@ -108,10 +112,11 @@ class ProjectSamplesRepository extends RepositoryService
 
         // FINISH
         if($finish){
-            $phase              = Phase::where('name', 'ILIKE', '%waiting approval%')->firstOrFail();
-            $data['phase_id']   = $phase->id;
+            $flow = Flow::where('phase_id', $model->phase_id)->first();
+            //$phase              = Phase::where('name', 'ILIKE', '%waiting approval%')->firstOrFail();
+            $data['phase_id']   = $flow->next_phase_id; //$phase->id;
             $data['finished_at']= now();
-            $data['status']     = 'waiting approval'; //@todo fix sample status
+            $data['status']     = $flow->next_phase->name; //@todo fix sample status
 
         }
 
@@ -119,7 +124,8 @@ class ProjectSamplesRepository extends RepositoryService
         // option 2 - finish without start
         if(!$model->started_at && ($recipe_update || $finish)){
             $data['started_at'] = now();
-            $data['status']     = $data['status'] ?? 'in progress';
+            //@todo when we set to in progress? and how we should do it?
+            //$data['status']     = $data['status'] ?? $model->phase->name;
         }
 
         parent::update($model, $data);
