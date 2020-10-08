@@ -24,30 +24,9 @@ class FlowController extends ControllerService implements CheckPolicies
         $this->resource = $resource;
         parent::__construct();
     }
-    public function getSampleFlows(){
-        $phase_id = (int)request()->query('phase_id');
-
-        $user_roles = auth()->user()->roles()->get()->pluck('id');
-        $phase_roles = PhaseRole::whereIn('role_id', $user_roles)->get();
-     
-        $flows = Flow::where('phase_id', $phase_id)->get();
-        $i =0;
-        $phases = [];
-
-        $current_phase = Phase::find($phase_id);
-        $phases[$i] = $current_phase;
-        $i++;
-
-        foreach($flows as $flow) {
-            $next = $flow->next_phase()->get()->first();
-            foreach($phase_roles as $phase_role) {
-                if($next->id === $phase_role->phase_id) {
-                    $phases[$i] = $next;
-                    $i++;
-                }
-            }         
-        }        
-        
+    public function getSampleFlows(Request $request){
+        $phase_id = (int)$request->query('phase_id');
+        $phases = Flow::phaseRole($phase_id);
         return $this->sendCollectionResponse($phases, ListResource::class);
     }
 }
