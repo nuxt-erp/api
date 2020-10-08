@@ -17,26 +17,26 @@ class ProjectLogsPolicy
 
     public function index(User $currentUser)
     {
-        return $currentUser->isAdmin();
+        return TRUE;
     }
 
     public function show(User $currentUser, ProjectLogs $target)
     {
-        return $currentUser->isAdmin();
+        return TRUE;
     }
 
     public function store(User $currentUser)
     {
-        return $currentUser->isAdmin();
+        return TRUE;
     }
 
     public function update(User $currentUser, ProjectLogs $target)
     {
-        return $currentUser->isAdmin();
+        return TRUE;
     }
 
     public function destroy(User $currentUser, ProjectLogs $target)
     {
-        return $currentUser->isAdmin();
+        return TRUE;
     }
 }

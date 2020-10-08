@@ -3,6 +3,7 @@
 namespace Modules\RD\Entities;
 
 use App\Models\ModelService;
+use App\Models\User;
 use Illuminate\Validation\Rule;
 
 class ProjectLogs extends ModelService
@@ -12,7 +13,7 @@ class ProjectLogs extends ModelService
     protected $table = 'rd_project_logs';
 
     protected $fillable = [
-        'project_id','status', 'code',
+        'project_id', 'updater_id', 'status', 'code',
         'comment'
     ];
 
@@ -20,6 +21,7 @@ class ProjectLogs extends ModelService
     {
         // generic rules
         $rules = [
+            'updater_id'   => ['nullable', 'exists:public.users,id'],
             'project_id'   => ['exists:tenant.rd_projects,id']
         ];
 
@@ -27,9 +29,7 @@ class ProjectLogs extends ModelService
         // rules when creating the item
         if (is_null($item)) {
             $rules['project_id'][] = 'required';
-            $rules['status'][] = 'required';
-            $rules['code'][] = 'required';
-            $rules['comment'][] = 'required';
+            $rules['updater_id'][] = 'required';
         }
 
         return $rules;
@@ -38,5 +38,9 @@ class ProjectLogs extends ModelService
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id');
+    }
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updater_id');
     }
 }

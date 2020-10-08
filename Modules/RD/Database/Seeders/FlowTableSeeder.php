@@ -15,6 +15,7 @@ class FlowTableSeeder extends Seeder
 
     public function run()
     {
+        
         $phases = [
             'pending'            => Phase::updateOrCreate(['name' => 'pending'], ['name' => 'pending']),
             'in_progress'        => Phase::updateOrCreate(['name' => 'in progress'],  ['name' => 'in progress']),
