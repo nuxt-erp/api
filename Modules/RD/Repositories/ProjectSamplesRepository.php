@@ -137,7 +137,6 @@ class ProjectSamplesRepository extends RepositoryService
                 lad($flow->next_phase->name);
                 $data['status']     = $flow->next_phase->name;
             }
-<<<<<<< HEAD
             if($reject){
                 $data['phase_id']   = 2;
                 $data['status']     = 'in progress';
@@ -146,7 +145,6 @@ class ProjectSamplesRepository extends RepositoryService
 
             // option 1 - recipe update without start
             // option 2 - finish without start
-=======
             else{
                 // IF FRONTEND SEND STATUS
                 if(!empty($data['status'])){
@@ -157,7 +155,6 @@ class ProjectSamplesRepository extends RepositoryService
             // STATUS HANDLE <======
 
             // HANDLE START AT
->>>>>>> da9d19b3bed322ba14dc0991748f9c37db192eae
             if(!$model->started_at && ($recipe_update || $finish)){
                 $data['started_at'] = now();
             }
