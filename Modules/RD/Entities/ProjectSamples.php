@@ -31,11 +31,11 @@ class ProjectSamples extends ModelService
     ];
 
     protected $fillable = [
-        'project_id', 'recipe_id', 'phase_id', 'assignee_id',
-        'internal_code', 'external_code', 'author_id',
-        'name', 'status', 'target_cost',
-        'feedback', 'comment', 'finished_at',
-        'started_at'
+        'project_id', 'recipe_id', 'phase_id',
+        'assignee_id', 'internal_code', 'external_code',
+        'author_id', 'name', 'status',
+        'target_cost', 'feedback', 'comment',
+        'finished_at', 'started_at'
     ];
 
     public function getRules($request, $item = null)
