@@ -13,8 +13,9 @@ class ProjectLogs extends ModelService
     protected $table = 'rd_project_logs';
 
     protected $fillable = [
-        'project_id', 'updater_id', 'status', 'code',
-        'comment'
+        'project_id', 'status', 'code',
+        'comment', 'start_at', 'closet_at',
+        'updater_id', 'is_start'
     ];
 
     public function getRules($request, $item = null)
@@ -24,7 +25,6 @@ class ProjectLogs extends ModelService
             'updater_id'   => ['nullable', 'exists:public.users,id'],
             'project_id'   => ['exists:tenant.rd_projects,id']
         ];
-
 
         // rules when creating the item
         if (is_null($item)) {

@@ -20,6 +20,14 @@ class ProjectSamplesRepository extends RepositoryService
             $this->queryBuilder->where('assignee_id', $user->id);
         }
 
+        if(empty($searchCriteria['project_id']) && $user->hasRole('rd_supervisor')){
+            $this->queryBuilder->where('status', 'ILIKE', 'waiting approval');
+        }
+
+        if(empty($searchCriteria['project_id']) && $user->hasRole('rd_flavorist')){
+            $this->queryBuilder->where('status', 'ILIKE', 'in progress');
+        }
+
         if(!empty($searchCriteria['created_at'])){
             $this->queryBuilder->whereBetween('created_at', $searchCriteria['created_at']);
         }
@@ -49,11 +57,18 @@ class ProjectSamplesRepository extends RepositoryService
 
             if(!empty($data['id'])){
                 $sample = ProjectSamples::find($data['id']);
+                if(empty($sample->assignee_id) && !empty($data['assignee_id'])){
+                    $data['status'] = 'in progress';
+                }
                 $this->update($sample, $data);
             }
             else{
                 $user               = auth()->user();
                 $data['author_id']  = $user->id;
+
+                if(!empty($data['assignee_id'])){
+                    $data['status'] = 'in progress';
+                }
 
                 // option 1 - no status in the array - find the first phase in the flow
                 if(empty($data['status'])){
@@ -67,6 +82,7 @@ class ProjectSamplesRepository extends RepositoryService
                     $phase = Phase::where('name', $data['status'])->first();
                     $data['phase_id']   = $phase->id;
                 }
+
                 parent::store($data);
                 if (Arr::has($data, 'attribute_ids')) {
                     $this->model->attributes()->sync($data['attribute_ids']);
@@ -98,7 +114,7 @@ class ProjectSamplesRepository extends RepositoryService
                     if($data['recipe']['new_version']){
 
                             // get current recipe
-                            $recipe                         = Recipe::findOrFail($data['recipe']['id']);
+                            $recipe         = Recipe::findOrFail($data['recipe']['id']);
 
                             $new_recipe                     = $recipe->replicate();
                             $new_recipe->author_id          = $user->id;
@@ -107,11 +123,16 @@ class ProjectSamplesRepository extends RepositoryService
                             $new_recipe->approved_at        = null;
                             $new_recipe->status             = Recipe::NEW_RECIPE;
                             $new_recipe->last_version       = FALSE;
-                            $new_recipe->carrier_id         = $data['recipe']['carrier_id'];
+                            $new_recipe->carrier_id         = $data['recipe']['carrier_id'] ?? null;
                             //$new_recipe->cost             = $data['recipe']['cost']; //@todo sum from the ingredients?
                             //$new_recipe->total            = $data['recipe']['total']; //@todo sum from the ingredients?
-                            $new_recipe->version++;
-                            $new_recipe->push();
+                            $new_recipe->version            = $recipe->version + 1;
+                            $new_recipe->last_version       = 1;
+
+                            $new_recipe->save();
+
+                            $recipe->last_version = 0;
+                            $recipe->save();
 
                             // copy ingredients
                             $this->syncIngredients($new_recipe->id, $data['recipe']['ingredients']);
@@ -145,7 +166,11 @@ class ProjectSamplesRepository extends RepositoryService
                 $data['status']     = strtolower($flow->next_phase->name);
             }
             else{
-                // IF FRONTEND SEND STATUS
+                if( ($model->status == 'pending' || empty($model->assignee_id)) && !empty($data['assignee_id'])){
+                    $data['status']     = 'in progress';
+                }
+
+                // IF FRONTEND SEND STATUS OR WE GET SOMETHING
                 if(!empty($data['status'])){
                     $data['status']     = strtolower($data['status']);
                     $data['phase_id']   = Phase::where('name', $data['status'])->first()->id;

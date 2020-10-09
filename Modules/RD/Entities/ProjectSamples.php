@@ -4,6 +4,7 @@ namespace Modules\RD\Entities;
 use App\Models\Parameter;
 
 use App\Models\ModelService;
+use App\Models\User;
 use Illuminate\Validation\Rule;
 class Constants {
     const rd_requester        = [
