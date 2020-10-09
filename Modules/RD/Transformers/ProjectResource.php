@@ -21,7 +21,7 @@ class ProjectResource extends ResourceService
             'id'                 => $this->id,
             'full_id'            => strval($this->id) . "-" . strval($this->iteration),
             'author_id'          => $this->author_id,
-            'author_name'        => $this->author->name,
+            'author_name'        => optional($this->author)->name,
             'customer_id'        => $this->customer_id,
             'customer_name'      => $this->customer->name,
             'actions'            => $actions,
