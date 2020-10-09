@@ -91,12 +91,47 @@ class ProjectRepository extends RepositoryService
                 parent::update($model, $data);
             }
 
-            $sample_repo = new ProjectSamplesRepository(new ProjectSamples());
+            //@todo find samples missing and delete
+            $sample_repo    = new ProjectSamplesRepository(new ProjectSamples());
+            $all_approved   = TRUE;
+            $sample_sent    = FALSE;
+            $sample_rework  = FALSE;
+
             foreach ($data["samples"] as $sample) {
+                if(strtolower($sample['status']) !== 'approved'){
+                    $all_approved = FALSE;
+                }
+                if(strtolower($sample['status']) === 'sent'){
+                    $sample_sent = TRUE;
+                }
+                if(strtolower($sample['status']) === 'rework'){
+                    $sample_rework = TRUE;
+                }
                 $sample['project_id'] = $this->model->id;
                 $sample_repo->store($sample);
             }
+            // ALL SAMPLES APPROVED
+            if($all_approved){
+                $this->model->status = 'finished';
+                $project_log['status'] = 'finished';
+            }
+            // SAMPLE SENT TO FEEDBACK
+            elseif($sample_sent && $model['status'] !== 'awaiting feedback'){
+                $this->model->status = 'awaiting feedback';
+                $project_log['status'] = 'awaiting feedback';
+            }
+            // SAMPLE SENT TO REWORK
+            elseif($sample_rework && $model['status'] !== 'updated'){
+                $this->model->status = 'updated';
+                $project_log['status'] = 'updated';
+            }
 
+            $this->model->save();
+
+            // ONLY CREATE LOG IF SOMETHING HAPPENED
+            if(!empty($project_log['status'])){
+                ProjectLogs::create($project_log);
+            }
         });
 
     }
