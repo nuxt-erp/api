@@ -47,18 +47,26 @@ class ProjectSamplesRepository extends RepositoryService
     {
         DB::transaction(function () use ($data){
 
-            $user = auth()->user();
-            $data['author_id'] = $user->id;
-            //@todo
-            //1 - get the first phase_id from the flow
-            //2 - get status
-            // $data['status']     = ;
-
             if(!empty($data['id'])){
                 $sample = ProjectSamples::find($data['id']);
                 $this->update($sample, $data);
             }
             else{
+                $user               = auth()->user();
+                $data['author_id']  = $user->id;
+
+                // option 1 - no status in the array - find the first phase in the flow
+                if(empty($data['status'])){
+                    $flow = Flow::where('start', 1)->first();
+                    $data['status']     = $flow->phase->name;
+                    $data['phase_id']   = $flow->phase_id;
+                }
+                // option 2 - status came, but no phase id - find the phase with this name
+                elseif(!empty($data['status']) && empty($data['phase_id'])){
+                    $data['status']     = strtolower($data['status']);
+                    $phase = Phase::where('name', $data['status'])->first();
+                    $data['phase_id']   = $phase->id;
+                }
                 parent::store($data);
                 if (Arr::has($data, 'attribute_ids')) {
                     $this->model->attributes()->sync($data['attribute_ids']);
@@ -72,6 +80,7 @@ class ProjectSamplesRepository extends RepositoryService
 
     public function update($model, array $data)
     {
+
         DB::transaction(function () use ($model, &$data){
 
             $approval       = !empty($data['supervisor_approval']) && $data['supervisor_approval'];
@@ -133,16 +142,15 @@ class ProjectSamplesRepository extends RepositoryService
                 if($finish){
                     $data['finished_at']= now();
                 }
-                $data['status']     = $flow->next_phase->name;
+                $data['status']     = strtolower($flow->next_phase->name);
             }
             else{
                 // IF FRONTEND SEND STATUS
                 if(!empty($data['status'])){
                     $data['status']     = strtolower($data['status']);
-                    $data['phase_id']   = Phase::where('name', strtolower($data['status']))->first()->id;
+                    $data['phase_id']   = Phase::where('name', $data['status'])->first()->id;
                 }
             }
-            // STATUS HANDLE <======
 
             // HANDLE START AT
             if(!$model->started_at && ($recipe_update || $finish)){
@@ -151,6 +159,9 @@ class ProjectSamplesRepository extends RepositoryService
 
             parent::update($model, $data);
 
+            if (Arr::has($data, 'attribute_ids')) {
+                $this->model->attributes()->sync($data['attribute_ids']);
+            }
             $this->createLog($this->model);
         });
 
