@@ -31,7 +31,12 @@ class ProjectSamplesRepository extends RepositoryService
 
         if(!empty($searchCriteria['name'])){
             $text = '%' . Arr::pull($searchCriteria, 'name') . '%';
-            $this->queryBuilder->where('name', 'ILIKE', $text);
+
+            $this->queryBuilder->where(function ($query) use($text) {
+                $query->where('name', 'ILIKE', $text)
+                ->orWhere('internal_code', 'LIKE', $text)
+                ->orWhere('external_code', 'LIKE', $text);
+            });
         }
 
         return parent::findBy($searchCriteria);

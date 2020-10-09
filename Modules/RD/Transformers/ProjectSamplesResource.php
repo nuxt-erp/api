@@ -37,6 +37,7 @@ class ProjectSamplesResource extends ResourceService
             'recipe_id'         => $this->recipe_id,
             'recipe_name'       => optional($this->recipe)->name,
             'recipe_version'    => optional($this->recipe)->version,
+            'recipe_type'       => $this->recipe ? optional($this->recipe->type)->name : null,
             'recipe_version_qty'=> $this->recipe_version_qty,
             'phase_id'          => $this->phase_id,
             'actions'           => collect($actions),
