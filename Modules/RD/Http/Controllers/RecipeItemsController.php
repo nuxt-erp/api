@@ -8,7 +8,7 @@ use App\Http\Controllers\ControllerService;
 use Modules\RD\Repositories\RecipeItemsRepository;
 use Modules\RD\Transformers\RecipeItemsResource;
 
-class RecipeItemsController extends ControllerService implements CheckPolicies
+class RecipeItemsController extends ControllerService
 {
 
     protected $repository;
