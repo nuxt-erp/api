@@ -123,6 +123,9 @@ class ProjectRepository extends RepositoryService
                         'internal_code'         => $sample['internal_code'],
                         'external_code'         => $sample['external_code'],
                     ];
+                    if(!empty($sample['assignee_id'])) {
+                        $sampleArray['status'] = 'in progress';
+                    }
                     if(strtolower($sampleArray['status']) === 'sent' && $model['status'] !== 'awaiting feedback') {
                         $model->update(array('status' => 'awaiting feedback'));
                         $project_log['status'] = 'awaiting feedback';

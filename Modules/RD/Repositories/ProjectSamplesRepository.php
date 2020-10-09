@@ -69,10 +69,11 @@ class ProjectSamplesRepository extends RepositoryService
         DB::transaction(function () use ($model, &$data){
 
             $approval       = !empty($data['supervisor_approval']) && $data['supervisor_approval'];
+            $reject         = !empty($data['supervisor_reject']) && $data['supervisor_reject'];
             $finish         = !empty($data['flavorist_finish']) && $data['flavorist_finish'];
             $recipe_update  = !empty($data['recipe']);
             $user           = auth()->user();
-
+            lad($approval);
             // FLAVORIST UPDATE
             if($recipe_update){
 
@@ -126,9 +127,14 @@ class ProjectSamplesRepository extends RepositoryService
                 if($finish){
                     $data['finished_at']= now();
                 }
+                lad($flow->next_phase->name);
                 $data['status']     = $flow->next_phase->name;
             }
-
+            if($reject){
+                $data['phase_id']   = 2;
+                $data['status']     = 'in progress';
+            }
+        
 
             // option 1 - recipe update without start
             // option 2 - finish without start
