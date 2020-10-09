@@ -66,7 +66,7 @@ class ExpensesProposalRepository extends RepositoryService
                     $query->where('author_id', $user->id)
                         ->orWhereHas('category', function (Builder $query) use ($user) {
                             $query->where('team_leader_id', $user->id)
-                                ->orWhere('director_id', $user->id);
+                                ->orWhere('sponsor_id', $user->id);
                         });
                 });
 
@@ -105,7 +105,7 @@ class ExpensesProposalRepository extends RepositoryService
                     $query->where('author_id', $user->id)
                         ->orWhereHas('category', function (Builder $query) use ($user) {
                             $query->where('team_leader_id', $user->id)
-                                ->orWhere('director_id', $user->id);
+                                ->orWhere('sponsor_id', $user->id);
                         });
                 });
 
@@ -229,14 +229,14 @@ class ExpensesProposalRepository extends RepositoryService
         $category = Category::where('id', $data['expenses_category_id'])->first();
         $rule = ExpensesRule::where('start_value', '<', $data['total_cost'])->where('end_value', '>=', $data['total_cost'])->orWhereNull('end_value')->orderBy('start_value')->first();
         $team_leader_required = $rule->team_leader_approval;
-        $director_required = $rule->director_approval;
+        $director_required = $rule->sponsor_approval;
         $pending_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'pending')->pluck('id')->first();
         $approved_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
         
         // TEAM LEADER AND DIRECTOR APPROVAL REQUIRED
         if ($team_leader_required && $director_required) {
             // AUTHOR OF EXPENSE IS THE DIRECTOR OF THE CATEGORY, APPROVE DIRECTLY
-            if ($user->id === $category->director_id) {
+            if ($user->id === $category->sponsor_id) {
                 $data['status_id'] = $approved_id;
             }
             // AUTHOR OF EXPENSE IS THE TEAM LEADER OF THE CATEGORY, APPROVE TEAM LEADER AND WAIT FOR DIRECTOR APPROVAL
@@ -251,7 +251,7 @@ class ExpensesProposalRepository extends RepositoryService
         // ONLY TEAM LEADER APPROVAL REQUIRED
         else if($team_leader_required && !$director_required) {
             // AUTHOR OF EXPENSE IS THE DIRECTOR OR TEAM LEADER OF THE CATEGORY, APPROVE DIRECTLY
-            if ($user->id === $category->team_leader_id || $user->id === $category->director_id) {
+            if ($user->id === $category->team_leader_id || $user->id === $category->sponsor_id) {
                 $data['status_id'] = $approved_id;
             }
             // AUTHOR OF EXPENSE IS OTHER USER, WAIT FOR TEAM LEADER APPROVAL
@@ -261,7 +261,7 @@ class ExpensesProposalRepository extends RepositoryService
         }
         else if(!$team_leader_required && $director_required) {
             // AUTHOR OF EXPENSE IS THE DIRECTOR OF THE CATEGORY, APPROVE DIRECTLY
-            if ($user->id === $category->director_id) {
+            if ($user->id === $category->sponsor_id) {
                 $data['status_id'] = $approved_id;
             }
             // AUTHOR OF EXPENSE IS OTHER USER, WAIT DIRECTOR APPROVAL
@@ -293,12 +293,12 @@ class ExpensesProposalRepository extends RepositoryService
         $proposal   = ExpensesProposal::find($id);
         $rule       = $proposal->rule();
         $team_leader_required = $rule->team_leader_approval;
-        $director_required = $rule->director_approval;
+        $director_required = $rule->sponsor_approval;
         $team_leader_approval = $team_leader_required ? ($proposal->author_id===$proposal->category->team_leader_id ? true : ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $proposal->category->team_leader_id)->first()) : null;
-        $director_approval = $director_required ? ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $proposal->category->director_id)->first() : null;
+        $sponsor_approval = $director_required ? ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $proposal->category->sponsor_id)->first() : null;
         $approved_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
 
-        if ($team_leader_required && $director_required && $team_leader_approval && $director_approval) {
+        if ($team_leader_required && $director_required && $team_leader_approval && $sponsor_approval) {
             $proposal->status_id = $approved_id;
         } else if($team_leader_required && !$director_required && $team_leader_approval) {
             $proposal->status_id = $approved_id;
@@ -385,12 +385,12 @@ class ExpensesProposalRepository extends RepositoryService
     {   
         $to = [];
        
-        if ($proposal->rule()->team_leader_approval && $proposal->author_id !== $proposal->category->team_leader_id && $proposal->author_id !== $proposal->category->director_id) {
+        if ($proposal->rule()->team_leader_approval && $proposal->author_id !== $proposal->category->team_leader_id && $proposal->author_id !== $proposal->category->sponsor_id) {
             $to[] = $proposal->category->team_leader->email;
         }
 
-        if ($proposal->rule()->director_approval && $proposal->author_id !== $proposal->category->director_id ) {
-            $to[] = $proposal->category->director->email;
+        if ($proposal->rule()->sponsor_approval && $proposal->author_id !== $proposal->category->sponsor_id ) {
+            $to[] = $proposal->category->sponsor->email;
         }
 
         $data = [

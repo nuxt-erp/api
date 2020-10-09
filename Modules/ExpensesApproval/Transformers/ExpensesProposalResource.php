@@ -36,7 +36,7 @@ class ExpensesProposalResource extends JsonResource
                         'icon'  => 'delete',
                         'type'  => 'danger'
                     ]));
-                } else if($user->id === $this->category->team_leader_id || $user->id === $this->category->director_id){
+                } else if($user->id === $this->category->team_leader_id || $user->id === $this->category->sponsor_id){
 
 
                     $user_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $user->id)->first();
@@ -74,7 +74,7 @@ class ExpensesProposalResource extends JsonResource
                     }                                    
                 }
             } else if($this->status->value === 'approved') {
-                if ($user->id === $this->category->director_id || ($user->id === $this->category->team_leader_id && $this->author_id !== $this->category->director_id)) {
+                if ($user->id === $this->category->sponsor_id || ($user->id === $this->category->team_leader_id && $this->author_id !== $this->category->sponsor_id)) {
                     $actions->push(collect([
                         'name'  => 'Cancel Expense',
                         'code'  => 'cancel_expense',
@@ -110,14 +110,14 @@ class ExpensesProposalResource extends JsonResource
             }
         } 
 
-        if($this->rule()->director_approval) {
-            if($this->author_id !== $this->category->director_id) {                
-                $director_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->director_id)->first();
-                if(!$director_approval) {
+        if($this->rule()->sponsor_approval) {
+            if($this->author_id !== $this->category->sponsor_id) {                
+                $sponsor_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->sponsor_id)->first();
+                if(!$sponsor_approval) {
                     if($approvers) {
-                        $approvers .= ', ' . $this->category->director->name;
+                        $approvers .= ', ' . $this->category->sponsor->name;
                     } else {
-                        $approvers .= $this->category->director->name;
+                        $approvers .= $this->category->sponsor->name;
                     }
                 }
             }
