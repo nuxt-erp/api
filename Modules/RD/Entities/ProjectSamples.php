@@ -19,6 +19,12 @@ class Constants {
         'approved',
         'rework',
     ];
+    const rd_flavorist       = [
+        'in progress',
+        'waiting approval',
+        'approved',
+        'rework',
+    ];
 }
 class ProjectSamples extends ModelService
 {
