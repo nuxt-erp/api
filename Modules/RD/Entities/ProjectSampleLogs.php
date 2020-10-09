@@ -12,10 +12,12 @@ class ProjectSampleLogs extends ModelService
 
     protected $table = 'rd_project_sample_logs';
 
-    protected $fillable = ['project_sample_id', 'project_id', 'recipe_id', 
-                            'updater_id', 'assignee_id','name', 
-                            'internal_code', 'external_code', 'status',
-                            'feedback', 'comment', 'is_start'];
+    protected $fillable = [
+        'project_sample_id', 'project_id', 'recipe_id',
+        'updater_id', 'assignee_id','name',
+        'internal_code', 'external_code', 'status',
+        'feedback', 'comment', 'is_start'
+    ];
 
     public function getRules($request, $item = null)
     {
@@ -29,7 +31,7 @@ class ProjectSampleLogs extends ModelService
 
         // rules when creating the item
         if (is_null($item)) {
-            
+
             $rules['project_sample_id'][] = 'required';
             $rules['project_id'][] = 'required';
             $rules['updater_id'][] = 'required';
