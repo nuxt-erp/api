@@ -14,7 +14,7 @@ class ProjectLogsResource extends ResourceService
         foreach ($this->resource->toArray() as $key => $value) {
             if(array_key_exists($key, $key_names) && !empty($value)) {
                 array_push($actions, 'Updated ' . $key_names[$key] . ' to ' . $value . '.' );
-            } else if ($key === 'is_start') {
+            } else if ($key === 'is_start' && $value) {
                 array_push($actions, 'Project was created.');
             }
         }

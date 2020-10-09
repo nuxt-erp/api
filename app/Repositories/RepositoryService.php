@@ -209,4 +209,37 @@ abstract class RepositoryService implements RepositoryInterface
         }
         return $result;
     }
+
+    public function isDirty($model, array $data){
+        if (!is_null($model)) {
+            $this->model = $model;
+            foreach ($data as $key => $value) {
+                // WHEN ID IS 0 > SET NULL ON DB
+                if (strpos($key, '_id') !== FALSE && $value == 0) {
+                    $value = null;
+                }
+                // update only fillAble properties
+                if ($this->model->isFillable($key)) {
+                    $this->model->{$key} = $value;
+                }
+            }
+        }
+        return  $this->model->isDirty();
+    }
+    public function getDirty($model, array $data){
+        if (!is_null($model)) {
+            $this->model = $model;
+            foreach ($data as $key => $value) {
+                // WHEN ID IS 0 > SET NULL ON DB
+                if (strpos($key, '_id') !== FALSE && $value == 0) {
+                    $value = null;
+                }
+                // update only fillAble properties
+                if ($this->model->isFillable($key)) {
+                    $this->model->{$key} = $value;
+                }
+            }
+        }
+        return  $this->model->getDirty();
+    }
 }
