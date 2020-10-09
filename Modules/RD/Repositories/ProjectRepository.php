@@ -36,10 +36,8 @@ class ProjectRepository extends RepositoryService
 
         DB::transaction(function () use ($data)
         {
-            //$sample_repo = resolve(ProjectSamplesRepository::class);
-            $sample_repo = new ProjectSamplesRepository(new ProjectSamples());
 
-            $this->samples = !empty($data["samples"]);
+            // PROJECT
             $user = auth()->user();
             $data['author_id'] = $user->id;
             parent::store($data);
@@ -54,23 +52,13 @@ class ProjectRepository extends RepositoryService
                 'is_start'     => 1
             ]);
 
+            // PROJECT SAMPLE HANDLE
+            //$sample_repo = resolve(ProjectSamplesRepository::class);
+            $sample_repo = new ProjectSamplesRepository(new ProjectSamples());
             if(!empty($data["samples"])) {
                 foreach($data["samples"] as $sample) {
-                    $sampleArray = [
-                        'project_id'            => $this->model->id,
-                        'recipe_id'             => $sample['recipe_id'],
-                        'phase_id'              => Phase::where('name', strtolower($sample['status']))->first()->id,
-                        'assignee_id'           => $sample['assignee_id'],
-                        'author_id'             => $user->id,
-                        'name'                  => $sample['name'],
-                        'status'                => $sample['status'],
-                        'target_cost'           => $sample['target_cost'],
-                        'feedback'              => $sample['feedback'],
-                        'comment'               => $sample['comment'],
-                        'internal_code'         => $sample['internal_code'],
-                        'external_code'         => $sample['external_code'],
-                    ];
-                    $sample_repo->store($sampleArray);
+                    $sample['project_id'] = $this->model->id;
+                    $sample_repo->store($sample);
                 }
             }
         });
@@ -84,7 +72,7 @@ class ProjectRepository extends RepositoryService
         {
             $user = auth()->user();
             $dirty = parent::getDirty($model, $data);
-            $sample_repo = new ProjectSamplesRepository(new ProjectSamples());
+
             $project_log = [
                 'project_id'   => $model->id,
                 'updater_id'   => $user->id,
@@ -103,69 +91,12 @@ class ProjectRepository extends RepositoryService
                 parent::update($model, $data);
             }
 
-
-
-            $sample_ids = ProjectSamples::where('project_id', $model->id)->get()->pluck('id')->toArray();
-            if(!empty($data["samples"])) {
-                $approved = true;
-                foreach ($data["samples"] as $sample)
-                {
-                    $sampleArray = [
-                        'id'                    => $sample['id'] ?? null,
-                        'project_id'            => $model->id,
-                        'recipe_id'             => $sample['recipe_id'],
-                        'assignee_id'           => $sample['assignee_id'],
-                        'name'                  => $sample['name'],
-                        'status'                => strtolower($sample['status']),
-                        'phase_id'              => Phase::where('name', strtolower($sample['status']))->get()->first()->id,
-                        'target_cost'           => $sample['target_cost'],
-                        'feedback'              => $sample['feedback'],
-                        'comment'               => $sample['comment'],
-                        'internal_code'         => $sample['internal_code'],
-                        'external_code'         => $sample['external_code'],
-                    ];
-                    if(strtolower($sampleArray['status']) === 'sent' && $model['status'] !== 'awaiting feedback') {
-                        $model->update(array('status' => 'awaiting feedback'));
-                        $project_log['status'] = 'awaiting feedback';
-
-                    } else if(strtolower($sampleArray['status']) === 'rework' && $model['status'] !== 'updated') {
-                        $model->update(array('status' => 'updated'));
-                        $project_log['status'] = 'updated';
-                    }
-                    if(strtolower($sampleArray['status']) !== 'approved') {
-                        $approved = false;
-                    }
-                    if(!empty($sampleArray['id'])) {
-                        $find_sample = ProjectSamples::find($sampleArray['id']);
-
-                        if($find_sample->project->id === $model->id) {
-                            $sample_repo->update($find_sample, $sampleArray);
-                            $index = array_search($sampleArray['id'], $sample_ids);
-                            array_splice($sample_ids, $index, 1);
-                        } else {
-                            unset($sampleArray['id']);
-                            $sampleArray['name'] = $model->id . ' - ' . $sampleArray['name'];
-                            $sample_repo->store($sampleArray);
-                        }
-
-                    } else {
-                        $sample_repo->store($sampleArray);
-                    }
-
-                    $index = array_search($sample['id'], $sample_ids);
-                    if($index) {
-                        array_splice($sample_ids, $index, 1);
-                    }
-                }
-                if($approved) {
-                    $model->update(array('status' => 'finished'));
-                    $project_log['status'] = 'finished';
-                }
-                foreach($sample_ids as $id) {
-                    ProjectSamples::find($id)->delete();
-                }
-                ProjectLogs::create($project_log);
+            $sample_repo = new ProjectSamplesRepository(new ProjectSamples());
+            foreach ($data["samples"] as $sample) {
+                $sample['project_id'] = $this->model->id;
+                $sample_repo->store($sample);
             }
+
         });
 
     }
