@@ -110,7 +110,7 @@ class ProjectRepository extends RepositoryService
                 foreach ($data["samples"] as $sample)
                 {
                     $sampleArray = [
-                        'id'                    => $sample['id'],
+                        'id'                    => $sample['id'] ?? null,
                         'project_id'            => $model->id,
                         'recipe_id'             => $sample['recipe_id'],
                         'assignee_id'           => $sample['assignee_id'],
@@ -135,12 +135,15 @@ class ProjectRepository extends RepositoryService
                         $approved = false;    
                     }
                     if(!empty($sampleArray['id'])) {
-                        $find_sample = ProjectSamples::find($sampleArray['id'])->get()->first();
+                        $find_sample = ProjectSamples::find($sampleArray['id']);
 
                         if($find_sample->project->id === $model->id) {
                             $sample_repo->update($find_sample, $sampleArray);
+                            $index = array_search($sampleArray['id'], $sample_ids);
+                            array_splice($sample_ids, $index, 1);
                         } else {
                             unset($sampleArray['id']);
+                            $sampleArray['name'] = $model->id . ' - ' . $sampleArray['name'];
                             $sample_repo->store($sampleArray);
                         }
                         
@@ -148,19 +151,16 @@ class ProjectRepository extends RepositoryService
                         $sample_repo->store($sampleArray);
                     }
                     
-                    $index = array_search($sample['id'], $sample_ids);
-                    if($index) { 
-                        array_splice($sample_ids, $index, 1);
-                    }
+                    
                 }
                 if($approved) {
                     $model->update(array('status' => 'finished'));
                     $project_log['status'] = 'finished';
                 }
-                
-                // foreach($sample_ids as $id) {
-                //     ProjectSamples::find($id)->delete();
-                // }
+                lad($sample_ids);
+                foreach($sample_ids as $id) {
+                    ProjectSamples::find($id)->delete();
+                }
                 ProjectLogs::create($project_log);
             }
         });
