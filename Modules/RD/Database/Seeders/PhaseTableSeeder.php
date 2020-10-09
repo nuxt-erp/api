@@ -38,6 +38,12 @@ class PhaseTableSeeder extends Seeder
         ]);
         
         Phase::updateOrCreate([
+            'name' => 'ready'
+        ], [
+            'name' => 'ready'
+        ]);
+
+        Phase::updateOrCreate([
             'name' => 'sent'
         ], [
             'name' => 'sent'

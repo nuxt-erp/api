@@ -99,11 +99,15 @@ class ProjectSamplesRepository extends RepositoryService
 
         DB::transaction(function () use ($model, &$data){
 
-            $approval       = !empty($data['supervisor_approval']) && $data['supervisor_approval'];
-            $reject         = !empty($data['supervisor_reject']) && $data['supervisor_reject'];
-            $finish         = !empty($data['flavorist_finish']) && $data['flavorist_finish'];
-            $recipe_update  = !empty($data['recipe']);
-            $user           = auth()->user();
+            $approval                    = !empty($data['supervisor_approval']) && $data['supervisor_approval'];
+            $reject                      = !empty($data['supervisor_reject']) && $data['supervisor_reject'];
+            $finish                      = !empty($data['flavorist_finish']) && $data['flavorist_finish'];
+            $sent                        = !empty($data['requester_sent']) && $data['requester_sent'];
+            $customer_approved           = !empty($data['customer_approved']) && $data['customer_approved'];
+            $customer_rejected           = !empty($data['customer_rejected']) && $data['customer_rejected'];
+            $supervisor_reassigned       = !empty($data['supervisor_reassigned']) && $data['supervisor_reassigned'];
+            $recipe_update               = !empty($data['recipe']);
+            $user                        = auth()->user();
             lad($approval);
             // FLAVORIST UPDATE
             if($recipe_update){
@@ -166,11 +170,23 @@ class ProjectSamplesRepository extends RepositoryService
                 }
                 $data['status']     = strtolower($flow->next_phase->name);
             }
-            if($reject){
+            if($reject || $supervisor_reassigned){
                 $data['phase_id']   = 2;
                 $data['status']     = 'in progress';
             }
-        
+            if($sent){
+                $data['phase_id']   = 5;
+                $data['status']     = 'sent';
+            }
+            if($customer_approved){
+                $data['phase_id']   = 6;
+                $data['status']     = 'approved';
+            }
+            if($customer_rejected){
+                $data['phase_id']   = 7;
+                $data['status']     = 'rework';
+            }
+            
 
             // option 1 - recipe update without start
             // option 2 - finish without start

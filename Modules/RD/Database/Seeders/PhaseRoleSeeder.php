@@ -16,11 +16,14 @@ class PhaseRoleSeeder extends Seeder
 
     public function run()
     {
+        PhaseRole::truncate();
+
         $phases = [
             'pending'            => Phase::updateOrCreate(['name' => 'pending'], ['name' => 'pending']),
             'in_progress'        => Phase::updateOrCreate(['name' => 'in progress'],  ['name' => 'in progress']),
             'waiting_approval'   => Phase::updateOrCreate(['name' => 'waiting approval'], ['name' => 'waiting approval']),
             'waiting_qc'         => Phase::updateOrCreate(['name' => 'waiting qc'], ['name' => 'waiting qc']),
+            'ready'               => Phase::updateOrCreate(['name' => 'ready'], ['name' => 'ready']),
             'sent'               => Phase::updateOrCreate(['name' => 'sent'], ['name' => 'sent']),
             'approved'           => Phase::updateOrCreate(['name' => 'approved'], ['name' => 'approved']),
             'rework'             => Phase::updateOrCreate(['name' => 'rework'], ['name' => 'rework']),
@@ -59,6 +62,13 @@ class PhaseRoleSeeder extends Seeder
         ], [
             'phase_id' => $phases['waiting_qc']->id,
             'role_id' => $roles['rd_supervisor']->id
+        ]);
+
+        PhaseRole::updateOrCreate([
+            'phase_id' => $phases['ready']->id
+        ], [
+            'phase_id' => $phases['ready']->id,
+            'role_id' => $roles['rd_quality_control']->id
         ]);
 
         PhaseRole::updateOrCreate([
