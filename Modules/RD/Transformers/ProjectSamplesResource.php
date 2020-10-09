@@ -16,19 +16,33 @@ class ProjectSamplesResource extends ResourceService
     {
         $actions = [];
 
-        if($this->status == 'pending'){
-            $actions[] = [
-                'name'  => !$this->recipe_id ? 'Develop' : 'Edit / Preview',
-                'code'  => 'sample',
-                'type'  => 'primary'
-            ];
-        }
-        else{
-            $actions[] = [
-                'name'  => 'Approve Sample',
-                'code'  => 'sample',
-                'type'  => 'primary'
-            ];
+        switch ($this->status) {
+            case 'approved':
+            case 'waiting qc':
+            case 'ready':
+            case 'pending':
+            case 'sent':
+                $actions[] = [
+                    'name'  => 'Preview',
+                    'code'  => 'sample',
+                    'type'  => 'primary'
+                ];
+                break;
+            case 'in progress':
+            case 'rework':
+                $actions[] = [
+                    'name'  => !$this->recipe_id ? 'Develop' : 'Edit / Preview',
+                    'code'  => 'sample',
+                    'type'  => 'primary'
+                ];
+                break;
+            case 'waiting approval':
+                $actions[] = [
+                    'name'  => 'Approve Sample',
+                    'code'  => 'sample',
+                    'type'  => 'primary'
+                ];
+                break;
         }
 
         return [
@@ -45,6 +59,7 @@ class ProjectSamplesResource extends ResourceService
             'attribute_names'   => $this->attributes->pluck('name'),
             'attribute_ids'     => optional($this->attributes)->pluck('id')->toArray(),
             'assignee_id'       => $this->assignee_id,
+            'assignee_name'     => optional($this->assignee)->name,
             'name'              => $this->name,
             'internal_code'     => $this->internal_code,
             'external_code'     => $this->external_code,
