@@ -13,7 +13,14 @@ class ProjectRepository extends RepositoryService
     public function findBy(array $searchCriteria = [])
     {
         $user = auth()->user();
-
+        if(!empty($searchCriteria['search'])){
+            $text = '%' . Arr::pull($searchCriteria, 'search') . '%';
+            $this->queryBuilder->where(function ($query) use($text) {
+                $query->where('comment', 'ILIKE', $text)
+                ->orWhere('id', 'LIKE', $text)
+                ->orWhere('status', 'LIKE', $text);
+            });
+        }
         if(!empty($searchCriteria['start_at'])){
             $this->queryBuilder->whereBetween('start_at', $searchCriteria['start_at']);
         }
