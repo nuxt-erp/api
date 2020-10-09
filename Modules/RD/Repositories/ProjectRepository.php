@@ -36,10 +36,8 @@ class ProjectRepository extends RepositoryService
 
         DB::transaction(function () use ($data)
         {
-            //$sample_repo = resolve(ProjectSamplesRepository::class);
-            $sample_repo = new ProjectSamplesRepository(new ProjectSamples());
 
-            $this->samples = !empty($data["samples"]);
+            // PROJECT
             $user = auth()->user();
             $data['author_id'] = $user->id;
             parent::store($data);
@@ -54,23 +52,13 @@ class ProjectRepository extends RepositoryService
                 'is_start'     => 1
             ]);
 
+            // PROJECT SAMPLE HANDLE
+            //$sample_repo = resolve(ProjectSamplesRepository::class);
+            $sample_repo = new ProjectSamplesRepository(new ProjectSamples());
             if(!empty($data["samples"])) {
                 foreach($data["samples"] as $sample) {
-                    $sampleArray = [
-                        'project_id'            => $this->model->id,
-                        'recipe_id'             => $sample['recipe_id'],
-                        'phase_id'              => Phase::where('name', strtolower($sample['status']))->first()->id,
-                        'assignee_id'           => $sample['assignee_id'],
-                        'author_id'             => $user->id,
-                        'name'                  => $sample['name'],
-                        'status'                => $sample['status'],
-                        'target_cost'           => $sample['target_cost'],
-                        'feedback'              => $sample['feedback'],
-                        'comment'               => $sample['comment'],
-                        'internal_code'         => $sample['internal_code'],
-                        'external_code'         => $sample['external_code'],
-                    ];
-                    $sample_repo->store($sampleArray);
+                    $sample['project_id'] = $this->model->id;
+                    $sample_repo->store($sample);
                 }
             }
         });
@@ -84,7 +72,7 @@ class ProjectRepository extends RepositoryService
         {
             $user = auth()->user();
             $dirty = parent::getDirty($model, $data);
-            $sample_repo = new ProjectSamplesRepository(new ProjectSamples());
+
             $project_log = [
                 'project_id'   => $model->id,
                 'updater_id'   => $user->id,
@@ -103,6 +91,7 @@ class ProjectRepository extends RepositoryService
                 parent::update($model, $data);
             }
 
+<<<<<<< HEAD
 
 
             $sample_ids = ProjectSamples::where('project_id', $model->id)->get()->pluck('id')->toArray();
@@ -168,7 +157,14 @@ class ProjectRepository extends RepositoryService
                     ProjectSamples::find($id)->delete();
                 }
                 ProjectLogs::create($project_log);
+=======
+            $sample_repo = new ProjectSamplesRepository(new ProjectSamples());
+            foreach ($data["samples"] as $sample) {
+                $sample['project_id'] = $this->model->id;
+                $sample_repo->store($sample);
+>>>>>>> da9d19b3bed322ba14dc0991748f9c37db192eae
             }
+
         });
 
     }

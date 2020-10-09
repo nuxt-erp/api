@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Modules\RD\Entities\Flow;
 use Modules\RD\Entities\Phase;
 use Modules\RD\Entities\ProjectSampleLogs;
+use Modules\RD\Entities\ProjectSamples;
 use Modules\RD\Entities\Recipe;
 use Modules\RD\Entities\RecipeItems;
 
@@ -53,13 +54,18 @@ class ProjectSamplesRepository extends RepositoryService
             //2 - get status
             // $data['status']     = ;
 
-            parent::store($data);
-
-            if (Arr::has($data, 'attribute_ids')) {
-                $this->model->attributes()->sync($data['attribute_ids']);
+            if(!empty($data['id'])){
+                $sample = ProjectSamples::find($data['id']);
+                $this->update($sample, $data);
+            }
+            else{
+                parent::store($data);
+                if (Arr::has($data, 'attribute_ids')) {
+                    $this->model->attributes()->sync($data['attribute_ids']);
+                }
+                $this->createLog($this->model, TRUE);
             }
 
-            $this->createLog($this->model, TRUE);
         });
 
     }
@@ -120,6 +126,7 @@ class ProjectSamplesRepository extends RepositoryService
 
             }
 
+            // STATUS HANDLE ======>
             // FINISH
             if($finish || $approval){
                 $flow = Flow::where('phase_id', $model->phase_id)->first();
@@ -130,6 +137,7 @@ class ProjectSamplesRepository extends RepositoryService
                 lad($flow->next_phase->name);
                 $data['status']     = $flow->next_phase->name;
             }
+<<<<<<< HEAD
             if($reject){
                 $data['phase_id']   = 2;
                 $data['status']     = 'in progress';
@@ -138,6 +146,18 @@ class ProjectSamplesRepository extends RepositoryService
 
             // option 1 - recipe update without start
             // option 2 - finish without start
+=======
+            else{
+                // IF FRONTEND SEND STATUS
+                if(!empty($data['status'])){
+                    $data['status']     = strtolower($data['status']);
+                    $data['phase_id']   = Phase::where('name', strtolower($data['status']))->first()->id;
+                }
+            }
+            // STATUS HANDLE <======
+
+            // HANDLE START AT
+>>>>>>> da9d19b3bed322ba14dc0991748f9c37db192eae
             if(!$model->started_at && ($recipe_update || $finish)){
                 $data['started_at'] = now();
             }
