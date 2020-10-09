@@ -13,7 +13,7 @@ use Modules\RD\Transformers\RecipeResource;
 use PDF;
 use Illuminate\Support\Facades\DB;
 
-class RecipeController extends ControllerService implements CheckPolicies
+class RecipeController extends ControllerService
 {
 
     protected $repository;

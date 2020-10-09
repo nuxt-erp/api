@@ -41,7 +41,7 @@ class ProductImagesController extends ControllerService
 
             foreach ($request->file('files') as $file) {
                 $x++;
-
+                //@todo DRY - add this to some helper function to reuse the same folder pattern
                 // save original file
                 $path = $file->store('company_'.$user->company_id.'/product_'.$request->product_id.'/images', ['disk' => 's3']);
 
