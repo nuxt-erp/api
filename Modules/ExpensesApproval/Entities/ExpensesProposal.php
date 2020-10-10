@@ -8,6 +8,11 @@ use App\Models\User;
 
 class ExpensesProposal extends ModelService
 {
+    const PENDING       = 'pending';
+    const APPROVED      = 'approved';
+    const PURCHASED     = 'purchased';
+    const DENIED        = 'denied';
+
     protected $connection = 'tenant';
 
     protected $table = 'exp_ap_proposals';
@@ -19,7 +24,7 @@ class ExpensesProposal extends ModelService
     protected $fillable = [
         'expenses_category_id', 'author_id', 'item',
         'reason', 'supplier_link', 'subtotal', 'hst',
-        'ship', 'total_cost', 'status_id', 'purchase_date',
+        'ship', 'total_cost', 'status', 'purchase_date',
         'subcategory_id'
     ];
 
@@ -29,7 +34,6 @@ class ExpensesProposal extends ModelService
             'expenses_category_id'  => ['exists:tenant.exp_ap_categories,id'],
             'author_id'             => ['exists:public.users,id'],
             'supplier_link'         => ['nullable'],
-            'status_id'             => ['exists:tenant.parameters,id'],
             'purchase_date'         => ['nullable', 'date'],
             'subcategory_id'        => ['nullable'],
         ];
@@ -65,11 +69,6 @@ class ExpensesProposal extends ModelService
         return $this->belongsTo(User::class, 'author_id');
     }
 
-    public function status()
-    {
-        return $this->belongsTo(Parameter::class, 'status_id');
-    }
-
     public function approvals()
     {
         return $this->hasMany(ExpensesApproval::class, 'expenses_proposal_id', 'id');
@@ -84,6 +83,17 @@ class ExpensesProposal extends ModelService
     {
         $rule = ExpensesRule::where('start_value', '<', $this->total_cost)->where('end_value', '>=', $this->total_cost)->orWhereNull('end_value')->orderBy('start_value')->first();
         return $rule;
+    }
+
+    public function sponsor_approval()
+    {
+        return ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->sponsor_id)->first();
+    }
+
+    public function team_leader_approval()
+    {
+        return ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->team_leader_id)->first();
+
     }
 
 }

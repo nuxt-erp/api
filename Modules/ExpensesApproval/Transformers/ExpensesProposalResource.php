@@ -4,6 +4,7 @@ namespace Modules\ExpensesApproval\Transformers;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Modules\ExpensesApproval\Entities\ExpensesApproval;
+use Modules\ExpensesApproval\Entities\ExpensesProposal;
 
 class ExpensesProposalResource extends JsonResource
 {
@@ -14,14 +15,14 @@ class ExpensesProposalResource extends JsonResource
         $actions = collect([]);
         $preview = false;
 
-        if($user->hasRole('buyer') && $this->status->value==='approved') {
+        if($user->hasRole('buyer') && $this->status === ExpensesProposal::APPROVED) {
             $actions->push(collect([
                 'name'  => 'Finish Purchase',
                 'code'  => 'finish_purchase',
                 'type'  => 'success'
             ]));
         } else {
-            if($this->status->value === 'pending') {
+            if($this->status === ExpensesProposal::PENDING) {
                 if($user->id === $this->author_id && $this->approvals->isEmpty()) {
                     $actions->push(collect([
                         'name'  => 'Edit',
@@ -73,7 +74,7 @@ class ExpensesProposalResource extends JsonResource
                         ]));
                     }                                    
                 }
-            } else if($this->status->value === 'approved') {
+            } else if($this->status === ExpensesProposal::APPROVED) {
                 if ($user->id === $this->category->sponsor_id || ($user->id === $this->category->team_leader_id && $this->author_id !== $this->category->sponsor_id)) {
                     $actions->push(collect([
                         'name'  => 'Cancel Expense',
@@ -87,7 +88,7 @@ class ExpensesProposalResource extends JsonResource
 
         $approvals = null;
 
-        if($this->status->value !== 'pending' && !$this->approvals->isEmpty()){
+        if($this->status !== ExpensesProposal::PENDING && !$this->approvals->isEmpty()){
             foreach($this->approvals as $item) {
                 if($approvals){
                     $approvals .= ', ' . $item->approver->name;
@@ -96,13 +97,13 @@ class ExpensesProposalResource extends JsonResource
                 }
             }           
         } else {
-            if($this->status->value !== 'denied') $approvals = 'pre-approved';
+            if($this->status !== ExpensesProposal::DENIED) $approvals = 'pre-approved';
         }
 
         $approvers = null;
         if($this->rule()->team_leader_approval) {
             if($this->author_id !== $this->category->team_leader_id) {                
-                $team_leader_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->team_leader_id)->first();
+                $team_leader_approval = $this->team_leader_approval();
 
                 if(!$team_leader_approval) {
                     $approvers .= $this->category->team_leader->name;
@@ -112,7 +113,7 @@ class ExpensesProposalResource extends JsonResource
 
         if($this->rule()->sponsor_approval) {
             if($this->author_id !== $this->category->sponsor_id) {                
-                $sponsor_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->sponsor_id)->first();
+                $sponsor_approval = $this->sponsor_approval();
                 if(!$sponsor_approval) {
                     if($approvers) {
                         $approvers .= ', ' . $this->category->sponsor->name;
@@ -138,7 +139,7 @@ class ExpensesProposalResource extends JsonResource
             'hst'                       => $this->hst,                   
             'ship'                      => $this->ship,
             'total_cost'                => $this->total_cost,            
-            'status'                    => $this->status->description,
+            'status'                    => $this->status,
             'approvers'                 => $user->hasRole('buyer') ? $approvals : $approvers,
             'approvals'                 => $approvals,
             'attachments'               => $this->attachments,
@@ -146,7 +147,7 @@ class ExpensesProposalResource extends JsonResource
             'created_at'                => optional($this->created_at)->format('Y-m-d'),
             'updated_at'                => optional($this->updated_at)->format('Y-m-d'),
             'actions'                   => $actions,
-            'hide'                      => $this->hide ? $this->hide : $this->status->value != 'pending',
+            'hide'                      => $this->hide ? $this->hide : $this->status != ExpensesProposal::PENDING,
             'preview'                   => $preview
         ];
     }
