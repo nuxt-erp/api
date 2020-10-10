@@ -19,31 +19,31 @@ class ExpensesApprovalPolicy
 
     public function list(User $currentUser)
     {
-        return $currentUser->hasRole('director', 'team_leader');
+        return $currentUser->hasRole('sponsor', 'team_leader');
     }
 
     public function index(User $currentUser)
     {
-        return $currentUser->hasRole('director', 'team_leader');
+        return $currentUser->hasRole('sponsor', 'team_leader');
     }
 
     public function show(User $currentUser, ExpensesApproval $target)
     {
-        return $currentUser->hasRole('director', 'team_leader');
+        return $currentUser->hasRole('sponsor', 'team_leader');
     }
 
     public function store(User $currentUser)
     {
-        return $currentUser->hasRole('director', 'team_leader');
+        return $currentUser->hasRole('sponsor', 'team_leader');
     }
 
     public function update(User $currentUser, ExpensesApproval $target)
     {
-        return $currentUser->hasRole('director', 'team_leader');
+        return $currentUser->hasRole('sponsor', 'team_leader');
     }
 
     public function destroy(User $currentUser, ExpensesApproval $target)
     {
-        return $currentUser->hasRole('director', 'team_leader');
+        return $currentUser->hasRole('sponsor', 'team_leader');
     }
 }

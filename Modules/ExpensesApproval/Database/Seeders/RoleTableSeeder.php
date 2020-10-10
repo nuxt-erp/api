@@ -25,8 +25,8 @@ class RoleTableSeeder extends Seeder
         ]);
 
         Role::updateOrCreate([
-            'code' => 'director',
-            'name' => 'Director'
+            'code' => 'sponsor',
+            'name' => 'Sponsor'
         ]);
 
         Role::updateOrCreate([
