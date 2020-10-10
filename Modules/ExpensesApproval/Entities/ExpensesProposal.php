@@ -8,7 +8,7 @@ use App\Models\User;
 
 class ExpensesProposal extends ModelService
 {
-    const PENDING       = 'pending';
+    const PENDING       = 'pending_approval';
     const APPROVED      = 'approved';
     const PURCHASED     = 'purchased';
     const DENIED        = 'denied';
