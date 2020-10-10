@@ -27,7 +27,7 @@ class ExpensesAttachmentController extends ControllerService
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $fileName = time() . '-' . $file->getClientOriginalName();
-            $file->storeAs('attachments', $fileName, ['disk' => 's3']);
+            $file->storeAs('expenses_approval/attachments', $fileName, ['disk' => 's3']);
 
             return $this->setStatus(true)->sendObject($fileName);
         }
@@ -35,7 +35,7 @@ class ExpensesAttachmentController extends ControllerService
 
     public function deleteFile($file_name)
     {                  
-        $filePath = 'attachments/' . $file_name;
+        $filePath = 'expenses_approval/attachments/' . $file_name;
         Storage::disk('s3')->delete($filePath);
 
         $this->repository->deleteFile($file_name);
@@ -45,13 +45,13 @@ class ExpensesAttachmentController extends ControllerService
 
     public function viewFile($file_name)
     {           
-        $filePath = 'attachments/' . $file_name; 
+        $filePath = 'expenses_approval/attachments/' . $file_name; 
         return Storage::disk('s3')->response($filePath);       
     }
 
     public function downloadFile($file_name)
     {           
-        $filePath = 'attachments/' . $file_name; 
+        $filePath = 'expenses_approval/attachments/' . $file_name; 
         return Storage::disk('s3')->download($filePath);
     }
 }
