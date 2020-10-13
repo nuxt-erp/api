@@ -105,8 +105,8 @@ class ProjectRepository extends RepositoryService
             $sample_rework  = FALSE;
 
             foreach ($data["samples"] as $sample) {
-                $stored_sample = $sample_repo->store($sample);
-
+                $sample_repo->store($sample);
+                $stored_sample = $sample_repo->model;
                 if(strtolower($stored_sample->status) !== 'approved'){
                     $all_approved = FALSE;
                 }
