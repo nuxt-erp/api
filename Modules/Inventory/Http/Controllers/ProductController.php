@@ -32,7 +32,7 @@ class ProductController extends ControllerService implements CheckPolicies
     public function findCarriers(Request $request)
     {
         $isList = $request->has('list') && $request->list;
-        $category = ProductCategory::where('name', 'LIKE', '%carrier%')->first();
+        $category = ProductCategory::where('name', 'ILIKE', '%carrier%')->first();
         if($category){
             $request->merge(['category_id' => $category->id]);
             $items = $this->repository->findBy($request->all());

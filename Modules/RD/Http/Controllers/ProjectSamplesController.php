@@ -11,7 +11,7 @@ use Modules\RD\Entities\ProjectSamples;
 use Modules\RD\Repositories\ProjectSamplesRepository;
 use Modules\RD\Transformers\ProjectSamplesResource;
 
-class ProjectSamplesController extends ControllerService implements CheckPolicies
+class ProjectSamplesController extends ControllerService
 {
 
     protected $repository;
