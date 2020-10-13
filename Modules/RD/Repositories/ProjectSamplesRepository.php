@@ -20,14 +20,6 @@ class ProjectSamplesRepository extends RepositoryService
             $this->queryBuilder->where('assignee_id', $user->id);
         }
 
-        if(empty($searchCriteria['project_id']) && $user->hasRole('rd_supervisor')){
-            $this->queryBuilder->where('status', 'ILIKE', 'waiting approval');
-        }
-
-        if(empty($searchCriteria['project_id']) && $user->hasRole('rd_flavorist')){
-            $this->queryBuilder->where('status', 'ILIKE', 'in progress');
-        }
-
         if(!empty($searchCriteria['created_at'])){
             $this->queryBuilder->whereBetween('created_at', $searchCriteria['created_at']);
         }
@@ -170,6 +162,7 @@ class ProjectSamplesRepository extends RepositoryService
                 }
                 $data['status']     = strtolower($flow->next_phase->name);
             }
+
             if($reject || $supervisor_reassigned){
                 $data['phase_id']   = 2;
                 $data['status']     = 'in progress';
