@@ -26,6 +26,7 @@ class RecipeResource extends ResourceService
             'type_name'           => optional($this->type)->name,
             'carrier_id'          => $this->carrier_id,
             'carrier_name'        => optional($this->carrier)->name,
+            'internal_code'       => optional($this->type)->value . '-' . $this->id,
             'attribute_names'     => $this->attributes->pluck('name'),
             'attribute_ids'       => optional($this->attributes)->pluck('id')->toArray(),
             'product_id'          => $this->product_id,

@@ -61,6 +61,11 @@ class ProjectSamplesRepository extends RepositoryService
                 if(!empty($data['assignee_id'])){
                     $data['status'] = 'in progress';
                 }
+                if(!empty($data['recipe_id'])){
+                    lad($data['recipe_id']);
+                    $recipe = Recipe::find($data['recipe_id']);
+                    $data['internal_code'] = $recipe->type->value . '-' . $data['recipe_id'] ;
+                }
 
                 // option 1 - no status in the array - find the first phase in the flow
                 if(empty($data['status'])){
