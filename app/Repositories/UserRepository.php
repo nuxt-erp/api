@@ -76,6 +76,7 @@ class UserRepository extends RepositoryService
 
     public function findBy(array $searchCriteria = [])
     {
+        lad($searchCriteria);
         if (!empty($searchCriteria['list']))
         {
             $this->queryBuilder->where('is_enabled', true);
@@ -94,12 +95,12 @@ class UserRepository extends RepositoryService
             });
         }
 
-        // if (!empty($searchCriteria['role'])) {
-        //     $this->queryBuilder->whereHas('roles', function (Builder $query) {
-        //         $role = strtolower(Arr::pull($searchCriteria, 'role'));
-        //         $query->where('code', $role);
-        //     });
-        // }
+        if (!empty($searchCriteria['role'])) {
+            $this->queryBuilder->whereHas('roles', function (Builder $query) {
+                $role = strtolower(Arr::pull($searchCriteria, 'role'));
+                $query->where('code', $role);
+            });
+        }
 
         $user = auth()->user();
         if($user){
