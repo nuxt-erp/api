@@ -24,6 +24,8 @@ class RecipeResource extends ResourceService
             'approver_name'       => optional($this->approver)->name,
             'type_id'             => $this->type_id,
             'type_name'           => optional($this->type)->name,
+            'carrier_id'          => $this->carrier_id,
+            'carrier_name'        => optional($this->carrier)->name,
             'attribute_names'     => $this->attributes->pluck('name'),
             'attribute_ids'       => optional($this->attributes)->pluck('id')->toArray(),
             'product_id'          => $this->product_id,

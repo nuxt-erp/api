@@ -81,12 +81,14 @@ class UserRepository extends RepositoryService
         {
             $this->queryBuilder->where('is_enabled', true);
         }
-        
+
         if (empty($searchCriteria['order_by'])) {
             $searchCriteria['order_by']['field']        = 'name';
             $searchCriteria['order_by']['direction']    = 'asc';
         }
 
+        $searchCriteria['text'] = $searchCriteria['text'] ?? $searchCriteria['name'] ?? null;
+        unset($searchCriteria['name']);
         if (!empty($searchCriteria['text'])) {
             $text = '%' . Arr::pull($searchCriteria, 'text') . '%';
             $this->queryBuilder->where(function ($query) use ($text) {
@@ -96,7 +98,7 @@ class UserRepository extends RepositoryService
         }
 
         if (!empty($searchCriteria['role'])) {
-            $this->queryBuilder->whereHas('roles', function (Builder $query) {
+            $this->queryBuilder->whereHas('roles', function ($query) use($searchCriteria) {
                 $role = strtolower(Arr::pull($searchCriteria, 'role'));
                 $query->where('code', $role);
             });
