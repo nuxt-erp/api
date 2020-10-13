@@ -105,17 +105,18 @@ class ProjectRepository extends RepositoryService
             $sample_rework  = FALSE;
 
             foreach ($data["samples"] as $sample) {
-                if(strtolower($sample['status']) !== 'approved'){
+                $stored_sample = $sample_repo->store($sample);
+
+                if(strtolower($stored_sample->status) !== 'approved'){
                     $all_approved = FALSE;
                 }
-                if(strtolower($sample['status']) === 'sent'){
+                if(strtolower($stored_sample->status) === 'sent'){
                     $sample_sent = TRUE;
                 }
-                if(strtolower($sample['status']) === 'rework'){
+                if(strtolower($stored_sample->status) === 'rework'){
                     $sample_rework = TRUE;
                 }
                 $sample['project_id'] = $this->model->id;
-                $sample_repo->store($sample);
             }
             // ALL SAMPLES APPROVED
             if($all_approved){
