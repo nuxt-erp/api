@@ -19,6 +19,7 @@ class RecipeItemsResource extends ResourceService
             'product_id'       => $this->product_id,
             'product_name'     => optional($this->product)->name,
             'product_sku'      => optional($this->product)->sku,
+            'product_uom'      => $this->product->measure->name ?? '',
             'recipe_id'        => $this->recipe_id,
             'quantity'         => $this->quantity ?? 0,
             'percent'          => $this->percent ?? 0,
