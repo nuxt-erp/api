@@ -19,6 +19,11 @@ class ProjectSamplesResource extends ResourceService
         switch ($this->status) {
             case 'approved':
             case 'waiting qc':
+                $actions[] = [
+                    'name'  => 'Generate Specs',
+                    'code'  => 'generate',
+                    'type'  => 'primary'
+                ];
             case 'ready':
             case 'pending':
             case 'sent':

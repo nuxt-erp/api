@@ -16,7 +16,11 @@ class ParameterRepository extends RepositoryService
                 ->orWhere('value', 'LIKE', $text);
             });
         }
-        lad(parent::findBy($searchCriteria));
+        
+        if(!empty($searchCriteria['order_by'])) {
+            $this->queryBuilder->orderBy('value', $searchCriteria['order_by']);
+        }
+
         return parent::findBy($searchCriteria);
     }
 }

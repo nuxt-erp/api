@@ -19,7 +19,7 @@ class ProjectSampleAttributes extends ModelService
     {
         // generic rules
         $rules = [
-            'project_sample_id'               => ['exists:tenant.rd_project_samples,id'],
+            'project_sample_id'       => ['exists:tenant.rd_project_samples,id'],
             'attribute_id'            => ['exists:tenant.parameters,id']
 
         ];
@@ -27,7 +27,7 @@ class ProjectSampleAttributes extends ModelService
         // rules when creating the item
         if (is_null($item)) {
             $rules['project_sample_id'][] = 'required';
-            $rules['attribute_id'][] = 'required';
+            $rules['attribute_id'][]      = 'required';
         }
       
 

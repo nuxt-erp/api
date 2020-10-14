@@ -27,7 +27,7 @@ class ParameterPolicy
 
     public function store(User $currentUser)
     {
-        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'admin');
+        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'rd_quality_control', 'admin');
     }
 
     public function update(User $currentUser, Parameter $target)

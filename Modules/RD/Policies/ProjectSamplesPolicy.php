@@ -12,17 +12,17 @@ class ProjectSamplesPolicy
 
     public function list(User $currentUser)
     {
-        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'rd_flavorist', 'admin');
+        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'rd_flavorist', 'rd_quality_control', 'admin');
     }
 
     public function index(User $currentUser)
     {
-        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'rd_flavorist', 'admin');
+        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'rd_flavorist', 'rd_quality_control', 'admin');
     }
 
     public function show(User $currentUser, ProjectSamples $target)
     {
-        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'rd_flavorist', 'admin');
+        return $currentUser->hasRole('rd_requester', 'rd_supervisor', 'rd_flavorist', 'rd_quality_control', 'admin');
     }
 
     public function store(User $currentUser)

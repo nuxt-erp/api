@@ -18,6 +18,10 @@ use Modules\RD\Repositories\ProjectSampleLogsRepository;
 use Modules\RD\Repositories\FlowRepository;
 use Modules\RD\Repositories\PhaseRepository;
 use Modules\RD\Repositories\PhaseRoleRepository;
+use Modules\RD\Repositories\RecipeSpecificationRepository;
+use Modules\RD\Repositories\RecipeSpecificationAttributesRepository;
+
+
 // RESOURCES
 use Modules\RD\Transformers\ProjectResource;
 use Modules\RD\Transformers\ProjectSampleAttributesResource;
@@ -32,6 +36,8 @@ use Modules\RD\Transformers\ProjectSampleLogsResource;
 use Modules\RD\Transformers\FlowResource;
 use Modules\RD\Transformers\PhaseResource;
 use Modules\RD\Transformers\PhaseRoleResource;
+use Modules\RD\Transformers\RecipeSpecificationResource;
+use Modules\RD\Transformers\RecipeSpecificationAttributesResource;
 
 // MODELS
 use Modules\RD\Entities\Project;
@@ -47,6 +53,9 @@ use Modules\RD\Entities\Recipe;
 use Modules\RD\Entities\Flow;
 use Modules\RD\Entities\Phase;
 use Modules\RD\Entities\PhaseRole;
+use Modules\RD\Entities\RecipeSpecification;
+use Modules\RD\Entities\RecipeSpecificationAttributes;
+
 
 class RDServiceProvider extends ServiceProvider
 {
@@ -162,6 +171,22 @@ class RDServiceProvider extends ServiceProvider
             return new RecipeProposalsResource(new RecipeProposals());
         });
 
+        $this->app->bind(RecipeSpecificationRepository::class, function () {
+            return new RecipeSpecificationRepository(new RecipeSpecification());
+        });
+
+        $this->app->bind(RecipeSpecificationResource::class, function () {
+            return new RecipeSpecificationResource(new RecipeSpecification());
+        });
+
+        $this->app->bind(RecipeSpecificationAttributesRepository::class, function () {
+            return new RecipeSpecificationAttributesRepository(new RecipeSpecificationAttributes());
+        });
+
+        $this->app->bind(RecipeSpecificationAttributesResource::class, function () {
+            return new RecipeSpecificationAttributesResource(new RecipeSpecificationAttributes());
+        });
+
         $this->app->bind(PhaseRepository::class, function () {
             return new PhaseRepository(new Phase());
         });
@@ -203,6 +228,8 @@ class RDServiceProvider extends ServiceProvider
             RecipeItemsRepository::class,
             RecipeProposalItemsRepository::class,
             RecipeProposalsRepository::class,
+            RecipeSpecificationRepository::class,
+            RecipeSpecificationAttributesRepository::class,
             ProjectLogsRepository::class,
             ProjectSampleLogsRepository::class,
             PhaseRepository::class,

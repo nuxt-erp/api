@@ -16,10 +16,14 @@ class ProjectSamplesRepository extends RepositoryService
     public function findBy(array $searchCriteria = [])
     {
         $user = auth()->user();
-        if(!$user->hasRole('admin', 'rd_requester', 'rd_supervisor')){
+    
+        if(!$user->hasRole('admin', 'rd_requester', 'rd_supervisor', 'rd_quality_control')){
             $this->queryBuilder->where('assignee_id', $user->id);
         }
-
+        if($user->hasRole('rd_quality_control')){
+            $this->queryBuilder->where('status', 'ILIKE', 'waiting qc')
+            ->orWhere('status', 'ILIKE', 'ready');
+        }
         if(!empty($searchCriteria['created_at'])){
             $this->queryBuilder->whereBetween('created_at', $searchCriteria['created_at']);
         }
@@ -38,6 +42,10 @@ class ProjectSamplesRepository extends RepositoryService
                 ->orWhere('internal_code', 'LIKE', $text)
                 ->orWhere('external_code', 'LIKE', $text);
             });
+        }
+        
+        if(!empty($searchCriteria['order_by'])) {
+            $this->queryBuilder->orderBy('name', $searchCriteria['order_by']);
         }
 
         return parent::findBy($searchCriteria);
@@ -62,9 +70,11 @@ class ProjectSamplesRepository extends RepositoryService
                     $data['status'] = 'in progress';
                 }
                 if(!empty($data['recipe_id'])){
-                    lad($data['recipe_id']);
                     $recipe = Recipe::find($data['recipe_id']);
-                    $data['internal_code'] = $recipe->type->value . '-' . $data['recipe_id'] ;
+                    if(!empty($recipe->type_id)) {
+                        $data['internal_code'] = $recipe->type->value . '-' . $data['recipe_id'] ;
+                    }
+                    lad($recipe->type_id);
                 }
 
                 // option 1 - no status in the array - find the first phase in the flow

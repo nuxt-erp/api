@@ -25,7 +25,7 @@ class ParameterTableSeeder extends Seeder
 
         Parameter::updateOrCreate([
             'name'  => 'recipe_type',
-            'value' => 'key',
+            'value' => 'FK',
             'order' => 1,
             'description' => 'Key',
             'is_internal' => true,
@@ -34,7 +34,7 @@ class ParameterTableSeeder extends Seeder
 
         Parameter::updateOrCreate([
             'name'  => 'recipe_type',
-            'value' => 'flavor',
+            'value' => 'FL',
             'order' => 2,
             'description' => 'Flavor',
             'is_internal' => true,
@@ -43,7 +43,7 @@ class ParameterTableSeeder extends Seeder
 
         Parameter::updateOrCreate([
             'name'  => 'recipe_type',
-            'value' => 'solution',
+            'value' => 'SL',
             'order' => 3,
             'description' => 'Solution',
             'is_internal' => true,

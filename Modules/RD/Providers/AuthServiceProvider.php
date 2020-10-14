@@ -17,6 +17,8 @@ use Modules\RD\Entities\RecipeAttributes;
 use Modules\RD\Entities\RecipeItems;
 use Modules\RD\Entities\RecipeProposalItems;
 use Modules\RD\Entities\RecipeProposals;
+use Modules\RD\Entities\RecipeSpecification;
+use Modules\RD\Entities\RecipeSpecificationAttributes;
 use Modules\RD\Policies\FlowPolicy;
 use Modules\RD\Policies\PhasePolicy;
 use Modules\RD\Policies\PhaseRolePolicy;
@@ -30,6 +32,8 @@ use Modules\RD\Policies\RecipeAttributesPolicy;
 use Modules\RD\Policies\RecipeItemsPolicy;
 use Modules\RD\Policies\RecipeProposalItemsPolicy;
 use Modules\RD\Policies\RecipeProposalsPolicy;
+use Modules\RD\Policies\RecipeSpecificationAttributesPolicy;
+use Modules\RD\Policies\RecipeSpecificationPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -56,6 +60,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(RecipeItems::class, RecipeItemsPolicy::class);
         Gate::policy(RecipeProposalItems::class, RecipeProposalItemsPolicy::class);
         Gate::policy(RecipeProposals::class, RecipeProposalsPolicy::class);
+        Gate::policy(RecipeSpecification::class, RecipeSpecificationPolicy::class);
+        Gate::policy(RecipeSpecificationAttributes::class, RecipeSpecificationAttributesPolicy::class);
         Gate::policy(Phase::class, PhasePolicy::class);
         Gate::policy(Flow::class, FlowPolicy::class);
         Gate::policy(PhaseRole::class, PhaseRolePolicy::class);

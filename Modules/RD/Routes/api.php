@@ -25,6 +25,8 @@ Route::middleware('auth:api')->group(function () {
 
         Route::resource('recipe_proposals', 'RecipeProposalsController');
         Route::resource('recipe_proposal_items', 'RecipeProposalItemsController');
+        Route::resource('recipe_specification', 'RecipeSpecificationController');
+        Route::resource('recipe_specification_attributes', 'RecipeSpecificationAttributesController');
 
         Route::resource('projects', 'ProjectController');
         Route::resource('project_samples', 'ProjectSamplesController');

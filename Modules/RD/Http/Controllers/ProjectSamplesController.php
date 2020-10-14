@@ -39,6 +39,8 @@ class ProjectSamplesController extends ControllerService
             $role = 'rd_supervisor';
         } else if($user->hasRole('rd_flavorist')) {
             $role = 'rd_flavorist';
+        } else if($user->hasRole('rd_quality_control')) {
+            $role = 'rd_quality_control';
         }
 
         $keyValue   = [];

@@ -26,6 +26,10 @@ class Constants {
         'approved',
         'rework',
     ];
+    const rd_quality_control       = [
+        'waiting qc',
+        'ready',
+    ];
 }
 class ProjectSamples extends ModelService
 {
