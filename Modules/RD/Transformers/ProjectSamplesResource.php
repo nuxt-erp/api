@@ -33,10 +33,11 @@ class ProjectSamplesResource extends ResourceService
                     'type'  => 'primary'
                 ];
                 break;
+            case 'assigned':
             case 'in progress':
             case 'rework':
                 $actions[] = [
-                    'name'  => !$this->recipe_id ? 'Develop' : 'Edit / Preview',
+                    'name'  => $this->status == 'in progress' || !empty($this->recipe_id) ? 'Edit / Preview' : 'Develop',
                     'code'  => 'sample',
                     'type'  => 'primary'
                 ];

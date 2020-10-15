@@ -106,6 +106,7 @@ class ProjectRepository extends RepositoryService
 
             foreach ($data["samples"] as $sample) {
                 $sample['project_id'] = $this->model->id;
+                // STORE / UPDATE Samples
                 $sample_repo->store($sample);
                 $stored_sample = $sample_repo->model;
                 if(strtolower($stored_sample->status) !== 'approved'){

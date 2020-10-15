@@ -12,7 +12,6 @@ class Constants {
         'waiting approval',
         'waiting qc',
         'ready'
-
     ];
     const rd_supervisor       = [
         'in progress',
@@ -21,6 +20,7 @@ class Constants {
         'rework',
     ];
     const rd_flavorist       = [
+        'assigned',
         'in progress',
         'waiting approval',
         'approved',

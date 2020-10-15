@@ -10,6 +10,10 @@ class RecipeRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {
+        if(empty($searchCriteria['version'])){
+            $this->queryBuilder->where('last_version', TRUE);
+        }
+
         if(!empty($searchCriteria['order_by'])) {
             $this->queryBuilder->orderBy('name', $searchCriteria['order_by']);
         }
@@ -23,8 +27,10 @@ class RecipeRepository extends RepositoryService
         DB::transaction(function () use ($data)
         {
             $user = auth()->user();
-            $data['author_id']  = $user->id;
-            $data['status']     = Recipe::NEW_RECIPE;
+            $data['author_id']      = $user->id;
+            $data['status']         = Recipe::NEW_RECIPE;
+            $data['last_version']   = TRUE;
+
 
             parent::store($data);
 
