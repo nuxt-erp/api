@@ -29,6 +29,13 @@ class ProjectRepository extends RepositoryService
             $text = '%' . Arr::pull($searchCriteria, 'status') . '%';
             $this->queryBuilder->where('status', 'ILIKE', $text);
         }
+        if(!empty($searchCriteria['sample_status'])){
+            lad($searchCriteria['sample_status']);
+            $text = '%' . Arr::pull($searchCriteria, 'sample_status') . '%';
+            $this->queryBuilder->whereHas('samples', function ($query) use($text) {
+                $query->where('status', 'ILIKE', $text);
+            });
+        }
 
         if(!empty($searchCriteria['comment'])){
             $text = '%' . Arr::pull($searchCriteria, 'comment') . '%';

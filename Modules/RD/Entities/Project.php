@@ -69,7 +69,6 @@ class Project extends ModelService
     public function attributes() 
     {
         return $this->belongsToMany(Parameter::class, 'rd_project_attributes', 'project_id', 'attribute_id');
-        
     }
     public function samples() {
         return $this->hasMany(ProjectSamples::class, 'project_id', 'id');    
