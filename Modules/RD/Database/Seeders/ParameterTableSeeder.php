@@ -18,10 +18,10 @@ class ParameterTableSeeder extends Seeder
             'name'  => 'recipe_sample_size',
             'value' => '100',
             'order' => 1,
-            'description' => 'Recipe Sample Size for making calculations',
+
             'is_internal' => true,
             'is_default' => false,
-        ]);
+        ], ['description' => 'g']);
 
         Parameter::updateOrCreate([
             'name'  => 'recipe_type',

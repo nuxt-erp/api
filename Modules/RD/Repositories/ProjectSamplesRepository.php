@@ -44,8 +44,8 @@ class ProjectSamplesRepository extends RepositoryService
             });
         }
 
-        if(!empty($searchCriteria['order_by'])) {
-            $this->queryBuilder->orderBy('name', $searchCriteria['order_by']);
+        if(empty($searchCriteria['order_by'])) {
+            $this->queryBuilder->orderBy('name', 'asc');
         }
 
         return parent::findBy($searchCriteria);

@@ -15,8 +15,6 @@ class RDDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $env = env('APP_ENV', 'local');
-
         Model::unguard();
         $this->call(ParameterTableSeeder::class);
         $this->call(PhaseTableSeeder::class);
@@ -25,12 +23,9 @@ class RDDatabaseSeeder extends Seeder
         $this->call(RoleTableSeeder::class);
         $this->call(RecipeSpecificationSeeder::class);
 
-        if ($env === 'local') {
+        // sample data
+        if (env('APP_ENV', 'local') === 'local') {
             $this->call(ProjectAndSamplesSeeder::class);
         }
-
-        // for the recipe page
-        Category::updateOrCreate(['name' => 'Carrier']);
-        Category::updateOrCreate(['name' => 'Raw Material']);
     }
 }

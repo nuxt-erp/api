@@ -30,12 +30,14 @@ class ProductRepository extends RepositoryService
             'field'         => 'is_enabled',
             'direction'     => 'desc'
         ];
+        //@todo add important relations (improve performance for queries)
+        // $this->queryBuilder->with([])
 
         if (!empty($searchCriteria['list']))
         {
             $this->queryBuilder->where('is_enabled', true);
         }
-        
+
         if (!empty($searchCriteria['sku'])) {
             $sku = '%' . Arr::pull($searchCriteria, 'sku') . '%';
             $this->queryBuilder
@@ -55,9 +57,9 @@ class ProductRepository extends RepositoryService
             });
         }
 
-        if (!empty($searchCriteria['category_id'])) {
+        if (!empty($searchCriteria['categories_id'])) {
             $this->queryBuilder
-                ->where('category_id', $searchCriteria['category_id']);
+                ->whereIn('category_id', Arr::pull($searchCriteria, 'categories_id'));
         }
 
         if (!empty($searchCriteria['brand_id'])) {
@@ -116,9 +118,6 @@ class ProductRepository extends RepositoryService
                 if($this->discounts) {
                     $this->createDiscounts($data); // CREATE ATTRIBUTE
                 }
-                if(!empty($data['images'])) {
-                    $this->syncImages($data['images']); // SYNC IMAGES
-                }
                 if(!empty($data["reorder_levels"])) {
                     foreach($data["reorder_levels"] as $reorder_level) {
                         ProductReorderLevel::create([
@@ -140,7 +139,7 @@ class ProductRepository extends RepositoryService
                             'date_from'             => $promo['date_from'],
                             'date_to'               => $promo['date_to'],
                             'gift_product_id'       => $promo['gift_product_id'] ?? $this->model->id,
-                        ]);                 
+                        ]);
                     }
                 }
 
@@ -153,7 +152,7 @@ class ProductRepository extends RepositoryService
                             'custom_price'          => $price['custom_price'] ?? 0,
                             'is_enabled'            => $price['is_enabled'],
                             'disabled_at'           => !$price['is_enabled'] ? now() : null,
-                        ]);                 
+                        ]);
                     }
                 }
             }
@@ -164,7 +163,7 @@ class ProductRepository extends RepositoryService
     {
         $this->suppliers = !empty($data["suppliers"]);
         $this->discounts = !empty($data["discounts"]);
-       
+
         parent::update($model,$data);
         $this->createAttribute($data);
         if($this->suppliers) {
@@ -217,13 +216,6 @@ class ProductRepository extends RepositoryService
             foreach($data["delete_custom_prices"] as $delete_custom_price) {
                 ProductCustomPrice::where('id', $delete_custom_price['id'])->delete();
             }
-        }
-    }
-
-    private function syncImages($images){
-        // the model need to exist before sync images
-        if($this->model){
-            lad($images);
         }
     }
 
@@ -376,7 +368,7 @@ class ProductRepository extends RepositoryService
             } else {
                 $new = CustomerDiscount::updateOrCreate($discountsArray);
             }
-        }        
+        }
     }
     private function updateReorderLevels($data) {
         foreach($data["reorder_levels"] as $reorder_level) {
@@ -437,11 +429,9 @@ class ProductRepository extends RepositoryService
         }
     }
 
-
-
     private function createDiscounts ($data)
     {
-     
+
         $discounts = $data['discounts'];
 
         foreach ($discounts as $discount)
@@ -452,8 +442,8 @@ class ProductRepository extends RepositoryService
             $new->reason        = $discount["reason"];
             $new->perc_value    = $discount["perc_value"];
             $new->start_date    = $discount["start_date"];
-            $new->end_date      = $discount["end_date"];           
-            $new->save();  
+            $new->end_date      = $discount["end_date"];
+            $new->save();
         }
 
         return $new->id;

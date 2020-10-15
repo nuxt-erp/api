@@ -52,9 +52,15 @@ class ProductController extends ControllerService implements CheckPolicies
     public function findRawMaterials(Request $request)
     {
         $isList = $request->has('list') && $request->list;
-        $category = ProductCategory::where('name', 'LIKE', '%Raw Material%')->first();
-        if($category){
-            $request->merge(['category_id' => $category->id]);
+        $categories_id = ProductCategory::where('name', 'ILIKE', '%Raw Material%')
+        ->orWhere('name', 'ILIKE', '%Flavor%')
+        ->orWhere('name', 'ILIKE', '%Flavor Key%')
+        ->orWhere('name', 'ILIKE', '%Solution Material%')
+        ->orWhere('name', 'ILIKE', '%Water%')
+        ->get()->pluck('id')->toArray();
+
+        if(!empty($categories_id)){
+            $request->merge(['categories_id' => $categories_id]);
             $items = $this->repository->findBy($request->all());
         }
         else{
