@@ -58,7 +58,7 @@ class ProjectSamplesRepository extends RepositoryService
             if(!empty($data['id'])){
                 $sample = ProjectSamples::find($data['id']);
                 if(empty($sample->assignee_id) && !empty($data['assignee_id'])){
-                    $data['status'] = 'in progress';
+                    $data['status'] = 'assigned';
                 }
                 $this->update($sample, $data);
             }
@@ -67,7 +67,7 @@ class ProjectSamplesRepository extends RepositoryService
                 $data['author_id']  = $user->id;
 
                 if(!empty($data['assignee_id'])){
-                    $data['status'] = 'in progress';
+                    $data['status'] = 'assigned';
                 }
                 if(!empty($data['recipe_id'])){
                     $recipe = Recipe::find($data['recipe_id']);
