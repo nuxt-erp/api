@@ -17,22 +17,35 @@ class FlowTableSeeder extends Seeder
     {
         Flow::truncate();
         $phases = [
-            'pending'            => Phase::updateOrCreate(['name' => 'pending'], ['name' => 'pending']),
-            'in_progress'        => Phase::updateOrCreate(['name' => 'in progress'],  ['name' => 'in progress']),
+            'pending'            => Phase::updateOrCreate(['name' => 'pending'],          ['name' => 'pending']),
+            'assigned'           => Phase::updateOrCreate(['name' => 'assigned'],         ['name' => 'assigned']),
+            'in_progress'        => Phase::updateOrCreate(['name' => 'in progress'],      ['name' => 'in progress']),
             'waiting_approval'   => Phase::updateOrCreate(['name' => 'waiting approval'], ['name' => 'waiting approval']),
-            'waiting_qc'         => Phase::updateOrCreate(['name' => 'waiting qc'], ['name' => 'waiting qc']),
-            'ready'              => Phase::updateOrCreate(['name' => 'ready'], ['name' => 'ready']),
-            'sent'               => Phase::updateOrCreate(['name' => 'sent'], ['name' => 'sent']),
-            'approved'           => Phase::updateOrCreate(['name' => 'approved'], ['name' => 'approved']),
-            'rework'             => Phase::updateOrCreate(['name' => 'rework'], ['name' => 'rework']),
+            'waiting_qc'         => Phase::updateOrCreate(['name' => 'waiting qc'],       ['name' => 'waiting qc']),
+            'ready'              => Phase::updateOrCreate(['name' => 'ready'],            ['name' => 'ready']),
+            'sent'               => Phase::updateOrCreate(['name' => 'sent'],             ['name' => 'sent']),
+            'approved'           => Phase::updateOrCreate(['name' => 'approved'],         ['name' => 'approved']),
+            'rework'             => Phase::updateOrCreate(['name' => 'rework'],           ['name' => 'rework']),
         ];
         Flow::updateOrCreate([
             'phase_id' => $phases['pending']->id,
-            'next_phase_id' => $phases['in_progress']->id,
+            'next_phase_id' => $phases['assigned']->id,
             'start' => 1,
             'end' => null
         ], [
             'phase_id' => $phases['pending']->id,
+            'next_phase_id' => $phases['assigned']->id,
+            'start' => 1,
+            'end' => null
+        ]);
+       
+        Flow::updateOrCreate([
+            'phase_id' => $phases['assigned']->id,
+            'next_phase_id' => $phases['in_progress']->id,
+            'start' => null,
+            'end' => null
+        ], [
+            'phase_id' => $phases['assigned']->id,
             'next_phase_id' => $phases['in_progress']->id,
             'start' => 1,
             'end' => null
@@ -76,7 +89,7 @@ class FlowTableSeeder extends Seeder
 
         Flow::updateOrCreate([
             'phase_id' => $phases['waiting_qc']->id,
-            'next_phase_id' => $phases['sent']->id,
+            'next_phase_id' => $phases['ready']->id,
             'start' => null,
             'end' => null
         ], [

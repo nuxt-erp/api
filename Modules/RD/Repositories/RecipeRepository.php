@@ -8,6 +8,14 @@ use Modules\RD\Entities\Recipe;
 
 class RecipeRepository extends RepositoryService
 {
+    public function findBy(array $searchCriteria = [])
+    {
+        if(!empty($searchCriteria['order_by'])) {
+            $this->queryBuilder->orderBy('name', $searchCriteria['order_by']);
+        }
+        return parent::findBy($searchCriteria);
+
+    }
 
     public function store(array $data)
     {
