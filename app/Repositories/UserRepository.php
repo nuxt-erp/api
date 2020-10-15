@@ -76,7 +76,6 @@ class UserRepository extends RepositoryService
 
     public function findBy(array $searchCriteria = [])
     {
-        lad($searchCriteria);
         if (!empty($searchCriteria['list']))
         {
             $this->queryBuilder->where('is_enabled', true);

@@ -22,7 +22,6 @@ class CustomerDiscountRepository extends RepositoryService
             $searchCriteria['id'] = '%' . Arr::pull($searchCriteria, 'id') . '%';
         }
 */
-        lad($searchCriteria);
         return parent::findBy($searchCriteria);
     }
 

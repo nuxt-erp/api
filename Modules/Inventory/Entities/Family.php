@@ -31,7 +31,6 @@ class Family extends ModelService
     {
         $string = '';
       /*  foreach ($this->family_attributes as $key => $p_attribute) {
-            //lad($attribute);
             $string .= ($key == 0  ? '' : ', ') . $p_attribute->attribute->name . ': ' . $p_attribute->value;
         }*/
         $string=count($this->product);

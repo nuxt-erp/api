@@ -64,7 +64,6 @@ class Product extends ModelService
     {
         $string = '';
         foreach ($this->product_attributes as $key => $p_attribute) {
-            //lad($attribute);
             $string .= ($key == 0  ? '' : ', ') . $p_attribute->attribute->name . ': ' . $p_attribute->value;
         }
         return $string;

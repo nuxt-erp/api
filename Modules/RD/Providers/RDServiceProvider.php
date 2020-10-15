@@ -268,10 +268,6 @@ class RDServiceProvider extends ServiceProvider
             $sourcePath => $viewPath
         ], ['views', $this->moduleNameLower . '-module-views']);
 
-        lad('register views');
-        lad('$sourcePath', $sourcePath);
-        lad($this->getPublishableViewPaths());
-
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
     }
 

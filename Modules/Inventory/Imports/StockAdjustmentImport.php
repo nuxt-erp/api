@@ -27,13 +27,10 @@ class StockAdjustmentImport implements ToArray, WithHeadingRow
             foreach ($rows as $row)
             {
                 $on_hand    = 0;
-                lad($row);
 
                 $product = Product::where('sku', $row['sku'])
                 ->with('location')
                 ->first();
-
-                lad($product);
 
                 if ($product)
                 {

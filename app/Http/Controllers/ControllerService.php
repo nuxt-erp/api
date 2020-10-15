@@ -167,6 +167,8 @@ class ControllerService extends LaravelController implements ControllerInterface
             $errorValues = $validator->errors();
             // crete error message by using key and value
             foreach ($errorTypes as $key => $value) {
+                lad('getValidationErrors');
+                lad($value);
                 $type = strtolower(array_keys($value)[0]);
                 $result[$key] = strstr($type, 'illuminate') === FALSE ? $type : $errorValues->get($key)[0];
             }
@@ -176,7 +178,7 @@ class ControllerService extends LaravelController implements ControllerInterface
     }
     public function getStatuses(){
         $statuses = $this->repository->model->getStatuses();
-        $keyValue = []; 
+        $keyValue = [];
         $i = 0;
         foreach ($statuses as $key => $status) {
             $keyValue[$i]['name'] = ucfirst($status);

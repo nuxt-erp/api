@@ -45,13 +45,8 @@ class TransferRepository extends RepositoryService
     {
         DB::transaction(function () use ($data, $model)
         {
-            
-            lad($model);
-            lad($data);
-
             parent::update($model, $data);
             // UPDATE STOCK TAKE PRODUCTS
-            lad($this->model);
             $this->saveTransferDetails($data, $this->model->id);
         });
     }
@@ -73,7 +68,7 @@ class TransferRepository extends RepositoryService
                     $qty_received   = $item['qty_received'] ?? 0;
                     $product_id     = $item['product_id'] ?? $item['name'] ?? null;
                     if ($product_id) {
-                        
+
                         TransferDetails::updateOrCreate([
                             'transfer_id'    => $id,
                             'product_id'     => $product_id],

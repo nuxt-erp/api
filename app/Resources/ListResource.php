@@ -19,7 +19,7 @@ class ListResource extends ResourceService
             'name'          => $this->description ?? $this->name ?? '',
             'is_default'    => isset($this->is_default) ? $this->is_default : 0
         ];
-        lad($this->model);
+
         switch ($this->model) {
             case 'Product':
                 $resource['name']   = $this->sku . ' - ' . $this->name;

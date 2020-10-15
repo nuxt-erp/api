@@ -33,10 +33,8 @@ class ProductImagesController extends ControllerService
     public function store(Request $request)
     {
         $user = auth()->user();
-        lad('store');
         $files = [];
         if ($request->hasFile('files') && $request->filled('product_id')) {
-            lad('has file');
             $x = 0;
 
             foreach ($request->file('files') as $file) {

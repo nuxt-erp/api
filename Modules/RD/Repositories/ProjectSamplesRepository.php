@@ -16,7 +16,7 @@ class ProjectSamplesRepository extends RepositoryService
     public function findBy(array $searchCriteria = [])
     {
         $user = auth()->user();
-    
+
         if(!$user->hasRole('admin', 'rd_requester', 'rd_supervisor', 'rd_quality_control')){
             $this->queryBuilder->where('assignee_id', $user->id);
         }
@@ -43,7 +43,7 @@ class ProjectSamplesRepository extends RepositoryService
                 ->orWhere('external_code', 'LIKE', $text);
             });
         }
-        
+
         if(!empty($searchCriteria['order_by'])) {
             $this->queryBuilder->orderBy('name', $searchCriteria['order_by']);
         }
@@ -74,7 +74,6 @@ class ProjectSamplesRepository extends RepositoryService
                     if(!empty($recipe->type_id)) {
                         $data['internal_code'] = $recipe->type->value . '-' . $data['recipe_id'] ;
                     }
-                    lad($recipe->type_id);
                 }
 
                 // option 1 - no status in the array - find the first phase in the flow
@@ -115,7 +114,6 @@ class ProjectSamplesRepository extends RepositoryService
             $supervisor_reassigned       = !empty($data['supervisor_reassigned']) && $data['supervisor_reassigned'];
             $recipe_update               = !empty($data['recipe']);
             $user                        = auth()->user();
-            lad($approval);
             // FLAVORIST UPDATE
             if($recipe_update){
 
@@ -194,7 +192,7 @@ class ProjectSamplesRepository extends RepositoryService
                 $data['phase_id']   = 7;
                 $data['status']     = 'rework';
             }
-            
+
 
             // option 1 - recipe update without start
             // option 2 - finish without start

@@ -25,8 +25,6 @@ class BelongsToManyTenant extends BelongsToMany
 
     protected function performJoin( $query = null )
     {
-        lad('perform Join: ', $this->table);
-        lad('----');
         $schema = '';
         if($this->using){
             $using = new $this->using;
