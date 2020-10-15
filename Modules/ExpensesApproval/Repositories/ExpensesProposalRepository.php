@@ -25,14 +25,7 @@ class ExpensesProposalRepository extends RepositoryService
             $this->queryBuilder
                 ->whereDate('created_at', '>=', $searchCriteria['date'][0])
                 ->whereDate('created_at', '<=', $searchCriteria['date'][1]);
-        }
-
-        if (!empty($searchCriteria['status'])) {
-            $status_id = Parameter::where('name', 'expenses_approval_status')->where('value', Arr::pull($searchCriteria, 'status'))->pluck('id')->first();
-            $searchCriteria['status_id'] = $status_id;
-        }
-
-
+        }       
 
         return parent::findBy($searchCriteria);
     }
@@ -44,29 +37,23 @@ class ExpensesProposalRepository extends RepositoryService
         // FOR ADMIN, GET ALL THE PENDING PROPOSALS
         if($user->hasRole('admin')) {
             $this->queryBuilder
-                ->whereHas('status', function (Builder $query) {
-                    $query->where('value', 'pending');
-                });
+                ->where('status', ExpensesProposal::PENDING);
         } 
         // FOR BUYERS, GET ALL THE APPROVED PROPOSALS ONLY
         else if($user->hasRole('buyer')) {
             $this->queryBuilder
-                ->whereHas('status', function (Builder $query) {
-                    $query->where('value', 'approved');
-                });
+                ->where('status', ExpensesProposal::APPROVED);
         } else {
             // GET ALL THE EXPENSES PROPOSALS CREATED BY THE USER
             // OR THAT THE USER IS THE TEAM LEADER OR DIRECTOR APPROVER OF THE EXPENSE CATEGORY
             // THAT HAVE PENDING STATUS
             $this->queryBuilder
-                ->whereHas('status', function (Builder $query) {
-                    $query->where('value', 'pending');
-                })
+                ->where('status', ExpensesProposal::PENDING)
                 ->where(function (Builder $query) use ($user) {
                     $query->where('author_id', $user->id)
                         ->orWhereHas('category', function (Builder $query) use ($user) {
                             $query->where('team_leader_id', $user->id)
-                                ->orWhere('director_id', $user->id);
+                                ->orWhere('sponsor_id', $user->id);
                         });
                 });
 
@@ -83,29 +70,23 @@ class ExpensesProposalRepository extends RepositoryService
         // FOR ADMIN, GET ALL PROPOSALS THAT HAVE STATUS DIFFERENT FROM PENDING
         if($user->hasRole('admin')) {
             $this->queryBuilder
-                ->whereHas('status', function (Builder $query) {
-                    $query->where('value', '<>', 'pending');
-                });
+                ->whereHas('status', '<>', ExpensesProposal::PENDING);
         } 
         // FOR BUYERS, GET ALL THE PURCHASED PROPOSALS ONLY
         else if($user->hasRole('buyer')) {
             $this->queryBuilder
-                ->whereHas('status', function (Builder $query) {
-                    $query->where('value', 'purchased');
-                });
+                ->where('status', ExpensesProposal::PURCHASED);
         } else {
             // GET ALL THE EXPENSES PROPOSALS CREATED BY THE USER
             // OR THAT THE USER IS THE TEAM LEADER OR DIRECTOR APPROVER OF THE EXPENSE CATEGORY
             // THAT HAVE STATUS DIFFERENT FROM PENDING
             $this->queryBuilder
-                ->whereHas('status', function (Builder $query) {
-                    $query->where('value', '<>', 'pending');
-                })
+                ->where('status', '<>', ExpensesProposal::PENDING)
                 ->where(function (Builder $query) use ($user) {
                     $query->where('author_id', $user->id)
                         ->orWhereHas('category', function (Builder $query) use ($user) {
                             $query->where('team_leader_id', $user->id)
-                                ->orWhere('director_id', $user->id);
+                                ->orWhere('sponsor_id', $user->id);
                         });
                 });
 
@@ -123,13 +104,13 @@ class ExpensesProposalRepository extends RepositoryService
             $data['author_id'] = $user->id;
                         
             // STATUS OF THE EXPENSE IS DEFINED BASED ON THE USER AND THE EXPENSES RULES
-            $data['status_id'] = $this->updateStatus($data, $user);
+            $data['status'] = $this->updateStatus($data, $user);
 
             parent::store($data);
 
             if($this->model) {
                 // IF EXPENSE IS AUTOMATICALLY APPROVED, SEND EMAIL
-                if ($this->model->status === 'Approved') {
+                if ($this->model->status === ExpensesProposal::APPROVED) {
                     $this->sendEmailApproved($this->model);                    
                 } else {
                     // SEND EMAIL TO APPROVERS
@@ -164,13 +145,12 @@ class ExpensesProposalRepository extends RepositoryService
             // BUYER FINISH PURCHASE - SAVE PURCHASE DATE
             if(isset($data['buyer_role']) && $data['buyer_role']) {
 
-                $purchased_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'purchased')->pluck('id')->first();
-                $data['status_id'] = $purchased_id;
+                $data['status'] = ExpensesProposal::PURCHASED;
                 $data['purchase_date'] = now();
             } else {
                 // UPDATE STATUS IF THERE IS CHANGE ON TOTAL COST
                 if($model->total_cost !== $data['total_cost']) {
-                    $data['status_id'] = $this->updateStatus($data, $user);
+                    $data['status'] = $this->updateStatus($data, $user);
                 }
             }
 
@@ -195,7 +175,7 @@ class ExpensesProposalRepository extends RepositoryService
             // CHECK IF RULE CHANGED AND ANY APPROVAL EMAIL NEEDS TO BE SENT
             if($this->model->rule()->id !== $original_rule->id) {
                 // IF EXPENSE IS AUTOMATICALLY APPROVED, SEND EMAIL
-                if ($this->model->status === 'Approved') {
+                if ($this->model->status === ExpensesProposal::APPROVED) {
                     $this->sendEmailApproved($this->model);                      
                 } else {
                     // SEND EMAIL TO APPROVERS
@@ -229,52 +209,50 @@ class ExpensesProposalRepository extends RepositoryService
         $category = Category::where('id', $data['expenses_category_id'])->first();
         $rule = ExpensesRule::where('start_value', '<', $data['total_cost'])->where('end_value', '>=', $data['total_cost'])->orWhereNull('end_value')->orderBy('start_value')->first();
         $team_leader_required = $rule->team_leader_approval;
-        $director_required = $rule->director_approval;
-        $pending_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'pending')->pluck('id')->first();
-        $approved_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
+        $director_required = $rule->sponsor_approval;
         
         // TEAM LEADER AND DIRECTOR APPROVAL REQUIRED
         if ($team_leader_required && $director_required) {
             // AUTHOR OF EXPENSE IS THE DIRECTOR OF THE CATEGORY, APPROVE DIRECTLY
-            if ($user->id === $category->director_id) {
-                $data['status_id'] = $approved_id;
+            if ($user->id === $category->sponsor_id) {
+                $data['status'] = ExpensesProposal::APPROVED;
             }
             // AUTHOR OF EXPENSE IS THE TEAM LEADER OF THE CATEGORY, APPROVE TEAM LEADER AND WAIT FOR DIRECTOR APPROVAL
             else if ($user->id === $category->team_leader_id) {
-                $data['status_id'] = $pending_id;
+                $data['status'] = ExpensesProposal::PENDING;
             }
             // AUTHOR OF EXPENSE IS OTHER USER, WAIT FOR TEAM LEADER AND DIRECTOR APPROVAL
             else {
-                $data['status_id'] = $pending_id;
+                $data['status'] = ExpensesProposal::PENDING;
             }
         }
         // ONLY TEAM LEADER APPROVAL REQUIRED
         else if($team_leader_required && !$director_required) {
             // AUTHOR OF EXPENSE IS THE DIRECTOR OR TEAM LEADER OF THE CATEGORY, APPROVE DIRECTLY
-            if ($user->id === $category->team_leader_id || $user->id === $category->director_id) {
-                $data['status_id'] = $approved_id;
+            if ($user->id === $category->team_leader_id || $user->id === $category->sponsor_id) {
+                $data['status'] = ExpensesProposal::APPROVED;
             }
             // AUTHOR OF EXPENSE IS OTHER USER, WAIT FOR TEAM LEADER APPROVAL
             else {
-                $data['status_id'] = $pending_id;
+                $data['status'] = ExpensesProposal::PENDING;
             }
         }
         else if(!$team_leader_required && $director_required) {
             // AUTHOR OF EXPENSE IS THE DIRECTOR OF THE CATEGORY, APPROVE DIRECTLY
-            if ($user->id === $category->director_id) {
-                $data['status_id'] = $approved_id;
+            if ($user->id === $category->sponsor_id) {
+                $data['status'] = ExpensesProposal::APPROVED;
             }
             // AUTHOR OF EXPENSE IS OTHER USER, WAIT DIRECTOR APPROVAL
             else {
-                $data['status_id'] = $pending_id;
+                $data['status'] = ExpensesProposal::PENDING;
             }
         }
         // NO APPROVAL REQUIRED, APPROVE DIRECTLY
         else {
-            $data['status_id'] = $approved_id;
+            $data['status'] = ExpensesProposal::APPROVED;
         }
 
-        return $data['status_id'];
+        return $data['status'];
     }
     
 
@@ -293,22 +271,21 @@ class ExpensesProposalRepository extends RepositoryService
         $proposal   = ExpensesProposal::find($id);
         $rule       = $proposal->rule();
         $team_leader_required = $rule->team_leader_approval;
-        $director_required = $rule->director_approval;
-        $team_leader_approval = $team_leader_required ? ($proposal->author_id===$proposal->category->team_leader_id ? true : ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $proposal->category->team_leader_id)->first()) : null;
-        $director_approval = $director_required ? ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $proposal->category->director_id)->first() : null;
-        $approved_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
-
-        if ($team_leader_required && $director_required && $team_leader_approval && $director_approval) {
-            $proposal->status_id = $approved_id;
-        } else if($team_leader_required && !$director_required && $team_leader_approval) {
-            $proposal->status_id = $approved_id;
-        } else if(!$team_leader_required && !$director_required) {
-            $proposal->status_id = $approved_id;
+        $sponsor_required = $rule->sponsor_approval;
+        $team_leader_approval = $team_leader_required ? ($proposal->author_id===$proposal->category->team_leader_id ? true : $proposal->team_leader_approval()) : null;
+        $sponsor_approval = $sponsor_required ? $proposal->sponsor_approval : null;
+        
+        if ($team_leader_required && $sponsor_required && $team_leader_approval && $sponsor_approval) {
+            $proposal->status = ExpensesProposal::APPROVED;
+        } else if($team_leader_required && !$sponsor_required && $team_leader_approval) {
+            $proposal->status = ExpensesProposal::APPROVED;
+        } else if(!$team_leader_required && !$sponsor_required) {
+            $proposal->status = ExpensesProposal::APPROVED;
         }
 
         $proposal->save();
 
-        if ($proposal->status_id === $approved_id) {
+        if ($proposal->status === ExpensesProposal::APPROVED) {
             $this->sendEmailApproved($proposal);
         }
 
@@ -318,8 +295,7 @@ class ExpensesProposalRepository extends RepositoryService
     public function disapproveProposal($id)
     {
         $proposal  = ExpensesProposal::find($id);
-        $denied_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'denied')->pluck('id')->first();
-        $proposal->status_id = $denied_id;
+        $proposal->status = ExpensesProposal::DENIED;
         $proposal->save();
 
         $data = [
@@ -348,11 +324,10 @@ class ExpensesProposalRepository extends RepositoryService
 
         $original_status = $proposal->status;
 
-        $pending_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'pending')->pluck('id')->first();
-        $proposal->status_id = $pending_id;
+        $proposal->status = ExpensesProposal::PENDING;
         $proposal->save();      
 
-        if($original_status === 'Approved') $proposal['hide'] = true;
+        if($original_status === ExpensesProposal::APPROVED) $proposal->hide = true;
 
         return $proposal;               
     }
@@ -385,12 +360,12 @@ class ExpensesProposalRepository extends RepositoryService
     {   
         $to = [];
        
-        if ($proposal->rule()->team_leader_approval && $proposal->author_id !== $proposal->category->team_leader_id && $proposal->author_id !== $proposal->category->director_id) {
+        if ($proposal->rule()->team_leader_approval && $proposal->author_id !== $proposal->category->team_leader_id && $proposal->author_id !== $proposal->category->sponsor_id) {
             $to[] = $proposal->category->team_leader->email;
         }
 
-        if ($proposal->rule()->director_approval && $proposal->author_id !== $proposal->category->director_id ) {
-            $to[] = $proposal->category->director->email;
+        if ($proposal->rule()->sponsor_approval && $proposal->author_id !== $proposal->category->sponsor_id ) {
+            $to[] = $proposal->category->sponsor->email;
         }
 
         $data = [

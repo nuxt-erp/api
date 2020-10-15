@@ -20,7 +20,7 @@ class ExpensesRuleTableSeeder extends Seeder
         ExpensesRule::updateOrCreate([
             'name' => 'Small expenses',
             'team_leader_approval' => false,
-            'director_approval' => false,
+            'sponsor_approval' => false,
             'start_value' => 0.00,
             'end_value' => 50.00
         ]);
@@ -28,7 +28,7 @@ class ExpensesRuleTableSeeder extends Seeder
         ExpensesRule::updateOrCreate([
             'name' => 'Medium expenses',
             'team_leader_approval' => true,
-            'director_approval' => false,
+            'sponsor_approval' => false,
             'start_value' => 50.00,
             'end_value' => 500.00
         ]);
@@ -36,7 +36,7 @@ class ExpensesRuleTableSeeder extends Seeder
         ExpensesRule::updateOrCreate([
             'name' => 'Big expenses',
             'team_leader_approval' => true,
-            'director_approval' => true,
+            'sponsor_approval' => true,
             'start_value' => 500.00,
             'end_value' => null
         ]);

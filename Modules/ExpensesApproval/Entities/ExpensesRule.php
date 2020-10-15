@@ -12,7 +12,7 @@ class ExpensesRule extends ModelService
     protected $table = 'exp_ap_rules';
 
     protected $fillable = [
-        'name', 'team_leader_approval', 'director_approval',
+        'name', 'team_leader_approval', 'sponsor_approval',
         'start_value', 'end_value'
     ];
 
@@ -21,7 +21,7 @@ class ExpensesRule extends ModelService
         $rules = [
             'name'                  => ['string', 'max:255'],
             'team_leader_approval'  => ['nullable', 'boolean'],
-            'director_approval'     => ['nullable', 'boolean'],
+            'sponsor_approval'      => ['nullable', 'boolean'],
             'end_value'             => ['nullable'],
         ];
 
@@ -30,7 +30,7 @@ class ExpensesRule extends ModelService
             //$rules['name'][]                    = 'unique:tenant.exp_ap_rules';
             $rules['name'][]                    = 'required';
             $rules['team_leader_approval'][]    = 'required';
-            $rules['director_approval'][]       = 'required';
+            $rules['sponsor_approval'][]       = 'required';
         } else {
             //update
             // $rules['name'][] = Rule::unique('tenant.exp_ap_rules')->ignore($item->id);
