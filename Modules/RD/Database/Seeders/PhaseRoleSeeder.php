@@ -20,10 +20,11 @@ class PhaseRoleSeeder extends Seeder
 
         $phases = [
             'pending'            => Phase::updateOrCreate(['name' => 'pending'], ['name' => 'pending']),
+            'assigned'           => Phase::updateOrCreate(['name' => 'assigned'],  ['name' => 'assigned']),
             'in_progress'        => Phase::updateOrCreate(['name' => 'in progress'],  ['name' => 'in progress']),
             'waiting_approval'   => Phase::updateOrCreate(['name' => 'waiting approval'], ['name' => 'waiting approval']),
             'waiting_qc'         => Phase::updateOrCreate(['name' => 'waiting qc'], ['name' => 'waiting qc']),
-            'ready'               => Phase::updateOrCreate(['name' => 'ready'], ['name' => 'ready']),
+            'ready'              => Phase::updateOrCreate(['name' => 'ready'], ['name' => 'ready']),
             'sent'               => Phase::updateOrCreate(['name' => 'sent'], ['name' => 'sent']),
             'approved'           => Phase::updateOrCreate(['name' => 'approved'], ['name' => 'approved']),
             'rework'             => Phase::updateOrCreate(['name' => 'rework'], ['name' => 'rework']),
@@ -43,10 +44,17 @@ class PhaseRoleSeeder extends Seeder
         ]);
 
         PhaseRole::updateOrCreate([
+            'phase_id' => $phases['assigned']->id
+        ], [
+            'phase_id' => $phases['assigned']->id,
+            'role_id' => $roles['rd_supervisor']->id
+        ]);
+
+        PhaseRole::updateOrCreate([
             'phase_id' => $phases['in_progress']->id
         ], [
             'phase_id' => $phases['in_progress']->id,
-            'role_id' => $roles['rd_supervisor']->id
+            'role_id' => $roles['rd_flavorist']->id
         ]);
 
         PhaseRole::updateOrCreate([

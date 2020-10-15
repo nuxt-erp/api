@@ -20,6 +20,12 @@ class PhaseTableSeeder extends Seeder
         ]);
 
         Phase::updateOrCreate([
+            'name' => 'assigned'
+        ], [
+            'name' => 'assigned'
+        ]);
+
+        Phase::updateOrCreate([
             'name' => 'in progress'
         ], [
             'name' => 'in progress'
