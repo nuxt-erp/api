@@ -28,6 +28,7 @@ class ProjectResource extends ResourceService
             'last_feedback'      => optional($this->samples->sortByDesc('updated_at')->first())->feedback,
             'iteration'          => $this->iteration,
             'status'             => ucwords($this->status),
+            'sample_status'      => ucwords(optional($this->samples->sortByDesc('updated_at')->first())->status),
             'code'               => $this->code,
             'comment'            => $this->comment,
             'start_at'           => optional($this->start_at)->format('Y-m-d'),

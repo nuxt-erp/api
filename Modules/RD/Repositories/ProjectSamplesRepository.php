@@ -198,7 +198,7 @@ class ProjectSamplesRepository extends RepositoryService
             // option 2 - finish without start
             else{
                 if( ($model->status == 'pending' || empty($model->assignee_id)) && !empty($data['assignee_id'])){
-                    $data['status']     = 'in progress';
+                    $data['status']     = 'assigned';
                 }
 
                 // IF FRONTEND SEND STATUS OR WE GET SOMETHING

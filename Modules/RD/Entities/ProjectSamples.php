@@ -9,13 +9,16 @@ use Illuminate\Validation\Rule;
 class Constants {
     const rd_requester        = [
         'pending',
-        'waiting approval',
-        'waiting qc',
-        'ready'
-
+        'ready',
+        'approved',
+        'rework'
     ];
     const rd_supervisor       = [
+        'pending',
         'in progress',
+        'assigned',
+        'waiting approval',
+        'waiting qc',
         'sent',
         'approved',
         'rework',
