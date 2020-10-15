@@ -16,7 +16,7 @@ class StockAdjustmentRepository extends RepositoryService
 {
 
     public function findBy(array $searchCriteria = [])
-    {       
+    {
         $searchCriteria['order_by'] = [
             'field'         => 'id',
             'direction'     => 'asc'
@@ -25,7 +25,7 @@ class StockAdjustmentRepository extends RepositoryService
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
             ->where('id', $searchCriteria['id']);
-        }      
+        }
 
         return parent::findBy($searchCriteria);
     }
@@ -58,7 +58,6 @@ class StockAdjustmentRepository extends RepositoryService
             StockAdjustmentDetail::where('stock_adjustment_id', $id)->delete();
 
             foreach ($data['list_products'] as $product) {
-                lad($product);
                 $qty    = $product['qty'] ?? 0;
                 $notes  = $product['notes'] ?? null;
 
@@ -73,7 +72,7 @@ class StockAdjustmentRepository extends RepositoryService
                     'abs_variance'  => abs($qty - $product['on_hand']),
                     'notes'         => $notes
                 ]);
-                
+
                 // UPDATE PRODUCT AVAILABILITY
                 Availability::updateOrCreate([
                     'product_id'  => $product['product_id'],
@@ -83,7 +82,7 @@ class StockAdjustmentRepository extends RepositoryService
                     'on_hand'   => $qty
                 ]);
 
-                // ADD MOVEMENT TO PRODUCT LOG  
+                // ADD MOVEMENT TO PRODUCT LOG
                 $type = Parameter::firstOrCreate(
                     ['name' => 'product_log_type', 'value' => 'Stock Adjustment']
                 );

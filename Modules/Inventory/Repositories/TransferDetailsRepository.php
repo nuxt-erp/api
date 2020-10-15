@@ -19,14 +19,13 @@ class TransferDetailsRepository extends RepositoryService
             'field'         => 'id',
             'direction'     => 'asc'
         ];
-        
+
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
             ->where('id', Arr::pull($searchCriteria, 'id'));
         }
 
      //   $this->queryBuilder->where('company_id', Auth::user()->company_id);
-     lad(parent::findBy($searchCriteria));
         return parent::findBy($searchCriteria);
     }
 
@@ -34,12 +33,12 @@ class TransferDetailsRepository extends RepositoryService
     {
         DB::transaction(function () use ($data)
         {
-          
+
             parent::store($data);
             // SAVE Transfer DETAILS
            // $this->saveTransferDetails($data, $this->model->id);
         });
     }
 
-  
+
 }

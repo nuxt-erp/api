@@ -15,9 +15,8 @@ class RecipeSpecificationRepository extends RepositoryService
     {
         DB::transaction(function () use ($data){
             $user = auth()->user();
-            lad($user->id);
             $data['approver_id'] = $user->id;
-            
+
             if(!empty($data['id'])){
                 $sample = ProjectSamples::find($data['id']);
                 $flow = Flow::where('phase_id', $sample->phase_id)->first();
@@ -26,7 +25,7 @@ class RecipeSpecificationRepository extends RepositoryService
                 $sample_repo = new ProjectSamplesRepository(new ProjectSamples());
                 $sample_repo->update($sample, $sample_data);
             }
-            
+
             parent::store($data);
 
             if (Arr::has($data, 'attributes')) {

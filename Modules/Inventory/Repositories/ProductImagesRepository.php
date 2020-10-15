@@ -12,10 +12,8 @@ class ProductImagesRepository extends RepositoryService
 
     public function store(array $data)
     {
-        lad('data', $data);
         DB::transaction(function () use ($data) {
             foreach ($data['paths'] as $file) {
-                lad('file repo', $file);
                 parent::store([
                     'product_id'    => $data['product_id'],
                     'path'          => $file['path'],
@@ -35,7 +33,6 @@ class ProductImagesRepository extends RepositoryService
 
             $result = parent::delete($model);
             if ($result) {
-                lad('delete s3');
                 $result = Storage::disk('s3')->delete($path);
                 $result = Storage::disk('s3')->delete($thumb_path);
             }

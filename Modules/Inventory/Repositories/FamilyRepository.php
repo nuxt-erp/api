@@ -12,7 +12,7 @@ use Modules\Inventory\Entities\ProductAttributes;
 
 
 class FamilyRepository extends RepositoryService
-{    
+{
     private $result = [];
     private $generate = false; // GENERATE PRODUCT FAMILY
 
@@ -29,7 +29,7 @@ class FamilyRepository extends RepositoryService
         {
             $this->queryBuilder->where('is_enabled', true);
         }
-        
+
         $data = [];
         if (isset($id)) {
             $data = Product::where('family_id', $id)->get();
@@ -40,7 +40,7 @@ class FamilyRepository extends RepositoryService
 
 
     public function findBy(array $searchCriteria = [])
-    {  
+    {
         if (!empty($searchCriteria['sku'])) {
             $sku = '%' . Arr::pull($searchCriteria, 'sku') . '%';
             $this->queryBuilder
@@ -87,22 +87,21 @@ class FamilyRepository extends RepositoryService
         return parent::findBy($searchCriteria);
     }
     public function store($data)
-    {       
+    {
         DB::transaction(function () use ($data) {
-            $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY                    
+            $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
             $this->generateFamily($data, $data['family_id']); // GENERATE FAMILY
-          
+
         });
-      
+
     }
     public function update($model, array $data)
-    {      
-        parent::update($model,$data);                        
-        $this->createAttribute($data); 
+    {
+        parent::update($model,$data);
+        $this->createAttribute($data);
     }
     private function createFamily($data)
     {
-       lad($data);
         $new                = new Family();
         $new->name          = $data["name"];
         $new->description   = $data["description"];
@@ -131,7 +130,7 @@ class FamilyRepository extends RepositoryService
         return $new->id;
     }
     public function generateFamily($data, $family_id = null)
-    { 
+    {
         if (isset($data["family_attributes"])) {
 
             $all_products_id    = [];
@@ -150,7 +149,7 @@ class FamilyRepository extends RepositoryService
             {
                 $row++;
                 $tot = count($attributes); // TOTAL ATTRIBUTES
-                
+
                 if ($row == 1) // ONE ROW CONTAINS ALL ATTRIBUTES
                 {
                     for ($i = 0; $i < $tot; $i++) // WHILE FOUND ATTRIBUTES
@@ -161,7 +160,7 @@ class FamilyRepository extends RepositoryService
                                 // SAVING ALL FAMILY ATTRIBUTES
                             FamilyAttribute::updateOrCreate(['family_id' => $data["family_id"], 'attribute_id' => $get_array["id"], 'value' => $get_array["value"]]);
                             $attributes_concat[$i] = $get_array["id"] . "|" . $get_array["value"];
-                               
+
                             }
                         }
                     }
@@ -170,13 +169,13 @@ class FamilyRepository extends RepositoryService
 
             $tot_attributes = FamilyAttribute::distinct('attribute_id')->count('attribute_id');
             $r              = $tot_attributes;
-           
+
             $n              = sizeof($attributes_concat);
-            
+
             $this->printCombination($attributes_concat, $n, $r);
             $my_array       = [];
-            $my_array       = $this->result;    
-                      
+            $my_array       = $this->result;
+
             foreach ($my_array as $index => $element) {
                 // CONCAT ATTRIBUTES TO SAVE ON PRODUCT NAME
                 $concat_name = "";
@@ -220,13 +219,12 @@ class FamilyRepository extends RepositoryService
                $new->save();
                 //GETTING PRODUCT ID CREATED
                 $new_product_id = $new->id;
-               
+
                 // SAVE ALL PRODUCTS CREATED
                 array_push($all_products_id, $new_product_id);
 
                 // [0] => 3|sour,2|50ml,1|50mg - EXAMPLE
                 $attributes = explode(',', $element);
-              //  lad($attributes);
 
                 // LOOP ROW OF ATTRIBUTES
                 foreach ($attributes as $v) {
@@ -234,7 +232,6 @@ class FamilyRepository extends RepositoryService
                         $get_array = explode('|', $v); // 3|sour 2|50ml 1|50mg - ALL ATTRIBUTES FOR ONE PRODUCT
                         $this->saveProductAttribute($new_product_id, $get_array[0], $get_array[1], $family_id); // CREATE NEW PRODUCT ATTRIBUTE
                         $concat_name .= " - " . $get_array[1];
-                       // lad($concat_name);   
                     }
                 }
 
@@ -255,7 +252,7 @@ class FamilyRepository extends RepositoryService
                 'value' => $value
             ]
         );
-      
+
     }
 
     private function printCombination($arr, $n, $r)
@@ -295,7 +292,7 @@ class FamilyRepository extends RepositoryService
             }
 
             // WE NEED THE COMPLETE COMBINATION (# r passed as parameter)
-            
+
             if ($qt_elements == $r) {
                 array_push($this->result, $comb);
             }
@@ -330,7 +327,7 @@ class FamilyRepository extends RepositoryService
         $this->combinationUtil($arr, $n, $r, $index, $data, $i + 1);
     }
     private function createAttribute($data)
-    { 
+    {
         if (!empty($data["family_attributes"])) {
 
             $family_id         = $data["id"] ?? $this->model->id;; //Get CURRENT PRODUCT ID
@@ -340,9 +337,9 @@ class FamilyRepository extends RepositoryService
             $sku_increment      = 1;
             $row = 0;
             $all_products_id    = [];
-        
+
             $attrib             = array(array());
-          
+
             $sku_family         = $data["sku"];
             $product_name       = $data["name"];
             $sku_increment      = 1;
@@ -369,16 +366,16 @@ class FamilyRepository extends RepositoryService
                         }
                     }
                 }
-            } 
+            }
           /*  $tot_attributes = FamilyAttribute::distinct('attribute_id')->count('attribute_id');
             $r              = $tot_attributes;
-           
+
             $n              = sizeof($attributes_concat);
-            
+
             $this->printCombination($attributes_concat, $n, $r);
             $my_array       = [];
-            $my_array       = $this->result;    
-                      
+            $my_array       = $this->result;
+
             foreach ($my_array as $index => $element) {
                 // CONCAT ATTRIBUTES TO SAVE ON PRODUCT NAME
                 $concat_name = "";
@@ -420,13 +417,11 @@ class FamilyRepository extends RepositoryService
                $new->save();
                 //GETTING PRODUCT ID CREATED
                 $new_product_id = $new->id;
-                lad($new_product_id);
                 // SAVE ALL PRODUCTS CREATED
                 array_push($all_products_id, $new_product_id);
 
                 // [0] => 3|sour,2|50ml,1|50mg - EXAMPLE
                 $attributes = explode(',', $element);
-              //  lad($attributes);
 
                 // LOOP ROW OF ATTRIBUTES
                 foreach ($attributes as $v) {
@@ -434,13 +429,12 @@ class FamilyRepository extends RepositoryService
                         $get_array = explode('|', $v); // 3|sour 2|50ml 1|50mg - ALL ATTRIBUTES FOR ONE PRODUCT
                         $this->saveProductAttribute($new_product_id, $get_array[0], $get_array[1], $family_id); // CREATE NEW PRODUCT ATTRIBUTE
                         $concat_name .= " - " . $get_array[1];
-                       // lad($concat_name);   
                     }
                 }
 
                 // CONCAT PRODUCT NAME WITH ATTRIBUTE VALUE
                 Product::where('id', $new_product_id)->update(['name' => $data["name"] . $concat_name]);
-            }  */         
+            }  */
         }
     }
     private function saveFamilyAttribute($family_id, $attribute_id, $value)
