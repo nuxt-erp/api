@@ -11,8 +11,8 @@ class CategoryResource extends JsonResource
         return [
             'id'                    => $this->id,
             'name'                  => $this->name,
-            'team_leader_id'        => $this->team_leader_id,
-            'team_leader_name'      => $this->team_leader->name,
+            'lead_id'               => $this->lead_id,
+            'lead_name'             => $this->lead->name,
             'sponsor_id'            => $this->sponsor_id,
             'sponsor_name'          => $this->sponsor->name,
             'buyer_id'              => $this->buyer_id,

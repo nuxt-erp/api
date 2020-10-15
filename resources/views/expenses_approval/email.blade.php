@@ -36,7 +36,7 @@
 					You will receive a new notification when the purchase is completed.
 				@elseif ($type === 'denied')
 					Hi <strong>{{ strtoupper($user_name) }}</strong>, the expense request bellow was not approved. <br>
-					Contact your team leader for more details.
+					Contact your Lead for more details.
 				@elseif ($type === 'buyer')
 					A new expense request was approved. 
 				@elseif ($type === 'purchased')

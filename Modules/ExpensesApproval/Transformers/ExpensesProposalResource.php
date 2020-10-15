@@ -36,7 +36,7 @@ class ExpensesProposalResource extends JsonResource
                         'icon'  => 'delete',
                         'type'  => 'danger'
                     ]));
-                } else if($user->id === $this->category->team_leader_id || $user->id === $this->category->sponsor_id){
+                } else if($user->id === $this->category->lead_id || $user->id === $this->category->sponsor_id){
 
 
                     $user_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $user->id)->first();
@@ -74,7 +74,7 @@ class ExpensesProposalResource extends JsonResource
                     }                                    
                 }
             } else if($this->status->value === 'approved') {
-                if ($user->id === $this->category->sponsor_id || ($user->id === $this->category->team_leader_id && $this->author_id !== $this->category->sponsor_id)) {
+                if ($user->id === $this->category->sponsor_id || ($user->id === $this->category->lead_id && $this->author_id !== $this->category->sponsor_id)) {
                     $actions->push(collect([
                         'name'  => 'Cancel Expense',
                         'code'  => 'cancel_expense',
@@ -100,12 +100,12 @@ class ExpensesProposalResource extends JsonResource
         }
 
         $approvers = null;
-        if($this->rule()->team_leader_approval) {
-            if($this->author_id !== $this->category->team_leader_id) {                
-                $team_leader_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->team_leader_id)->first();
+        if($this->rule()->lead_approval) {
+            if($this->author_id !== $this->category->lead_id) {                
+                $lead_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->lead_id)->first();
 
-                if(!$team_leader_approval) {
-                    $approvers .= $this->category->team_leader->name;
+                if(!$lead_approval) {
+                    $approvers .= $this->category->lead->name;
                 }
             }
         } 

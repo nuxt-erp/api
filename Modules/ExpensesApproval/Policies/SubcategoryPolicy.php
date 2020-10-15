@@ -24,26 +24,26 @@ class SubcategoryPolicy
 
     public function index(User $currentUser)
     {
-        return $currentUser->hasRole('sponsor', 'team_leader', 'user', 'buyer');
+        return $currentUser->hasRole('sponsor', 'lead', 'user', 'buyer');
     }
 
     public function show(User $currentUser, Subcategory $target)
     {
-        return $currentUser->hasRole('sponsor', 'team_leader');
+        return $currentUser->hasRole('sponsor', 'lead');
     }
 
     public function store(User $currentUser)
     {
-        return $currentUser->hasRole('sponsor', 'team_leader');
+        return $currentUser->hasRole('sponsor', 'lead');
     }
 
     public function update(User $currentUser, Subcategory $target)
     {
-        return $currentUser->hasRole('sponsor', 'team_leader');
+        return $currentUser->hasRole('sponsor', 'lead');
     }
 
     public function destroy(User $currentUser, Subcategory $target)
     {
-        return $currentUser->hasRole('sponsor', 'team_leader');
+        return $currentUser->hasRole('sponsor', 'lead');
     }
 }

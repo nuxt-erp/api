@@ -30,8 +30,8 @@ class RoleTableSeeder extends Seeder
         ]);
 
         Role::updateOrCreate([
-            'code' => 'team_leader',
-            'name' => 'Team Leader'
+            'code' => 'lead',
+            'name' => 'Lead'
         ]);
     }
 }

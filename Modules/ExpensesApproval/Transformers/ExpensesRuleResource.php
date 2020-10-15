@@ -17,7 +17,7 @@ class ExpensesRuleResource extends JsonResource
         return [
             'id'                        => $this->id,
             'name'                      => $this->name,
-            'team_leader_approval'      => $this->team_leader_approval,
+            'lead_approval'             => $this->lead_approval,
             'sponsor_approval'          => $this->sponsor_approval,
             'start_value'               => $this->start_value,
             'end_value'                 => $this->end_value,
