@@ -102,9 +102,9 @@ class ProjectSamplesRepository extends RepositoryService
 
         DB::transaction(function () use ($model, &$data){
 
-            $approval                    = !empty($data['supervisor_approval']) && $data['supervisor_approval'];
-            $reject                      = !empty($data['supervisor_reject']) && $data['supervisor_reject'];
-            $finish                      = !empty($data['flavorist_finish']) && $data['flavorist_finish'];
+            $approved                    = !empty($data['supervisor_approval']) && $data['supervisor_approval'];
+            $rejected                    = !empty($data['supervisor_reject']) && $data['supervisor_reject'];
+            $finished                    = !empty($data['flavorist_finish']) && $data['flavorist_finish'];
             $sent                        = !empty($data['requester_sent']) && $data['requester_sent'];
             $customer_approved           = !empty($data['customer_approved']) && $data['customer_approved'];
             $customer_rejected           = !empty($data['customer_rejected']) && $data['customer_rejected'];
@@ -121,7 +121,20 @@ class ProjectSamplesRepository extends RepositoryService
                     if($data['recipe']['new_version']){
 
                             // get current recipe
-                            $recipe         = Recipe::findOrFail($data['recipe']['id']);
+                            $recipe             = Recipe::findOrFail($data['recipe']['id']);
+                            if(!$recipe->last_version){
+                                $last_recipe    = Recipe::where('last_version', TRUE)
+                                ->where('code', $recipe->code)
+                                ->orderBy('version', 'DESC') // let's make sure we are getting the last version
+                                ->first();
+                            }
+                            else{
+                                $last_recipe    = $recipe;
+                            }
+                            // not the last version anymore
+                            $last_recipe->last_version  = FALSE;
+                            $last_recipe->save();
+
 
                             // NEW RECIPE ---->
                             $new_recipe                     = $recipe->replicate();
@@ -134,13 +147,10 @@ class ProjectSamplesRepository extends RepositoryService
                             $new_recipe->carrier_id         = $data['recipe']['carrier_id'] ?? null;
                             //$new_recipe->cost             = $data['recipe']['cost']; //@todo sum from the ingredients?
                             //$new_recipe->total            = $data['recipe']['total']; //@todo sum from the ingredients?
-                            $new_recipe->version            = $recipe->version + 1;
+                            $new_recipe->version            = $last_recipe->version + 1;
                             $new_recipe->last_version       = TRUE;
                             $new_recipe->save();
 
-                            // OLD RECIPE ---->
-                            $recipe->last_version = FALSE;
-                            $recipe->save();
                             // copy ingredients
                             $this->syncIngredients($new_recipe->id, $data['recipe']['ingredients']);
                             // update sample recipe id
@@ -162,18 +172,20 @@ class ProjectSamplesRepository extends RepositoryService
                 }
 
             }
-
+            //@todo maybe should we use the logic to find the next phase?
             // STATUS HANDLE ======>
-            // FINISHED OR APPROVED
-            if($finish || $approval){
+            if($approved){
                 $flow = Flow::where('phase_id', $model->phase_id)->first();
                 $data['phase_id']   = $flow->next_phase_id;
-                if($finish){
-                    $data['finished_at'] = now();
-                }
                 $data['status']     = strtolower($flow->next_phase->name);
             }
-            elseif($reject || $supervisor_reassigned){
+            elseif($finished){
+                $flow = Flow::where('phase_id', $model->phase_id)->first();
+                $data['phase_id']       = $flow->next_phase_id;
+                $data['status']         = strtolower($flow->next_phase->name);
+                $data['finished_at']    = now();
+            }
+            elseif($supervisor_reassigned){
                 $data['phase_id']   = Phase::where('name', 'assigned')->first()->id;
                 $data['status']     = 'assigned';
             }
@@ -185,23 +197,21 @@ class ProjectSamplesRepository extends RepositoryService
                 $data['phase_id']   = Phase::where('name', 'approved')->first()->id;
                 $data['status']     = 'approved';
             }
-            elseif($customer_rejected){
-                $data['phase_id']   = Phase::where('name', 'rework')->first()->id;
-                $data['status']     = 'rework';
+            elseif($rejected || $customer_rejected){
+                $data['phase_id']       = Phase::where('name', 'rework')->first()->id;
+                $data['status']         = 'rework';
+                $data['assignee_id']    = null;
+                $data['finished_at']    = null;
+                $data['started_at']     = null;
             }
-            // option 1 - recipe update without start
-            // option 2 - finish without start
-            else{
-                if( ($model->status == 'pending' || empty($model->assignee_id)) && !empty($data['assignee_id'])){
-                    $data['status']     = 'assigned';
-                    $data['phase_id']   = Phase::where('name', 'assigned')->first()->id;
-                }
+            elseif(empty($model->assignee_id) && !empty($data['assignee_id'])){
+                $data['phase_id']   = Phase::where('name', 'assigned')->first()->id;
+                $data['status']     = 'assigned';
             }
 
+            // handle start_at
             if(empty($model->started_at) && $recipe_update){
                 $data['started_at'] = now();
-                $data['status']     = 'in progress';
-                $data['phase_id']   = Phase::where('name', 'in progress')->first()->id;
             }
 
             parent::update($model, $data);
