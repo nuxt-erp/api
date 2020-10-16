@@ -24,6 +24,7 @@ class ListResource extends ResourceService
             case 'Product':
                 $resource['name']   = $this->sku . ' - ' . $this->name;
                 $resource['sku']    = $this->sku;
+                $resource['cost']   = $this->cost;
                 break;
             case 'Parameter':
                 $resource['name']   = $this->name;
