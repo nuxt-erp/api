@@ -20,7 +20,7 @@ class FamilyAttributeRepository extends RepositoryService
 
         if (!empty($searchCriteria['value'])) {
             $value = '%' . Arr::pull($searchCriteria, 'value') . '%';
-            $searchCriteria['query_type'] = 'LIKE';
+            $searchCriteria['query_type'] = 'ILIKE';
             $searchCriteria['where']      = 'OR';
             $searchCriteria['value'] = $value;
         }

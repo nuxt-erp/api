@@ -80,7 +80,7 @@ class ShopifyService
 
                         // Get all previous orders - Could be one or more previous orders (Ex. 123A, 123B, 123C)
                         // or Search for another other with same number but with letter at the final (updated order - more recent).
-                        $sales = Sale::where('order_number', 'LIKE', '%' . $tmp_order . '%')
+                        $sales = Sale::where('order_number', 'ILIKE', '%' . $tmp_order . '%')
                             ->where('order_number', '<>', $order_number) // Do not remove itself
                             ->select('id')->get();
 

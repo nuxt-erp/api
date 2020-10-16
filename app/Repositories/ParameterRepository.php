@@ -11,8 +11,8 @@ class ParameterRepository extends RepositoryService
         if (!empty($searchCriteria['text'])) {
             $text = '%' . Arr::pull($searchCriteria, 'text') . '%';
             $this->queryBuilder->where(function ($query) use($text) {
-                $query->where('name', 'LIKE', $text)
-                ->orWhere('value', 'LIKE', $text);
+                $query->where('name', 'ILIKE', $text)
+                ->orWhere('value', 'ILIKE', $text);
             });
         }
 

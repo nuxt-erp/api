@@ -36,7 +36,7 @@ class StockCountImport implements ToArray, WithHeadingRow
                 if ($product)
                 {
                     if ($row['warehouse'] != "") {
-                        $on_hand = Availability::where(['product_id' => $product->id, 'location_id' => Location::where('short_name', 'LIKE', $row['warehouse'])->pluck('id')->first()])->pluck('on_hand')->first();
+                        $on_hand = Availability::where(['product_id' => $product->id, 'location_id' => Location::where('short_name', 'ILIKE', $row['warehouse'])->pluck('id')->first()])->pluck('on_hand')->first();
                     }
 
                     $array = [

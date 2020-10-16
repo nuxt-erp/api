@@ -12,12 +12,12 @@ class LocationRepository extends RepositoryService
         {
             $this->queryBuilder->where('is_enabled', true);
         }
-        
+
         if (!empty($searchCriteria['text'])) {
             $text = '%' . Arr::pull($searchCriteria, 'text') . '%';
             $this->queryBuilder->where(function ($query) use($text) {
-                $query->where('short_name', 'LIKE', $text)
-                ->orWhere('name', 'LIKE', $text);
+                $query->where('short_name', 'ILIKE', $text)
+                ->orWhere('name', 'ILIKE', $text);
             });
         }
 

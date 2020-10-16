@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
 
         // $schedule->call(function () {
         //     $api    = resolve('Dear\API');
-        //     $user = User::where('email', 'like', '%dear%')->first();
+        //     $user = User::where('email', 'ILIKE', '%dear%')->first();
 
         //     $result = $api->syncProds();
         //     Import::create([

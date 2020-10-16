@@ -9,7 +9,7 @@ class StockLocatorRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {
-      
+
         $searchCriteria['order_by'] = [
             'field'         => 'name',
             'direction'     => 'asc'
@@ -19,10 +19,10 @@ class StockLocatorRepository extends RepositoryService
         {
             $this->queryBuilder->where('is_enabled', true);
         }
-        
+
         if (!empty($searchCriteria['name']))
         {
-            $searchCriteria['query_type'] = 'LIKE';
+            $searchCriteria['query_type'] = 'ILIKE';
             $searchCriteria['name'] = '%' . Arr::pull($searchCriteria, 'name') . '%';
         }
 

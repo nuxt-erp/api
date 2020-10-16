@@ -48,7 +48,7 @@ class RegisterController extends Controller
         DB::setDefaultConnection('public');
 
         //$user = auth()->user(); // this is the right option after we make a page to install modules
-        $user = User::where('name', 'LIKE', '%'.$name.'%')->orWhere('email', 'LIKE', '%'.$name.'%')->first();
+        $user = User::where('name', 'ILIKE', '%'.$name.'%')->orWhere('email', 'ILIKE', '%'.$name.'%')->first();
         echo '<<<<<<<<< SCRIPT START >>>>>>>><br><br>';
 
         echo 'Company: '.$user->company->name.'<br><br>';

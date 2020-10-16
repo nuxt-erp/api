@@ -38,8 +38,8 @@ class AvailabilityRepository extends RepositoryService
         if (!empty($searchCriteria['product_name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'product_name') . '%';
             $this->queryBuilder
-                ->where('inv_products.name', 'LIKE', $name)
-                ->orWhere('inv_products.sku', 'LIKE', $name);
+                ->where('inv_products.name', 'ILIKE', $name)
+                ->orWhere('inv_products.sku', 'ILIKE', $name);
         }
 
         if (!empty($searchCriteria['brand_id'])) {
@@ -53,10 +53,10 @@ class AvailabilityRepository extends RepositoryService
     public function update($model, array $data)
     {
         DB::transaction(function () use ($data, $model){
-           
+
             parent::update($model, $data);
 
-            // ADD MOVEMENT TO PRODUCT LOG  
+            // ADD MOVEMENT TO PRODUCT LOG
             $type = Parameter::firstOrCreate(
                 ['name' => 'product_log_type', 'value' => 'Stock Update']
             );
@@ -124,7 +124,7 @@ class AvailabilityRepository extends RepositoryService
         $type = Parameter::firstOrCreate(
             ['name' => 'product_log_type', 'value' => $type]
         );
-      
+
         $log = new ProductLog();
         $log->product_id    = $product_id;
         $log->location_id   = $location_id;

@@ -18,7 +18,7 @@ class CustomerDiscountRepository extends RepositoryService
 
         if (!empty($searchCriteria['id']))
         {
-            $searchCriteria['query_type'] = 'LIKE';
+            $searchCriteria['query_type'] = 'ILIKE';
             $searchCriteria['id'] = '%' . Arr::pull($searchCriteria, 'id') . '%';
         }
 */

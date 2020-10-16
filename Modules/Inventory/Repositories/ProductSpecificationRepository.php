@@ -12,7 +12,7 @@ class ProductSpecificationRepository extends RepositoryService
     {
         if (!empty($searchCriteria['value']))
         {
-            $searchCriteria['query_type'] = 'LIKE';
+            $searchCriteria['query_type'] = 'ILIKE';
             $searchCriteria['value'] = '%' . Arr::pull($searchCriteria, 'value') . '%';
         }
 

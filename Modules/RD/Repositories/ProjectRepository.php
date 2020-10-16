@@ -15,8 +15,8 @@ class ProjectRepository extends RepositoryService
             $text = '%' . Arr::pull($searchCriteria, 'search') . '%';
             $this->queryBuilder->where(function ($query) use($text) {
                 $query->where('comment', 'ILIKE', $text)
-                ->orWhere('id', 'LIKE', $text)
-                ->orWhere('status', 'LIKE', $text);
+                ->orWhere('id', 'ILIKE', $text)
+                ->orWhere('status', 'ILIKE', $text);
             });
         }
         if(!empty($searchCriteria['start_at'])){
@@ -27,7 +27,7 @@ class ProjectRepository extends RepositoryService
             $text = '%' . Arr::pull($searchCriteria, 'status') . '%';
             $this->queryBuilder->where('status', 'ILIKE', $text);
         }
-        
+
         if(!empty($searchCriteria['sample_status'])){
             lad($searchCriteria['sample_status']);
             $text = '%' . Arr::pull($searchCriteria, 'sample_status') . '%';

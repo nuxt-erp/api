@@ -36,7 +36,7 @@ class StockAdjustmentImport implements ToArray, WithHeadingRow
                 {
                     $new_qty = 0;
                     if ($row['location'] != "") {
-                        $location = Location::where('short_name', 'LIKE', $row['location'])->first();
+                        $location = Location::where('short_name', 'ILIKE', $row['location'])->first();
                         $on_hand = Availability::where(['product_id' => $product->id, 'location_id' => $location->id])->pluck('on_hand')->first();
                     }
 

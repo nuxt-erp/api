@@ -20,7 +20,7 @@ class ProductAttributeRepository extends RepositoryService
 
         if (!empty($searchCriteria['value'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
-            $searchCriteria['query_type'] = 'LIKE';
+            $searchCriteria['query_type'] = 'ILIKE';
             $searchCriteria['where']      = 'OR';
             $searchCriteria['name'] = $name;
         }

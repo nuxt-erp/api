@@ -20,17 +20,22 @@ class ProjectSamplesRepository extends RepositoryService
         if(!$user->hasRole('admin', 'rd_requester', 'rd_supervisor', 'rd_quality_control')){
             $this->queryBuilder->where('assignee_id', $user->id);
         }
-        if($user->hasRole('rd_quality_control')){
+
+        if(!empty($searchCriteria['status'])){
+            $this->queryBuilder->where('status', strtolower(Arr::pull($searchCriteria, 'status')));
+        }
+        elseif($user->hasRole('rd_quality_control')){
             $this->queryBuilder->where('status', 'ILIKE', 'waiting qc')
             ->orWhere('status', 'ILIKE', 'ready');
         }
+
         if(!empty($searchCriteria['created_at'])){
-            $this->queryBuilder->whereBetween('created_at', $searchCriteria['created_at']);
+            $this->queryBuilder->whereBetween('created_at', Arr::pull($searchCriteria, 'created_at'));
         }
 
         if(!empty($searchCriteria['type'])){
             $this->queryBuilder->whereHas('recipe', function ($query) use ($searchCriteria) {
-                $query->whereIn('type_id', $searchCriteria['type']);
+                $query->whereIn('type_id', Arr::pull($searchCriteria, 'type'));
             });
         }
 
@@ -39,8 +44,8 @@ class ProjectSamplesRepository extends RepositoryService
 
             $this->queryBuilder->where(function ($query) use($text) {
                 $query->where('name', 'ILIKE', $text)
-                ->orWhere('internal_code', 'LIKE', $text)
-                ->orWhere('external_code', 'LIKE', $text);
+                ->orWhere('internal_code', 'ILIKE', $text)
+                ->orWhere('external_code', 'ILIKE', $text);
             });
         }
 

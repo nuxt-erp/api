@@ -58,7 +58,7 @@ class StockCountRepository extends RepositoryService
 
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
-            $searchCriteria['query_type'] = 'LIKE';
+            $searchCriteria['query_type'] = 'ILIKE';
             $searchCriteria['where']      = 'OR';
             $searchCriteria['name'] = $name;
             $searchCriteria['sku'] = $name;

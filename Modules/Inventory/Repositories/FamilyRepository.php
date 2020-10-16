@@ -44,8 +44,8 @@ class FamilyRepository extends RepositoryService
         if (!empty($searchCriteria['sku'])) {
             $sku = '%' . Arr::pull($searchCriteria, 'sku') . '%';
             $this->queryBuilder
-                ->where('sku', 'LIKE', $sku)
-                ->orWhere('name', 'LIKE', $sku);
+                ->where('sku', 'ILIKE', $sku)
+                ->orWhere('name', 'ILIKE', $sku);
         }
 
         if (!empty($searchCriteria['id'])) {
@@ -79,7 +79,7 @@ class FamilyRepository extends RepositoryService
         }
         if (!empty($searchCriteria['name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
-            $searchCriteria['query_type'] = 'LIKE';
+            $searchCriteria['query_type'] = 'ILIKE';
             $searchCriteria['where']      = 'OR';
             $searchCriteria['name'] = $name;
         }

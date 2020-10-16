@@ -19,7 +19,7 @@ class SaleRepository extends RepositoryService
 
         if (!empty($searchCriteria['order_number']))
         {
-            $searchCriteria['query_type'] = 'LIKE';
+            $searchCriteria['query_type'] = 'ILIKE';
             $searchCriteria['order_number'] = '%' . Arr::pull($searchCriteria, 'order_number') . '%';
         }
 
