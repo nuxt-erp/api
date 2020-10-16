@@ -125,8 +125,45 @@ class ProjectSamplesRepository extends RepositoryService
                     $data['internal_code'] = $recipe->type->value . '-' . $data['recipe_id'] ;
                 }
             }
+            
+            //@todo maybe should we use the logic to find the next phase?
+            // STATUS HANDLE ======>
+            if($approved){
+                $flow = Flow::where('phase_id', $model->phase_id)->first();
+                $data['phase_id']   = $flow->next_phase_id;
+                $data['status']     = strtolower($flow->next_phase->name);
+            }
+            elseif($finished){
+                $flow = Flow::where('phase_id', $model->phase_id)->first();
+                $data['phase_id']       = $flow->next_phase_id;
+                $data['status']         = strtolower($flow->next_phase->name);
+                $data['finished_at']    = now();
+            }
+            elseif($supervisor_reassigned){
+                $data['phase_id']   = Phase::where('name', 'assigned')->first()->id;
+                $data['status']     = 'assigned';
+            }
+            elseif($sent){
+                $data['phase_id']   = Phase::where('name', 'sent')->first()->id;
+                $data['status']     = 'sent';
+            }
+            elseif($customer_approved){
+                $data['phase_id']   = Phase::where('name', 'approved')->first()->id;
+                $data['status']     = 'approved';
+            }
+            elseif($rejected || $customer_rejected){
+                $data['phase_id']       = Phase::where('name', 'rework')->first()->id;
+                $data['status']         = 'rework';
+                $data['assignee_id']    = null;
+                $data['finished_at']    = null;
+                $data['started_at']     = null;
+            }
+            elseif(empty($model->assignee_id) && !empty($data['assignee_id'])){
+                $data['phase_id']   = Phase::where('name', 'assigned')->first()->id;
+                $data['status']     = 'assigned';
+            }
             // FLAVORIST RECIPE UPDATE
-            if($recipe_update){
+            elseif($recipe_update){
 
                 // existing recipe
                 if(!empty($data['recipe']['id'])){
@@ -186,6 +223,7 @@ class ProjectSamplesRepository extends RepositoryService
                 }
 
             }
+<<<<<<< HEAD
             //@todo maybe should we use the logic to find the next phase?
             // STATUS HANDLE ======>
             if($approved){
@@ -227,6 +265,8 @@ class ProjectSamplesRepository extends RepositoryService
             if(empty($model->started_at) && $recipe_update){
                 $data['started_at'] = now();
             }
+=======
+>>>>>>> cf216ec8589add4b20cd249c9db267cbf60c8ea9
 
             parent::update($model, $data);
 
