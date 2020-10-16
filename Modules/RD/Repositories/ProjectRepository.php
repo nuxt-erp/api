@@ -20,7 +20,7 @@ class ProjectRepository extends RepositoryService
             });
         }
         if(!empty($searchCriteria['start_at'])){
-            $this->queryBuilder->whereBetween('start_at', $searchCriteria['start_at']);
+            $this->queryBuilder->whereBetween('start_at', Arr::pull($searchCriteria, 'start_at'));
         }
 
         if(!empty($searchCriteria['status'])){
