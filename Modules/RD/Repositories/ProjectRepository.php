@@ -107,6 +107,7 @@ class ProjectRepository extends RepositoryService
             //@todo find samples missing and delete
             $sample_repo    = new ProjectSamplesRepository(new ProjectSamples());
             $all_approved   = TRUE;
+            $at_least_one   = FALSE;
             $sample_sent    = FALSE;
             $sample_rework  = FALSE;
 
@@ -116,6 +117,8 @@ class ProjectRepository extends RepositoryService
                 $stored_sample = $sample_repo->model;
                 if(strtolower($stored_sample->status) !== 'approved'){
                     $all_approved = FALSE;
+                } else {
+                    $at_least_one = TRUE;
                 }
                 if(strtolower($stored_sample->status) === 'sent'){
                     $sample_sent = TRUE;
@@ -141,7 +144,11 @@ class ProjectRepository extends RepositoryService
                 $this->model->status = 'updated';
                 $project_log['status'] = 'updated';
             }
-
+            // SAMPLE SENT TO REWORK
+            elseif($at_least_one && $model['status'] !== 'updated'){
+                $this->model->status = 'updated';
+                $project_log['status'] = 'updated';
+            }
             $this->model->save();
 
             // ONLY CREATE LOG IF SOMETHING HAPPENED
