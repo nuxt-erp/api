@@ -75,5 +75,53 @@ class ProjectSamplesController extends ControllerService
 
         return $this->sendArray($keyValue);
     }
+
+    public function index(Request $request)
+    {
+        $result = $this->indexCollection($request);
+        // lad('$result', $result);
+
+        $user = auth()->user();
+        foreach ($result as $item) {
+            $actions = [];
+            switch ($item->status) {
+                case 'approved':
+                case 'waiting qc':
+                    $actions[] = [
+                        'name'  => 'Generate Specs',
+                        'code'  => 'generate',
+                        'type'  => 'primary'
+                    ];
+                case 'ready':
+                case 'pending':
+                case 'sent':
+                    $actions[] = [
+                        'name'  => 'Preview',
+                        'code'  => 'sample',
+                        'type'  => 'primary'
+                    ];
+                    break;
+                case 'assigned':
+                case 'in progress':
+                case 'rework':
+                    $actions[] = [
+                        'name'  => $user->hasRole('rd_flavorist') ? ($item->status == 'in progress' || !empty($item->recipe_id) ? 'Edit / Preview' : 'Develop') : 'Preview',
+                        'code'  => 'sample',
+                        'type'  => 'primary'
+                    ];
+                    break;
+                case 'waiting approval':
+                    $actions[] = [
+                        'name'  => $user->hasRole('rd_supervisor') ? 'Approve Sample' : 'Preview',
+                        'code'  => 'sample',
+                        'type'  => 'primary'
+                    ];
+                    break;
+            }
+            $item->actions = collect($actions);
+        }
+
+        return $this->indexResponse($request, $result);
+    }
 }
 

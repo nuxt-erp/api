@@ -14,43 +14,6 @@ class ProjectSamplesResource extends ResourceService
      */
     public function toArray($request)
     {
-        $actions = [];
-
-        switch ($this->status) {
-            case 'approved':
-            case 'waiting qc':
-                $actions[] = [
-                    'name'  => 'Generate Specs',
-                    'code'  => 'generate',
-                    'type'  => 'primary'
-                ];
-            case 'ready':
-            case 'pending':
-            case 'sent':
-                $actions[] = [
-                    'name'  => 'Preview',
-                    'code'  => 'sample',
-                    'type'  => 'primary'
-                ];
-                break;
-            case 'assigned':
-            case 'in progress':
-            case 'rework':
-                $actions[] = [
-                    'name'  => $this->status == 'in progress' || !empty($this->recipe_id) ? 'Edit / Preview' : 'Develop',
-                    'code'  => 'sample',
-                    'type'  => 'primary'
-                ];
-                break;
-            case 'waiting approval':
-                $actions[] = [
-                    'name'  => 'Approve Sample',
-                    'code'  => 'sample',
-                    'type'  => 'primary'
-                ];
-                break;
-        }
-
         return [
             'id'                => $this->id,
             'project_id'        => $this->project_id,
@@ -60,7 +23,7 @@ class ProjectSamplesResource extends ResourceService
             'recipe_type'       => $this->recipe ? optional($this->recipe->type)->name : null,
             'recipe_version_qty'=> $this->recipe_version_qty,
             'phase_id'          => $this->phase_id,
-            'actions'           => collect($actions),
+            'actions'           => $this->actions ?? [],
             'attributes'        => implode(', ', $this->attributes->pluck('name')->toArray()),
             'attribute_names'   => $this->attributes->pluck('name'),
             'attribute_ids'     => optional($this->attributes)->pluck('id')->toArray(),

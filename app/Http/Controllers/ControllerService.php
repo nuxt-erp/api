@@ -37,8 +37,14 @@ class ControllerService extends LaravelController implements ControllerInterface
 
     public function index(Request $request)
     {
-        $isList = $request->has('list') && $request->list;
+        $items = $this->indexCollection($request);
 
+        return $this->indexResponse($request, $items);
+    }
+
+    public function indexCollection(Request $request){
+
+        $isList         = $request->has('list') && $request->list;
         if($this instanceof CheckPolicies){
             // call the police associated with this model
             if($isList){
@@ -49,7 +55,11 @@ class ControllerService extends LaravelController implements ControllerInterface
             }
         }
 
-        $items = $this->repository->findBy($request->all());
+        return $this->repository->findBy($request->all());
+    }
+
+    public function indexResponse(Request $request, $items){
+        $isList         = $request->has('list') && $request->list;
         if($isList){
             return $this->sendCollectionResponse($items, ListResource::class);
         }
