@@ -24,9 +24,13 @@ class ModelService extends Model implements ModelInterface
 
     public static function getConstants()
     {
-        // "static::class" here does the magic
-        $reflectionClass = new ReflectionClass(static::class);
-        return $reflectionClass->getConstants();
+        $reflectionClass    = new ReflectionClass(static::class);
+        $allConstants       = $reflectionClass->getConstants();
+
+        $rc                 = new \ReflectionClass(get_parent_class(static::class));
+        $parentConstants    = $rc->getConstants();
+
+        return array_diff($allConstants, $parentConstants);
     }
 
 }
