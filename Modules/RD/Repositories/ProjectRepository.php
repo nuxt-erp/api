@@ -5,9 +5,7 @@ use Illuminate\Support\Facades\DB;
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Arr;
 use Modules\RD\Entities\ProjectSamples;
-use Modules\RD\Entities\Phase;
 use Modules\RD\Entities\ProjectLogs;
-use Modules\RD\Entities\ProjectSampleLogs;
 class ProjectRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
@@ -29,6 +27,7 @@ class ProjectRepository extends RepositoryService
             $text = '%' . Arr::pull($searchCriteria, 'status') . '%';
             $this->queryBuilder->where('status', 'ILIKE', $text);
         }
+        
         if(!empty($searchCriteria['sample_status'])){
             lad($searchCriteria['sample_status']);
             $text = '%' . Arr::pull($searchCriteria, 'sample_status') . '%';
@@ -113,7 +112,6 @@ class ProjectRepository extends RepositoryService
 
             foreach ($data["samples"] as $sample) {
                 $sample['project_id'] = $this->model->id;
-                // STORE / UPDATE Samples
                 $sample_repo->store($sample);
                 $stored_sample = $sample_repo->model;
                 if(strtolower($stored_sample->status) !== 'approved'){
@@ -129,6 +127,8 @@ class ProjectRepository extends RepositoryService
             // ALL SAMPLES APPROVED
             if($all_approved){
                 $this->model->status = 'finished';
+                $this->model->closed_at = now();
+
                 $project_log['status'] = 'finished';
             }
             // SAMPLE SENT TO FEEDBACK
