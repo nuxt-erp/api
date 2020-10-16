@@ -105,7 +105,7 @@ class ProjectSamplesController extends ControllerService
                 case 'in progress':
                 case 'rework':
                     $actions[] = [
-                        'name'  => $user->hasRole('rd_flavorist') ? ($item->status == 'in progress' || !empty($item->recipe_id) ? 'Edit / Preview' : 'Develop') : 'Preview',
+                        'name'  => $user->hasRole('rd_flavorist') ?  'Develop' : 'Preview',
                         'code'  => 'sample',
                         'type'  => 'primary'
                     ];

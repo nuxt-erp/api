@@ -169,7 +169,7 @@ class ProjectSamplesRepository extends RepositoryService
                 if(!empty($data['recipe']['id'])){
 
                     // create the next version
-                    if($data['recipe']['new_version']){
+                    if($data['recipe']['new_version'] && !empty($data['recipe']['ingredients'])){
 
                             // get current recipe
                             $recipe             = Recipe::findOrFail($data['recipe']['id']);
