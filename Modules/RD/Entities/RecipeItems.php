@@ -45,6 +45,10 @@ class RecipeItems extends ModelService
         return $this->product->sku . ' - '. $this->product->name;
     }
 
+    public function getCostAttribute($value){
+        return $this->quantity * $this->product->cost;
+    }
+
     public function recipe()
     {
         return $this->belongsTo(Recipe::class);
