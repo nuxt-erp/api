@@ -175,7 +175,8 @@ class ProjectSamplesRepository extends RepositoryService
                     $recipe->save();
 
                     $this->syncIngredients($recipe->id, $data['recipe']['ingredients']);
-                    $data['recipe_id'] = $recipe->id;
+                    $data['recipe_id']  = $recipe->id;
+                    $model->recipe      = $recipe;
                 }
                 else{
 
@@ -216,16 +217,20 @@ class ProjectSamplesRepository extends RepositoryService
                         $new_recipe->last_version       = TRUE;
                         $new_recipe->save();
 
+
+
                         // copy ingredients
                         $this->syncIngredients($new_recipe->id, $data['recipe']['ingredients']);
                         // RECIPE ID now is the new version
-                        $data['recipe_id'] = $new_recipe->id;
+                        $data['recipe_id']  = $new_recipe->id;
+                        $model->recipe      = $new_recipe;
                     }
                     // UPDATE THE RECIPE
                     else{
                         // IF THE CARRIER IS CHANGED
                         $recipe->carrier_id = $data['recipe']['carrier_id'];
                         $recipe->save();
+                        $model->recipe      = $recipe;
                         // IF DEVELOPING A NEW VERSION, UPDATE INGREDIENTS
                         if($new_version){
                             $this->syncIngredients($data['recipe']['id'], $data['recipe']['ingredients']);
