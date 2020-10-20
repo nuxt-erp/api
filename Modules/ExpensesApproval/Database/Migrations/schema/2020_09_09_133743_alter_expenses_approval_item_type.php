@@ -14,6 +14,7 @@ class AlterExpensesApprovalItemType extends Migration
     public function up()
     {
         Schema::connection('tenant')->table('exp_ap_proposals', function (Blueprint $table) {
+            //@todo undefined variable values
             $table->text('item')->change();
         });
     }

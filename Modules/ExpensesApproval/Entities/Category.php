@@ -17,8 +17,8 @@ class Category extends ModelService
     ];
 
     protected $fillable = [
-        'name', 'lead_id', 'sponsor_id',
-        'buyer_id', 'is_finished', 'finished_at'
+        'name', 'lead_id', 'buyer_id',
+        'is_finished', 'finished_at'
     ];
 
     public function getRules($request, $item = null)
@@ -26,7 +26,6 @@ class Category extends ModelService
         $rules = [
             'name'              => ['string', 'max:255'],
             'lead_id'           => ['nullable', 'exists:public.users,id'],
-            'sponsor_id'        => ['nullable', 'exists:public.users,id'],
             'buyer_id'          => ['nullable', 'exists:public.users,id'],
             'is_finished'       => ['nullable', 'boolean'],
             'finished_at'       => ['nullable', 'date']
@@ -38,7 +37,6 @@ class Category extends ModelService
             // $rules['name'][]            = 'unique:tenant.exp_ap_categories,id';
             $rules['name'][]            = 'required';
             $rules['lead_id'][]         = 'required';
-            $rules['sponsor_id'][]      = 'required';
             $rules['buyer_id'][]        = 'required';
 
         } else {
@@ -54,9 +52,14 @@ class Category extends ModelService
         return $this->belongsTo(User::class, 'lead_id');
     }
 
-    public function sponsor()
+    public function sponsors()
     {
-        return $this->belongsTo(User::class, 'sponsor_id');
+        return $this
+        ->setConnection('tenant')
+        ->belongsToMany(User::class, 'exp_ap_category_sponsors', 'expenses_category_id', 'sponsor_id')
+        ->using(CategorySponsors::class)
+        ->withTimestamps();
+        //->withPivot('sectionMemberType', 'journalMemberType')
     }
 
     public function buyer()

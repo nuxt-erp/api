@@ -13,8 +13,10 @@ class CategoryResource extends JsonResource
             'name'                  => $this->name,
             'lead_id'               => $this->lead_id,
             'lead_name'             => $this->lead->name,
-            'sponsor_id'            => $this->sponsor_id,
-            'sponsor_name'          => $this->sponsor->name,
+            //@todo get primary sponsor and the list of other sponsors
+            //'sponsor_id'            => $this->sponsor_id,
+            //'sponsor_name'          => $this->sponsors->name,
+            //'sponsors'              => optional($this->sponsors)->pluck('id')->toArray(),
             'buyer_id'              => $this->buyer_id,
             'buyer_name'            => $this->buyer->name,
             'is_finished'           => $this->is_finished ? 1 : 0,

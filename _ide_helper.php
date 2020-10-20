@@ -3,7 +3,7 @@
 
 /**
  * A helper file for Laravel, to provide autocomplete information to your IDE
- * Generated for Laravel 7.25.0.
+ * Generated for Laravel 7.28.4.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -2523,7 +2523,7 @@
          * Begin broadcasting an event.
          *
          * @param mixed|null $event
-         * @return \Illuminate\Broadcasting\PendingBroadcast|void 
+         * @return \Illuminate\Broadcasting\PendingBroadcast 
          * @static 
          */ 
         public static function event($event = null)
@@ -6012,6 +6012,7 @@
      * @method static \Illuminate\Http\Client\PendingRequest stub(callable $callback)
      * @method static \Illuminate\Http\Client\PendingRequest timeout(int $seconds)
      * @method static \Illuminate\Http\Client\PendingRequest withBasicAuth(string $username, string $password)
+     * @method static \Illuminate\Http\Client\PendingRequest withBody(resource|string $content, string $contentType)
      * @method static \Illuminate\Http\Client\PendingRequest withCookies(array $cookies, string $domain)
      * @method static \Illuminate\Http\Client\PendingRequest withDigestAuth(string $username, string $password)
      * @method static \Illuminate\Http\Client\PendingRequest withHeaders(array $headers)
@@ -9736,6 +9737,19 @@
                         return $instance->hasAny($keys);
         }
                     /**
+         * Apply the callback if the request contains the given input item key.
+         *
+         * @param string $key
+         * @param callable $callback
+         * @return $this|mixed 
+         * @static 
+         */ 
+        public static function whenHas($key, $callback)
+        {
+                        /** @var \Illuminate\Http\Request $instance */
+                        return $instance->whenHas($key, $callback);
+        }
+                    /**
          * Determine if the request contains a non-empty value for an input item.
          *
          * @param string|array $key
@@ -9770,6 +9784,19 @@
         {
                         /** @var \Illuminate\Http\Request $instance */
                         return $instance->anyFilled($keys);
+        }
+                    /**
+         * Apply the callback if the request contains a non-empty value for the given input item key.
+         *
+         * @param string $key
+         * @param callable $callback
+         * @return $this|mixed 
+         * @static 
+         */ 
+        public static function whenFilled($key, $callback)
+        {
+                        /** @var \Illuminate\Http\Request $instance */
+                        return $instance->whenFilled($key, $callback);
         }
                     /**
          * Determine if the request is missing a given input item key.
@@ -9984,6 +10011,8 @@
                     /**
          * 
          *
+         * @param array $rules
+         * @param mixed $params
          * @static 
          */ 
         public static function validate($rules, ...$params)
@@ -9993,6 +10022,9 @@
                     /**
          * 
          *
+         * @param string $errorBag
+         * @param array $rules
+         * @param mixed $params
          * @static 
          */ 
         public static function validateWithBag($errorBag, $rules, ...$params)
@@ -10002,6 +10034,7 @@
                     /**
          * 
          *
+         * @param mixed $absolute
          * @static 
          */ 
         public static function hasValidSignature($absolute = true)
@@ -12698,7 +12731,7 @@
          * Create a signed route URL for a named route.
          *
          * @param string $name
-         * @param array $parameters
+         * @param mixed $parameters
          * @param \DateTimeInterface|\DateInterval|int|null $expiration
          * @param bool $absolute
          * @return string 
@@ -12885,7 +12918,7 @@
                     /**
          * Force the scheme for URLs.
          *
-         * @param string $scheme
+         * @param string|null $scheme
          * @return void 
          * @static 
          */ 
@@ -12897,7 +12930,7 @@
                     /**
          * Set the forced root URL.
          *
-         * @param string $root
+         * @param string|null $root
          * @return void 
          * @static 
          */ 
@@ -14054,6 +14087,38 @@
         class Str {
          
     }
+            /**
+     * 
+     *
+     */ 
+        class Collection {
+                    /**
+         * 
+         *
+         * @param string $fileName
+         * @param string|null $writerType
+         * @param mixed $withHeadings
+         * @static 
+         */ 
+        public static function downloadExcel($fileName, $writerType = null, $withHeadings = false)
+        {
+                        return \Illuminate\Support\Collection::downloadExcel($fileName, $writerType, $withHeadings);
+        }
+                    /**
+         * 
+         *
+         * @param string $filePath
+         * @param string|null $disk
+         * @param string|null $writerType
+         * @param mixed $withHeadings
+         * @static 
+         */ 
+        public static function storeExcel($filePath, $disk = null, $writerType = null, $withHeadings = false)
+        {
+                        return \Illuminate\Support\Collection::storeExcel($filePath, $disk, $writerType, $withHeadings);
+        }
+         
+    }
      
 }
 
@@ -15120,6 +15185,50 @@
         public static function hasMacro($name)
         {            //Method inherited from \Nwidart\Modules\FileRepository         
                         return \Nwidart\Modules\Laravel\LaravelFileRepository::hasMacro($name);
+        }
+         
+    }
+     
+}
+
+    namespace Illuminate\Http { 
+            /**
+     * 
+     *
+     */ 
+        class Request {
+                    /**
+         * 
+         *
+         * @param array $rules
+         * @param mixed $params
+         * @static 
+         */ 
+        public static function validate($rules, ...$params)
+        {
+                        return \Illuminate\Http\Request::validate($rules, ...$params);
+        }
+                    /**
+         * 
+         *
+         * @param string $errorBag
+         * @param array $rules
+         * @param mixed $params
+         * @static 
+         */ 
+        public static function validateWithBag($errorBag, $rules, ...$params)
+        {
+                        return \Illuminate\Http\Request::validateWithBag($errorBag, $rules, ...$params);
+        }
+                    /**
+         * 
+         *
+         * @param mixed $absolute
+         * @static 
+         */ 
+        public static function hasValidSignature($absolute = true)
+        {
+                        return \Illuminate\Http\Request::hasValidSignature($absolute);
         }
          
     }
@@ -17145,7 +17254,7 @@ namespace  {
             }
              
                 /**
-             * Adds a or where condition using row values.
+             * Adds an or where condition using row values.
              *
              * @param array $columns
              * @param string $operator
@@ -17176,7 +17285,7 @@ namespace  {
             }
              
                 /**
-             * Add a "or where JSON contains" clause to the query.
+             * Add an "or where JSON contains" clause to the query.
              *
              * @param string $column
              * @param mixed $value
@@ -17205,7 +17314,7 @@ namespace  {
             }
              
                 /**
-             * Add a "or where JSON not contains" clause to the query.
+             * Add an "or where JSON not contains" clause to the query.
              *
              * @param string $column
              * @param mixed $value
@@ -17235,7 +17344,7 @@ namespace  {
             }
              
                 /**
-             * Add a "or where JSON length" clause to the query.
+             * Add an "or where JSON length" clause to the query.
              *
              * @param string $column
              * @param mixed $operator
@@ -17307,7 +17416,7 @@ namespace  {
             }
              
                 /**
-             * Add a "or having" clause to the query.
+             * Add an "or having" clause to the query.
              *
              * @param string $column
              * @param string|null $operator

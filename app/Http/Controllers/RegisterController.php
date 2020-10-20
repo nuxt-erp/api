@@ -40,7 +40,7 @@ class RegisterController extends Controller
 
     public function installModules($name){
         //$user = auth()->user(); // this is the right option after we make a page to install modules
-        $user = User::where('name', 'LIKE', '%'.$name.'%')->first();
+        $user = User::where('name', 'ILIKE', '%'.$name.'%')->first();
 
         // run specific migration files for the schema
 
@@ -73,6 +73,7 @@ class RegisterController extends Controller
                 dump(Artisan::output());
                 echo '<br>';
                 echo $th->getMessage();
+                echo '<br>';
             }
             try {
                 Artisan::call('module:seed '.ucfirst($module->name));
