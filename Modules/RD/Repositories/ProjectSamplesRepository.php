@@ -154,7 +154,7 @@ class ProjectSamplesRepository extends RepositoryService
                 $data['status']     = 'assigned';
             }
 
-
+            $recipe = $model->recipe;
 
             // FLAVORIST RECIPE UPDATE
             if(!empty($data['recipe'])){
@@ -163,7 +163,6 @@ class ProjectSamplesRepository extends RepositoryService
                 $recipe_from_scratch = empty($data['recipe']['id']);
                 $change_of_recipe    = $current_recipe && $model->recipe_id !== $data['recipe']['id'];
                 $new_version         = $data['recipe']['new_version'];
-
 
                 if($recipe_from_scratch){
                     $recipe                     =  new Recipe();
@@ -176,7 +175,6 @@ class ProjectSamplesRepository extends RepositoryService
 
                     $this->syncIngredients($recipe->id, $data['recipe']['ingredients']);
                     $data['recipe_id']  = $recipe->id;
-                    $model->recipe      = $recipe;
                 }
                 else{
 
@@ -217,20 +215,17 @@ class ProjectSamplesRepository extends RepositoryService
                         $new_recipe->last_version       = TRUE;
                         $new_recipe->save();
 
-
-
                         // copy ingredients
                         $this->syncIngredients($new_recipe->id, $data['recipe']['ingredients']);
                         // RECIPE ID now is the new version
                         $data['recipe_id']  = $new_recipe->id;
-                        $model->recipe      = $new_recipe;
+                        $recipe             = $new_recipe;
                     }
                     // UPDATE THE RECIPE
                     else{
                         // IF THE CARRIER IS CHANGED
                         $recipe->carrier_id = $data['recipe']['carrier_id'];
                         $recipe->save();
-                        $model->recipe      = $recipe;
                         // IF DEVELOPING A NEW VERSION, UPDATE INGREDIENTS
                         if($new_version){
                             $this->syncIngredients($data['recipe']['id'], $data['recipe']['ingredients']);
@@ -247,8 +242,8 @@ class ProjectSamplesRepository extends RepositoryService
             }
 
             // UPDATE SAMPLE INTERNAL CODE
-            if ($model->recipe && $model->recipe->type) {
-                $data['internal_code'] = $model->recipe->type->value . '-' . $model->recipe->id;
+            if ($recipe && $recipe->type) {
+                $data['internal_code'] = $recipe->type->value . '-' . $recipe->id;
             }
 
             parent::update($model, $data);

@@ -14,25 +14,25 @@ class ParameterTableSeeder extends Seeder
 
     public function run()
     {
-        Parameter::updateOrCreate([
+        Parameter::firstOrCreate([
             'name'  => 'recipe_sample_size',
+            'description' => 'g',
             'value' => '100',
             'order' => 1,
-
             'is_internal' => true,
             'is_default' => false,
-        ], ['description' => 'g']);
+        ]);
 
-        Parameter::updateOrCreate([
+        Parameter::firstOrCreate([
             'name'  => 'recipe_type',
             'value' => 'FK',
             'order' => 1,
             'description' => 'Key',
             'is_internal' => true,
-            'is_default' => false,
+            'is_default' => false
         ]);
 
-        Parameter::updateOrCreate([
+        Parameter::firstOrCreate([
             'name'  => 'recipe_type',
             'value' => 'FL',
             'order' => 2,
@@ -41,7 +41,7 @@ class ParameterTableSeeder extends Seeder
             'is_default' => false,
         ]);
 
-        Parameter::updateOrCreate([
+        Parameter::firstOrCreate([
             'name'  => 'recipe_type',
             'value' => 'SL',
             'order' => 3,
