@@ -70,6 +70,7 @@
         }
         h1 > .details {
             font-weight:400;
+            max-width:1200px;
         }
         .main-title-secondary{
             font-weight: 200;
