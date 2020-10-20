@@ -34,9 +34,7 @@ class RecipeSpecification extends ModelService
             'viscosity'           => ['string', 'max:255'],
             'specific_gravity'    => ['string', 'max:255'],
             'flash_point'         => ['string', 'max:255'],
-            'storage_conditions'  => ['string', 'max:255'],
             'shelf_life'          => ['string', 'max:255'],
-            'ingredient_list'     => ['string', 'max:255']
         ];
 
         // rules when creating the item
