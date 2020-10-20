@@ -104,13 +104,33 @@ class RecipeController extends ControllerService
         DB::reconnect('tenant');
 
         $recipe_specification = RecipeSpecification::with(['approver', 'project_sample', 'attributes'])->find($recipe_specification_id);
-    
+        $all_attributes = Parameter::where('name', 'recipe_spec_attributes')->get()->toArray();
+        $key_value = [];
+        $key_titles = [
+            'isPeanut' => 'Peanut and Peanut Product Derivatives',
+            'isMilk' => 'Milk or Dairy Derivatives',
+            'isEgg' => 'Egg and Egg Products',
+            'isSoy' => 'Soy Products',
+            'isWheat' => 'Wheat Products (Wheat Gluten)',
+            'isTreeNut' => 'Tree Nuts',
+            'isFish' => 'Fish Protein',
+            'isShellfish' => 'Shellfish',
+            'isMustard' => 'Mustard',
+            'isSesame' => 'Sesame Seeds'
+        ];
+
+        foreach ($all_attributes as $attribute) {
+            $key_value [$attribute['value']] = false;
+        }
+
+        foreach ($recipe_specification->spec_attributes as $attribute) {
+            $key_value[$attribute->value] = true;
+        }
+
         if($recipe_specification){
-            return view('rd::recipe-specifications', ['recipe_specification' => $recipe_specification]);
-            //$pdf = PDF::loadView('rd::recipe', ['recipe' => $recipe]);
-            //return $pdf->download('recipe.pdf');
-            $pdf = PDF::loadView('rd::recipe', $data);
-            return $pdf->download('recipe.pdf');
+            // return view('rd::recipe-specifications', ['recipe_specification' => $recipe_specification,'key_titles' => $key_titles, 'key_value' => $key_value ]);
+            $pdf = PDF::loadView('rd::recipe-specifications', ['recipe_specification' => $recipe_specification,'key_titles' => $key_titles, 'key_value' => $key_value ]);
+            return $pdf->download('recipe-specifications.pdf');
         }
 
     }

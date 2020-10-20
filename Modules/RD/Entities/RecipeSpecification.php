@@ -72,5 +72,8 @@ class RecipeSpecification extends ModelService
     public function packing(){
         return $this->attributes()->where('name', '=', 'recipe_spec_packing');
     }
+    public function spec_attributes(){
+        return $this->attributes()->where('name', '=', 'recipe_spec_attributes');
+    }
     
 }

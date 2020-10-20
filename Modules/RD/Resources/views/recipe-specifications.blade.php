@@ -6,31 +6,35 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
+
         body { 
-            font-family: 'Roboto';
+            font-family: 'Roboto-Regular';
         }
         table {
             width:100%;
         }
-        .sub-table {
+        table.sub-table {
             text-align:center;
-            border: 1px solid #000;
+            border-collapse: collapse;
+            border: 1px solid #2d2925;
+        }
+        table.sub-table > th {
+            border: 1px solid #2d2925;
+        }
+        .sub-table td {
+            border: 1px solid #2d2925;
         }
         .sub-table td:first-child{
             width:33%;
-            border-left:none;
         }
         .sub-table td{
             width:33%;
-            border-left: 1px solid #000;
         }
         .sub-table h1.details-title {
             text-align:center !important;
             padding: 5px;
         }
-        th{
-            
-        }
+
         .address {
             text-align:right;
             font-size:14px;
@@ -38,9 +42,7 @@
             color:#0e0d0c;
             text-transform: uppercase;
         }
-        tfoot{
-           
-        }
+     
         ul {
             list-style:none;
             font-weight:600;
@@ -50,7 +52,7 @@
         }
         .main-title{
             font-weight: 600;
-            font-size: 16px;
+            font-size: 18px;
             text-transform: uppercase;
             color: #2d2925;
             text-align: left;
@@ -59,7 +61,7 @@
         }
         .details-title{
             font-weight: 600;
-            font-size: 14px;
+            font-size: 16px;
             text-transform: uppercase;
             color: #2d2925;
             text-align: left;
@@ -195,7 +197,8 @@
         
     </table>
     <br>
-    
+   
+
     <table class="sub-table">
         <tr >
             <td>
@@ -208,6 +211,46 @@
                 <h1 class="details-title">No</h1>
             </td>
         </tr>
+        @if (!empty($key_value))
+        @foreach ($key_value as $key => $attribute)
+        <tr>
+            <td>
+            <h1 class="details-title"style="font-weight:400;font-size:14px;">{{ $key_titles[$key] }}</h1>
+
+               
+            </td>
+            @if ($attribute)
+
+            <td>
+                <span style="font-weight:600;">X</span>
+            </td>
+            <td>
+            </td>
+            @else
+            <td>
+            </td>
+            <td>
+            <span style="font-weight:600;">X</span>
+
+            </td>
+            @endif
+
+        </tr>
+        @endforeach
+    @endif
+    </table>
+    <br>
+    <br>
+    <br>
+    <table style="width:100%">
+    <tr>
+        <td style="width:50%;">
+            <h1 class="details-title" style="text-align:center;">Approved By: <span class="details"> {{ $recipe_specification->approver->name }} </span></h1>
+        </td>
+        <td style="width:50%;">
+        <h1 class="details-title" style="text-align:center;">Date of Issue: <span class="details"> {{ now()->toDateString() }}</span></h1>
+        </td>
+    </tr>
     </table>
 </body>
 </html>
