@@ -4,6 +4,7 @@ namespace Modules\RD\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Modules\RD\Entities\RecipeSpecification;
 
 class RecipeSpecificationPolicy
 {
@@ -19,7 +20,7 @@ class RecipeSpecificationPolicy
         return $currentUser->hasRole('rd_quality_control', 'admin');
     }
 
-    public function show(User $currentUser, EntityName $target)
+    public function show(User $currentUser, RecipeSpecification $target)
     {
         return $currentUser->hasRole('rd_quality_control', 'admin');
     }
@@ -29,12 +30,12 @@ class RecipeSpecificationPolicy
         return $currentUser->hasRole('rd_quality_control', 'admin');
     }
 
-    public function update(User $currentUser, EntityName $target)
+    public function update(User $currentUser, RecipeSpecification $target)
     {
         return $currentUser->hasRole('rd_quality_control', 'admin');
     }
 
-    public function destroy(User $currentUser, EntityName $target)
+    public function destroy(User $currentUser, RecipeSpecification $target)
     {
         return $currentUser->hasRole('rd_quality_control', 'admin');
     }

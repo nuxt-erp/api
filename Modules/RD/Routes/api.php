@@ -13,7 +13,8 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('recipe_print/{company_id}/{recipe_id}', 'RecipeController@print');
+Route::get('recipe_print/{user_id}/{recipe_id}', 'RecipeController@print');
+Route::get('recipe_specification_print/{user_id}/{recipe_specification_id}', 'RecipeController@printSpecification');
 
 Route::middleware('auth:api')->group(function () {
 

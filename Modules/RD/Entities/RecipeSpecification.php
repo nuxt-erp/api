@@ -5,6 +5,8 @@ namespace Modules\RD\Entities;
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use App\Models\Parameter;
+
 
 
 class RecipeSpecification extends ModelService
@@ -17,7 +19,7 @@ class RecipeSpecification extends ModelService
         'project_sample_id', 'approver_id', 'appearance',
         'aroma', 'flavor', 'viscosity',
         'specific_gravity', 'flash_point', 'storage_conditions',
-        'shelf_life'
+        'shelf_life', 'ingredient_list'
     ];
 
     public function getRules($request, $item = null)
@@ -33,13 +35,13 @@ class RecipeSpecification extends ModelService
             'specific_gravity'    => ['string', 'max:255'],
             'flash_point'         => ['string', 'max:255'],
             'storage_conditions'  => ['string', 'max:255'],
-            'shelf_life'          => ['string', 'max:255']
+            'shelf_life'          => ['string', 'max:255'],
+            'ingredient_list'     => ['string', 'max:255']
         ];
 
         // rules when creating the item
         if (is_null($item)) {
             $rules['project_sample_id'][]   = 'required';
-            $rules['approver_id'][]         = 'required';
             $rules['appearance'][]          = 'required';
             $rules['aroma'][]               = 'required';
             $rules['flavor'][]              = 'required';
@@ -48,6 +50,7 @@ class RecipeSpecification extends ModelService
             $rules['flash_point'][]         = 'required';
             $rules['storage_conditions'][]  = 'required';
             $rules['shelf_life'][]          = 'required';
+            $rules['ingredient_list'][]     = 'required';
         }
         // rules when updating the item
         else{ }
@@ -66,4 +69,8 @@ class RecipeSpecification extends ModelService
     {
         return $this->belongsToMany(Parameter::class, 'rd_recipe_specification_attributes', 'recipe_specification_id', 'attribute_id');
     }
+    public function packing(){
+        return $this->attributes()->where('name', '=', 'recipe_spec_packing');
+    }
+    
 }
