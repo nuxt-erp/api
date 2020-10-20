@@ -87,11 +87,13 @@ class ProjectSamplesController extends ControllerService
             switch ($item->status) {
                 case 'approved':
                 case 'waiting qc':
-                    $actions[] = [
-                        'name'  => 'Generate Specs',
-                        'code'  => 'generate',
-                        'type'  => 'primary'
-                    ];
+                    if($user->hasRole('rd_quality_control')) {
+                        $actions[] = [
+                            'name'  => 'Generate Specs',
+                            'code'  => 'generate',
+                            'type'  => 'primary'
+                        ];
+                    }
                 break;
 
                 case 'ready':
