@@ -91,7 +91,7 @@ class RecipeController extends ControllerService
         if($recipe){
             return view('rd::recipe', ['recipe' => $recipe]);
             //$pdf = PDF::loadView('rd::recipe', ['recipe' => $recipe]);
-            //return $pdf->download('recipe.pdf');
+            //return $pdf->stream('recipe.pdf');
         }
 
     }
@@ -130,7 +130,7 @@ class RecipeController extends ControllerService
         if($recipe_specification){
             // return view('rd::recipe-specifications', ['recipe_specification' => $recipe_specification,'key_titles' => $key_titles, 'key_value' => $key_value ]);
             $pdf = PDF::loadView('rd::recipe-specifications', ['recipe_specification' => $recipe_specification,'key_titles' => $key_titles, 'key_value' => $key_value ]);
-            return $pdf->download('recipe-specifications.pdf');
+            return $pdf->stream('recipe-specifications.pdf');
         }
 
     }

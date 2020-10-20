@@ -92,7 +92,16 @@ class ProjectSamplesController extends ControllerService
                         'code'  => 'generate',
                         'type'  => 'primary'
                     ];
+                break;
+
                 case 'ready':
+                    $actions[] = [
+                        'name'  => 'View Specs',
+                        'code'  => 'generate',
+                        'type'  => 'primary'
+                    ];
+                break;
+
                 case 'pending':
                 case 'sent':
                     $actions[] = [
