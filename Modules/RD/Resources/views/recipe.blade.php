@@ -27,6 +27,10 @@
         .centerText{
             text-align: center;
         }
+        .center {
+            margin-left: auto;
+            margin-right: auto;
+        }
     </style>
 </head>
 <body>
@@ -58,27 +62,44 @@
     <br>
     @if (!empty($recipe->carrier))
         <span class="title">Carrier:</span> {{ $recipe->carrier->name }}
+        <span class="title">Sample Size:</span> {{ $sample_size.$sample_uom }}
     @endif
     <table style="width:100%">
         <tr>
             <th>Ingredient Name</th>
+            <th>QTY</th>
             <th>%</th>
             <th>Cost </th>
         </tr>
         @foreach ($recipe->ingredients as $item)
             <tr>
                 <td>{{ $item['name'] }}</td>
-                <td class="centerText">{{ number_format($item['percent'] ?? $item['quantity'], 2) }}</td>
-                <td class="centerText">{{ number_format($item['cost'], 2) }}</td>
+                <td class="centerText">{{ number_format($item['quantity'], 4) }}</td>
+                <td class="centerText">{{ number_format($item['percent'], 4) }}</td>
+                <td class="centerText">{{ number_format($item->cost ?? 0, 4) }}</td>
             </tr>
         @endforeach
-        <tfoot>
-            <tr>
-                <td>Total</td>
-                <td class="centerText">{{ number_format($recipe->total ?? 0, 2) }}</td>
-                <td class="centerText">{{ number_format($recipe->cost ?? 0, 2) }}</td>
-            </tr>
-        </tfoot>
+    </table>
+    <br><br>
+    <table class="center">
+        <tr>
+            <td>TOTAL RAW MATERIAL</td>
+            <td class="centerText">{{ number_format($total_material, 4) . $sample_uom }}</td>
+            <td class="centerText">{{ number_format($total_material_perc, 4) }}%</td>
+            <td class="centerText">${{ number_format($total_material_cost ?? 0, 4) }}</td>
+        </tr>
+        <tr>
+            <td>CARRIER</td>
+            <td class="centerText">{{ number_format($total_carrier ?? 0, 4) . $sample_uom }}</td>
+            <td class="centerText">{{ number_format($total_carrier_perc, 4) }}%</td>
+            <td class="centerText">${{ number_format($total_carrier_cost ?? 0, 4) }}</td>
+        </tr>
+        <tr>
+            <td>TOTAL</td>
+            <td class="centerText">{{ number_format($total_material+$total_carrier ?? 0, 4) . $sample_uom}}</td>
+            <td class="centerText">100%</td>
+            <td class="centerText">${{ number_format($total_material_cost+$total_carrier_cost ?? 0, 4) }}</td>
+        </tr>
     </table>
 </body>
 </html>

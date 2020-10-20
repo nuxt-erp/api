@@ -114,18 +114,9 @@ class ProjectSamplesRepository extends RepositoryService
             $customer_approved           = !empty($data['customer_approved']) && $data['customer_approved'];
             $customer_rejected           = !empty($data['customer_rejected']) && $data['customer_rejected'];
             $supervisor_reassigned       = !empty($data['supervisor_reassigned']) && $data['supervisor_reassigned'];
-            $recipe_update               = !empty($data['recipe']);
+            $assigned                    = $model->status === 'pending' && empty($model->assignee_id) && !empty($data['assignee_id']);
             $user                        = auth()->user();
 
-            if (!empty($data['recipe_id'])) {
-                $recipe = Recipe::findOrFail($data['recipe_id']);
-                lad($recipe);
-
-                if(!empty($recipe->type_id)) {
-                    $data['internal_code'] = $recipe->type->value . '-' . $data['recipe_id'] ;
-                }
-            }
-            
             //@todo maybe should we use the logic to find the next phase?
             // STATUS HANDLE ======>
             if($approved){
@@ -158,58 +149,23 @@ class ProjectSamplesRepository extends RepositoryService
                 $data['finished_at']    = null;
                 $data['started_at']     = null;
             }
-            elseif(empty($model->assignee_id) && !empty($data['assignee_id'])){
+            elseif($assigned){
                 $data['phase_id']   = Phase::where('name', 'assigned')->first()->id;
                 $data['status']     = 'assigned';
             }
+
+
+
             // FLAVORIST RECIPE UPDATE
-            elseif($recipe_update){
+            if(!empty($data['recipe'])){
 
-                // existing recipe
-                if(!empty($data['recipe']['id'])){
-
-                    // create the next version
-                    if($data['recipe']['new_version'] && !empty($data['recipe']['ingredients'])){
-
-                            // get current recipe
-                            $recipe             = Recipe::findOrFail($data['recipe']['id']);
-                            if(!$recipe->last_version){
-                                $last_recipe    = Recipe::where('last_version', TRUE)
-                                ->where('code', $recipe->code)
-                                ->orderBy('version', 'DESC') // let's make sure we are getting the last version
-                                ->first();
-                            }
-                            else{
-                                $last_recipe    = $recipe;
-                            }
-                            // not the last version anymore
-                            $last_recipe->last_version  = FALSE;
-                            $last_recipe->save();
+                $current_recipe      = !empty($model->recipe_id);
+                $recipe_from_scratch = empty($data['recipe']['id']);
+                $change_of_recipe    = $current_recipe && $model->recipe_id !== $data['recipe']['id'];
+                $new_version         = $data['recipe']['new_version'];
 
 
-                            // NEW RECIPE ---->
-                            $new_recipe                     = $recipe->replicate();
-                            $new_recipe->author_id          = $user->id;
-                            $new_recipe->last_updater_id    = $user->id;
-                            $new_recipe->approver_id        = null;
-                            $new_recipe->approved_at        = null;
-                            $new_recipe->status             = Recipe::NEW_RECIPE;
-                            $new_recipe->last_version       = FALSE;
-                            $new_recipe->carrier_id         = $data['recipe']['carrier_id'] ?? null;
-                            //$new_recipe->cost             = $data['recipe']['cost']; //@todo sum from the ingredients?
-                            //$new_recipe->total            = $data['recipe']['total']; //@todo sum from the ingredients?
-                            $new_recipe->version            = $last_recipe->version + 1;
-                            $new_recipe->last_version       = TRUE;
-                            $new_recipe->save();
-
-                            // copy ingredients
-                            $this->syncIngredients($new_recipe->id, $data['recipe']['ingredients']);
-                            // update sample recipe id
-                            $data['recipe_id'] = $new_recipe->id;
-
-                    }
-                }
-                else{
+                if($recipe_from_scratch){
                     $recipe                     =  new Recipe();
                     $recipe->fill($data['recipe']);
                     $recipe->author_id          = $user->id;
@@ -219,9 +175,80 @@ class ProjectSamplesRepository extends RepositoryService
                     $recipe->save();
 
                     $this->syncIngredients($recipe->id, $data['recipe']['ingredients']);
-                    $data['recipe_id'] = $recipe->id;
+                    $data['recipe_id']  = $recipe->id;
+                    $model->recipe      = $recipe;
+                }
+                else{
+
+                    $recipe = Recipe::findOrFail($data['recipe']['id']);
+
+                    // GENERATE A NEW VERSION
+                    // 1 - new version + no current recipe
+                    // 2 - new version + change recipe
+                    if($new_version && (!$current_recipe || $change_of_recipe)){
+                        // NEW VERSION BASED ON AN OLD RECIPE
+                        if(!$recipe->last_version){
+                            $last_recipe    = Recipe::where('last_version', TRUE)
+                            ->where('code', $recipe->code)
+                            ->orderBy('version', 'DESC') // let's make sure we are getting the last version
+                            ->first();
+                        }
+                        // CURRENT RECIPE IS THE LAST VERSION
+                        else{
+                            $last_recipe    = $recipe;
+                        }
+                        // not the last version anymore
+                        $last_recipe->last_version  = FALSE;
+                        $last_recipe->save();
+
+                        // NEW RECIPE VERSION ---->
+                        $new_recipe                     = $recipe->replicate();
+                        $new_recipe->author_id          = $user->id;
+                        $new_recipe->last_updater_id    = $user->id;
+                        $new_recipe->approver_id        = null;
+                        $new_recipe->approved_at        = null;
+                        $new_recipe->status             = Recipe::NEW_RECIPE;
+                        $new_recipe->last_version       = FALSE;
+                        $new_recipe->carrier_id         = $data['recipe']['carrier_id'] ?? null;
+                        //$new_recipe->cost             = $data['recipe']['cost']; //@todo sum from the ingredients?
+                        //$new_recipe->total            = $data['recipe']['total']; //@todo sum from the ingredients?
+                        // add new version if is finished
+                        $new_recipe->version            = $last_recipe->version + 1;
+                        $new_recipe->last_version       = TRUE;
+                        $new_recipe->save();
+
+
+
+                        // copy ingredients
+                        $this->syncIngredients($new_recipe->id, $data['recipe']['ingredients']);
+                        // RECIPE ID now is the new version
+                        $data['recipe_id']  = $new_recipe->id;
+                        $model->recipe      = $new_recipe;
+                    }
+                    // UPDATE THE RECIPE
+                    else{
+                        // IF THE CARRIER IS CHANGED
+                        $recipe->carrier_id = $data['recipe']['carrier_id'];
+                        $recipe->save();
+                        $model->recipe      = $recipe;
+                        // IF DEVELOPING A NEW VERSION, UPDATE INGREDIENTS
+                        if($new_version){
+                            $this->syncIngredients($data['recipe']['id'], $data['recipe']['ingredients']);
+                        }
+                    }
                 }
 
+                // RECIPE UPDATE + assigned = IN PROGRESS
+                if($model->status == 'assigned'){
+                    $data['phase_id']   = Phase::where('name', 'in progress')->first()->id;
+                    $data['status']     = 'in progress';
+                    $data['started_at'] = now();
+                }
+            }
+
+            // UPDATE SAMPLE INTERNAL CODE
+            if ($model->recipe && $model->recipe->type) {
+                $data['internal_code'] = $model->recipe->type->value . '-' . $model->recipe->id;
             }
 
             parent::update($model, $data);
