@@ -3,8 +3,8 @@
 namespace Modules\ExpensesApproval\Entities;
 
 use App\Models\ModelService;
-
-class CategorySponsors extends ModelService
+use Illuminate\Database\Eloquent\Relations\Pivot;
+class CategorySponsors extends Pivot
 {
 
     protected $connection = 'tenant';

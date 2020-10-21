@@ -30,11 +30,7 @@ class CategoryRepository extends RepositoryService
             parent::store($data);
 
             if(!empty($data['sponsors'])){
-                $sponsors = [];
-                foreach ($data['sponsors'] as $id) {
-                    $sponsors[] = User::find($id);
-                }
-                $this->model->sponsors()->sync($sponsors);
+                $this->model->sponsors()->sync($data['sponsors']);
             }
 
             if($this->model) {
@@ -60,9 +56,9 @@ class CategoryRepository extends RepositoryService
             }
             parent::update($model, $data);
 
-            // if(!empty($data['sponsors'])){
-            //     $this->model->sponsors()->sync($data['sponsors']);
-            // }
+            if(!empty($data['sponsors'])){
+                $this->model->sponsors()->sync($data['sponsors']);
+            }
         });
     }
 

@@ -2,12 +2,16 @@
 
 namespace Modules\ExpensesApproval\Entities;
 
+use App\Models\BelongsToManyTenantTrait;
 use App\Models\ModelService;
 use App\Models\User;
 use Illuminate\Validation\Rule;
 
 class Category extends ModelService
 {
+
+    use BelongsToManyTenantTrait;
+
     protected $connection = 'tenant';
 
     protected $table = 'exp_ap_categories';
@@ -56,10 +60,9 @@ class Category extends ModelService
     {
         return $this
         ->setConnection('tenant')
-        ->belongsToMany(User::class, 'exp_ap_category_sponsors', 'expenses_category_id', 'sponsor_id')
+        ->belongsToManyTenant(User::class, 'exp_ap_category_sponsors', null, 'expenses_category_id', 'sponsor_id')
         ->using(CategorySponsors::class)
         ->withTimestamps();
-        //->withPivot('sectionMemberType', 'journalMemberType')
     }
 
     public function buyer()

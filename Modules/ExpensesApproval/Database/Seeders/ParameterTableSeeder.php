@@ -53,5 +53,27 @@ class ParameterTableSeeder extends Seeder
             'is_default' => false,
         ]);
 
+        Parameter::updateOrCreate([
+            'name'  => 'expenses_approval_status',
+            'value' => 'denied',
+            'order' => 1,
+            'description' => 'Denied',
+            'is_internal' => true,
+            'is_default' => false,
+        ]);
+
+        Parameter::firstOrCreate(
+            [
+                'name'  => 'expense_max_value',
+            ],
+            [
+                'value' => '1000',
+                'order' => 1,
+                'description' => 'Expense Max Value',
+                'is_internal' => true,
+                'is_default' => true
+            ]
+        );
+
     }
 }

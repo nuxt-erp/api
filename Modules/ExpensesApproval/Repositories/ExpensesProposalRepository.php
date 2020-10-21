@@ -47,7 +47,7 @@ class ExpensesProposalRepository extends RepositoryService
                 ->whereHas('status', function (Builder $query) {
                     $query->where('value', 'pending');
                 });
-        } 
+        }
         // FOR BUYERS, GET ALL THE APPROVED PROPOSALS ONLY
         else if($user->hasRole('buyer')) {
             $this->queryBuilder
@@ -66,7 +66,9 @@ class ExpensesProposalRepository extends RepositoryService
                     $query->where('author_id', $user->id)
                         ->orWhereHas('category', function (Builder $query) use ($user) {
                             $query->where('lead_id', $user->id)
-                                ->orWhere('sponsor_id', $user->id);
+                                ->orWhereHas('sponsors', function (Builder $query2) use ($user) {
+                                    $query2->where('id', $user->id);
+                                });
                         });
                 });
 
@@ -86,7 +88,7 @@ class ExpensesProposalRepository extends RepositoryService
                 ->whereHas('status', function (Builder $query) {
                     $query->where('value', '<>', 'pending');
                 });
-        } 
+        }
         // FOR BUYERS, GET ALL THE PURCHASED PROPOSALS ONLY
         else if($user->hasRole('buyer')) {
             $this->queryBuilder
@@ -105,7 +107,9 @@ class ExpensesProposalRepository extends RepositoryService
                     $query->where('author_id', $user->id)
                         ->orWhereHas('category', function (Builder $query) use ($user) {
                             $query->where('lead_id', $user->id)
-                                ->orWhere('sponsor_id', $user->id);
+                            ->orWhereHas('sponsors', function (Builder $query2) use ($user) {
+                                $query2->where('id', $user->id);
+                            });
                         });
                 });
 
@@ -121,7 +125,7 @@ class ExpensesProposalRepository extends RepositoryService
 
             $user = auth()->user();
             $data['author_id'] = $user->id;
-                        
+
             // STATUS OF THE EXPENSE IS DEFINED BASED ON THE USER AND THE EXPENSES RULES
             $data['status_id'] = $this->updateStatus($data, $user);
 
@@ -130,12 +134,12 @@ class ExpensesProposalRepository extends RepositoryService
             if($this->model) {
                 // IF EXPENSE IS AUTOMATICALLY APPROVED, SEND EMAIL
                 if ($this->model->status === 'Approved') {
-                    $this->sendEmailApproved($this->model);                    
+                    $this->sendEmailApproved($this->model);
                 } else {
                     // SEND EMAIL TO APPROVERS
-                    $this->sendEmailApprovers($this->model);                    
+                    $this->sendEmailApprovers($this->model);
                 }
-                
+
 
                 // SAVE ATTCHMENTS
                 if($attachments) {
@@ -196,10 +200,10 @@ class ExpensesProposalRepository extends RepositoryService
             if($this->model->rule()->id !== $original_rule->id) {
                 // IF EXPENSE IS AUTOMATICALLY APPROVED, SEND EMAIL
                 if ($this->model->status === 'Approved') {
-                    $this->sendEmailApproved($this->model);                      
+                    $this->sendEmailApproved($this->model);
                 } else {
                     // SEND EMAIL TO APPROVERS
-                    $this->sendEmailApprovers($this->model);  
+                    $this->sendEmailApprovers($this->model);
                 }
             }
 
@@ -226,17 +230,20 @@ class ExpensesProposalRepository extends RepositoryService
     }
 
     private function updateStatus($data, $user) {
+
         $category = Category::where('id', $data['expenses_category_id'])->first();
         $rule = ExpensesRule::where('start_value', '<', $data['total_cost'])->where('end_value', '>=', $data['total_cost'])->orWhereNull('end_value')->orderBy('start_value')->first();
         $lead_required = $rule->lead_approval;
         $sponsor_required = $rule->sponsor_approval;
         $pending_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'pending')->pluck('id')->first();
         $approved_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
-        
+
+        $is_user_sponsor = $category->sponsors->contains($user->id);
+
         // LEAD AND SPONSOR APPROVAL REQUIRED
         if ($lead_required && $sponsor_required) {
             // AUTHOR OF EXPENSE IS THE SPONSOR OF THE CATEGORY, APPROVE DIRECTLY
-            if ($user->id === $category->sponsor_id) {
+            if ($is_user_sponsor) {
                 $data['status_id'] = $approved_id;
             }
             // AUTHOR OF EXPENSE IS THE LEAD OF THE CATEGORY, APPROVE LEAD AND WAIT FOR SPONSOR APPROVAL
@@ -251,7 +258,7 @@ class ExpensesProposalRepository extends RepositoryService
         // ONLY LEAD APPROVAL REQUIRED
         else if($lead_required && !$sponsor_required) {
             // AUTHOR OF EXPENSE IS THE SPONSOR OR LEAD OF THE CATEGORY, APPROVE DIRECTLY
-            if ($user->id === $category->lead_id || $user->id === $category->sponsor_id) {
+            if ($user->id === $category->lead_id || $is_user_sponsor) {
                 $data['status_id'] = $approved_id;
             }
             // AUTHOR OF EXPENSE IS OTHER USER, WAIT FOR LEAD APPROVAL
@@ -261,7 +268,7 @@ class ExpensesProposalRepository extends RepositoryService
         }
         else if(!$lead_required && $sponsor_required) {
             // AUTHOR OF EXPENSE IS THE SPONSOR OF THE CATEGORY, APPROVE DIRECTLY
-            if ($user->id === $category->sponsor_id) {
+            if ($is_user_sponsor) {
                 $data['status_id'] = $approved_id;
             }
             // AUTHOR OF EXPENSE IS OTHER USER, WAIT SPONSOR APPROVAL
@@ -276,7 +283,7 @@ class ExpensesProposalRepository extends RepositoryService
 
         return $data['status_id'];
     }
-    
+
 
     public function approveProposal($id)
     {
@@ -290,13 +297,13 @@ class ExpensesProposalRepository extends RepositoryService
 
 
         // CHANGE STATUS OF EXPENSES PROPOSAL
-        $proposal   = ExpensesProposal::find($id);
-        $rule       = $proposal->rule();
-        $lead_required = $rule->lead_approval;
-        $sponsor_required = $rule->sponsor_approval;
-        $lead_approval = $lead_required ? ($proposal->author_id===$proposal->category->lead_id ? true : ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $proposal->category->lead_id)->first()) : null;
-        $sponsor_approval = $sponsor_required ? ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $proposal->category->sponsor_id)->first() : null;
-        $approved_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
+        $proposal           = ExpensesProposal::find($id);
+        $rule               = $proposal->rule();
+        $lead_required      = $rule->lead_approval;
+        $sponsor_required   = $rule->sponsor_approval;
+        $lead_approval      = $lead_required ? ($proposal->author_id===$proposal->category->lead_id ? true : ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $proposal->category->lead_id)->first()) : null;
+        $sponsor_approval   = $sponsor_required ? ExpensesApproval::where('expenses_proposal_id', $proposal->id)->whereIn('approver_id', $proposal->category->sponsors->pluck('id'))->first() : null;
+        $approved_id        = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
 
         if ($lead_required && $sponsor_required && $lead_approval && $sponsor_approval) {
             $proposal->status_id = $approved_id;
@@ -350,15 +357,15 @@ class ExpensesProposalRepository extends RepositoryService
 
         $pending_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'pending')->pluck('id')->first();
         $proposal->status_id = $pending_id;
-        $proposal->save();      
+        $proposal->save();
 
         if($original_status === 'Approved') $proposal['hide'] = true;
 
-        return $proposal;               
+        return $proposal;
     }
 
     public function sendEmailApproved($proposal)
-    {   
+    {
         $data = [
             'id'            => $proposal->id,
             'user_name'     => $proposal->author->name,
@@ -382,15 +389,19 @@ class ExpensesProposalRepository extends RepositoryService
     }
 
     public function sendEmailApprovers($proposal)
-    {   
+    {
         $to = [];
-       
-        if ($proposal->rule()->lead_approval && $proposal->author_id !== $proposal->category->lead_id && $proposal->author_id !== $proposal->category->sponsor_id) {
+
+        $is_sponsor_author = $proposal->category->sponsors->contains($proposal->author_id);
+
+        if ($proposal->rule()->lead_approval && $proposal->author_id !== $proposal->category->lead_id && !$is_sponsor_author) {
             $to[] = $proposal->category->lead->email;
         }
 
-        if ($proposal->rule()->sponsor_approval && $proposal->author_id !== $proposal->category->sponsor_id ) {
-            $to[] = $proposal->category->sponsor->email;
+        if ($proposal->rule()->sponsor_approval && !$is_sponsor_author ) {
+            foreach ($proposal->category->sponsors as $user) {
+                $to[] = $user->email;
+            }
         }
 
         $data = [
@@ -410,7 +421,7 @@ class ExpensesProposalRepository extends RepositoryService
     }
 
     public function sendEmail(array $to, $data)
-    {   
+    {
         try {
             $beautymail = app()->make(Beautymail::class);
             $beautymail->send('expenses_approval.email', $data, function($message) use ($data, $to)
@@ -427,5 +438,5 @@ class ExpensesProposalRepository extends RepositoryService
         }
     }
 
-    
+
 }

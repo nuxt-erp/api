@@ -14,6 +14,9 @@ class ExpensesProposalResource extends JsonResource
         $actions = collect([]);
         $preview = false;
 
+        $is_user_sponsor    = $this->category->sponsors->contains($user->id);
+        $is_author_sponsor  = $this->category->sponsors->contains($this->author_id);
+
         if($user->hasRole('buyer') && $this->status->value==='approved') {
             $actions->push(collect([
                 'name'  => 'Finish Purchase',
@@ -36,7 +39,9 @@ class ExpensesProposalResource extends JsonResource
                         'icon'  => 'delete',
                         'type'  => 'danger'
                     ]));
-                } else if($user->id === $this->category->lead_id || $user->id === $this->category->sponsor_id){
+                } else if($user->id === $this->category->lead_id || $is_user_sponsor){
+
+
 
 
                     $user_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $user->id)->first();
@@ -71,10 +76,10 @@ class ExpensesProposalResource extends JsonResource
                             'icon'  => 'undo',
                             'type'  => 'danger'
                         ]));
-                    }                                    
+                    }
                 }
             } else if($this->status->value === 'approved') {
-                if ($user->id === $this->category->sponsor_id || ($user->id === $this->category->lead_id && $this->author_id !== $this->category->sponsor_id)) {
+                if ($this->category->sponsors->contains($user->id) || ($user->id === $this->category->lead_id && $is_author_sponsor)) {
                     $actions->push(collect([
                         'name'  => 'Cancel Expense',
                         'code'  => 'cancel_expense',
@@ -94,30 +99,28 @@ class ExpensesProposalResource extends JsonResource
                 } else {
                     $approvals .= $item->approver->name;
                 }
-            }           
+            }
         } else {
             if($this->status->value !== 'denied') $approvals = 'pre-approved';
         }
 
         $approvers = null;
         if($this->rule()->lead_approval) {
-            if($this->author_id !== $this->category->lead_id) {                
+            if($this->author_id !== $this->category->lead_id) {
                 $lead_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->lead_id)->first();
 
                 if(!$lead_approval) {
                     $approvers .= $this->category->lead->name;
                 }
             }
-        } 
+        }
 
         if($this->rule()->sponsor_approval) {
-            if($this->author_id !== $this->category->sponsor_id) {                
-                $sponsor_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->sponsor_id)->first();
+            if(!$is_author_sponsor) {
+                $sponsor_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->whereIn('approver_id', $this->category->sponsors->pluck('id'))->first();
                 if(!$sponsor_approval) {
-                    if($approvers) {
-                        $approvers .= ', ' . $this->category->sponsor->name;
-                    } else {
-                        $approvers .= $this->category->sponsor->name;
+                    foreach ($this->category->sponsors as $user) {
+                        $approvers .= ($approvers ? ', ' : ' ') . $user->name;
                     }
                 }
             }
@@ -128,16 +131,16 @@ class ExpensesProposalResource extends JsonResource
             'expenses_category_id'      => $this->expenses_category_id,
             'expenses_category_name'    => $this->category->name,
             'subcategory_id'            => $this->subcategory_id,
-            'subcategory_name'          => $this->subcategory->name, 
+            'subcategory_name'          => $this->subcategory->name,
             'author_id'                 => $this->author_id,
             'author_name'               => $this->author->name,
             'item'                      => $this->item,
             'reason'                    => $this->reason,
             'supplier_link'             => $this->supplier_link,
             'subtotal'                  => $this->subtotal,
-            'hst'                       => $this->hst,                   
+            'hst'                       => $this->hst,
             'ship'                      => $this->ship,
-            'total_cost'                => $this->total_cost,            
+            'total_cost'                => $this->total_cost,
             'status'                    => $this->status->description,
             'approvers'                 => $user->hasRole('buyer') ? $approvals : $approvers,
             'approvals'                 => $approvals,
