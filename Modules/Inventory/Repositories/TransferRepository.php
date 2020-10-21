@@ -80,7 +80,7 @@ class TransferRepository extends RepositoryService
                             'qty_received'   => $qty_received,
                             'variance'       => ($qty_sent - $qty_received)
                         ]);
-
+                            
                         // Transfer received, update stock levels on both locations
                         if ($qty_received > 0) {
                             // Increment stock from receiver location
@@ -89,7 +89,8 @@ class TransferRepository extends RepositoryService
                             // Decrement stock from sender
                             $availability_repository->updateStock($product_id, $qty_received, $data['location_from_id'], '-', 'Transfer', $id, 0,0, 'Sending quantity');
 
-                            Transfer::where('id', $id)->update(['is_enable' => 0]); // Transfer status
+                          //Transfer::where('id', $id)->update(['is_enable' => 0]); // Transfer status
+                          
                         }
                     }
                 }

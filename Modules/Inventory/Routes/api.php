@@ -54,6 +54,9 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('family_attributes', 'FamilyAttributeController');
         Route::resource('availabilities', 'AvailabilityController');
         Route::get('products_availabilities', 'ProductController@productAvailabilities');
+        Route::get('stock_on_hand', 'AvailabilityController@stockOnHand');
+
+        
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');
         Route::resource('customer_discounts', 'CustomerDiscountController');

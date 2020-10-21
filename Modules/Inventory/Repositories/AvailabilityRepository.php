@@ -212,4 +212,14 @@ class AvailabilityRepository extends RepositoryService
 
         return parent::findBy($searchCriteria);
     }
+    public function stockOnHand($product_id,$location_id)
+    {
+       $item= Availability::where([
+            'product_id'    => $product_id,
+            'location_id'   => $location_id
+        ])->first();
+        
+       return isset($item)?$item->on_hand:0;
+    }
+    
 }

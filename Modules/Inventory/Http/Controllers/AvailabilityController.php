@@ -29,6 +29,12 @@ class AvailabilityController extends ControllerService implements CheckPolicies
         return $this->sendFullCollectionResponse($items, AvailabilityStockCountResource::class);
 
     }
+    public function stockOnHand(Request $request)
+    {
+        $items = $this->repository->stockOnHand($request->product_id,$request->location_id);
+        return $items;
 
+    }
+    
 
 }
