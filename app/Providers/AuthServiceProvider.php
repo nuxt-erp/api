@@ -6,6 +6,7 @@ use App\Models\Country;
 use App\Models\Customer;
 use App\Models\Location;
 use App\Models\Parameter;
+use App\Models\ParameterType;
 use App\Models\Province;
 use App\Models\Role;
 use App\Models\Supplier;
@@ -15,6 +16,7 @@ use App\Policies\CountryPolicy;
 use App\Policies\CustomerPolicy;
 use App\Policies\LocationPolicy;
 use App\Policies\ParameterPolicy;
+use App\Policies\ParameterTypePolicy;
 use App\Policies\ProvincePolicy;
 use App\Policies\RolePolicy;
 use App\Policies\SupplierPolicy;
@@ -48,5 +50,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Province::class, ProvincePolicy::class);
         Gate::policy(Supplier::class, SupplierPolicy::class);
         Gate::policy(Customer::class, CustomerPolicy::class);
+        Gate::policy(ParameterType::class, ParameterTypePolicy::class);
+
     }
 }

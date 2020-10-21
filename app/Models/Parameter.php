@@ -31,7 +31,4 @@ class Parameter extends ModelService
 
         return $rules;
     }
-    public function getNameAttribute(){
-        return !empty($this->description) ? $this->description : $this->value;
-    }
 }

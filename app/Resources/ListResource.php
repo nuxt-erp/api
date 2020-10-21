@@ -29,10 +29,14 @@ class ListResource extends ResourceService
             case 'Parameter':
                 $resource['name']   = $this->name;
                 $resource['value']  = $this->value;
+                break;
+            case 'ParameterType':
+                $resource['value']  = $this->value;
+                $resource['id']     = $this->value;
+                break;
             case 'Phase':
                 $resource['name']   = ucwords($this->name);
                 $resource['value']  = $this->name;
-
                 break;
         }
 

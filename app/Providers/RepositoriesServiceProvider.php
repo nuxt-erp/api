@@ -8,6 +8,7 @@ use App\Models\Country;
 use App\Models\Customer;
 use App\Models\Location;
 use App\Models\Parameter;
+use App\Models\ParameterType;
 use App\Models\Province;
 use App\Models\Role;
 use App\Models\Supplier;
@@ -18,6 +19,7 @@ use App\Repositories\CountryRepository;
 use App\Repositories\CustomerRepository;
 use App\Repositories\LocationRepository;
 use App\Repositories\ParameterRepository;
+use App\Repositories\ParameterTypeRepository;
 use App\Repositories\ProvinceRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\SupplierRepository;
@@ -28,6 +30,7 @@ use App\Resources\CountryResource;
 use App\Resources\CustomerResource;
 use App\Resources\LocationResource;
 use App\Resources\ParameterResource;
+use App\Resources\ParameterTypeResource;
 use App\Resources\ProvinceResource;
 use App\Resources\RoleResource;
 use App\Resources\SupplierResource;
@@ -122,6 +125,14 @@ class RepositoriesServiceProvider extends ServiceProvider
         $this->app->bind(CustomerResource::class, function () {
             return new CustomerResource(new Customer());
         });
+
+        $this->app->bind(ParameterTypeRepository::class, function () {
+            return new ParameterTypeRepository(new ParameterType());
+        });
+
+        $this->app->bind(ParameterTypeResource::class, function () {
+            return new ParameterTypeResource(new ParameterType());
+        });
     }
 
     /**
@@ -140,7 +151,8 @@ class RepositoriesServiceProvider extends ServiceProvider
             CountryRepository::class,
             ProvinceRepository::class,
             SupplierRepository::class,
-            CustomerRepository::class
+            CustomerRepository::class,
+            ParameterTypeRepository::class
         ];
     }
 }

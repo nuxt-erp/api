@@ -33,6 +33,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('provinces', 'General\ProvinceController');
         Route::resource('suppliers', 'General\SupplierController');
         Route::resource('customers', 'General\CustomerController');
+        Route::resource('parameter_types', 'General\ParameterTypeController');
     });
 
 });
