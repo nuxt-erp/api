@@ -32,6 +32,8 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_reorder_levels', 'ProductReorderLevelController');
         Route::resource('product_promos', 'ProductPromoController');
         Route::resource('product_custom_prices', 'ProductCustomPriceController');
+        Route::resource('tags', 'TagController');
+        Route::resource('product_tags', 'ProductTagController');
 
         Route::resource('product_images', 'ProductImagesController');
         Route::get('carrier_products', 'ProductController@findCarriers');
