@@ -77,7 +77,6 @@ abstract class RepositoryService implements RepositoryInterface
         $this->queryBuilder->where(function ($query) use ($searchCriteria) {
             $this->applySearchCriteriaInQueryBuilder($query, $searchCriteria);
         });
-        lad($this->queryBuilder->paginate($limit));
         return $isList ? $this->queryBuilder->get() : $this->queryBuilder->paginate($limit);
     }
 
