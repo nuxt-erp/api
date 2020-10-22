@@ -14,8 +14,8 @@ class ExpensesProposalResource extends JsonResource
         $actions = collect([]);
         $preview = false;
 
-        $is_user_sponsor    = $this->category->sponsors->contains($user->id);
-        $is_author_sponsor  = $this->category->sponsors->contains($this->author_id);
+        $is_user_sponsor    = optional($this->category)->sponsors && $this->category->sponsors->contains($user->id);
+        $is_author_sponsor  = optional($this->category)->sponsors && $this->category->sponsors->contains($this->author_id);
 
         if($user->hasRole('buyer') && $this->status->value==='approved') {
             $actions->push(collect([
@@ -40,9 +40,6 @@ class ExpensesProposalResource extends JsonResource
                         'type'  => 'danger'
                     ]));
                 } else if($user->id === $this->category->lead_id || $is_user_sponsor){
-
-
-
 
                     $user_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $user->id)->first();
 
@@ -105,7 +102,7 @@ class ExpensesProposalResource extends JsonResource
         }
 
         $approvers = null;
-        if($this->rule()->lead_approval) {
+        if($this->rule()->lead_approval && $this->category) {
             if($this->author_id !== $this->category->lead_id) {
                 $lead_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->lead_id)->first();
 
@@ -115,12 +112,24 @@ class ExpensesProposalResource extends JsonResource
             }
         }
 
-        if($this->rule()->sponsor_approval) {
+        // PRIMARY SPONSOR
+        if($this->rule()->sponsor_approval && $this->category && count($this->category->sponsors) > 0) {
             if(!$is_author_sponsor) {
-                $sponsor_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->whereIn('approver_id', $this->category->sponsors->pluck('id'))->first();
+                $sponsor_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->sponsors[0]->id)->first();
                 if(!$sponsor_approval) {
-                    foreach ($this->category->sponsors as $user) {
-                        $approvers .= ($approvers ? ', ' : ' ') . $user->name;
+                    $approvers .= ($approvers ? ', ' : ' ') . $this->category->sponsors[0]->name;
+                }
+            }
+        }
+
+        if($this->rule()->others_sponsor_approval && $this->category && count($this->category->sponsors) > 1) {
+            if(!$is_author_sponsor) {
+                foreach ($this->category->sponsors as $key => $user) {
+                    if($key > 0){
+                        $sponsor_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $user->id)->first();
+                        if(!$sponsor_approval){
+                            $approvers .= ($approvers ? ', ' : ' ') . $user->name;
+                        }
                     }
                 }
             }
@@ -129,9 +138,9 @@ class ExpensesProposalResource extends JsonResource
         return [
             'id'                        => $this->id,
             'expenses_category_id'      => $this->expenses_category_id,
-            'expenses_category_name'    => $this->category->name,
+            'expenses_category_name'    => optional($this->category)->name,
             'subcategory_id'            => $this->subcategory_id,
-            'subcategory_name'          => $this->subcategory->name,
+            'subcategory_name'          => optional($this->subcategory)->name,
             'author_id'                 => $this->author_id,
             'author_name'               => $this->author->name,
             'item'                      => $this->item,

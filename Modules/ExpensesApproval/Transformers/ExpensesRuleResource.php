@@ -19,6 +19,7 @@ class ExpensesRuleResource extends JsonResource
             'name'                      => $this->name,
             'lead_approval'             => $this->lead_approval,
             'sponsor_approval'          => $this->sponsor_approval,
+            'others_sponsor_approval'   => $this->others_sponsor_approval,
             'start_value'               => $this->start_value,
             'end_value'                 => $this->end_value,
             'created_at'                => optional($this->created_at)->format('Y-m-d H:i:s'),

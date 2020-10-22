@@ -38,54 +38,107 @@ class RegisterController extends Controller
 
     }
 
+    private function artisanResult(){
+        echo implode('<br>', explode(PHP_EOL, Artisan::output()));
+    }
+
     public function installModules($name){
+
+        DB::setDefaultConnection('public');
+
         //$user = auth()->user(); // this is the right option after we make a page to install modules
-        $user = User::where('name', 'ILIKE', '%'.$name.'%')->first();
+        $user = User::where('name', 'ILIKE', '%'.$name.'%')->orWhere('email', 'ILIKE', '%'.$name.'%')->first();
+        echo '<<<<<<<<< SCRIPT START >>>>>>>><br><br>';
+
+        echo 'Company: '.$user->company->name.'<br><br>';
+
+        echo '----- <br>';
+        try {
+            echo 'Root migration: <br>';
+            Artisan::call('migrate');
+            $this->artisanResult();
+        } catch (\Throwable $th) {
+            echo 'Root migration error!<br>';
+            $this->artisanResult();
+            echo $th->getMessage();
+        }
+        echo '----- <br>';
+
+        try {
+            echo 'Root seeder: <br>';
+            Artisan::call('db:seed');
+            $this->artisanResult();
+        } catch (\Throwable $th) {
+            echo 'Root seeder error!<br>';
+            $this->artisanResult();
+            echo $th->getMessage();
+        }
+        echo '----- <br>';
 
         // run specific migration files for the schema
 
         // 1 - add modules to the company
         $modules = Module::all();
-        foreach ($modules as $module){
-            //@todo change here to add only selected modules [this must come from the frontend]
-            CompanyModules::updateOrCreate([
-                'module_id'     => $module->id,
-                'company_id'    => $user->company_id
-            ]);
-            echo $module->name . ' module added for: '.$user->company->name.'. <br>';
+
+        if(count($user->company->modules) == 0){
+            echo 'Adding modules to the company: <br><br>';
+            foreach ($modules as $module){
+                //@todo change here to add only selected modules [this must come from the frontend]
+                CompanyModules::updateOrCreate([
+                    'module_id'     => $module->id,
+                    'company_id'    => $user->company_id
+                ]);
+                echo $module->name . ' module added for: '.$user->company->name.'. <br>';
+            }
+            echo '----- <br>';
         }
 
-        echo '----- <br>';
 
         // 2 - run migrations and seeders for enabled modules
 
         DB::setDefaultConnection('tenant');
         config(['database.connections.tenant.schema' => $user->company->schema]); // we can remove this after we have a logged user
 
+        try {
+            echo 'Tenant Root migration: <br>';
+            Artisan::call('migrate', [
+                '--path' => '/database/migrations/schema'
+            ]);
+            $this->artisanResult();
+        } catch (\Throwable $th) {
+            echo 'Tenant Root migration error!<br>';
+            $this->artisanResult();
+            echo $th->getMessage();
+        }
+        echo '----- <br>';
+
         foreach ($modules as $module){
+            echo '<strong>Module: '.$module->name.' => </strong><br>';
             try {
+                echo $module->name.' migration: <br>';
                 Artisan::call('migrate', [
                     '--path' => '/Modules/'.ucfirst($module->name).'/Database/Migrations/schema'
                 ]);
-                echo $module->name . ' migration done. <br>';
+                $this->artisanResult();
             } catch (\Throwable $th) {
                 echo 'Migration error for '.ucfirst($module->name).'!<br>';
-                dump(Artisan::output());
-                echo '<br>';
+                $this->artisanResult();
                 echo $th->getMessage();
-                echo '<br>';
             }
+            echo '-----<br>';
             try {
+                echo $module->name.' seeder: <br>';
                 Artisan::call('module:seed '.ucfirst($module->name));
-                echo $module->name . ' seeder done. <br>';
+                $this->artisanResult();
             } catch (\Throwable $th) {
                 echo 'Seed error for '.ucfirst($module->name).'!<br>';
-                dump(Artisan::output());
-                echo '<br>';
+                $this->artisanResult();
                 echo $th->getMessage();
             }
-            echo '----- <br>';
+            echo '-----<br>';
         }
+
+        echo '<br><br><<<<<<<< SCRIPT DONE >>>>>>>>';
     }
 
 }

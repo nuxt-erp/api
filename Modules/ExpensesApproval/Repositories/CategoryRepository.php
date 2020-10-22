@@ -28,8 +28,9 @@ class CategoryRepository extends RepositoryService
                 $data['finished_at'] = now();
             }
             parent::store($data);
-
-            if(!empty($data['sponsors'])){
+            if (empty($data['sponsors'])) {
+                $this->model->sponsors()->detach();
+            } else {
                 $this->model->sponsors()->sync($data['sponsors']);
             }
 
@@ -55,8 +56,9 @@ class CategoryRepository extends RepositoryService
                 $data['finished_at'] = null;
             }
             parent::update($model, $data);
-
-            if(!empty($data['sponsors'])){
+            if (empty($data['sponsors'])) {
+                $this->model->sponsors()->detach();
+            } else {
                 $this->model->sponsors()->sync($data['sponsors']);
             }
         });

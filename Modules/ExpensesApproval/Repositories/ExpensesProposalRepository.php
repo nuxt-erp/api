@@ -32,8 +32,6 @@ class ExpensesProposalRepository extends RepositoryService
             $searchCriteria['status_id'] = $status_id;
         }
 
-
-
         return parent::findBy($searchCriteria);
     }
 
@@ -141,7 +139,7 @@ class ExpensesProposalRepository extends RepositoryService
                 }
 
 
-                // SAVE ATTCHMENTS
+                // SAVE ATTACHMENTS
                 if($attachments) {
                     foreach($attachments as $attachment) {
                         ExpensesAttachment::create([
@@ -231,57 +229,30 @@ class ExpensesProposalRepository extends RepositoryService
 
     private function updateStatus($data, $user) {
 
-        $category = Category::where('id', $data['expenses_category_id'])->first();
-        $rule = ExpensesRule::where('start_value', '<', $data['total_cost'])->where('end_value', '>=', $data['total_cost'])->orWhereNull('end_value')->orderBy('start_value')->first();
-        $lead_required = $rule->lead_approval;
-        $sponsor_required = $rule->sponsor_approval;
-        $pending_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'pending')->pluck('id')->first();
-        $approved_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
+        $category           = Category::where('id', $data['expenses_category_id'])->first();
+        $rule               = ExpensesRule::where('start_value', '<', $data['total_cost'])->where('end_value', '>=', $data['total_cost'])->orWhereNull('end_value')->orderBy('start_value')->first();
 
-        $is_user_sponsor = $category->sponsors->contains($user->id);
+        $pending_id         = Parameter::where('name', 'expenses_approval_status')->where('value', 'pending')->pluck('id')->first();
+        $approved_id        = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
+        $approved           = TRUE;
 
-        // LEAD AND SPONSOR APPROVAL REQUIRED
-        if ($lead_required && $sponsor_required) {
-            // AUTHOR OF EXPENSE IS THE SPONSOR OF THE CATEGORY, APPROVE DIRECTLY
-            if ($is_user_sponsor) {
-                $data['status_id'] = $approved_id;
-            }
-            // AUTHOR OF EXPENSE IS THE LEAD OF THE CATEGORY, APPROVE LEAD AND WAIT FOR SPONSOR APPROVAL
-            else if ($user->id === $category->lead_id) {
-                $data['status_id'] = $pending_id;
-            }
-            // AUTHOR OF EXPENSE IS OTHER USER, WAIT FOR LEAD AND SPONSOR APPROVAL
-            else {
-                $data['status_id'] = $pending_id;
-            }
-        }
-        // ONLY LEAD APPROVAL REQUIRED
-        else if($lead_required && !$sponsor_required) {
-            // AUTHOR OF EXPENSE IS THE SPONSOR OR LEAD OF THE CATEGORY, APPROVE DIRECTLY
-            if ($user->id === $category->lead_id || $is_user_sponsor) {
-                $data['status_id'] = $approved_id;
-            }
-            // AUTHOR OF EXPENSE IS OTHER USER, WAIT FOR LEAD APPROVAL
-            else {
-                $data['status_id'] = $pending_id;
-            }
-        }
-        else if(!$lead_required && $sponsor_required) {
-            // AUTHOR OF EXPENSE IS THE SPONSOR OF THE CATEGORY, APPROVE DIRECTLY
-            if ($is_user_sponsor) {
-                $data['status_id'] = $approved_id;
-            }
-            // AUTHOR OF EXPENSE IS OTHER USER, WAIT SPONSOR APPROVAL
-            else {
-                $data['status_id'] = $pending_id;
-            }
-        }
-        // NO APPROVAL REQUIRED, APPROVE DIRECTLY
-        else {
-            $data['status_id'] = $approved_id;
+        // NEED LEAD APPROVAL
+        if($rule->lead_approval){
+            $approved = $user->id == $category->lead_id;
         }
 
-        return $data['status_id'];
+        // NEED PRIMARY SPONSOR APPROVAL
+        if($approved && $rule->sponsor_approval && count($category->sponsors) > 0){
+            $primary_sponsor    = $category->sponsors[0];
+            $approved           = $approved && $user->id == $primary_sponsor->id;
+        }
+
+        // NEED OTHERS SPONSOR APPROVAL
+        if($approved && $rule->others_sponsor_approval && count($category->sponsors) > 1){
+            $approved = FALSE;
+        }
+
+        return $approved ? $approved_id : $pending_id;
     }
 
 
@@ -299,23 +270,37 @@ class ExpensesProposalRepository extends RepositoryService
         // CHANGE STATUS OF EXPENSES PROPOSAL
         $proposal           = ExpensesProposal::find($id);
         $rule               = $proposal->rule();
-        $lead_required      = $rule->lead_approval;
-        $sponsor_required   = $rule->sponsor_approval;
-        $lead_approval      = $lead_required ? ($proposal->author_id===$proposal->category->lead_id ? true : ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $proposal->category->lead_id)->first()) : null;
-        $sponsor_approval   = $sponsor_required ? ExpensesApproval::where('expenses_proposal_id', $proposal->id)->whereIn('approver_id', $proposal->category->sponsors->pluck('id'))->first() : null;
-        $approved_id        = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
+        $approved_status_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
+        $approved           = TRUE;
 
-        if ($lead_required && $sponsor_required && $lead_approval && $sponsor_approval) {
-            $proposal->status_id = $approved_id;
-        } else if($lead_required && !$sponsor_required && $lead_approval) {
-            $proposal->status_id = $approved_id;
-        } else if(!$lead_required && !$sponsor_required) {
-            $proposal->status_id = $approved_id;
+        // NEED LEAD APPROVAL
+        if($rule->lead_approval){
+
+            $approved = $proposal->author_id == $proposal->category->lead_id ||
+            ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $proposal->category->lead_id)->count() > 0;
         }
 
-        $proposal->save();
+        // NEED PRIMARY SPONSOR APPROVAL
+        if($approved && $rule->sponsor_approval && count($proposal->category->sponsors) > 0){
 
-        if ($proposal->status_id === $approved_id) {
+            $primary_sponsor = $proposal->category->sponsors[0];
+            $approved = $approved &&
+            (
+                $proposal->author_id == $primary_sponsor->id ||
+                ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $primary_sponsor->id)->count() > 0
+            );
+        }
+
+        // NEED OTHERS SPONSOR APPROVAL
+        if($approved && $rule->others_sponsor_approval && count($proposal->category->sponsors) > 1){
+            foreach ($proposal->category->sponsors as $sponsor) {
+                $approved = $approved && ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $sponsor->id)->count() > 0;
+            }
+        }
+
+        if ($approved) {
+            $proposal->status_id = $approved_status_id;
+            $proposal->save();
             $this->sendEmailApproved($proposal);
         }
 
@@ -383,41 +368,43 @@ class ExpensesProposalRepository extends RepositoryService
 
         $data['type'] = 'buyer';
 
-        $buyer = $proposal->category->buyer->email;
-
-        $this->sendEmail( [$buyer], $data);
+        $this->sendEmail( [$proposal->category->buyer->email], $data);
     }
 
     public function sendEmailApprovers($proposal)
     {
         $to = [];
 
-        $is_sponsor_author = $proposal->category->sponsors->contains($proposal->author_id);
-
-        if ($proposal->rule()->lead_approval && $proposal->author_id !== $proposal->category->lead_id && !$is_sponsor_author) {
+        // LEAD APPROVAL
+        if ($proposal->rule()->lead_approval && $proposal->author_id !== $proposal->category->lead_id) {
             $to[] = $proposal->category->lead->email;
         }
 
-        if ($proposal->rule()->sponsor_approval && !$is_sponsor_author ) {
+        // SPONSOR APPROVAL
+        if ($proposal->rule()->sponsor_approval) {
             foreach ($proposal->category->sponsors as $user) {
-                $to[] = $user->email;
+                if($proposal->author_id != $user->id){
+                    $to[] = $user->email;
+                }
             }
         }
 
-        $data = [
-            'id'            => $proposal->id,
-            'user_name'     => $proposal->author->name,
-            'category'      => $proposal->category->name,
-            'item'          => $proposal->item,
-            'supplier_link' => $proposal->supplier_link,
-            'subtotal'      => $proposal->subtotal,
-            'hst'           => $proposal->hst,
-            'ship'          => $proposal->ship,
-            'total_cost'    => $proposal->total_cost,
-            'type'          => 'approval',
-        ];
+        if(!empty($to)){
+            $data = [
+                'id'            => $proposal->id,
+                'user_name'     => $proposal->author->name,
+                'category'      => $proposal->category->name,
+                'item'          => $proposal->item,
+                'supplier_link' => $proposal->supplier_link,
+                'subtotal'      => $proposal->subtotal,
+                'hst'           => $proposal->hst,
+                'ship'          => $proposal->ship,
+                'total_cost'    => $proposal->total_cost,
+                'type'          => 'approval',
+            ];
 
-        $this->sendEmail($to, $data);
+            $this->sendEmail($to, $data);
+        }
     }
 
     public function sendEmail(array $to, $data)
