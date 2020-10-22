@@ -27,7 +27,7 @@ class Product extends ModelService
         'weight', 'launch_at', 'is_enabled',
         'disabled_at', 'sales_channel','stock_locator','measure_id',
         'carton_length', 'carton_width', 'carton_height',
-        'carton_weight'
+        'carton_weight', 'msrp'
     ];
 
 
@@ -148,5 +148,11 @@ class Product extends ModelService
     {
         return $this->hasMany(ProductReorderLevel::class, 'product_id', 'id');
     }
+
+    public function tags()
+    {
+        return $this->hasMany(ProductTag::class, 'product_id', 'id');
+    }
+
 
 }

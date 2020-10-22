@@ -17,6 +17,7 @@ use Modules\Inventory\Entities\ProductSupplierLocations;
 use Modules\Inventory\Entities\ProductSuppliers;
 use Modules\Inventory\Entities\CustomerDiscount;
 use Modules\Inventory\Entities\ProductCustomPrice;
+use Modules\Inventory\Entities\ProductTag;
 
 class ProductRepository extends RepositoryService
 {
@@ -155,6 +156,14 @@ class ProductRepository extends RepositoryService
                         ]);
                     }
                 }
+                if(!empty($data["tag_ids"])) {
+                    foreach($data["tag_ids"] as $tag_id) {
+                        ProductTag::create([
+                            'product_id'    => $this->model->id,
+                            'tag_id'        => $tag_id,                            
+                        ]);
+                    }
+                }
             }
         });
 
@@ -215,6 +224,25 @@ class ProductRepository extends RepositoryService
         if(!empty($data["delete_custom_prices"])) {
             foreach($data["delete_custom_prices"] as $delete_custom_price) {
                 ProductCustomPrice::where('id', $delete_custom_price['id'])->delete();
+            }
+        }
+
+        if(!empty($data["tag_ids"])) {
+
+            $current_tags = $this->model->tags->pluck('tag_id')->toArray();
+            $deleted_tags = array_diff($current_tags, $data["tag_ids"]);
+            
+            foreach($data["tag_ids"] as $tag_id) {
+                if ( !in_array($tag_id, $current_tags)) {
+                    ProductTag::create([
+                        'product_id'    => $this->model->id,
+                        'tag_id'        => $tag_id,                            
+                    ]);
+                }
+            }
+
+            foreach($deleted_tags as $tag_id) {
+                ProductTag::where('product_id', $this->model->id)->where('tag_id', $tag_id)->delete();
             }
         }
     }

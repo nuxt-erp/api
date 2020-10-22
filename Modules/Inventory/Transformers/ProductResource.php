@@ -35,6 +35,7 @@ class ProductResource extends ResourceService
             'carton_width'          => $this->carton_width,
             'carton_height'         => $this->carton_height,
             'carton_weight'         => $this->carton_weight,
+            'msrp'                  => $this->msrp,
             'launch_at'             => $this->launch_at,
             'is_enabled'            => $this->is_enabled,
             'sales_channel'         => $this->sales_channel,
@@ -50,7 +51,8 @@ class ProductResource extends ResourceService
             'disabled_at'           => optional($this->disabled_at)->format('Y-m-d H:i:s'),
             'created_at'            => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'            => optional($this->updated_at)->format('Y-m-d H:i:s'),
-            'can_be_deleted'        => true
+            'can_be_deleted'        => true,
+            'tag_ids'               => $this->tags()->pluck('tag_id')
         ];
     }
 }
