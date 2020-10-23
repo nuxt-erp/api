@@ -9,6 +9,7 @@ class CustomerResource extends ResourceService
         return [
             'id'            => $this->id,
             'country_id'    => $this->country_id,
+            'tax_rule_id'    => $this->tax_rule_id,
             'country_name'  => optional($this->country)->name,
             'province_id'   => $this->province_id,
             'province_name' => optional($this->province)->name,
