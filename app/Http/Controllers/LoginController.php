@@ -42,7 +42,6 @@ class LoginController extends AccessTokenController
             } else {
                 $email = $request->getParsedBody()['username'];
                 $user = User::where('email', $email)
-                    ->where('is_enabled', 1)
                     ->first();
 
                 foreach ($user->tokens as $key => $token) {
@@ -51,9 +50,18 @@ class LoginController extends AccessTokenController
                     }
                 }
 
-                $data = $tokenData;
-                $this->setStatus(true);
-                $this->setStatusCode(200);
+                if($user->is_enabled){
+                    $data = $tokenData;
+                    $this->setStatus(true);
+                    $this->setStatusCode(200);
+                }
+                else{
+                    $data = [];
+                    $this->setStatus(false);
+                    $this->setStatusCode(400);
+                    $this->setMessage('wrong_password');
+                }
+
             }
         } catch (LeagueException $e) {
             $payload = $e->getPayload();

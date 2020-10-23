@@ -35,13 +35,18 @@ class BelongsToManyTenant extends BelongsToMany
         $schema = '';
         if($this->using){
             $using = new $this->using;
-            $schema = $using->getConnection()->getConfig()['schema'].'.';
+            $schema = $using->getConnection()->getConfig()['schema'];
+            $schema = !empty($schema) ?: config('database.connections.'.$this->connection->getName().'.schema'); //@todo maybe $this->using
+            $schema .='.';
         }
         elseif(!empty($this->connection->getConfig()['schema'])){
             $schema = $this->connection->getConfig()['schema'].'.';
         }
         else{
             $schema = config('database.connections.'.$this->connection->getName().'.schema').'.';
+        }
+        if($schema == '.'){
+            $schema = '';
         }
 
         $query = $query ?: $this->query;
@@ -69,6 +74,11 @@ class BelongsToManyTenant extends BelongsToMany
         if(!empty($this->connection->getConfig()['schema'])){
             $schema = $this->connection->getConfig()['schema'].'.';
         }
+        elseif(!empty(config('database.connections.'.$this->connection->getName().'.schema'))){
+            $schema = $this->related->getConnection()->getConfig()['schema'].'.';
+            //$schema = config('database.connections.'.$this->connection->getName().'.schema').'.';
+        }
+
         $query->getQuery()->from = $schema.$query->getQuery()->from;
 
         return get_parent_class(get_parent_class($this))::getRelationExistenceQuery($query, $parentQuery, $columns);

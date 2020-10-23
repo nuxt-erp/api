@@ -14,8 +14,31 @@ class ExpensesProposalResource extends JsonResource
         $actions = collect([]);
         $preview = false;
 
-        $is_user_sponsor    = optional($this->category)->sponsors && $this->category->sponsors->contains($user->id);
-        $is_author_sponsor  = optional($this->category)->sponsors && $this->category->sponsors->contains($this->author_id);
+        $primary_sponsor    = $this->category->sponsors && count($this->category->sponsors) > 0 ? $this->category->sponsors[0] : null;
+
+        $is_user_primary_sponsor    = $primary_sponsor && $primary_sponsor->id == $user->id;
+        $is_author_primary_sponsor  = $primary_sponsor && $primary_sponsor->id == $this->author_id;
+
+        $is_author_lead             = $this->author_id == $this->category->lead_id;
+        $is_user_lead               = $user->id == $this->category->lead_id;
+
+        $is_user_other_sponsor      = FALSE;
+        $is_author_other_sponsor    = FALSE;
+
+        $other_sponsors     = [];
+        if($this->category->sponsors){
+            foreach ($this->category->sponsors as $key => $sponsor) {
+                if($key > 0){
+                    $other_sponsors[] = $sponsor;
+                    if($sponsor->id == $user->id){
+                        $is_user_other_sponsor = TRUE;
+                    }
+                    if($sponsor->id == $this->author_id){
+                        $is_author_other_sponsor = TRUE;
+                    }
+                }
+            }
+        }
 
         if($user->hasRole('buyer') && $this->status->value==='approved') {
             $actions->push(collect([
@@ -39,7 +62,7 @@ class ExpensesProposalResource extends JsonResource
                         'icon'  => 'delete',
                         'type'  => 'danger'
                     ]));
-                } else if($user->id === $this->category->lead_id || $is_user_sponsor){
+                } else if($user->id === $this->category->lead_id || $is_user_primary_sponsor){
 
                     $user_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $user->id)->first();
 
@@ -76,7 +99,7 @@ class ExpensesProposalResource extends JsonResource
                     }
                 }
             } else if($this->status->value === 'approved') {
-                if ($this->category->sponsors->contains($user->id) || ($user->id === $this->category->lead_id && $is_author_sponsor)) {
+                if ($this->category->sponsors->contains($user->id) || ($user->id === $this->category->lead_id && $is_author_primary_sponsor)) {
                     $actions->push(collect([
                         'name'  => 'Cancel Expense',
                         'code'  => 'cancel_expense',
@@ -101,11 +124,12 @@ class ExpensesProposalResource extends JsonResource
             if($this->status->value !== 'denied') $approvals = 'pre-approved';
         }
 
-        $approvers = null;
-        if($this->rule()->lead_approval && $this->category) {
-            if($this->author_id !== $this->category->lead_id) {
-                $lead_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->lead_id)->first();
+        $approvers = '';
 
+        // LEAD APPROVAL
+        if($this->rule()->lead_approval && $this->category) {
+            if(!$is_author_lead && !$is_user_lead && !$is_author_primary_sponsor) {
+                $lead_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->lead_id)->first();
                 if(!$lead_approval) {
                     $approvers .= $this->category->lead->name;
                 }
@@ -113,24 +137,23 @@ class ExpensesProposalResource extends JsonResource
         }
 
         // PRIMARY SPONSOR
-        if($this->rule()->sponsor_approval && $this->category && count($this->category->sponsors) > 0) {
-            if(!$is_author_sponsor) {
-                $sponsor_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $this->category->sponsors[0]->id)->first();
+        if($this->rule()->sponsor_approval && $primary_sponsor) {
+            // dont show current user
+            if(!$is_user_primary_sponsor && !$is_author_primary_sponsor) {
+                $sponsor_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $primary_sponsor->id)->first();
+                // remove approvals made
                 if(!$sponsor_approval) {
-                    $approvers .= ($approvers ? ', ' : ' ') . $this->category->sponsors[0]->name;
+                    $approvers .= ($approvers ? ', ' : ' ') . $primary_sponsor->name;
                 }
             }
         }
 
-        if($this->rule()->others_sponsor_approval && $this->category && count($this->category->sponsors) > 1) {
-            if(!$is_author_sponsor) {
-                foreach ($this->category->sponsors as $key => $user) {
-                    if($key > 0){
-                        $sponsor_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $user->id)->first();
-                        if(!$sponsor_approval){
-                            $approvers .= ($approvers ? ', ' : ' ') . $user->name;
-                        }
-                    }
+        if($this->rule()->others_sponsor_approval && !empty($other_sponsors)) {
+            foreach ($other_sponsors as $key => $sponsor_user) {
+                $sponsor_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $sponsor_user->id)->first();
+                // remove approvals made
+                if(!$sponsor_approval && $sponsor_user->id != $user->id){ // dont show current user
+                    $approvers .= ($approvers ? ', ' : ' ') . $sponsor_user->name;
                 }
             }
         }

@@ -62,12 +62,12 @@ class ExpensesProposalRepository extends RepositoryService
                 })
                 ->where(function (Builder $query) use ($user) {
                     $query->where('author_id', $user->id)
-                        ->orWhereHas('category', function (Builder $query) use ($user) {
-                            $query->where('lead_id', $user->id)
-                                ->orWhereHas('sponsors', function (Builder $query2) use ($user) {
-                                    $query2->where('id', $user->id);
-                                });
+                    ->orWhereHas('category', function (Builder $query1) use ($user) {
+                        $query1->where('lead_id', $user->id)
+                        ->orWhereHas('sponsors', function (Builder $query2) use ($user) {
+                            $query2->where('users.id', $user->id);
                         });
+                    });
                 });
 
 
@@ -103,12 +103,12 @@ class ExpensesProposalRepository extends RepositoryService
                 })
                 ->where(function (Builder $query) use ($user) {
                     $query->where('author_id', $user->id)
-                        ->orWhereHas('category', function (Builder $query) use ($user) {
-                            $query->where('lead_id', $user->id)
-                            ->orWhereHas('sponsors', function (Builder $query2) use ($user) {
-                                $query2->where('id', $user->id);
-                            });
+                    ->orWhereHas('category', function (Builder $query1) use ($user) {
+                        $query1->where('lead_id', $user->id)
+                        ->orWhereHas('sponsors', function (Builder $query2) use ($user) {
+                            $query2->where('users.id', $user->id);
                         });
+                    });
                 });
 
         }
@@ -230,25 +230,47 @@ class ExpensesProposalRepository extends RepositoryService
     private function updateStatus($data, $user) {
 
         $category           = Category::where('id', $data['expenses_category_id'])->first();
-        $rule               = ExpensesRule::where('start_value', '<', $data['total_cost'])->where('end_value', '>=', $data['total_cost'])->orWhereNull('end_value')->orderBy('start_value')->first();
+        $rule               = ExpensesRule::where('start_value', '<', $data['total_cost'])
+                            ->where('end_value', '>=', $data['total_cost'])
+                            ->orWhereNull('end_value')
+                            ->orderBy('start_value')
+                            ->first();
 
         $pending_id         = Parameter::where('name', 'expenses_approval_status')->where('value', 'pending')->pluck('id')->first();
         $approved_id        = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
         $approved           = TRUE;
 
+        $primary_sponsor    = $category->sponsors && count($category->sponsors) > 0 ? $category->sponsors[0] : null;
+
+        $is_primary_author  = !empty($primary_sponsor) && $user->id == $primary_sponsor->id;
+        $is_lead_author     = $user->id == $category->lead_id;
+        $is_other_author    = FALSE;
+
+        $other_sponsors     = [];
+        if($category->sponsors){
+            foreach ($category->sponsors as $key => $sponsor) {
+                if($key > 0){
+                    $other_sponsors[] = $sponsor;
+                    if($sponsor->id == $user->id){
+                        $is_other_author = TRUE;
+                    }
+                }
+            }
+        }
+
+
         // NEED LEAD APPROVAL
-        if($rule->lead_approval){
+        if($rule->lead_approval && !$is_primary_author && !$is_other_author && !$is_lead_author){
             $approved = $user->id == $category->lead_id;
         }
 
         // NEED PRIMARY SPONSOR APPROVAL
-        if($approved && $rule->sponsor_approval && count($category->sponsors) > 0){
-            $primary_sponsor    = $category->sponsors[0];
-            $approved           = $approved && $user->id == $primary_sponsor->id;
+        if($rule->sponsor_approval && $approved && !$is_primary_author){
+            $approved = $approved && $user->id == $primary_sponsor->id;
         }
 
         // NEED OTHERS SPONSOR APPROVAL
-        if($approved && $rule->others_sponsor_approval && count($category->sponsors) > 1){
+        if($rule->others_sponsor_approval && $approved && !$is_other_author){
             $approved = FALSE;
         }
 
@@ -273,27 +295,38 @@ class ExpensesProposalRepository extends RepositoryService
         $approved_status_id = Parameter::where('name', 'expenses_approval_status')->where('value', 'approved')->pluck('id')->first();
         $approved           = TRUE;
 
-        // NEED LEAD APPROVAL
-        if($rule->lead_approval){
+        $primary_sponsor    = optional($proposal->category)->sponsors && count($proposal->category->sponsors) > 0 ? $proposal->category->sponsors[0] : null;
 
-            $approved = $proposal->author_id == $proposal->category->lead_id ||
-            ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $proposal->category->lead_id)->count() > 0;
+        $is_primary_author  = !empty($primary_sponsor) && $proposal->author_id == $primary_sponsor->id;
+        $is_lead_author     = $proposal->author_id == $proposal->category->lead_id;
+        $is_other_author    = FALSE;
+
+        $other_sponsors     = [];
+        if($proposal->category->sponsors){
+            foreach ($proposal->category->sponsors as $key => $sponsor) {
+                if($key > 0){
+                    $other_sponsors[] = $sponsor;
+                    if($sponsor->id == $proposal->author_id){
+                        $is_other_author = TRUE;
+                    }
+                }
+            }
+        }
+
+
+        // NEED LEAD APPROVAL
+        if($rule->lead_approval && !$is_primary_author && !$is_other_author && !$is_lead_author){
+            $approved = ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $proposal->category->lead_id)->count() > 0;
         }
 
         // NEED PRIMARY SPONSOR APPROVAL
-        if($approved && $rule->sponsor_approval && count($proposal->category->sponsors) > 0){
-
-            $primary_sponsor = $proposal->category->sponsors[0];
-            $approved = $approved &&
-            (
-                $proposal->author_id == $primary_sponsor->id ||
-                ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $primary_sponsor->id)->count() > 0
-            );
+        if($rule->sponsor_approval && $approved && !$is_primary_author){
+            $approved = $approved && ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $primary_sponsor->id)->count() > 0;
         }
 
         // NEED OTHERS SPONSOR APPROVAL
-        if($approved && $rule->others_sponsor_approval && count($proposal->category->sponsors) > 1){
-            foreach ($proposal->category->sponsors as $sponsor) {
+        if($rule->others_sponsor_approval && $approved && !$is_other_author){
+            foreach ($other_sponsors as $sponsor) {
                 $approved = $approved && ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $sponsor->id)->count() > 0;
             }
         }

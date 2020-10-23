@@ -14,15 +14,16 @@ class ParameterPolicy
     {
         return TRUE;
     }
-
+    // parameters for everyone
     public function index(User $currentUser)
     {
-        return $currentUser->isAdmin();
+        return TRUE;
     }
 
+    // everyone should have the privileges to get more details about a parameter
     public function show(User $currentUser, Parameter $target)
     {
-        return $currentUser->isAdmin();
+        return TRUE;
     }
 
     public function store(User $currentUser)

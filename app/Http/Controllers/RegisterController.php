@@ -55,7 +55,10 @@ class RegisterController extends Controller
         echo '----- <br>';
         try {
             echo 'Root migration: <br>';
-            Artisan::call('migrate');
+            Artisan::call('migrate', [
+                '--force' => true,
+            ]);
+
             $this->artisanResult();
         } catch (\Throwable $th) {
             echo 'Root migration error!<br>';
@@ -66,7 +69,9 @@ class RegisterController extends Controller
 
         try {
             echo 'Root seeder: <br>';
-            Artisan::call('db:seed');
+            Artisan::call('db:seed', [
+                '--force' => true,
+            ]);
             $this->artisanResult();
         } catch (\Throwable $th) {
             echo 'Root seeder error!<br>';
@@ -102,7 +107,8 @@ class RegisterController extends Controller
         try {
             echo 'Tenant Root migration: <br>';
             Artisan::call('migrate', [
-                '--path' => '/database/migrations/schema'
+                '--path' => '/database/migrations/schema',
+                '--force' => true,
             ]);
             $this->artisanResult();
         } catch (\Throwable $th) {
@@ -117,7 +123,8 @@ class RegisterController extends Controller
             try {
                 echo $module->name.' migration: <br>';
                 Artisan::call('migrate', [
-                    '--path' => '/Modules/'.ucfirst($module->name).'/Database/Migrations/schema'
+                    '--path' => '/Modules/'.ucfirst($module->name).'/Database/Migrations/schema',
+                    '--force' => true,
                 ]);
                 $this->artisanResult();
             } catch (\Throwable $th) {
@@ -128,7 +135,9 @@ class RegisterController extends Controller
             echo '-----<br>';
             try {
                 echo $module->name.' seeder: <br>';
-                Artisan::call('module:seed '.ucfirst($module->name));
+                Artisan::call('module:seed '.ucfirst($module->name), [
+                    '--force' => true,
+                ]);
                 $this->artisanResult();
             } catch (\Throwable $th) {
                 echo 'Seed error for '.ucfirst($module->name).'!<br>';
