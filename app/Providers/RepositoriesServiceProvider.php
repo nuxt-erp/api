@@ -12,6 +12,9 @@ use App\Models\ParameterType;
 use App\Models\Province;
 use App\Models\Role;
 use App\Models\Supplier;
+use App\Models\TaxRule;
+use App\Models\TaxRuleComponent;
+use App\Models\TaxRuleScope;
 use App\Models\User;
 // REPOSITORIES
 use App\Repositories\ConfigRepository;
@@ -23,6 +26,9 @@ use App\Repositories\ParameterTypeRepository;
 use App\Repositories\ProvinceRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\SupplierRepository;
+use App\Repositories\TaxRuleComponentRepository;
+use App\Repositories\TaxRuleRepository;
+use App\Repositories\TaxRuleScopeRepository;
 use App\Repositories\UserRepository;
 // RESOURCES
 use App\Resources\ConfigResource;
@@ -34,6 +40,9 @@ use App\Resources\ParameterTypeResource;
 use App\Resources\ProvinceResource;
 use App\Resources\RoleResource;
 use App\Resources\SupplierResource;
+use App\Resources\TaxRuleComponentResource;
+use App\Resources\TaxRuleResource;
+use App\Resources\TaxRuleScopeResource;
 use App\Resources\UserResource;
 
 use Illuminate\Support\ServiceProvider;
@@ -133,6 +142,30 @@ class RepositoriesServiceProvider extends ServiceProvider
         $this->app->bind(ParameterTypeResource::class, function () {
             return new ParameterTypeResource(new ParameterType());
         });
+
+        $this->app->bind(TaxRuleRepository::class, function () {
+            return new TaxRuleRepository(new TaxRule());
+        });
+        
+        $this->app->bind(TaxRuleResource::class, function () {
+            return new TaxRuleResource(new TaxRule());
+        });
+
+        $this->app->bind(TaxRuleComponentRepository::class, function () {
+            return new TaxRuleComponentRepository(new TaxRuleComponent());
+        });
+
+        $this->app->bind(TaxRuleComponentResource::class, function () {
+            return new TaxRuleComponentResource(new TaxRuleComponent());
+        });
+
+        $this->app->bind(TaxRuleScopeRepository::class, function () {
+            return new TaxRuleScopeRepository(new TaxRuleScope());
+        });
+
+        $this->app->bind(TaxRuleScopeResource::class, function () {
+            return new TaxRuleScopeResource(new TaxRuleScope());
+        });
     }
 
     /**
@@ -152,7 +185,11 @@ class RepositoriesServiceProvider extends ServiceProvider
             ProvinceRepository::class,
             SupplierRepository::class,
             CustomerRepository::class,
-            ParameterTypeRepository::class
+            ParameterTypeRepository::class,
+            TaxRuleRepository::class,
+            TaxRuleComponentRepository::class,
+            TaxRuleScopeRepository::class
+
         ];
     }
 }

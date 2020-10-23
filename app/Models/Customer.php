@@ -13,7 +13,8 @@ class Customer extends ModelService
         'country_id', 'province_id', 'shopify_id',
         'name', 'email', 'address1',
         'address2', 'city', 'phone_number',
-        'postal_code', 'website', 'note'
+        'postal_code', 'website', 'note',
+        'tax_rule_id'
     ];
 
     public function getRules($request, $item = null)
@@ -21,6 +22,7 @@ class Customer extends ModelService
         $rules = [
             'country_id'        => ['nullable', 'exists:tenant.countries,id'],
             'province_id'       => ['nullable', 'exists:tenant.provinces,id'],
+            'tax_rule_id'       => ['nullable', 'exists:tenant.tax_rules,id'],
             'shopify_id'        => ['nullable', 'string', 'max:255'],
             'name'              => ['nullable', 'string', 'max:255'],
             'email'             => ['nullable', 'max:255'],
@@ -46,11 +48,14 @@ class Customer extends ModelService
         return $rules;
     }
 
+    public function tax_rule()
+    {
+        return $this->belongsTo(TaxRule::class);
+    }
     public function country()
     {
         return $this->belongsTo(Country::class);
     }
-
     public function province()
     {
         return $this->belongsTo(Province::class);

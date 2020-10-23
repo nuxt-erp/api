@@ -10,6 +10,9 @@ use App\Models\ParameterType;
 use App\Models\Province;
 use App\Models\Role;
 use App\Models\Supplier;
+use App\Models\TaxRule;
+use App\Models\TaxRuleComponent;
+use App\Models\TaxRuleScope;
 use App\Models\User;
 // Policies
 use App\Policies\CountryPolicy;
@@ -20,6 +23,9 @@ use App\Policies\ParameterTypePolicy;
 use App\Policies\ProvincePolicy;
 use App\Policies\RolePolicy;
 use App\Policies\SupplierPolicy;
+use App\Policies\TaxRuleComponentPolicy;
+use App\Policies\TaxRulePolicy;
+use App\Policies\TaxRuleScopePolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -51,6 +57,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Supplier::class, SupplierPolicy::class);
         Gate::policy(Customer::class, CustomerPolicy::class);
         Gate::policy(ParameterType::class, ParameterTypePolicy::class);
+        Gate::policy(TaxRule::class, TaxRulePolicy::class);
+        Gate::policy(TaxRuleComponent::class, TaxRuleComponentPolicy::class);
+        Gate::policy(TaxRuleScope::class, TaxRuleScopePolicy::class);
 
     }
 }
