@@ -16,7 +16,10 @@ class ProductPromoRepository extends RepositoryService
                 $query->where('date_from', '>=', $today)
                     ->orWhere( function ($query2) use ($today) {
                         $query2->where('date_from', '<', $today)
-                        ->where('date_to', '>=', $today);
+                        ->where( function ($query3) use ($today) {
+                            $query3->where('date_to', '>=', $today)
+                                ->orWhereNull('date_to');
+                        });
                     });
             });
         

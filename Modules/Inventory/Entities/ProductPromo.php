@@ -31,8 +31,6 @@ class ProductPromo extends ModelService
         {
             $rules['product_id'][]      = 'required';
             $rules['date_from'][]       = 'required';
-            $rules['date_to'][]         = 'required';
-
         }        
 
         return $rules;
