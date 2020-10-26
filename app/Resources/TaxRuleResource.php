@@ -13,6 +13,8 @@ class TaxRuleResource extends ResourceService
             'short_name'            => $this->short_name,
             'computation'           => $this->computation,
             'status'                => $this->status,
+            'status_name'           => $this->status === 1 ? 'Active' : 'Disabled',
+            'tax_details'           => optional($this->tax_details)->first(),
             'province_id'           => $this->province_id,
             'province_name'         => optional($this->province)->name,
             'province_code'         => optional($this->province)->code,

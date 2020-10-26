@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+class TaxRuleConstants {
+    const PERCENT_ON_PRICE    = 'percent_on_price';
+}
 class TaxRule extends Model
 {
     protected $connection = 'tenant';
@@ -41,5 +43,13 @@ class TaxRule extends Model
     public function scopes()
     {
         return $this->hasMany(TaxRuleScope::class, 'tax_rule_id', 'id');
+    }
+    public function tax_details()
+    {
+        return $this->hasMany(TaxRuleComponent::class, 'tax_rule_id', 'id');
+    }
+    static function getStatuses() {
+        $oClass = new \ReflectionClass(TaxRuleConstants::class);
+        return $oClass->getConstants();
     }
 }
