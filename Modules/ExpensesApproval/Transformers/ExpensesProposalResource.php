@@ -14,19 +14,19 @@ class ExpensesProposalResource extends JsonResource
         $actions = collect([]);
         $preview = false;
 
-        $primary_sponsor    = $this->category->sponsors && count($this->category->sponsors) > 0 ? $this->category->sponsors[0] : null;
+        $primary_sponsor    = optional($this->category)->sponsors && count($this->category->sponsors) > 0 ? $this->category->sponsors[0] : null;
 
         $is_user_primary_sponsor    = $primary_sponsor && $primary_sponsor->id == $user->id;
         $is_author_primary_sponsor  = $primary_sponsor && $primary_sponsor->id == $this->author_id;
 
-        $is_author_lead             = $this->author_id == $this->category->lead_id;
-        $is_user_lead               = $user->id == $this->category->lead_id;
+        $is_author_lead             = $this->author_id == optional($this->category)->lead_id;
+        $is_user_lead               = $user->id == optional($this->category)->lead_id;
 
         $is_user_other_sponsor      = FALSE;
         $is_author_other_sponsor    = FALSE;
 
         $other_sponsors     = [];
-        if($this->category->sponsors){
+        if(optional($this->category)->sponsors){
             foreach ($this->category->sponsors as $key => $sponsor) {
                 if($key > 0){
                     $other_sponsors[] = $sponsor;
@@ -62,7 +62,7 @@ class ExpensesProposalResource extends JsonResource
                         'icon'  => 'delete',
                         'type'  => 'danger'
                     ]));
-                } else if($user->id === $this->category->lead_id || $is_user_primary_sponsor){
+                } else if($user->id === optional($this->category)->lead_id || $is_user_primary_sponsor){
 
                     $user_approval = ExpensesApproval::where('expenses_proposal_id', $this->id)->where('approver_id', $user->id)->first();
 
