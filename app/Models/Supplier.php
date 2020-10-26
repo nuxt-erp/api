@@ -53,4 +53,8 @@ class Supplier extends ModelService
     {
         return $this->belongsTo(Brand::class, 'brand_id');
     }
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class, 'entity_id', 'id')->where('entity_type' , 'supplier');
+    }
 }

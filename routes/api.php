@@ -32,10 +32,12 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('countries', 'General\CountryController');
         Route::resource('provinces', 'General\ProvinceController');
         Route::resource('suppliers', 'General\SupplierController');
+        Route::resource('contacts', 'General\ContactController');
         Route::resource('customers', 'General\CustomerController');
         Route::resource('tax_rules', 'General\TaxRuleController');
         Route::resource('tax_rule_components', 'General\TaxRuleComponentController');
         Route::resource('tax_rule_scopes', 'General\TaxRuleScopeController');
+        Route::resource('sales_reps', 'General\SalesRepController');
         Route::resource('parameter_types', 'General\ParameterTypeController');
     });
 
