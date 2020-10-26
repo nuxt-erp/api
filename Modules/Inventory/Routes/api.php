@@ -58,6 +58,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('products_availabilities', 'ProductController@productAvailabilities');
         Route::get('stock_on_hand', 'AvailabilityController@stockOnHand');
         Route::get('stock_count_data', 'ProductController@stockCountData');
+        Route::get('sku_suppliers', 'ProductSuppliersController@skuSuppliers');
 
         
         
