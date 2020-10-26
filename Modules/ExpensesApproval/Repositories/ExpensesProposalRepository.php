@@ -230,6 +230,7 @@ class ExpensesProposalRepository extends RepositoryService
     private function updateStatus($data, $user) {
 
         $category           = Category::where('id', $data['expenses_category_id'])->first();
+
         $rule               = ExpensesRule::where('start_value', '<', $data['total_cost'])
                             ->where('end_value', '>=', $data['total_cost'])
                             ->orWhereNull('end_value')
@@ -257,7 +258,6 @@ class ExpensesProposalRepository extends RepositoryService
                 }
             }
         }
-
 
         // NEED LEAD APPROVAL
         if($rule->lead_approval && !$is_primary_author && !$is_other_author && !$is_lead_author){

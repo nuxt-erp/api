@@ -11,6 +11,12 @@ class ExpensesRule extends ModelService
 
     protected $table = 'exp_ap_rules';
 
+    protected $casts = [
+        'lead_approval'             => 'int',
+        'sponsor_approval'          => 'int',
+        'others_sponsor_approval'   => 'int',
+    ];
+
     protected $fillable = [
         'name', 'lead_approval', 'sponsor_approval',
         'others_sponsor_approval', 'start_value', 'end_value'

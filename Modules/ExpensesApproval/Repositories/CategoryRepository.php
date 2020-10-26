@@ -28,11 +28,8 @@ class CategoryRepository extends RepositoryService
                 $data['finished_at'] = now();
             }
             parent::store($data);
-            if (empty($data['sponsors'])) {
-                $this->model->sponsors()->detach();
-            } else {
-                $this->model->sponsors()->sync($data['sponsors']);
-            }
+            $this->model->sponsors()->detach();
+            $this->model->sponsors()->sync($data['sponsors']);
 
             if($this->model) {
                 // CREATE DEFAULT SUBCATEGORY 'GENERAL' WHEN CREATING NEW CATEGORY
@@ -56,11 +53,8 @@ class CategoryRepository extends RepositoryService
                 $data['finished_at'] = null;
             }
             parent::update($model, $data);
-            if (empty($data['sponsors'])) {
-                $this->model->sponsors()->detach();
-            } else {
-                $this->model->sponsors()->sync($data['sponsors']);
-            }
+            $this->model->sponsors()->detach();
+            $this->model->sponsors()->sync($data['sponsors']);
         });
     }
 
