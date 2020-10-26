@@ -12,6 +12,7 @@ class SupplierResource extends ResourceService
             'supplier_type_name'    => optional($this->supplier_type)->value,
             'brand_id'              => $this->brand_id,
             'brand_name'            => optional($this->brand)->name,
+            'contacts'              => optional($this->contacts)->toArray(),
             'name'                  => $this->name,
             'lead_time'             => $this->lead_time,
             'ordering_cycle'        => $this->ordering_cycle,

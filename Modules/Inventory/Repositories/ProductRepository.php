@@ -715,7 +715,7 @@ class ProductRepository extends RepositoryService
         $searchCriteria['per_page'] = 20;
 
         $this->queryBuilder->with('brand')
-        ->with('category');
+        ->with('category')->with('tags');
 
         if (!empty($searchCriteria['location_id'])) {
             $this->queryBuilder->with(['availabilities' => function ($query) use($searchCriteria) {
@@ -723,7 +723,47 @@ class ProductRepository extends RepositoryService
             }]);
             unset($searchCriteria['location_id']);
         }
+     
+        if (!empty($searchCriteria['tag_ids'])) {          
+            $this->queryBuilder->whereHas('tags', function ($query) use ($searchCriteria) {
+                    $query->whereIn('tag_id', $searchCriteria['tag_ids']);           
+            });           
+            unset($searchCriteria['tag_ids']);
+        }
+       
+        if (!empty($searchCriteria['stock_locator'])) {
+         
+            $this->queryBuilder->where('stock_locator', $searchCriteria['stock_locator']);
+            
+            unset($searchCriteria['stock_locator']);
+        }        
 
         return parent::findBy($searchCriteria);
     }
+    public function stockCountData(array $searchCriteria = [])
+    {
+        $searchCriteria['order_by'] = [
+            'field'         => 'name',
+            'direction'     => 'asc'
+        ];
+
+        $searchCriteria['per_page'] = 20;
+        $this->queryBuilder->with('brand')
+        ->with('category')->with('availabilities.location');
+        if (!empty($searchCriteria['id'])) {
+         
+            $this->queryBuilder->where('id', $searchCriteria['id']);
+            
+            unset($searchCriteria['id']);
+        }  
+        if (!empty($searchCriteria['location_id'])) {
+            $this->queryBuilder->with(['availabilities' => function ($query) use($searchCriteria) {
+                $query->where('location_id', $searchCriteria['location_id']);
+            }]);
+            unset($searchCriteria['location_id']);
+        }
+        return parent::findBy($searchCriteria);
+
+    }
+    
 }

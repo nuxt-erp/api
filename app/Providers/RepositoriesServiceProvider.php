@@ -4,6 +4,7 @@ namespace App\Providers;
 
 // MODELS
 use App\Models\Config;
+use App\Models\Contact;
 use App\Models\Country;
 use App\Models\Customer;
 use App\Models\Location;
@@ -11,10 +12,15 @@ use App\Models\Parameter;
 use App\Models\ParameterType;
 use App\Models\Province;
 use App\Models\Role;
+use App\Models\SalesRep;
 use App\Models\Supplier;
+use App\Models\TaxRule;
+use App\Models\TaxRuleComponent;
+use App\Models\TaxRuleScope;
 use App\Models\User;
 // REPOSITORIES
 use App\Repositories\ConfigRepository;
+use App\Repositories\ContactRepository;
 use App\Repositories\CountryRepository;
 use App\Repositories\CustomerRepository;
 use App\Repositories\LocationRepository;
@@ -22,10 +28,15 @@ use App\Repositories\ParameterRepository;
 use App\Repositories\ParameterTypeRepository;
 use App\Repositories\ProvinceRepository;
 use App\Repositories\RoleRepository;
+use App\Repositories\SalesRepRepository;
 use App\Repositories\SupplierRepository;
+use App\Repositories\TaxRuleComponentRepository;
+use App\Repositories\TaxRuleRepository;
+use App\Repositories\TaxRuleScopeRepository;
 use App\Repositories\UserRepository;
 // RESOURCES
 use App\Resources\ConfigResource;
+use App\Resources\ContactResource;
 use App\Resources\CountryResource;
 use App\Resources\CustomerResource;
 use App\Resources\LocationResource;
@@ -33,7 +44,11 @@ use App\Resources\ParameterResource;
 use App\Resources\ParameterTypeResource;
 use App\Resources\ProvinceResource;
 use App\Resources\RoleResource;
+use App\Resources\SalesRepResource;
 use App\Resources\SupplierResource;
+use App\Resources\TaxRuleComponentResource;
+use App\Resources\TaxRuleResource;
+use App\Resources\TaxRuleScopeResource;
 use App\Resources\UserResource;
 
 use Illuminate\Support\ServiceProvider;
@@ -126,12 +141,52 @@ class RepositoriesServiceProvider extends ServiceProvider
             return new CustomerResource(new Customer());
         });
 
+        $this->app->bind(ContactRepository::class, function () {
+            return new ContactRepository(new Contact());
+        });
+
+        $this->app->bind(ContactResource::class, function () {
+            return new ContactResource(new Contact());
+        });
+
         $this->app->bind(ParameterTypeRepository::class, function () {
             return new ParameterTypeRepository(new ParameterType());
         });
 
         $this->app->bind(ParameterTypeResource::class, function () {
             return new ParameterTypeResource(new ParameterType());
+        });
+
+        $this->app->bind(TaxRuleRepository::class, function () {
+            return new TaxRuleRepository(new TaxRule());
+        });
+        
+        $this->app->bind(TaxRuleResource::class, function () {
+            return new TaxRuleResource(new TaxRule());
+        });
+
+        $this->app->bind(TaxRuleComponentRepository::class, function () {
+            return new TaxRuleComponentRepository(new TaxRuleComponent());
+        });
+
+        $this->app->bind(TaxRuleComponentResource::class, function () {
+            return new TaxRuleComponentResource(new TaxRuleComponent());
+        });
+
+        $this->app->bind(TaxRuleScopeRepository::class, function () {
+            return new TaxRuleScopeRepository(new TaxRuleScope());
+        });
+
+        $this->app->bind(TaxRuleScopeResource::class, function () {
+            return new TaxRuleScopeResource(new TaxRuleScope());
+        });
+
+        $this->app->bind(SalesRepRepository::class, function () {
+            return new SalesRepRepository(new SalesRep());
+        });
+
+        $this->app->bind(SalesRepResource::class, function () {
+            return new SalesRepResource(new SalesRep());
         });
     }
 
@@ -152,7 +207,12 @@ class RepositoriesServiceProvider extends ServiceProvider
             ProvinceRepository::class,
             SupplierRepository::class,
             CustomerRepository::class,
-            ParameterTypeRepository::class
+            ContactRepository::class,
+            ParameterTypeRepository::class,
+            TaxRuleRepository::class,
+            TaxRuleComponentRepository::class,
+            TaxRuleScopeRepository::class,
+            SalesRepRepository::class
         ];
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Validation\Rule;
+use Modules\Inventory\Entities\CustomerDiscount;
+use Modules\Inventory\Entities\ProductCustomPrice;
 
 class Customer extends ModelService
 {
@@ -13,7 +15,8 @@ class Customer extends ModelService
         'country_id', 'province_id', 'shopify_id',
         'name', 'email', 'address1',
         'address2', 'city', 'phone_number',
-        'postal_code', 'website', 'note'
+        'postal_code', 'website', 'note',
+        'tax_rule_id', 'sales_rep_id', 'credit_limit'
     ];
 
     public function getRules($request, $item = null)
@@ -21,6 +24,8 @@ class Customer extends ModelService
         $rules = [
             'country_id'        => ['nullable', 'exists:tenant.countries,id'],
             'province_id'       => ['nullable', 'exists:tenant.provinces,id'],
+            'tax_rule_id'       => ['nullable', 'exists:tenant.tax_rules,id'],
+            'sales_rep_id'      => ['nullable', 'exists:tenant.sales_reps,id'],
             'shopify_id'        => ['nullable', 'string', 'max:255'],
             'name'              => ['nullable', 'string', 'max:255'],
             'email'             => ['nullable', 'max:255'],
@@ -46,13 +51,32 @@ class Customer extends ModelService
         return $rules;
     }
 
+    public function tax_rule()
+    {
+        return $this->belongsTo(TaxRule::class);
+    }
+    public function sales_rep()
+    {
+        return $this->belongsTo(SalesRep::class);
+    }
     public function country()
     {
         return $this->belongsTo(Country::class);
     }
-
     public function province()
     {
         return $this->belongsTo(Province::class);
+    }
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class, 'entity_id', 'id')->where('entity_type' , 'customer');
+    }
+    public function custom_discounts()
+    {
+        return $this->hasMany(CustomerDiscount::class, 'customer_id', 'id');
+    }
+    public function custom_product_prices()
+    {
+        return $this->hasMany(ProductCustomPrice::class, 'customer_id', 'id');
     }
 }

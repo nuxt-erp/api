@@ -20,4 +20,11 @@ class ProductSuppliersController extends ControllerService implements CheckPolic
         $this->resource = $resource;
         parent::__construct();
     }
+    
+    public function skuSuppliers(Request $request)
+    {
+        $items = $this->repository->skuSuppliers($request->all());
+        return $items;
+    }
+    
 }

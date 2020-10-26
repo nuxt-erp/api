@@ -17,5 +17,6 @@ class SalesDatabaseSeeder extends Seeder
         Model::unguard();
 
         $this->call(SeedParametersTableSeeder::class);
+        $this->call(SalesRepSeeder::class);
     }
 }
