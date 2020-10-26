@@ -49,11 +49,7 @@ class CustomerRepository extends RepositoryService
                     $new->currency        = $custom_product_price['currency'];
                     $new->custom_price    = $custom_product_price['custom_price'];
                     $new->is_enabled      = $custom_product_price['is_enabled'];
-                    
-                    $new->disabled_at     = $custom_product_price['disabled_at'];
-                    lad($custom_product_price['is_enabled']);
                     if (empty($custom_product_price['disabled_at']) && $custom_product_price['is_enabled'] === 0) {
-                        lad(now());
                         $custom_product_price['disabled_at'] = now();
                     }
                     $new->save();
@@ -82,11 +78,8 @@ class CustomerRepository extends RepositoryService
                 foreach ($data['custom_product_prices'] as $custom_product_price) {
                     $custom_product_price['customer_id']   = $model->id;
                     $custom_product_price['entity_type']   = 'customer';
-                    lad($custom_product_price['is_enabled']);
-
+                    
                     if (empty($custom_product_price['disabled_at']) && $custom_product_price['is_enabled'] === 0) {
-
-                        lad(now());
                         $custom_product_price['disabled_at'] = now();
                     }
                     ProductCustomPrice::updateOrCreate(
