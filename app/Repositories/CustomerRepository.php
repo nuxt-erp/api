@@ -19,5 +19,20 @@ class CustomerRepository extends RepositoryService
         }
         return parent::findBy($searchCriteria);
     }
+    // public function store(array $data)
+    // {
+    //     DB::transaction(function () use ($data)
+    //     {
+    //         parent::store($data);   
+    //     });
+
+    // }
+    // public function update($model, array $data)
+    // {
+    //     DB::transaction(function () use ($data, $model)
+    //     {
+    //         parent::update($model, $data);
+    //     });
+    // }
 
 }
