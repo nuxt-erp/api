@@ -26,6 +26,7 @@ use Modules\Inventory\Entities\StockAdjustment;
 use Modules\Inventory\Entities\StockAdjustmentDetail;
 use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
+use Modules\Inventory\Entities\Tag;
 use Modules\Inventory\Entities\Transfer;
 use Modules\Inventory\Entities\TransferDetails;
 
@@ -51,6 +52,7 @@ use Modules\Inventory\Policies\StockAdjustmentDetailPolicy;
 use Modules\Inventory\Policies\StockAdjustmentPolicy;
 use Modules\Inventory\Policies\StockCountPolicy;
 use Modules\Inventory\Policies\StockCountDetailPolicy;
+use Modules\Inventory\Policies\TagPolicy;
 use Modules\Inventory\Policies\TransferPolicy;
 use Modules\Inventory\Policies\TransferDetailsPolicy;
 

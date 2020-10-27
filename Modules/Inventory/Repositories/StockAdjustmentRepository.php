@@ -93,7 +93,7 @@ class StockAdjustmentRepository extends RepositoryService
                 $log->ref_code_id   = $id;
                 $log->type_id       = $type->id;
                 $log->description   = 'Finished stock adjustment - changing quantity';
-                $log->user_id       =  Auth::user()->id;
+                
                 $log->save();
             }
         }
