@@ -26,6 +26,8 @@ class ProductLogResource extends ResourceService
             'description'       => $this->description,
             'created_at'        => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'        => optional($this->updated_at)->format('Y-m-d H:i:s'),
+            'user_id'           => $this->id,
+            'user_name'         =>optional($this->user)->name,
         ];
     }
 }

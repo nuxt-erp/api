@@ -74,6 +74,17 @@ class ProductController extends ControllerService implements CheckPolicies
             return $this->sendFullCollectionResponse($items, $this->resource);
         }
     }
+
+    public function findBySKU($sku)
+    {
+        $item = $this->repository->findBySKU($sku);
+
+        if($item) {
+            return $this->sendObjectResource($item, $this->resource);
+        }else {
+            return $this->notFoundResponse([]);
+        }
+    }
     public function stockCountData(Request $request)
     {
         $items = $this->repository->stockCountData($request->all());

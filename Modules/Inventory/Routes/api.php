@@ -39,6 +39,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_images', 'ProductImagesController');
         Route::get('carrier_products', 'ProductController@findCarriers');
         Route::get('raw_material_products', 'ProductController@findRawMaterials');
+        Route::get('find_sku/{sku} ', 'ProductController@findBySKU');
 
         Route::resource('stock_adjustments', 'StockAdjustmentController');
         Route::resource('stock_adjustment_details', 'StockAdjustmentDetailController');

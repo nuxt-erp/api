@@ -50,6 +50,9 @@ class ProvinceTaxSeeder extends Seeder
             ]),
             'ON' => Province::updateOrcreate([
                 'name'      => 'Ontario',
+            ],
+                [
+                'name'      => 'Ontario',
                 'code'      => 'ON',
                 'country_id'=> $canada->id
             ]),

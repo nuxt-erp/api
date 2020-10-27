@@ -94,6 +94,9 @@ class ProductRepository extends RepositoryService
         return parent::findBy($searchCriteria);
     }
 
+    public function findBySKU($sku) {
+        return $this->queryBuilder->where('sku', $sku)->first();
+    }
 
     public function store($data)
     {
