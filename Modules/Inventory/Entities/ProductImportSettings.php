@@ -17,7 +17,7 @@ class ProductImportSettings extends ModelService
      * @var array
      */
     protected $fillable = [
-        'column_name', 'custom_name'
+        'column_name', 'custom_name', 'entity'
     ];
 
     public function getRules($request, $item = null)
@@ -25,12 +25,14 @@ class ProductImportSettings extends ModelService
 
         $rules = [
             'column_name'   => ['string', 'max:255'],
-            'custom_name'   => ['string', 'max:255']
+            'custom_name'   => ['string', 'max:255'],
+            'entity'        => ['string', 'max:255']
         ];
 
         if (is_null($item)) {
-            $rules['column_name'][]    = 'required';
-            $rules['custom_name'][]    = 'required';
+            $rules['column_name'][]     = 'required';
+            $rules['custom_name'][]     = 'required';
+            $rules['entity'][]          = 'required';
         }
 
         return $rules;
