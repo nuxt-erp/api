@@ -5,7 +5,7 @@ namespace Modules\Inventory\Repositories;
 use App\Models\Parameter;
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Facades\DB;
-
+use Auth;
 use Illuminate\Support\Arr;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductLog;
@@ -67,6 +67,7 @@ class AvailabilityRepository extends RepositoryService
             $log->ref_code_id   = null;
             $log->type_id       = $type->id;
             $log->description   = 'Finished stock update - changing quantity';
+            $log->user_id       =  Auth::user()->id;
             $log->save();
         });
     }
@@ -132,6 +133,8 @@ class AvailabilityRepository extends RepositoryService
         $log->ref_code_id   = $ref_code;
         $log->type_id       = $type->id;
         $log->description   = $description;
+        $log->user_id       =  Auth::user()->id;
+
         $log->save();
     }
 
