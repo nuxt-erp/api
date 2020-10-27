@@ -24,15 +24,11 @@ class ProductImportSettings extends ModelService
     {
 
         $rules = [
-            'column_name'   => ['string', 'max:255'],
-            'custom_name'   => ['string', 'max:255'],
-            'entity'        => ['string', 'max:255']
+            'columns' => ['array'],
         ];
 
         if (is_null($item)) {
-            $rules['column_name'][]     = 'required';
-            $rules['custom_name'][]     = 'required';
-            $rules['entity'][]          = 'required';
+            $rules['columns'][]     = 'required';
         }
 
         return $rules;

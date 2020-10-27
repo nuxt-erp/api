@@ -18,7 +18,8 @@ class ProductImportSettingsResource extends ResourceService
         return [
             'id'            => $this->id,
             'column_name'   => $this->column_name,
-            'custom_name'   => $this->custom_name
+            'custom_name'   => $this->custom_name,
+            'entity'        => $this->entity
         ];
     }
 }

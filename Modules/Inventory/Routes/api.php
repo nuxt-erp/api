@@ -68,7 +68,7 @@ Route::middleware('auth:api')->group(function () {
         //Route::resource('subspecifications', 'SubSpecificationController');
         Route::resource('customer_discounts', 'CustomerDiscountController');
 
-
+        Route::post('products_import/{type}', 'ImportController@productsImport');
 
     });
 

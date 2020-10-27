@@ -53,6 +53,7 @@ use Modules\Inventory\Policies\StockAdjustmentDetailPolicy;
 use Modules\Inventory\Policies\StockAdjustmentPolicy;
 use Modules\Inventory\Policies\StockCountPolicy;
 use Modules\Inventory\Policies\StockCountDetailPolicy;
+use Modules\Inventory\Policies\TagPolicy;
 use Modules\Inventory\Policies\TransferPolicy;
 use Modules\Inventory\Policies\TransferDetailsPolicy;
 

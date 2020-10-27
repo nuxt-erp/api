@@ -16,9 +16,11 @@ class CreateProductsImportSettingsTable extends Migration
         Schema::connection('tenant')->create('inv_products_import_settings', function (Blueprint $table) {
             $table->id();
 
-            $table->string('column_name')->unique();
-            $table->string('custom_name')->nullable()->unique();
+            $table->string('column_name');
+            $table->string('custom_name')->nullable();
             $table->string('entity');
+
+            $table->unique('column_name', 'entity');
 
             $table->timestamps();
         });
