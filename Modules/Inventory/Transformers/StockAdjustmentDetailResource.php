@@ -12,7 +12,7 @@ class StockAdjustmentDetailResource extends ResourceService
             'id'                    => $this->id,
             'stock_adjustment_id'   => $this->stock_adjustment_id,
             'product_id'            => $this->product_id,
-            'product_name'          => optional($this->product)->getFullDescriptionAttribute(),
+            'product_name'          => optional($this->product)->name,
             'sku'                   => optional($this->product)->sku,
             'location_id'           => $this->location_id,
             'location_name'         => optional($this->location)->name,
