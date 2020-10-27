@@ -10,7 +10,7 @@ use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductLog;
-
+use Auth;
 class StockCountRepository extends RepositoryService
 {
 
@@ -153,6 +153,7 @@ class StockCountRepository extends RepositoryService
                     $log->ref_code_id   = $stockcount_id;
                     $log->type_id       = $type->id;
                     $log->description   = 'Finished stock count - changing quantity';
+                    $log->user_id       =  Auth::user()->id;
                     $log->save();
 
                 }

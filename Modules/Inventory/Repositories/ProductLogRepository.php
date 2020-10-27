@@ -36,5 +36,5 @@ class ProductLogRepository extends RepositoryService
 
         return $data;
     }
-
+    
 }

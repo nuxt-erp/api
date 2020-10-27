@@ -6,6 +6,8 @@ use Modules\Purchase\Entities\Purchase;
 use App\Models\Location;
 use App\Models\Parameter;
 use App\Models\Sale;
+use App\Models\User;
+
 use App\Models\ModelService;
 use Illuminate\Validation\Rule;
 
@@ -24,7 +26,7 @@ class ProductLog extends ModelService
 
     protected $fillable = [
         'product_id', 'location_id', 'type_id',
-        'ref_code_id', 'quantity', 'description'
+        'ref_code_id', 'quantity', 'description','user_id'
 
     ];
 
@@ -36,7 +38,9 @@ class ProductLog extends ModelService
             'type_id'       => ['nullable', 'exists:tenant.parameters,id'],
             'ref_code_id'   => ['nullable', 'integer'],
             'quantity'      => ['nullable', 'number'],
-            'description'   => ['nullable', 'string', 'max:255']
+            'description'   => ['nullable', 'string', 'max:255'],
+            'user_id'           => ['nullable', 'exists:tenant.users,id']
+
         ];
 
         // CREATE
@@ -80,6 +84,10 @@ class ProductLog extends ModelService
        
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
     
    
 }
