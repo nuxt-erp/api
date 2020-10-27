@@ -14,7 +14,7 @@ class Purchase extends ModelService
 
     protected $fillable = [
         'supplier_id', 'author_id', 'location_id',
-        'status', 'ref_code', 'invoice_number',
+        'status', 'ref_code', 'invoice_number', 'tracking_number',
         'notes', 'discount', 'taxes',
         'shipping', 'subtotal', 'total',
         'purchase_date'
