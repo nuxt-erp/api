@@ -62,7 +62,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('stock_count_data', 'ProductController@stockCountData');
         Route::get('sku_suppliers', 'ProductSuppliersController@skuSuppliers');
 
-
+        Route::resource('price_tiers', 'PriceTierController');
 
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');

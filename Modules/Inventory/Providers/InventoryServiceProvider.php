@@ -27,6 +27,7 @@ use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\Transfer;
 use Modules\Inventory\Entities\TransferDetails;
 use Modules\Inventory\Entities\CustomerDiscount;
+use Modules\Inventory\Entities\PriceTier;
 use Modules\Inventory\Entities\ProductCustomPrice;
 use Modules\Inventory\Entities\ProductImportSettings;
 use Modules\Inventory\Entities\ProductTag;
@@ -55,6 +56,7 @@ use Modules\Inventory\Repositories\ProductReorderLevelRepository;
 use Modules\Inventory\Repositories\TransferRepository;
 use Modules\Inventory\Repositories\TransferDetailsRepository;
 use Modules\Inventory\Repositories\CustomerDiscountRepository;
+use Modules\Inventory\Repositories\PriceTierRepository;
 use Modules\Inventory\Repositories\ProductCustomPriceRepository;
 use Modules\Inventory\Repositories\ProductImportSettingsRepository;
 use Modules\Inventory\Repositories\ProductTagRepository;
@@ -83,6 +85,7 @@ use Modules\Inventory\Transformers\ProductReorderLevelResource;
 use Modules\Inventory\Transformers\TransferResource;
 use Modules\Inventory\Transformers\TransferDetailsResource;
 use Modules\Inventory\Transformers\CustomerDiscountResource;
+use Modules\Inventory\Transformers\PriceTierResource;
 use Modules\Inventory\Transformers\ProductCustomPriceResource;
 use Modules\Inventory\Transformers\ProductImportSettingsResource;
 use Modules\Inventory\Transformers\ProductTagResource;
@@ -334,6 +337,13 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductImportSettingsResource::class, function () {
             return new ProductImportSettingsResource(new ProductImportSettings());
         });
+
+        $this->app->bind(PriceTierRepository::class, function () {
+            return new PriceTierRepository(new PriceTier());
+        });
+        $this->app->bind(PriceTierResource::class, function () {
+            return new PriceTierResource(new PriceTier());
+        });
     }
 
     /**
@@ -370,7 +380,8 @@ class InventoryServiceProvider extends ServiceProvider
             StockAdjustmentDetailRepository::class,
             TagRepository::class,
             ProductTagRepository::class,
-            ProductImportSettingsRepository::class
+            ProductImportSettingsRepository::class,
+            PriceTierRepository::class
         ];
     }
 
