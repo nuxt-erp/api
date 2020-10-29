@@ -49,7 +49,7 @@ class StockAdjustmentImport implements ToArray, WithHeadingRow
                     $array = [
                         'sku'           => $row['sku'],
                         'product_id'    => $product->id,
-                        'product_name'  => $product->name,
+                        'name'          => $row['sku'] . ' - ' . $product->name,
                         'location_id'   => $location->id,
                         'location_name' => $location->short_name,
                         'on_hand'       => $on_hand,
