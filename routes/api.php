@@ -40,6 +40,9 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('tax_rule_scopes', 'General\TaxRuleScopeController');
         Route::resource('sales_reps', 'General\SalesRepController');
         Route::resource('parameter_types', 'General\ParameterTypeController');
+        Route::resource('tags', 'General\TagController');
+        Route::resource('customer_tags', 'General\CustomerTagController');
+
     });
 
 });

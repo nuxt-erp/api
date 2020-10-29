@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Contact;
 use App\Models\Country;
 use App\Models\Customer;
+use App\Models\CustomerTag;
 use App\Models\Location;
 use App\Models\Parameter;
 use App\Models\ParameterType;
@@ -12,6 +13,7 @@ use App\Models\Province;
 use App\Models\Role;
 use App\Models\SalesRep;
 use App\Models\Supplier;
+use App\Models\Tag;
 use App\Models\TaxRule;
 use App\Models\TaxRuleComponent;
 use App\Models\TaxRuleScope;
@@ -20,6 +22,7 @@ use App\Models\User;
 use App\Policies\ContactPolicy;
 use App\Policies\CountryPolicy;
 use App\Policies\CustomerPolicy;
+use App\Policies\CustomerTagPolicy;
 use App\Policies\LocationPolicy;
 use App\Policies\ParameterPolicy;
 use App\Policies\ParameterTypePolicy;
@@ -27,6 +30,7 @@ use App\Policies\ProvincePolicy;
 use App\Policies\RolePolicy;
 use App\Policies\SalesRepPolicy;
 use App\Policies\SupplierPolicy;
+use App\Policies\TagPolicy;
 use App\Policies\TaxRuleComponentPolicy;
 use App\Policies\TaxRulePolicy;
 use App\Policies\TaxRuleScopePolicy;
@@ -66,6 +70,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(TaxRuleComponent::class, TaxRuleComponentPolicy::class);
         Gate::policy(TaxRuleScope::class, TaxRuleScopePolicy::class);
         Gate::policy(SalesRep::class, SalesRepPolicy::class);
+        Gate::policy(Tag::class, TagPolicy::class);        
+        Gate::policy(CustomerTag::class, CustomerTagPolicy::class);        
 
     }
 }

@@ -7,6 +7,7 @@ use App\Models\Config;
 use App\Models\Contact;
 use App\Models\Country;
 use App\Models\Customer;
+use App\Models\CustomerTag;
 use App\Models\Location;
 use App\Models\Parameter;
 use App\Models\ParameterType;
@@ -14,6 +15,7 @@ use App\Models\Province;
 use App\Models\Role;
 use App\Models\SalesRep;
 use App\Models\Supplier;
+use App\Models\Tag;
 use App\Models\TaxRule;
 use App\Models\TaxRuleComponent;
 use App\Models\TaxRuleScope;
@@ -23,6 +25,7 @@ use App\Repositories\ConfigRepository;
 use App\Repositories\ContactRepository;
 use App\Repositories\CountryRepository;
 use App\Repositories\CustomerRepository;
+use App\Repositories\CustomerTagRepository;
 use App\Repositories\LocationRepository;
 use App\Repositories\ParameterRepository;
 use App\Repositories\ParameterTypeRepository;
@@ -30,6 +33,7 @@ use App\Repositories\ProvinceRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\SalesRepRepository;
 use App\Repositories\SupplierRepository;
+use App\Repositories\TagRepository;
 use App\Repositories\TaxRuleComponentRepository;
 use App\Repositories\TaxRuleRepository;
 use App\Repositories\TaxRuleScopeRepository;
@@ -39,6 +43,7 @@ use App\Resources\ConfigResource;
 use App\Resources\ContactResource;
 use App\Resources\CountryResource;
 use App\Resources\CustomerResource;
+use App\Resources\CustomerTagResource;
 use App\Resources\LocationResource;
 use App\Resources\ParameterResource;
 use App\Resources\ParameterTypeResource;
@@ -46,6 +51,7 @@ use App\Resources\ProvinceResource;
 use App\Resources\RoleResource;
 use App\Resources\SalesRepResource;
 use App\Resources\SupplierResource;
+use App\Resources\TagResource;
 use App\Resources\TaxRuleComponentResource;
 use App\Resources\TaxRuleResource;
 use App\Resources\TaxRuleScopeResource;
@@ -188,6 +194,22 @@ class RepositoriesServiceProvider extends ServiceProvider
         $this->app->bind(SalesRepResource::class, function () {
             return new SalesRepResource(new SalesRep());
         });
+
+        $this->app->bind(TagRepository::class, function () {
+            return new TagRepository(new Tag());
+        });
+
+        $this->app->bind(TagResource::class, function () {
+            return new TagResource(new Tag());
+        });
+
+        $this->app->bind(CustomerTagRepository::class, function () {
+            return new CustomerTagRepository(new CustomerTag());
+        });
+
+        $this->app->bind(CustomerTagResource::class, function () {
+            return new CustomerTagResource(new CustomerTag());
+        });
     }
 
     /**
@@ -212,7 +234,9 @@ class RepositoriesServiceProvider extends ServiceProvider
             TaxRuleRepository::class,
             TaxRuleComponentRepository::class,
             TaxRuleScopeRepository::class,
-            SalesRepRepository::class
+            SalesRepRepository::class,
+            TagRepository::class,
+            CustomerTagRepository::class
         ];
     }
 }
