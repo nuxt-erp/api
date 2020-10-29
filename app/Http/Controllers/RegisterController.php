@@ -43,7 +43,7 @@ class RegisterController extends Controller
         echo implode('<br>', explode(PHP_EOL, Artisan::output()));
     }
 
-    public function installModules($name){
+    public function installModules($name, $seed = TRUE){
 
         DB::setDefaultConnection('public');
 
@@ -54,27 +54,29 @@ class RegisterController extends Controller
         echo 'Company: '.$user->company->name.'<br><br>';
 
         echo '----- <br>';
-        try {
-            echo 'Root migration: <br>';
-            Artisan::call('migrate');
-            $this->artisanResult();
-        } catch (\Throwable $th) {
-            echo 'Root migration error!<br>';
-            $this->artisanResult();
-            echo $th->getMessage();
-        }
-        echo '----- <br>';
+            try {
+                echo 'Root migration: <br>';
+                Artisan::call('migrate');
+                $this->artisanResult();
+            } catch (\Throwable $th) {
+                echo 'Root migration error!<br>';
+                $this->artisanResult();
+                echo $th->getMessage();
+            }
+            echo '----- <br>';
 
-        try {
-            echo 'Root seeder: <br>';
-            Artisan::call('db:seed');
-            $this->artisanResult();
-        } catch (\Throwable $th) {
-            echo 'Root seeder error!<br>';
-            $this->artisanResult();
-            echo $th->getMessage();
+        if($seed){
+            try {
+                echo 'Root seeder: <br>';
+                Artisan::call('db:seed');
+                $this->artisanResult();
+            } catch (\Throwable $th) {
+                echo 'Root seeder error!<br>';
+                $this->artisanResult();
+                echo $th->getMessage();
+            }
+            echo '----- <br>';
         }
-        echo '----- <br>';
 
         // run specific migration files for the schema
 
@@ -105,6 +107,7 @@ class RegisterController extends Controller
             Artisan::call('migrate', [
                 '--path' => '/database/migrations/schema'
             ]);
+
             $this->artisanResult();
         } catch (\Throwable $th) {
             echo 'Tenant Root migration error!<br>';
@@ -120,6 +123,7 @@ class RegisterController extends Controller
                 Artisan::call('migrate', [
                     '--path' => '/Modules/'.ucfirst($module->name).'/Database/Migrations/schema'
                 ]);
+
                 $this->artisanResult();
             } catch (\Throwable $th) {
                 echo 'Migration error for '.ucfirst($module->name).'!<br>';
@@ -127,16 +131,19 @@ class RegisterController extends Controller
                 echo $th->getMessage();
             }
             echo '-----<br>';
-            try {
-                echo $module->name.' seeder: <br>';
-                Artisan::call('module:seed '.ucfirst($module->name));
-                $this->artisanResult();
-            } catch (\Throwable $th) {
-                echo 'Seed error for '.ucfirst($module->name).'!<br>';
-                $this->artisanResult();
-                echo $th->getMessage();
+            if($seed){
+                try {
+                    echo $module->name.' seeder: <br>';
+                    Artisan::call('module:seed '.ucfirst($module->name));
+                    $this->artisanResult();
+                } catch (\Throwable $th) {
+                    echo 'Seed error for '.ucfirst($module->name).'!<br>';
+                    $this->artisanResult();
+                    echo $th->getMessage();
+                }
+                echo '-----<br>';
             }
-            echo '-----<br>';
+
         }
 
         echo '<br><br><<<<<<<< SCRIPT DONE >>>>>>>>';

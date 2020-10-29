@@ -4,7 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 class TaxRuleConstants {
-    const PERCENT_ON_PRICE    = 'percent_on_price';
+    const COMPUTATIONS = [ 
+        'PERCENT_ON_PRICE'    => 'Percent on Price', 
+        'FIXED'               => 'Fixed',
+        'INCLUDED'            => 'Included' 
+    ];
+    const SCOPES = [ 
+        'SALES'               => 'Sales',
+        'PURCHASES'           => 'Puchases'
+    ];
 }
 class TaxRule extends Model
 {
