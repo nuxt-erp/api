@@ -10,6 +10,7 @@ class TaxRuleScopeResource extends ResourceService
     {
         return [
             'id'                    => $this->id,
+            'scope'                 => $this->scope,
             'tax_rule_id'           => $this->tax_rule_id,
             'tax_rule_name'         => optional($this->tax_rule)->name,
             'created_at'            => optional($this->created_at)->format('Y-m-d H:i:s'),

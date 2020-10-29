@@ -36,6 +36,8 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('customers', 'General\CustomerController');
         Route::resource('tax_rules', 'General\TaxRuleController');
         Route::get('tax_rule_constants', 'General\TaxRuleController@getStatuses');
+        Route::get('tax_rule_scope_constants', 'General\TaxRuleController@getScopes');
+        Route::get('tax_rule_computation_constants', 'General\TaxRuleController@getComputations');
         Route::resource('tax_rule_components', 'General\TaxRuleComponentController');
         Route::resource('tax_rule_scopes', 'General\TaxRuleScopeController');
         Route::resource('sales_reps', 'General\SalesRepController');

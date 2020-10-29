@@ -34,6 +34,19 @@ class PurchaseRepository extends RepositoryService
             ->where('id', Arr::pull($searchCriteria, 'id'));
         }
 
+        if (!empty($searchCriteria['supplier_name'])) {
+            $name = '%' . Arr::pull($searchCriteria, 'supplier_name') . '%';
+
+            $this->queryBuilder->whereHas('supplier', function ($query) use($name) {
+                $query->where('name', 'ILIKE', $name);
+            });
+
+            $this->queryBuilder
+                ->orWhere('tracking_number', 'ILIKE', $name)
+                ->orWhere('invoice_number', 'ILIKE', $name);
+
+        }
+
         return parent::findBy($searchCriteria);
     }
 

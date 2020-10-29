@@ -28,6 +28,7 @@ use Modules\Inventory\Entities\Transfer;
 use Modules\Inventory\Entities\TransferDetails;
 use Modules\Inventory\Entities\CustomerDiscount;
 use Modules\Inventory\Entities\ProductCustomPrice;
+use Modules\Inventory\Entities\ProductImportSettings;
 use Modules\Inventory\Entities\ProductTag;
 use Modules\Inventory\Entities\StockAdjustment;
 use Modules\Inventory\Entities\StockAdjustmentDetail;
@@ -55,6 +56,7 @@ use Modules\Inventory\Repositories\TransferRepository;
 use Modules\Inventory\Repositories\TransferDetailsRepository;
 use Modules\Inventory\Repositories\CustomerDiscountRepository;
 use Modules\Inventory\Repositories\ProductCustomPriceRepository;
+use Modules\Inventory\Repositories\ProductImportSettingsRepository;
 use Modules\Inventory\Repositories\ProductTagRepository;
 use Modules\Inventory\Repositories\StockAdjustmentDetailRepository;
 use Modules\Inventory\Repositories\StockAdjustmentRepository;
@@ -82,6 +84,7 @@ use Modules\Inventory\Transformers\TransferResource;
 use Modules\Inventory\Transformers\TransferDetailsResource;
 use Modules\Inventory\Transformers\CustomerDiscountResource;
 use Modules\Inventory\Transformers\ProductCustomPriceResource;
+use Modules\Inventory\Transformers\ProductImportSettingsResource;
 use Modules\Inventory\Transformers\ProductTagResource;
 use Modules\Inventory\Transformers\StockAdjustmentDetailResource;
 use Modules\Inventory\Transformers\StockAdjustmentResource;
@@ -116,7 +119,7 @@ class InventoryServiceProvider extends ServiceProvider
 
 
     }
-    
+
 
     /**
      * Register the service provider.
@@ -324,6 +327,13 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductTagResource::class, function () {
             return new ProductTagResource(new ProductTag());
         });
+
+        $this->app->bind(ProductImportSettingsRepository::class, function () {
+            return new ProductImportSettingsRepository(new ProductImportSettings());
+        });
+        $this->app->bind(ProductImportSettingsResource::class, function () {
+            return new ProductImportSettingsResource(new ProductImportSettings());
+        });
     }
 
     /**
@@ -359,7 +369,8 @@ class InventoryServiceProvider extends ServiceProvider
             StockAdjustmentRepository::class,
             StockAdjustmentDetailRepository::class,
             TagRepository::class,
-            ProductTagRepository::class
+            ProductTagRepository::class,
+            ProductImportSettingsRepository::class
         ];
     }
 
