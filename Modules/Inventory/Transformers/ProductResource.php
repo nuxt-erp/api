@@ -52,7 +52,8 @@ class ProductResource extends ResourceService
             'created_at'            => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'            => optional($this->updated_at)->format('Y-m-d H:i:s'),
             'can_be_deleted'        => true,
-            'tag_ids'               => $this->tags()->pluck('tag_id')
+            'tag_ids'               => $this->tags()->pluck('tag_id'),
+            'taxable'               =>$this->taxable
         ];
     }
 }
