@@ -35,20 +35,17 @@ class DearService
             'base_uri' => $this->dear_url,
         ]);
 
-        $this->limit = 500;
+        $this->limit = 1000;
         $this->user = auth()->user() ?? User::where('name', 'admin')->first();
     }
 
     public function syncProds($sku = null)
     {
-        $result = FALSE;
-        $flagLoop = FALSE;
-        $total = 0;
-        $page = 1;
-        $count = 0;
-
-        $category = $this->syncCategories();
-        $brand = $this->syncBrands();
+        $result     = FALSE;
+        $flagLoop   = FALSE;
+        $total      = 0;
+        $page       = 1;
+        $count      = 0;
 
         // GET STRENGTH ATTRIBUTE ID
         $strength_id  = Attribute::where('code', 'str')
@@ -72,7 +69,9 @@ class DearService
             $categories_list    = [];
             $brands_list        = [];
 
-            $dear_result        = $this->makeRequest('product', $filters);
+            $dear_result = cache()->remember('products_'.implode('_', $filters), 60 * 60, function () use($filters) {
+                return $this->makeRequest('product', $filters);
+            });
 
             if ($dear_result->status && $dear_result->Total > 0) {
                 $total = $dear_result->Total;
@@ -82,13 +81,17 @@ class DearService
                     $formatted_product = $this->formatProduct($prod);
 
                     // CATEGORY HANDLE
-                    if(!isset($categories_list[$formatted_product->category])){
-                        $category = Category::firstOrCreate(['name' => $formatted_product->category]);
-                        $categories_list[$formatted_product->category] = $category;
+                    $category = null;
+                    if(!empty($formatted_product->category)){
+                        if(!isset($categories_list[$formatted_product->category])){
+                            $category = Category::firstOrCreate(['name' => $formatted_product->category]);
+                            $categories_list[$formatted_product->category] = $category;
+                        }
+                        else{
+                            $category = $categories_list[$formatted_product->category];
+                        }
                     }
-                    else{
-                        $category = $categories_list[$formatted_product->category];
-                    }
+
 
                     // BRAND HANDLE
                     $brand = null;
@@ -103,16 +106,13 @@ class DearService
                     }
 
                     $values = [
-                        'category_id'   => $category->id,
+                        'category_id'   => $category->id ?? null,
                         'brand_id'      => $brand->id ?? null,
-                        'sku'           => $formatted_product->sku,
+                        'sku'           => !empty($formatted_product->sku) ? $formatted_product->sku : null,
                         'name'          => $formatted_product->name,
                         'description'   => $formatted_product->description,
-                        'barcode'       => $formatted_product->barcode
+                        'barcode'       => !empty($formatted_product->barcode) ? $formatted_product->barcode : null
                     ];
-                    if(empty($formatted_product->barcode)){
-                        unset($values['barcode']);
-                    }
 
                     $new_prod = Product::updateOrCreate(
                         ['dear_id' => $prod->ID],
@@ -120,22 +120,27 @@ class DearService
                     );
 
                     // SAVE ATTRIBUTE BY PRODUCT
-                    ProductAttributes::updateOrCreate([
-                        'product_id'    => $new_prod->id,
-                        'attribute_id'  => $strength_id,
-                    ],
-                    [
-                        'value'         => $formatted_product->strength
-                    ]);
+                    if(!empty($formatted_product->strength)){
+                        ProductAttributes::updateOrCreate([
+                            'product_id'    => $new_prod->id,
+                            'attribute_id'  => $strength_id,
+                        ],
+                        [
+                            'value'         => $formatted_product->strength
+                        ]);
+                    }
 
                     // SAVE ATTRIBUTE BY PRODUCT
-                    ProductAttributes::updateOrCreate([
-                        'product_id'    => $new_prod->id,
-                        'attribute_id'  => $size_id,
-                    ],
-                    [
-                        'value'         => $formatted_product->size
-                    ]);
+                    if(!empty($formatted_product->size)){
+                        ProductAttributes::updateOrCreate([
+                            'product_id'    => $new_prod->id,
+                            'attribute_id'  => $size_id,
+                        ],
+                        [
+                            'value'         => $formatted_product->size
+                        ]);
+                    }
+
 
                     $count++;
 
