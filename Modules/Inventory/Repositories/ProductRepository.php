@@ -44,12 +44,7 @@ class ProductRepository extends RepositoryService
                 ->where('sku', 'ILIKE', $sku)
                 ->orWhere('name', 'ILIKE', $sku);
         }
-        if (!empty($searchCriteria['name'])) {
-            $sku = '%' . Arr::pull($searchCriteria, 'name') . '%';
-            $this->queryBuilder
-                ->where('sku', 'ILIKE', $sku)
-                ->orWhere('name', 'ILIKE', $sku);
-        }
+      
 
         if (!empty($searchCriteria['id']) && empty($searchCriteria['list'])) {
             $this->queryBuilder
@@ -80,25 +75,25 @@ class ProductRepository extends RepositoryService
             $this->queryBuilder
                 ->where('location_id', $searchCriteria['location_id']);
         }
-        if (!empty($searchCriteria['is_enabled'])) {
+
+        if (Arr::has($searchCriteria, 'is_enabled')) {
+            lad($searchCriteria['is_enabled']);
+
             $this->queryBuilder
                 ->where('is_enabled', $searchCriteria['is_enabled']);
         }
         if (!empty($searchCriteria['name'])) {
-            $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
-            $searchCriteria['query_type'] = 'ILIKE';
-            $searchCriteria['where']      = 'OR';
-            $searchCriteria['name'] = $name;
-            $searchCriteria['sku'] = $name;
+            $sku = '%' . Arr::pull($searchCriteria, 'name') . '%';
+            $this->queryBuilder
+                ->where('sku', 'ILIKE', $sku)
+                ->orWhere('name', 'ILIKE', $sku);
         }
-
         if (Arr::has($searchCriteria, 'complete_name')) {
             $searchCriteria['query_type']   = 'ILIKE';
             $searchCriteria['where']        = 'OR';
             $name = Arr::pull($searchCriteria, 'complete_name');
             $searchCriteria['sku']          = '%' . $name . '%';
         }
-        lad( $this->queryBuilder->get());
         return parent::findBy($searchCriteria);
     }
 
