@@ -33,4 +33,23 @@ class ModelService extends Model implements ModelInterface
         return array_diff($allConstants, $parentConstants);
     }
 
+    /**
+     * Overrides the default Eloquent hasMany relationship to return a HasManySync.
+     *
+     * {@inheritDoc}
+     * @return \App\Models\HasManySync
+     */
+    public function hasManySync($related, $foreignKey = null, $localKey = null)
+    {
+        $instance = $this->newRelatedInstance($related);
+
+        $foreignKey = $foreignKey ?: $this->getForeignKey();
+
+        $localKey = $localKey ?: $this->getKeyName();
+
+        return new HasManySync(
+            $instance->newQuery(), $this, $instance->getTable().'.'.$foreignKey, $localKey
+        );
+    }
+
 }

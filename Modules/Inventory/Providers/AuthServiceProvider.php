@@ -18,6 +18,7 @@ use Modules\Inventory\Entities\FamilyAttribute;
 use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\StockLocator;
 use Modules\Inventory\Entities\Measure;
+use Modules\Inventory\Entities\PriceTier;
 use Modules\Inventory\Entities\ProductCustomPrice;
 use Modules\Inventory\Entities\ProductImportSettings;
 use Modules\Inventory\Entities\ProductPromo;
@@ -27,10 +28,8 @@ use Modules\Inventory\Entities\StockAdjustment;
 use Modules\Inventory\Entities\StockAdjustmentDetail;
 use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
-use Modules\Inventory\Entities\Tag;
 use Modules\Inventory\Entities\Transfer;
 use Modules\Inventory\Entities\TransferDetails;
-
 // policies
 use Modules\Inventory\Policies\AttributePolicy;
 use Modules\Inventory\Policies\AvailabilityPolicy;
@@ -45,6 +44,7 @@ use Modules\Inventory\Policies\ProductLogPolicy;
 use Modules\Inventory\Policies\ProductPolicy;
 use Modules\Inventory\Policies\StockLocatorPolicy;
 use Modules\Inventory\Policies\MeasurePolicy;
+use Modules\Inventory\Policies\PriceTierPolicy;
 use Modules\Inventory\Policies\ProductCustomPricePolicy;
 use Modules\Inventory\Policies\ProductImportSettingsPolicy;
 use Modules\Inventory\Policies\ProductPromoPolicy;
@@ -54,10 +54,8 @@ use Modules\Inventory\Policies\StockAdjustmentDetailPolicy;
 use Modules\Inventory\Policies\StockAdjustmentPolicy;
 use Modules\Inventory\Policies\StockCountPolicy;
 use Modules\Inventory\Policies\StockCountDetailPolicy;
-use Modules\Inventory\Policies\TagPolicy;
 use Modules\Inventory\Policies\TransferPolicy;
 use Modules\Inventory\Policies\TransferDetailsPolicy;
-
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -91,7 +89,6 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(ProductReorderLevel::class, ProductReorderLevelPolicy::class);
         Gate::policy(ProductPromo::class, ProductPromoPolicy::class);
         Gate::policy(ProductCustomPrice::class, ProductCustomPricePolicy::class);
-        Gate::policy(Tag::class, TagPolicy::class);
         Gate::policy(ProductTag::class, ProductTagPolicy::class);
 
         Gate::policy(StockLocator::class, StockLocatorPolicy::class);
@@ -102,6 +99,6 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(StockAdjustmentDetail::class, StockAdjustmentDetailPolicy::class);
 
         Gate::policy(ProductImportSettings::class, ProductImportSettingsPolicy::class);
-
+        Gate::policy(PriceTier::class, PriceTierPolicy::class);
     }
 }

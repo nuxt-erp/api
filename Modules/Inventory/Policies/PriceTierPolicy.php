@@ -4,9 +4,9 @@ namespace Modules\Inventory\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Modules\Inventory\Entities\Tag;
+use Modules\Inventory\Entities\PriceTier;
 
-class TagPolicy
+class PriceTierPolicy
 {
     use HandlesAuthorization;
 
@@ -20,7 +20,7 @@ class TagPolicy
         return $currentUser->isAdmin();
     }
 
-    public function show(User $currentUser, Tag $target)
+    public function show(User $currentUser, PriceTier $target)
     {
         return $currentUser->isAdmin();
     }
@@ -30,12 +30,12 @@ class TagPolicy
         return $currentUser->isAdmin();
     }
 
-    public function update(User $currentUser, Tag $target)
+    public function update(User $currentUser, PriceTier $target)
     {
         return $currentUser->isAdmin();
     }
 
-    public function destroy(User $currentUser, Tag $target)
+    public function destroy(User $currentUser, PriceTier $target)
     {
         return $currentUser->isAdmin();
     }

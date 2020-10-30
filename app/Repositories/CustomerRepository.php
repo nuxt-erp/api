@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Contact;
+use App\Models\CustomerTag;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
 use Modules\Inventory\Entities\ProductCustomPrice;
@@ -55,6 +56,15 @@ class CustomerRepository extends RepositoryService
                     $new->save();
                 }
             }
+
+            if(!empty($data['tag_ids'])) {
+                foreach ($data['tag_ids'] as $tag_id) {
+                    CustomerTag::create([
+                        'customer_id' => $this->model->id,
+                        'tag_id'      => $tag_id
+                    ]);
+                }
+            }
         });
     }
     public function update($model, array $data)
@@ -86,6 +96,25 @@ class CustomerRepository extends RepositoryService
                         ['id' => $custom_product_price['id']],
                         $custom_product_price
                     );
+                }
+            }
+
+            if(!empty($data["tag_ids"])) {
+
+                $current_tags = $this->model->tags->pluck('tag_id')->toArray();
+                $deleted_tags = array_diff($current_tags, $data["tag_ids"]);
+                
+                foreach($data["tag_ids"] as $tag_id) {
+                    if ( !in_array($tag_id, $current_tags)) {
+                        CustomerTag::create([
+                            'customer_id'    => $this->model->id,
+                            'tag_id'        => $tag_id,                            
+                        ]);
+                    }
+                }
+    
+                foreach($deleted_tags as $tag_id) {
+                    CustomerTag::where('customer_id', $this->model->id)->where('tag_id', $tag_id)->delete();
                 }
             }
         });

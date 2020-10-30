@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Entities;
 
 use App\Models\ModelService;
+use App\Models\Tag;
 
 class ProductTag extends ModelService
 {
@@ -18,13 +19,13 @@ class ProductTag extends ModelService
     {
         $rules = [
             'product_id'    => ['exists:tenant.inv_products,id'],
-            'tag_id'        => ['exists:tenant.inv_tags,id'],
+            'tag_id'        => ['exists:tenant.tags,id'],
         ];
 
         // CREATE
         if (is_null($item))
         {
-            $rules['product_id'][]      = 'required';
+            $rules['product_id'][]   = 'required';
             $rules['tag_id'][]       = 'required';
         }        
 
