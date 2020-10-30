@@ -14,7 +14,7 @@ class AlterInvProductTagsAddTagId extends Migration
     public function up()
     {
         Schema::connection('tenant')->table('inv_product_tags', function (Blueprint $table) {
-            $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
+            $table->foreignId('tag_id')->nullable()->constrained('tags')->onDelete('cascade');
         });
     }
 
