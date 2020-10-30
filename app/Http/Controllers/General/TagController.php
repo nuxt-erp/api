@@ -1,11 +1,12 @@
 <?php
 
-namespace Modules\Inventory\Http\Controllers;
+namespace App\Http\Controllers\General;
 
+use Illuminate\Http\Request;
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
-use Modules\Inventory\Repositories\TagRepository;
-use Modules\Inventory\Transformers\TagResource;
+use App\Repositories\TagRepository;
+use App\Resources\TagResource;
 
 class TagController extends ControllerService implements CheckPolicies
 {

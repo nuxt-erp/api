@@ -79,4 +79,8 @@ class Customer extends ModelService
     {
         return $this->hasMany(ProductCustomPrice::class, 'customer_id', 'id');
     }
+    public function tags()
+    {
+        return $this->hasMany(CustomerTag::class, 'customer_id', 'id');
+    }
 }
