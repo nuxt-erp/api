@@ -60,6 +60,7 @@ class PurchaseRepository extends RepositoryService
             Supplier::where('id', $data["supplier_id"])->update(['last_order_at' => date('Y-m-d')]);
 
             // Save purchase details
+            
             $this->savePurchaseDetails($data, $this->model->id);
         });
     }
@@ -91,6 +92,7 @@ class PurchaseRepository extends RepositoryService
 
                 foreach ($data['list_products'] as $item) // EACH ATTRIBUTE
                 {
+                    lad($data);
 
                     $qty            = $item['qty'] ?? 0;
                     $received_date  = !empty($item['received_date']) ? date('Y-m-d', strtotime($item['received_date'])) : null;
@@ -99,8 +101,10 @@ class PurchaseRepository extends RepositoryService
                     $price          = $item['price'] ?? 0;
                     $ref            = $item['ref'] ?? '';
                     $product_id     = $item['product_id'] ?? null;
+                    $tax_rule_id     = $item['tax_rule_id'] ?? null;
+                   
                     $new_status     = $qty == $qty_received;
-
+                   
                     if ($product_id) {
 
                         $total_item = ($price * $qty);
@@ -119,7 +123,9 @@ class PurchaseRepository extends RepositoryService
                                 'price'          => $price,
                                 'gross_total'    => $total_item,
                                 'total'          => $total_item,
+                                
                                 'item_status'    => $new_status, // Fulfillment status for item
+                                'tax_rule_id'    => $tax_rule_id
                             ]
                         );
 
@@ -139,7 +145,7 @@ class PurchaseRepository extends RepositoryService
                     }
                 }
                 // Total purchase
-                Purchase::where('id', $id)->update(['total' => $total]);
+               // Purchase::where('id', $id)->update(['total' => $total]);
             }
         });
     }

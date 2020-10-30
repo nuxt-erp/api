@@ -9,6 +9,22 @@ use Illuminate\Support\Arr;
 
 class TaxRuleRepository extends RepositoryService
 {
+    public function findBy(array $searchCriteria = [])
+    {
+        $searchCriteria['order_by'] = [
+            'field'         => 'id',
+            'direction'     => 'asc'
+        ];
+
+        if (!empty($searchCriteria['scope'])) {
+            $scope=$searchCriteria['scope'];
+            $this->queryBuilder->whereHas('scopes', function ($query) use ($scope) {
+                $query->where('tax_rule_scopes.scope', $scope);
+            });
+        }  
+
+        return parent::findBy($searchCriteria);
+    }
     public function store(array $data)
     {
 

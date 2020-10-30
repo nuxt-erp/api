@@ -31,7 +31,8 @@ class PurchaseDetailResource extends JsonResource
             'received_date'     => $this->received_date,
             'ref'               => $this->ref,
             'item_status'       => $this->item_status,
-            'can_be_deleted'    => true
+            'can_be_deleted'    => true,
+            'tax_rule_id'      =>  $this->tax_rule_id
         ];
     }
 }
