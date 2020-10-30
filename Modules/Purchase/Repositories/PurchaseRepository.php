@@ -28,7 +28,7 @@ class PurchaseRepository extends RepositoryService
             'field'         => 'id',
             'direction'     => 'asc'
         ];
-
+       
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
             ->where('id', Arr::pull($searchCriteria, 'id'));
@@ -46,7 +46,7 @@ class PurchaseRepository extends RepositoryService
                 ->orWhere('invoice_number', 'ILIKE', $name);
 
         }
-
+        lad($this->queryBuilder->get());
         return parent::findBy($searchCriteria);
     }
 
@@ -92,7 +92,6 @@ class PurchaseRepository extends RepositoryService
 
                 foreach ($data['list_products'] as $item) // EACH ATTRIBUTE
                 {
-                    lad($data);
 
                     $qty            = $item['qty'] ?? 0;
                     $received_date  = !empty($item['received_date']) ? date('Y-m-d', strtotime($item['received_date'])) : null;
