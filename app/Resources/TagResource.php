@@ -1,8 +1,6 @@
 <?php
 
-namespace Modules\Inventory\Transformers;
-
-use App\Resources\ResourceService;
+namespace App\Resources;
 
 class TagResource extends ResourceService
 {
@@ -11,6 +9,7 @@ class TagResource extends ResourceService
         return [
             'id'            => $this->id,
             'name'          => $this->name,
+            'type'          => $this->type,
             'created_at'    => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'    => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];

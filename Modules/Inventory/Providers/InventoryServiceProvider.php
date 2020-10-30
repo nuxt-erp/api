@@ -33,7 +33,6 @@ use Modules\Inventory\Entities\ProductImportSettings;
 use Modules\Inventory\Entities\ProductTag;
 use Modules\Inventory\Entities\StockAdjustment;
 use Modules\Inventory\Entities\StockAdjustmentDetail;
-use Modules\Inventory\Entities\Tag;
 // repositories
 use Modules\Inventory\Repositories\AttributeRepository;
 use Modules\Inventory\Repositories\AvailabilityRepository;
@@ -62,7 +61,6 @@ use Modules\Inventory\Repositories\ProductImportSettingsRepository;
 use Modules\Inventory\Repositories\ProductTagRepository;
 use Modules\Inventory\Repositories\StockAdjustmentDetailRepository;
 use Modules\Inventory\Repositories\StockAdjustmentRepository;
-use Modules\Inventory\Repositories\TagRepository;
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
 use Modules\Inventory\Transformers\AvailabilityResource;
@@ -91,7 +89,6 @@ use Modules\Inventory\Transformers\ProductImportSettingsResource;
 use Modules\Inventory\Transformers\ProductTagResource;
 use Modules\Inventory\Transformers\StockAdjustmentDetailResource;
 use Modules\Inventory\Transformers\StockAdjustmentResource;
-use Modules\Inventory\Transformers\TagResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -317,13 +314,6 @@ class InventoryServiceProvider extends ServiceProvider
             return new StockAdjustmentDetailResource(new StockAdjustmentDetail());
         });
 
-        $this->app->bind(TagRepository::class, function () {
-            return new TagRepository(new Tag());
-        });
-        $this->app->bind(TagResource::class, function () {
-            return new TagResource(new Tag());
-        });
-
         $this->app->bind(ProductTagRepository::class, function () {
             return new ProductTagRepository(new ProductTag());
         });
@@ -378,7 +368,6 @@ class InventoryServiceProvider extends ServiceProvider
             ProductCustomPriceRepository::class,
             StockAdjustmentRepository::class,
             StockAdjustmentDetailRepository::class,
-            TagRepository::class,
             ProductTagRepository::class,
             ProductImportSettingsRepository::class,
             PriceTierRepository::class

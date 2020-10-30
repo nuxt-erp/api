@@ -33,7 +33,6 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_promos', 'ProductPromoController');
         Route::resource('product_custom_prices', 'ProductCustomPriceController');
         Route::resource('product_import_settings', 'ProductImportSettingsController');
-        Route::resource('tags', 'TagController');
         Route::resource('product_tags', 'ProductTagController');
 
         Route::resource('product_images', 'ProductImagesController');
