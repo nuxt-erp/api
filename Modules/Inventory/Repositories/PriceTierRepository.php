@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Entities\PriceTierItems;
+use Modules\Inventory\Entities\Product;
 
 class PriceTierRepository extends RepositoryService
 {
@@ -21,6 +22,7 @@ class PriceTierRepository extends RepositoryService
             parent::store($data);
 
             $this->model->items()->sync($data['items']);
+            $this->syncProductsPrice($data['items']);
 
         });
     }
@@ -34,8 +36,17 @@ class PriceTierRepository extends RepositoryService
             parent::update($model, $data);
 
             $this->model->items()->sync($data['items']);
+            $this->syncProductsPrice($data['items']);
 
         });
+    }
+
+    private function syncProductsPrice($items){
+
+        foreach ($items as $item) {
+            Product::where('id', $item['product_id'])
+            ->update(['price' => $item['custom_price']]);
+        }
     }
 
 }
