@@ -25,12 +25,10 @@ class Tag extends ModelService
         // CREATE
         if (is_null($item))
         {
-            $rules['name'][]        = 'unique:tenant.tags';
             $rules['name'][]        = 'required';
             $rules['type'][]        = 'required';
         } else {
             //update
-            $rules['name'][]       = Rule::unique('tenant.tags')->ignore($item->id);
         }
 
         return $rules;
