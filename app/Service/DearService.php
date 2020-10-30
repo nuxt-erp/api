@@ -76,7 +76,6 @@ class DearService
             if ($dear_result->status && $dear_result->Total > 0) {
                 $total = $dear_result->Total;
                 foreach ($dear_result->Products as $prod) {
-
                     //$prod
                     $formatted_product = $this->formatProduct($prod);
 
@@ -111,7 +110,8 @@ class DearService
                         'sku'           => !empty($formatted_product->sku) ? $formatted_product->sku : null,
                         'name'          => $formatted_product->name,
                         'description'   => $formatted_product->description,
-                        'barcode'       => !empty($formatted_product->barcode) ? $formatted_product->barcode : null
+                        'barcode'       => !empty($formatted_product->barcode) ? $formatted_product->barcode : null,
+                        //'cost'          => mt_rand(2*1000000,50*1000000)/1000000
                     ];
 
                     $new_prod = Product::updateOrCreate(

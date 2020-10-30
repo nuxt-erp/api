@@ -47,6 +47,6 @@ class PriceTier extends ModelService
     }
 
     public function items(){
-        return $this->hasMany(PriceTierItems::class, 'price_tier_id', 'id');
+        return $this->hasManySync(PriceTierItems::class, 'price_tier_id', 'id');
     }
 }
