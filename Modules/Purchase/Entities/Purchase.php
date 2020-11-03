@@ -50,7 +50,12 @@ class Purchase extends ModelService
     public function getEarliestEtaAttribute()
     {
         $data = $this->details->sortBy('estimated_date')->all();
-        return $data[0]->estimated_date;
+        if(isset($data[0]->estimated_date)){
+            return $data[0]->estimated_date;
+        }
+    else{
+        return null;
+    }
     }
 
 }

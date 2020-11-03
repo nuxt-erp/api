@@ -28,7 +28,7 @@ class PurchaseRepository extends RepositoryService
             'field'         => 'id',
             'direction'     => 'asc'
         ];
-
+       
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
             ->where('id', Arr::pull($searchCriteria, 'id'));
@@ -46,7 +46,7 @@ class PurchaseRepository extends RepositoryService
                 ->orWhere('invoice_number', 'ILIKE', $name);
 
         }
-
+        lad($this->queryBuilder->get());
         return parent::findBy($searchCriteria);
     }
 
@@ -60,6 +60,7 @@ class PurchaseRepository extends RepositoryService
             Supplier::where('id', $data["supplier_id"])->update(['last_order_at' => date('Y-m-d')]);
 
             // Save purchase details
+            
             $this->savePurchaseDetails($data, $this->model->id);
         });
     }
@@ -99,8 +100,10 @@ class PurchaseRepository extends RepositoryService
                     $price          = $item['price'] ?? 0;
                     $ref            = $item['ref'] ?? '';
                     $product_id     = $item['product_id'] ?? null;
+                    $tax_rule_id     = $item['tax_rule_id'] ?? null;
+                   
                     $new_status     = $qty == $qty_received;
-
+                   
                     if ($product_id) {
 
                         $total_item = ($price * $qty);
@@ -119,7 +122,9 @@ class PurchaseRepository extends RepositoryService
                                 'price'          => $price,
                                 'gross_total'    => $total_item,
                                 'total'          => $total_item,
+                                
                                 'item_status'    => $new_status, // Fulfillment status for item
+                                'tax_rule_id'    => $tax_rule_id
                             ]
                         );
 
@@ -139,7 +144,7 @@ class PurchaseRepository extends RepositoryService
                     }
                 }
                 // Total purchase
-                Purchase::where('id', $id)->update(['total' => $total]);
+               // Purchase::where('id', $id)->update(['total' => $total]);
             }
         });
     }

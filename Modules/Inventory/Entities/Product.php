@@ -28,7 +28,7 @@ class Product extends ModelService
         'disabled_at', 'sales_channel','stock_locator',
         'measure_id', 'carton_length', 'carton_width',
         'carton_height', 'carton_weight', 'msrp',
-        'carton_barcode', 'carton_qty'
+        'carton_barcode', 'carton_qty','taxable'
     ];
 
 

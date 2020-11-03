@@ -4,6 +4,8 @@ namespace Modules\Purchase\Entities;
 
 use App\Models\ModelService;
 use App\Models\Supplier;
+use App\Models\TaxRule;
+
 use Illuminate\Validation\Rule;
 use Modules\Inventory\Entities\Product;
 
@@ -18,7 +20,7 @@ class PurchaseDetail extends ModelService
         'price', 'sub_total', 'total',
         'estimated_date', 'qty_received', 'received_date',
         'ref', 'item_status', 'taxes',
-        'discounts'
+        'discounts','tax_rule_id'
     ];
 
     public function getRules($request, $item = null)
@@ -50,5 +52,8 @@ class PurchaseDetail extends ModelService
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-
+    public function tax_rules()
+    {
+        return $this->belongsTo(TaxRule::class, 'tax_rule_id');
+    }
 }
