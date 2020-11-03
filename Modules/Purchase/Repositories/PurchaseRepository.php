@@ -128,13 +128,13 @@ class PurchaseRepository extends RepositoryService
                         // We need to check update stock
                         if ($data['status']) { // Do not update when the stock is already received
                             // Increase stock quantity
-                            $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], '+', 'Purchase', $id, 0, 0, 'Recieved');
+                            $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], null, '+', 'Purchase', $id, 0, 0, 'Recieved');
 
                             // Decrease on order quantity
-                            $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], '-', 'Purchase', $id, $qty, 0, 'Ordered');
+                            $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], null, '-', 'Purchase', $id, $qty, 0, 'Ordered');
                         }
                         else{ // Not fulfilled, update on order quantity
-                            $availability_repository->updateStock($product_id, $qty, $data['location_id'], '+', 'Purchase', $id, $qty, 0, ' Ordered');
+                            $availability_repository->updateStock($product_id, $qty, $data['location_id'], null, '+', 'Purchase', $id, $qty, 0, ' Ordered');
                         }
                     }
                 }
@@ -156,10 +156,10 @@ class PurchaseRepository extends RepositoryService
             {
                 if ($purchase->status == 1) { // Finished. Update stock available
                     // Decrement on hand qty
-                    $availability_repository->updateStock($value->product_id, $value->qty_received, $purchase->location_id, "-", "Purchase", $id, 0, 0, "Remove item");
+                    $availability_repository->updateStock($value->product_id, $value->qty_received, $purchase->location_id, null, "-", "Purchase", $id, 0, 0, "Remove item");
                 } else { // Not finished, just update on order quantity
                     // Decrement on order qty
-                    $availability_repository->updateStock($value->product_id, 0, $purchase->location_id, "-", "Purchase", $id, $value->qty, 0, "Remove item");
+                    $availability_repository->updateStock($value->product_id, 0, $purchase->location_id, null, "-", "Purchase", $id, $value->qty, 0, "Remove item");
                 }
             }
             Purchase::where('id', $id)->delete();

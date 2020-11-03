@@ -44,7 +44,7 @@ class ProductRepository extends RepositoryService
                 ->where('sku', 'ILIKE', $sku)
                 ->orWhere('name', 'ILIKE', $sku);
         }
-      
+
 
         if (!empty($searchCriteria['id']) && empty($searchCriteria['list'])) {
             $this->queryBuilder
@@ -62,7 +62,7 @@ class ProductRepository extends RepositoryService
             $this->queryBuilder
                 ->where('category_id', $searchCriteria['category_id']);
         }
-       
+
         if (!empty($searchCriteria['brand_id'])) {
             $this->queryBuilder
                 ->where('brand_id', $searchCriteria['brand_id']);
@@ -166,7 +166,7 @@ class ProductRepository extends RepositoryService
                     foreach($data["tag_ids"] as $tag_id) {
                         ProductTag::create([
                             'product_id'    => $this->model->id,
-                            'tag_id'        => $tag_id,                            
+                            'tag_id'        => $tag_id,
                         ]);
                     }
                 }
@@ -237,12 +237,12 @@ class ProductRepository extends RepositoryService
 
             $current_tags = $this->model->tags->pluck('tag_id')->toArray();
             $deleted_tags = array_diff($current_tags, $data["tag_ids"]);
-            
+
             foreach($data["tag_ids"] as $tag_id) {
                 if ( !in_array($tag_id, $current_tags)) {
                     ProductTag::create([
                         'product_id'    => $this->model->id,
-                        'tag_id'        => $tag_id,                            
+                        'tag_id'        => $tag_id,
                     ]);
                 }
             }
@@ -706,43 +706,6 @@ class ProductRepository extends RepositoryService
         $this->combinationUtil($arr, $n, $r, $index, $data, $i + 1);
     }
 
-    // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
-    public function productAvailabilities(array $searchCriteria = [])
-    {
-
-        $searchCriteria['order_by'] = [
-            'field'         => 'name',
-            'direction'     => 'asc'
-        ];
-
-        $searchCriteria['per_page'] = 20;
-
-        $this->queryBuilder->with('brand')
-        ->with('category')->with('tags');
-
-        if (!empty($searchCriteria['location_id'])) {
-            $this->queryBuilder->with(['availabilities' => function ($query) use($searchCriteria) {
-                $query->where('location_id', $searchCriteria['location_id']);
-            }]);
-            unset($searchCriteria['location_id']);
-        }
-     
-        if (!empty($searchCriteria['tag_ids'])) {          
-            $this->queryBuilder->whereHas('tags', function ($query) use ($searchCriteria) {
-                    $query->whereIn('tag_id', $searchCriteria['tag_ids']);           
-            });           
-            unset($searchCriteria['tag_ids']);
-        }
-       
-        if (!empty($searchCriteria['stock_locator'])) {
-         
-            $this->queryBuilder->where('stock_locator', $searchCriteria['stock_locator']);
-            
-            unset($searchCriteria['stock_locator']);
-        }        
-
-        return parent::findBy($searchCriteria);
-    }
     public function stockCountData(array $searchCriteria = [])
     {
         $searchCriteria['order_by'] = [
@@ -754,11 +717,11 @@ class ProductRepository extends RepositoryService
         $this->queryBuilder->with('brand')
         ->with('category')->with('availabilities.location');
         if (!empty($searchCriteria['id'])) {
-         
+
             $this->queryBuilder->where('id', $searchCriteria['id']);
-            
+
             unset($searchCriteria['id']);
-        }  
+        }
         if (!empty($searchCriteria['location_id'])) {
             $this->queryBuilder->with(['availabilities' => function ($query) use($searchCriteria) {
                 $query->where('location_id', $searchCriteria['location_id']);
@@ -768,5 +731,5 @@ class ProductRepository extends RepositoryService
         return parent::findBy($searchCriteria);
 
     }
-    
+
 }

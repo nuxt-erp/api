@@ -71,7 +71,8 @@ class StockCountRepository extends RepositoryService
     public function destroy($id)
     {
 
-        $stockcount = StockCount::where('id', $id->id)->select('company_id', 'status')->get();
+        $stockcount = StockCount::where('id', $id->id)->get();
+        $availabilityRepository = new AvailabilityRepository(new Availability());
 
         // GET ALL SAVED QTY FROM COUNTING
         $stock = StockCountDetail::where('stockcount_id', $id->id)->get();
@@ -93,7 +94,7 @@ class StockCountRepository extends RepositoryService
 
             if ($stockcount->status == 1) {
                 // Decrement
-                $this->availabilityRepository->updateStock($stockcount->company_id, $value->product_id, $value->stock_on_hand, $value->location_id, "-", "Stock Count", $id, 0 , 0, "Remove item");
+                $availabilityRepository->updateStock($value->product_id, $value->stock_on_hand, $value->location_id, $value->bin_id, "-", "Stock Count", $id, 0 , 0, "Remove item");
             }
 
         }
@@ -135,11 +136,12 @@ class StockCountRepository extends RepositoryService
                 if($item->location_id){
 
                     Availability::updateOrCreate([
-                        'product_id'  => $item->product_id,
-                        'location_id' => $item->location_id
+                        'product_id'    => $item->product_id,
+                        'location_id'   => $item->location_id,
+                        'bin_id'        => $item->bin_id
                     ],
                     [
-                        'on_hand'   => $item->qty
+                        'on_hand'       => $item->qty
                     ]);
 
                     // add movement
@@ -149,6 +151,7 @@ class StockCountRepository extends RepositoryService
                     $log                = new ProductLog();
                     $log->product_id    = $item->product_id;
                     $log->location_id   = $item->location_id;
+                    $log->bin_id        = $item->bin_id;
                     $log->quantity      = $item->qty;
                     $log->ref_code_id   = $stockcount_id;
                     $log->type_id       = $type->id;
@@ -181,7 +184,8 @@ class StockCountRepository extends RepositoryService
                 StockCountDetail::updateOrCreate([
                     'stockcount_id' => $id,
                     'product_id'    => $data['product_id'] ?? $product['product_id'],
-                    'location_id'   => $data['location_id']
+                    'location_id'   => $data['location_id'],
+                    'bin_id'        => $data['bin_id'] ?? null
                 ],[
                     'qty'           => $qty,
                     'stock_on_hand' => $product['on_hand'],

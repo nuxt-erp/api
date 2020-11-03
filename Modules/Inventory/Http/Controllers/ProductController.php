@@ -23,12 +23,6 @@ class ProductController extends ControllerService implements CheckPolicies
         parent::__construct();
     }
 
-    public function productAvailabilities(Request $request)
-    {
-        $items = $this->repository->productAvailabilities($request->all());
-        return $this->sendFullCollectionResponse($items, AvailabilityStockCountResource::class);
-    }
-
     public function findCarriers(Request $request)
     {
         $isList = $request->has('list') && $request->list;
@@ -90,5 +84,5 @@ class ProductController extends ControllerService implements CheckPolicies
         $items = $this->repository->stockCountData($request->all());
         return $items;
     }
-    
+
 }

@@ -23,7 +23,9 @@ class StockCountDetailResource extends ResourceService
             'category_id'   => optional($this->product)->category_id,
             'category_name' => optional($this->product->category)->name,
             'location_id'   => $this->location_id,
-            'location_name' => optional($this->location)->name
+            'location_name' => optional($this->location)->name,
+            'bin_id'        => $this->bin_id,
+            'bin_name'      => optional($this->bin)->name,
         ];
     }
 }

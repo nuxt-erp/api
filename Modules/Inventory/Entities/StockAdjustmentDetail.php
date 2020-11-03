@@ -14,15 +14,16 @@ class StockAdjustmentDetail extends ModelService
     protected $fillable = [
         'stock_adjustment_id', 'product_id', 'location_id',
         'stock_on_hand', 'qty', 'variance',
-        'abs_variance', 'notes'
+        'abs_variance', 'notes', 'bin_id'
     ];
 
     public function getRules($request, $item = null)
     {
         $rules = [
-            'stock_adjustment_id'       => ['exists:tenant.inv_stock_ajustments,id'],
+            'stock_adjustment_id'       => ['exists:tenant.inv_stock_adjustments,id'],
             'product_id'                => ['exists:tenant.inv_products,id'],
             'location_id'               => ['nullable', 'exists:tenant.locations,id'],
+            'bin_id'                    => ['nullable', 'exists:tenant.inv_location_bins,id'],
             'stock_on_hand'             => ['integer'],
             'qty'                       => ['integer'],
             'variance'                  => ['integer'],

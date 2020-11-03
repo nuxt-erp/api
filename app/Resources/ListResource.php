@@ -18,6 +18,7 @@ class ListResource extends ResourceService
             'value'         => $this->id,
             'name'          => $this->description ?? $this->name ?? '',
             'label'         => $this->description ?? $this->name ?? '',
+            'description'   => $this->description,
             'is_default'    => isset($this->is_default) ? $this->is_default : 0
         ];
 
