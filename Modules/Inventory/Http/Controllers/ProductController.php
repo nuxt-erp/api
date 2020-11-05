@@ -6,7 +6,6 @@ use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 use App\Resources\ListResource;
 use Modules\Inventory\Repositories\ProductRepository;
-use Modules\Inventory\Transformers\AvailabilityStockCountResource;
 use Modules\Inventory\Transformers\ProductResource;
 use Illuminate\Http\Request;
 use Modules\Inventory\Entities\ProductCategory;

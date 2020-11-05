@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 use Modules\Inventory\Repositories\StockCountRepository;
+use Modules\Inventory\Transformers\StockCountProductsResource;
 use Modules\Inventory\Transformers\StockCountResource;
 
 class StockCountController extends ControllerService implements CheckPolicies
@@ -22,10 +23,8 @@ class StockCountController extends ControllerService implements CheckPolicies
 
     public function start(Request $request)
     {
-        //@todo
-        // 1 get all products
-        // 2 get all availabilities (filtered by location)
-        // 3 split by bin if exist
+        $result = $this->repository->findProductsAvailabilities($request->all());
+        return $this->sendArray($result);
     }
 
     public function finish($stockcount_id)
