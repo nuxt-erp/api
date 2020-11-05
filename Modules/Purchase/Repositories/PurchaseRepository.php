@@ -46,7 +46,6 @@ class PurchaseRepository extends RepositoryService
                 ->orWhere('invoice_number', 'ILIKE', $name);
 
         }
-        lad($this->queryBuilder->get());
         return parent::findBy($searchCriteria);
     }
 

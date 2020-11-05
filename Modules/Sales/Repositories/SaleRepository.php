@@ -29,10 +29,12 @@ class SaleRepository extends RepositoryService
     public function store($data)
     {
         DB::transaction(function () use ($data)
-        {
+        {          
+
             parent::store($data);
             // Save all products
             $api    = resolve('Shopify\API');
+
             $api->saveSaleDetails($data['sale_details'], $this->model->id);
         });
     }

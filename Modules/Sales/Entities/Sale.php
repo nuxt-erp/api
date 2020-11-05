@@ -10,6 +10,8 @@ use Illuminate\Validation\Rule;
 
 class Sale extends ModelService
 {
+    protected $connection = 'tenant';
+
     protected $table = 'sal_sales';
 
     protected $dates = [
@@ -27,20 +29,19 @@ class Sale extends ModelService
     public function getRules($request, $item = null)
     {
         $rules = [
-            'customer_id'           => ['nullable', 'exists:customers,id'],
-            'financial_status_id'   => ['nullable', 'exists:parameters,id'],
-            'fulfillment_status_id' => ['nullable', 'exists:parameters,id'],
-            'author_id'             => ['nullable', 'exists:users,id'],
+            'customer_id'           => ['nullable', 'exists:tenant.customers,id'],
+            'financial_status_id'   => ['nullable', 'exists:tenant.parameters,id'],
+            'fulfillment_status_id' => ['nullable', 'exists:tenant.parameters,id'],
+            'author_id'             => ['nullable', 'exists:tenant.users,id'],
             //@todo add more validation
         ];
-
         // CREATE
         if (is_null($item)){
-            $rules['order_number'][] = 'unique:sal_sales';
+            $rules['order_number'][] = 'unique:tenant.sal_sales';
             $rules['order_number'][] = 'required';
         } else {
             //update
-            $rules['order_number'][] = Rule::unique('sal_sales')->ignore($item->id);
+            $rules['order_number'][] = Rule::unique('tenant.sal_sales')->ignore($item->id);
         }
 
         return $rules;
@@ -53,7 +54,7 @@ class Sale extends ModelService
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class,'customer_id');
     }
 
     public function financial_status()
