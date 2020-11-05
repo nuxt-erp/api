@@ -23,7 +23,7 @@ class PriceTier extends ModelService
         $rules = [
             'name'          => ['string', 'max:255'],
             'markup'        => ['nullable', 'numeric'],
-            'markup_type'   => ['nullable', Rule::in(['cost', 'msrp'])],
+            'markup_type'   => ['nullable', Rule::in(['cost', 'msrp','custom'])],
             'custom_price'  => ['nullable', 'numeric']
         ];
 
