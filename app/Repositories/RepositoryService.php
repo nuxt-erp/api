@@ -6,7 +6,7 @@ use App\Exceptions\ConstrainException;
 use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
+
 
 abstract class RepositoryService implements RepositoryInterface
 {
@@ -62,11 +62,6 @@ abstract class RepositoryService implements RepositoryInterface
             }
         }
 
-        if(!empty($searchCriteria['include'])){
-            $find = $this->model->where($searchCriteria['include']['field'], $searchCriteria['include']['value']);
-            $this->queryBuilder->union($find);
-        }
-
         if(!empty($searchCriteria['exclude'])){
             $this->queryBuilder->where($searchCriteria['exclude']['field'], '!=', $searchCriteria['exclude']['value']);
         }
@@ -78,18 +73,11 @@ abstract class RepositoryService implements RepositoryInterface
         });
 
         if($isList){
-            $model_name = (new \ReflectionClass($this->model))->getShortName();
-            $key = $model_name.'_'.serialize($searchCriteria);
-
-            $result = Cache::remember($key, 60, function () use($limit){
-                return $this->queryBuilder->limit($limit)->get();
-            });
+            return $this->queryBuilder->limit($limit)->get();
         }
         else{
-            $result = $this->queryBuilder->paginate($limit);
+            return $this->queryBuilder->paginate($limit);
         }
-
-        return  $result;
     }
 
     /**

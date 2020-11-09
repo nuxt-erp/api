@@ -98,14 +98,20 @@ class StockCountRepository extends RepositoryService
             $qb->where('is_enabled', $filter['is_enabled']);
         }
 
-        $products = $qb->paginate($filter['per_page']);
+        if(!empty($filter['per_page'])){
+            $products = $qb->paginate($filter['per_page']);
+        }
+        else{
+            $products = $qb->limit(1)->get();
+        }
+
 
         $location       = Location::find($filter['location_id']);
         $bins           = $location->bins;
         $availabilities = [];
         foreach ($products as $product) {
 
-            if(!empty($bins)){
+            if(!empty($bins) && isset($filter['bin_ids'])){
                 foreach ($bins as $bin) {
                     // no bin filter OR the bin match the filter
                     if(empty($filter['bin_ids']) || in_array($bin->id, $filter['bin_ids'])){
@@ -119,10 +125,13 @@ class StockCountRepository extends RepositoryService
                 }
             }
             else{
+                lad('else');
                 $availability = $product->availabilities()
                     ->where('location_id', $location->id)
                     ->whereNull('bin_id')
                     ->first();
+
+                lad('$availability', $availability);
 
                 $availabilities[] = $this->getAvailability($product, $location, $availability);
             }
@@ -130,7 +139,7 @@ class StockCountRepository extends RepositoryService
 
         $collection = $products->toArray();
 
-        return ['list' => $availabilities, 'pagination' => Arr::except($collection, 'data')];
+        return !empty($filter['per_page']) ? ['list' => $availabilities, 'pagination' => Arr::except($collection, 'data')] : $availabilities;
     }
 
     private function getAvailability($product, $location, $availability, $bin = null){

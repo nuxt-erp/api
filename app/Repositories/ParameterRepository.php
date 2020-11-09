@@ -11,10 +11,10 @@ class ParameterRepository extends RepositoryService
         if (!empty($searchCriteria['text'])) {
             $text = '%' . Arr::pull($searchCriteria, 'text') . '%';
             $this->queryBuilder->where(function ($query) use($text) {
-                $query->where('name', 'ILIKE', $text)
+                $query->where('description', 'ILIKE', $text)
                 ->orWhere('value', 'ILIKE', $text);
             });
-        }        
+        }
 
         return parent::findBy($searchCriteria);
     }

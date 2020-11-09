@@ -82,7 +82,7 @@ class ProductRepository extends RepositoryService
             $this->queryBuilder
                 ->where('is_enabled', $searchCriteria['is_enabled']);
         }else{
-           
+
             $this->queryBuilder
                 ->where('is_enabled', 1);
         }
@@ -91,6 +91,12 @@ class ProductRepository extends RepositoryService
             $this->queryBuilder
                 ->where('sku', 'ILIKE', $sku)
                 ->orWhere('name', 'ILIKE', $sku);
+        }
+        if (!empty($searchCriteria['text'])) {
+            $text = '%' . Arr::pull($searchCriteria, 'text') . '%';
+            $this->queryBuilder
+                ->where('sku', 'ILIKE', $text)
+                ->orWhere('name', 'ILIKE', $text);
         }
         if (Arr::has($searchCriteria, 'complete_name')) {
             $searchCriteria['query_type']   = 'ILIKE';
