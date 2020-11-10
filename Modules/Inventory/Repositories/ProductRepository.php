@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Entities\Family;
 use Modules\Inventory\Entities\FamilyAttribute;
 
+use Modules\Inventory\Entities\PriceTierItems;
+
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductAttributes;
 use Modules\Inventory\Entities\ProductPromo;
@@ -182,6 +184,7 @@ class ProductRepository extends RepositoryService
     {
         $this->suppliers = !empty($data["suppliers"]);
         $this->discounts = !empty($data["discounts"]);
+        $this->priceTiers = !empty($data["price_tier_items"]);
 
         parent::update($model,$data);
         $this->createAttribute($data);
@@ -190,6 +193,9 @@ class ProductRepository extends RepositoryService
         }
         if($this->discounts) {
             $this->updateDiscounts($data);
+        }
+        if($this->priceTiers) {
+            $this->updatepriceTiers($data);
         }
         if(!empty($data['deleteDiscounts'])) {
             foreach ($data['deleteDiscounts'] as $deleteDiscount) {
@@ -384,6 +390,22 @@ class ProductRepository extends RepositoryService
                     $new = ProductSupplierLocations::updateOrCreate($supplierLocationsArray);
                 }
             }
+        }
+    }
+    
+    private function updatepriceTiers($data) {
+        $priceTierItems = $data['price_tier_items'];
+
+        foreach ($priceTierItems as $priceTierItem)
+        {
+            $discountsArray = [
+              
+                'custom_price'   => $priceTierItem['custom_price']
+                
+            ];
+           
+            PriceTierItems::updateOrCreate(['id' =>  $priceTierItem['id']], $discountsArray);
+           
         }
     }
     private function updateDiscounts($data) {
