@@ -171,8 +171,7 @@ class ShopifyService
                                 );
 
                                 // Allocated quantity
-                                $this->updateStock($product_id, 0, null, '+', 'Sale', $sale->id, 0, $items['quantity'], 'Allocated quantity');
-                                //updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
+                                $this->updateStock($product_id, 0, null, null, '+', 'Sale', $sale->id, 0, $items['quantity'], 'Allocated quantity');
                             }
                         }
 
@@ -272,10 +271,10 @@ class ShopifyService
         return $country;
     }
 
-    public function updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
+    public function updateStock($product_id, $qty, $location_id, $bin_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
     {
         // UPDATE STOCK AVAILABILITY
-        $this->availabilityRepository->updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty, $allocated_qty, $description);
+        $this->availabilityRepository->updateStock($product_id, $qty, $location_id, $bin_id, $operator, $type, $ref_code, $on_order_qty, $allocated_qty, $description);
     }
 
     private function checkFulfillments($data, $sale_id)
@@ -343,12 +342,10 @@ class ShopifyService
     public function setItemFulfilled($product_id, $quantity, $location_id, $operation, $fulfillment_status_id, $fulfillment_date, $sale_id)
     {
         // Update stock on hand
-                        // ($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
-        $this->updateStock($product_id, $quantity, $location_id, $operation, 'Sale', $sale_id, 0, 0, ($operation == '+' ? 'Item cancelled fulfillment' : 'Item fulfilled'));
+        $this->updateStock($product_id, $quantity, $location_id, null, $operation, 'Sale', $sale_id, 0, 0, ($operation == '+' ? 'Item cancelled fulfillment' : 'Item fulfilled'));
 
         // Update allocated quantity
-              //updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
-        $this->updateStock($product_id, 0, $location_id, $operation, 'Sale', $sale_id, 0, $quantity, ($operation == '+' ? 'Item cancelled returning allocated quantity' : 'Allocated quantity'));
+        $this->updateStock($product_id, 0, $location_id, null, $operation, 'Sale', $sale_id, 0, $quantity, ($operation == '+' ? 'Item cancelled returning allocated quantity' : 'Allocated quantity'));
 
         // Update Sale Details
         SaleDetails::where(['product_id' => $product_id, 'sale_id' => $sale_id])->update([
@@ -393,11 +390,9 @@ class ShopifyService
                 foreach ($sale->details as $detail) {
                     // Undo stock on hand just when fulfilled
                     if ($sale->fulfillment_status->name == 'fulfilled') {
-                        $this->updateStock($detail->product_id, $detail->qty_fulfilled, $detail->location_id, '+', 'Sale', $id, 0, 0, 'Returning stock - item deleted');
-                        //updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
+                        $this->updateStock($detail->product_id, $detail->qty_fulfilled, $detail->location_id, null, '+', 'Sale', $id, 0, 0, 'Returning stock - item deleted');
                     } else { // Update allocated qty
-                        $this->updateStock($detail->product_id, 0, $detail->location_id, '-', 'Sale', $id, 0, $detail->qty, 'Remove allocated qtd - item deleted');
-                        //updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
+                        $this->updateStock($detail->product_id, 0, $detail->location_id, null, '-', 'Sale', $id, 0, $detail->qty, 'Remove allocated qtd - item deleted');
                     }
                 }
             }

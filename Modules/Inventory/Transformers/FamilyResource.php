@@ -24,7 +24,6 @@ class FamilyResource extends ResourceService
             'sku'               => $this->sku,
             'launch_at'         => $this->launch_at,
             'stock_locator'     => $this->stock_locator,
-            'stock_locator_name'=> optional($this->stock_locator)->name,
             'measure_id'        => $this->measure_id,
             'measure_name'      => optional($this->measure)->name,
             'price'             => $this->price,

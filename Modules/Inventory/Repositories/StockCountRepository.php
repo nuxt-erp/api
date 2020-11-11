@@ -2,6 +2,7 @@
 
 namespace Modules\Inventory\Repositories;
 
+use App\Models\Location;
 use App\Models\Parameter;
 use Illuminate\Support\Arr;
 use App\Repositories\RepositoryService;
@@ -10,7 +11,8 @@ use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductLog;
-use Auth;
+use Modules\Inventory\Entities\Product;
+
 class StockCountRepository extends RepositoryService
 {
 
@@ -68,32 +70,121 @@ class StockCountRepository extends RepositoryService
         return parent::findBy($searchCriteria);
     }
 
+    public function findProductsAvailabilities($filter){
+
+        $qb = Product::with(['brand', 'product_attributes.attribute', 'category']);
+
+        if(!empty($filter['brand_id'])){
+            $qb->where('brand_id', $filter['brand_id']);
+        }
+
+        if(!empty($filter['product_id'])){
+            $qb->where('id', $filter['product_id']);
+        }
+
+        if(!empty($filter['category_id'])){
+            $qb->where('category_id', $filter['category_id']);
+        }
+
+        if(!empty($filter['stock_locator'])){
+            $qb->where('stock_locator', $filter['stock_locator']);
+        }
+        // @todo check, tag is a many relation
+        if(!empty($filter['tag_ids'])){
+            $qb->whereIn('tag_ids', $filter['tag_ids']);
+        }
+
+        if(isset($filter['is_enabled'])){
+            $qb->where('is_enabled', $filter['is_enabled']);
+        }
+
+        if(!empty($filter['per_page'])){
+            $products = $qb->paginate($filter['per_page']);
+        }
+        else{
+            $products = $qb->limit(1)->get();
+        }
+
+
+        $location       = Location::find($filter['location_id']);
+        $bins           = $location->bins;
+        $availabilities = [];
+        foreach ($products as $product) {
+
+            if(!empty($bins) && isset($filter['bin_ids'])){
+                foreach ($bins as $bin) {
+                    // no bin filter OR the bin match the filter
+                    if(empty($filter['bin_ids']) || in_array($bin->id, $filter['bin_ids'])){
+                        $availability = $product->availabilities()
+                        ->where('location_id', $location->id)
+                        ->where('bin_id', $bin->id)
+                        ->first();
+
+                        $availabilities[] = $this->getAvailability($product, $location, $availability, $bin);
+                    }
+                }
+            }
+            else{
+                lad('else');
+                $availability = $product->availabilities()
+                    ->where('location_id', $location->id)
+                    ->whereNull('bin_id')
+                    ->first();
+
+                lad('$availability', $availability);
+
+                $availabilities[] = $this->getAvailability($product, $location, $availability);
+            }
+        }
+
+        $collection = $products->toArray();
+
+        return !empty($filter['per_page']) ? ['list' => $availabilities, 'pagination' => Arr::except($collection, 'data')] : $availabilities;
+    }
+
+    private function getAvailability($product, $location, $availability, $bin = null){
+
+        $on_hand        = $availability ? $availability->on_hand : 0;
+        $available      = $availability ? $availability->available : 0;
+        $location_id    = $availability ? $availability->location_id : $location->id;
+        $location_name  = $availability ? optional($availability->location)->name : $location->name;
+        $bin_id         = $availability ? $availability->bin_id : ($bin->id ?? null);
+        $bin_name       = $availability ? optional($availability->bin)->name : ($bin->name ?? null);
+
+        return [
+            'product_id'        => $product->id,
+            'product_name'      => $product->name,
+            'product_sku'       => $product->sku,
+            'product_brand'     => optional($product->brand)->name,
+            'product_category'  => optional($product->category)->name,
+            'location_id'       => $location_id,
+            'location_name'     => $location_name,
+            'bin_id'            => $bin_id,
+            'bin_name'          => $bin_name,
+            'on_hand'           => $on_hand,
+            'available'         => $available,
+            'qty'               => 0,
+            'variance'          => 0,
+            'notes'             => null
+        ];
+    }
+
     public function destroy($id)
     {
 
-        $stockcount = StockCount::where('id', $id->id)->select('company_id', 'status')->get();
+        $stockcount = StockCount::where('id', $id->id)->get();
+        $availabilityRepository = new AvailabilityRepository(new Availability());
 
         // GET ALL SAVED QTY FROM COUNTING
         $stock = StockCountDetail::where('stockcount_id', $id->id)->get();
 
         foreach ($stock as $value)
         {
-            /*
-            ProductAvailability::updateOrCreate([
-                'product_id'  => $value->product_id,
-                'company_id'  => Auth::user()->company_id,
-                'location_id' => $value->location_id
-            ],
-            [
-                'available' => $value->stock_on_hand, // PREVIOUS QTY
-                'on_hand'   => $value->stock_on_hand  // PREVIOUS QTY
-            ]);*/
-
             // Undo stock when stock take is finished
 
             if ($stockcount->status == 1) {
                 // Decrement
-                $this->availabilityRepository->updateStock($stockcount->company_id, $value->product_id, $value->stock_on_hand, $value->location_id, "-", "Stock Count", $id, 0 , 0, "Remove item");
+                $availabilityRepository->updateStock($value->product_id, $value->stock_on_hand, $value->location_id, $value->bin_id, "-", "Stock Count", $id, 0 , 0, "Remove item");
             }
 
         }
@@ -109,7 +200,7 @@ class StockCountRepository extends RepositoryService
             // SAVE STOCK TAKE
             parent::store($data);
             // SAVE STOCK TAKE PRODUCTS
-            $this->saveStockCountDetail($data, $this->model->id);
+            $this->model->details()->sync($data['list_products']);
         });
     }
 
@@ -118,7 +209,7 @@ class StockCountRepository extends RepositoryService
         DB::transaction(function () use ($data, $model){
             parent::update($model, $data);
             // UPDATE STOCK TAKE PRODUCTS
-            $this->saveStockCountDetail($data, $this->model->id);
+            $this->model->details()->sync($data['list_products']);
         });
     }
 
@@ -135,11 +226,12 @@ class StockCountRepository extends RepositoryService
                 if($item->location_id){
 
                     Availability::updateOrCreate([
-                        'product_id'  => $item->product_id,
-                        'location_id' => $item->location_id
+                        'product_id'    => $item->product_id,
+                        'location_id'   => $item->location_id,
+                        'bin_id'        => $item->bin_id
                     ],
                     [
-                        'on_hand'   => $item->qty
+                        'on_hand'       => $item->qty
                     ]);
 
                     // add movement
@@ -149,11 +241,12 @@ class StockCountRepository extends RepositoryService
                     $log                = new ProductLog();
                     $log->product_id    = $item->product_id;
                     $log->location_id   = $item->location_id;
+                    $log->bin_id        = $item->bin_id;
                     $log->quantity      = $item->qty;
                     $log->ref_code_id   = $stockcount_id;
                     $log->type_id       = $type->id;
                     $log->description   = 'Finished stock count - changing quantity';
-                    $log->user_id       =  Auth::user()->id;
+                    $log->user_id       =  auth()->user()->id;
                     $log->save();
 
                 }
@@ -165,32 +258,4 @@ class StockCountRepository extends RepositoryService
             return true;
         });
     }
-
-    private function saveStockCountDetail($data, $id)
-    {
-
-        if (!empty($data['list_products']))
-        {
-            // DELETE ITEMS TO INSERT THEM AGAIN
-            StockCountDetail::where('stockcount_id', $id)->delete();
-
-            foreach ($data['list_products'] as $product) {
-                $qty    = $product['qty'] ?? 0;
-                $notes  = $product['notes'] ?? null;
-
-                StockCountDetail::updateOrCreate([
-                    'stockcount_id' => $id,
-                    'product_id'    => $data['product_id'] ?? $product['product_id'],
-                    'location_id'   => $data['location_id']
-                ],[
-                    'qty'           => $qty,
-                    'stock_on_hand' => $product['on_hand'],
-                    'variance'      => ($qty - $product['on_hand']),
-                    'abs_variance'  => abs($qty - $product['on_hand']),
-                    'notes'         => $notes
-                ]);
-            }
-        }
-    }
-
 }

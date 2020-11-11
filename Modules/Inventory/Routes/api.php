@@ -40,11 +40,17 @@ Route::middleware('auth:api')->group(function () {
         Route::get('raw_material_products', 'ProductController@findRawMaterials');
         Route::get('find_sku/{sku} ', 'ProductController@findBySKU');
 
+        Route::resource('location_bins', 'LocationBinController');
+
         Route::resource('stock_adjustments', 'StockAdjustmentController');
         Route::resource('stock_adjustment_details', 'StockAdjustmentDetailController');
         Route::resource('stock_count', 'StockCountController');
         Route::resource('stock_count_details', 'StockCountDetailController');
         Route::get('stock_count/finish/{id?}', 'StockCountController@finish'); // ADJUST AND FINISH STOCK TAKE
+        Route::get('stock_on_hand', 'AvailabilityController@stockOnHand');
+        Route::get('stock_count_data', 'ProductController@stockCountData');
+        Route::get('start_stock_count', 'StockCountController@start');
+
         Route::resource('transfers', 'TransferController');
         Route::get('transfer/remove/{id?}', 'TransferController@remove');
         Route::get('transfer/packingSlip/{id?}', 'TransferController@exportPackingSlip'); // EXPORT PACKING SLIP
@@ -56,18 +62,14 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('families', 'FamilyController');
         Route::resource('family_attributes', 'FamilyAttributeController');
         Route::resource('availabilities', 'AvailabilityController');
-        Route::get('products_availabilities', 'ProductController@productAvailabilities');
-        Route::get('stock_on_hand', 'AvailabilityController@stockOnHand');
-        Route::get('stock_count_data', 'ProductController@stockCountData');
         Route::get('sku_suppliers', 'ProductSuppliersController@skuSuppliers');
-
         Route::resource('price_tiers', 'PriceTierController');
         Route::resource('price_tier_items', 'PriceTierItemsController');
 
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');
         Route::resource('customer_discounts', 'CustomerDiscountController');
-
+        // XLS IMPORT
         Route::post('products_import/{type}', 'ImportController@productsImport');
 
     });

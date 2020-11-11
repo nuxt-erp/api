@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
+
 abstract class RepositoryService implements RepositoryInterface
 {
 
@@ -50,8 +51,6 @@ abstract class RepositoryService implements RepositoryInterface
     {
         $isList = !empty($searchCriteria['list']) && $searchCriteria['list'];
 
-        //@todo if is to fill a list, probably we must filter when is_enabled = 0
-
         if (isset($searchCriteria['order_by']) && !empty($searchCriteria['order_by']['field'])) {
             if(!empty($searchCriteria['order_by']['table'])){
                 $this->queryBuilder->with([$searchCriteria['order_by']['table'] => function ($q) use($searchCriteria){
@@ -63,11 +62,6 @@ abstract class RepositoryService implements RepositoryInterface
             }
         }
 
-        if(!empty($searchCriteria['include'])){
-            $find = $this->model->where($searchCriteria['include']['field'], $searchCriteria['include']['value']);
-            $this->queryBuilder->union($find);
-        }
-
         if(!empty($searchCriteria['exclude'])){
             $this->queryBuilder->where($searchCriteria['exclude']['field'], '!=', $searchCriteria['exclude']['value']);
         }
@@ -77,7 +71,13 @@ abstract class RepositoryService implements RepositoryInterface
         $this->queryBuilder->where(function ($query) use ($searchCriteria) {
             $this->applySearchCriteriaInQueryBuilder($query, $searchCriteria);
         });
-        return $isList ? $this->queryBuilder->limit($limit)->get() : $this->queryBuilder->paginate($limit);
+
+        if($isList){
+            return $this->queryBuilder->limit($limit)->get();
+        }
+        else{
+            return $this->queryBuilder->paginate($limit);
+        }
     }
 
     /**

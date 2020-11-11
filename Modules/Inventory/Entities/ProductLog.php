@@ -26,7 +26,8 @@ class ProductLog extends ModelService
 
     protected $fillable = [
         'product_id', 'location_id', 'type_id',
-        'ref_code_id', 'quantity', 'description','user_id'
+        'ref_code_id', 'quantity', 'description',
+        'user_id', 'bin_id'
 
     ];
 
@@ -35,11 +36,12 @@ class ProductLog extends ModelService
         $rules = [
             'product_id'    => ['exists:tenant.inv_products,id'],
             'location_id'   => ['nullable', 'exists:tenant.locations,id'],
+            'bin_id'        => ['nullable', 'exists:tenant.inv_location_bins,id'],
             'type_id'       => ['nullable', 'exists:tenant.parameters,id'],
             'ref_code_id'   => ['nullable', 'integer'],
             'quantity'      => ['nullable', 'number'],
             'description'   => ['nullable', 'string', 'max:255'],
-            'user_id'           => ['nullable', 'exists:tenant.users,id']
+            'user_id'       => ['nullable', 'exists:tenant.users,id']
 
         ];
 
@@ -69,7 +71,7 @@ class ProductLog extends ModelService
     }
     public function getSourceAttribute()
     {
-       
+
         if ($this->type->name == self::TYPE_LOG_SALE) {
             $get = Sale::where('id', $this->ref_code_id)->with('customer')->first();
             if ($get) {
@@ -81,14 +83,14 @@ class ProductLog extends ModelService
                 return $get->supplier->name;
             }
         }
-       
+
     }
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
-    
-   
+
+
 }
 

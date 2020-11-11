@@ -25,9 +25,10 @@ class Product extends ModelService
         'cost', 'price', 'barcode',
         'length', 'width', 'height',
         'weight', 'launch_at', 'is_enabled',
-        'disabled_at', 'sales_channel','stock_locator','measure_id',
-        'carton_length', 'carton_width', 'carton_height',
-        'carton_weight', 'msrp','taxable'
+        'disabled_at', 'sales_channel','stock_locator',
+        'measure_id', 'carton_length', 'carton_width',
+        'carton_height', 'carton_weight', 'msrp',
+        'carton_barcode', 'carton_qty','taxable'
     ];
 
 
@@ -39,10 +40,10 @@ class Product extends ModelService
             'category_id'   => ['nullable', 'exists:tenant.inv_categories,id'],
             'supplier_id'   => ['nullable', 'exists:tenant.suppliers,id'],
             'family_id'     => ['nullable', 'exists:tenant.inv_families,id'],
-            'stock_locator' => ['nullable', 'exists:tenant.inv_stock_locator,id'],
             'measure_id'    => ['nullable', 'exists:tenant.inv_measure,id'],
             'location_id'   => ['nullable', 'exists:tenant.locations,id'],
-
+            'carton_barcode'=> ['nullable', 'string', 'max:255'],
+            'carton_qty'    => ['nullable', 'numeric']
             //@todo add more validation
         ];
 
@@ -130,10 +131,6 @@ class Product extends ModelService
         return $this->belongsTo(Supplier::class);
     }
 
-    public function stockLocator()
-    {
-        return $this->belongsTo(StockLocator::class);
-    }
     public function measure()
     {
         return $this->belongsTo(Measure::class);
