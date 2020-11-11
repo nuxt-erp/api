@@ -19,6 +19,7 @@ class PriceTierItemsResource extends ResourceService
             'price_tier_id'     => $this->price_tier_id,
             'product_id'        => $this->product_id,
             'name'              => $this->product->name,
+            'Tier_name'         => optional($this->price_tier)->name,
             'sku'               => $this->product->sku,
             'cost'              => $this->product->cost,
             'msrp'              => $this->product->msrp,

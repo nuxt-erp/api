@@ -10,6 +10,8 @@ use Modules\Inventory\Entities\Product;
 
 class SaleDetails extends ModelService
 {
+    protected $connection = 'tenant';
+
     protected $table = 'sal_sale_details';
 
     protected $dates = [

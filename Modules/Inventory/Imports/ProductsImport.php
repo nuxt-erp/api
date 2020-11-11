@@ -31,10 +31,14 @@ class ProductsImport implements ToArray, WithHeadingRow
 
             $custom_names = [];
             $settings->each(function ($item, $key) use(&$custom_names){
-                $custom_names[$item->entity.'_'.$item->column_name] = $item->custom_name;
+                $custom_names[$item->entity.'_'.$item->column_name] = strtolower($item->custom_name);
             });
 
             lad($custom_names);
+            if(count($rows) > 0){
+                lad("row0", $rows[0]);
+            }
+
 
             foreach ($rows as $key => $row)
             {

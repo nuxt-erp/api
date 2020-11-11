@@ -29,6 +29,7 @@ use Modules\Inventory\Entities\TransferDetails;
 use Modules\Inventory\Entities\CustomerDiscount;
 use Modules\Inventory\Entities\LocationBin;
 use Modules\Inventory\Entities\PriceTier;
+use Modules\Inventory\Entities\PriceTierItems;
 use Modules\Inventory\Entities\ProductCustomPrice;
 use Modules\Inventory\Entities\ProductImportSettings;
 use Modules\Inventory\Entities\ProductTag;
@@ -58,6 +59,8 @@ use Modules\Inventory\Repositories\TransferDetailsRepository;
 use Modules\Inventory\Repositories\CustomerDiscountRepository;
 use Modules\Inventory\Repositories\LocationBinRepository;
 use Modules\Inventory\Repositories\PriceTierRepository;
+use Modules\Inventory\Repositories\PriceTierItemsRepository;
+
 use Modules\Inventory\Repositories\ProductCustomPriceRepository;
 use Modules\Inventory\Repositories\ProductImportSettingsRepository;
 use Modules\Inventory\Repositories\ProductTagRepository;
@@ -87,6 +90,8 @@ use Modules\Inventory\Transformers\TransferDetailsResource;
 use Modules\Inventory\Transformers\CustomerDiscountResource;
 use Modules\Inventory\Transformers\LocationBinResource;
 use Modules\Inventory\Transformers\PriceTierResource;
+use Modules\Inventory\Transformers\PriceTierItemsResource;
+
 use Modules\Inventory\Transformers\ProductCustomPriceResource;
 use Modules\Inventory\Transformers\ProductImportSettingsResource;
 use Modules\Inventory\Transformers\ProductTagResource;
@@ -344,6 +349,13 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(LocationBinResource::class, function () {
             return new LocationBinResource(new LocationBin());
         });
+
+        $this->app->bind(PriceTierItemsRepository::class, function () {
+            return new PriceTierItemsRepository(new PriceTierItems());
+        });
+        $this->app->bind(PriceTierItemsResource::class, function () {
+            return new PriceTierItemsResource(new PriceTierItems());
+        });
     }
 
     /**
@@ -381,7 +393,9 @@ class InventoryServiceProvider extends ServiceProvider
             ProductTagRepository::class,
             ProductImportSettingsRepository::class,
             PriceTierRepository::class,
-            LocationBinRepository::class
+            LocationBinRepository::class,
+            PriceTierItemsRepository::class
+
         ];
     }
 

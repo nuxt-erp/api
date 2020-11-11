@@ -11,6 +11,25 @@ use Modules\Inventory\Entities\Product;
 
 class PriceTierRepository extends RepositoryService
 {
+  /*  public function findBy(array $searchCriteria = [])
+    {
+        if(empty($searchCriteria['order_by'])){
+            $searchCriteria['order_by'] = [
+                'field'         => 'name',
+                'direction'     => 'desc'
+            ];
+        }
+        if (!empty($searchCriteria['product_id']))
+        {
+            $product_id = Arr::pull($searchCriteria, 'product_id');
+            $this->queryBuilder->whereHas('items', function ($query) use ($product_id) {
+                $query->where('inv_price_tier_items.product_id', $product_id);
+            });
+        }
+
+        return parent::findBy($searchCriteria);
+    }
+*/
 
     public function store(array $data)
     {

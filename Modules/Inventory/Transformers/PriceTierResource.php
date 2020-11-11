@@ -19,6 +19,7 @@ class PriceTierResource extends ResourceService
             'name'              => $this->name,
             'markup'            => $this->markup,
             'markup_type'       => $this->markup_type,
+            'markup_name'       =>$this->markup_type==null?'custom':$this->markup_type,   
             'custom_price'      => $this->custom_price,
             'author_id'         => $this->author_id,
             'author_name'       => optional($this->author)->name,

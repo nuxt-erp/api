@@ -64,6 +64,8 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('availabilities', 'AvailabilityController');
         Route::get('sku_suppliers', 'ProductSuppliersController@skuSuppliers');
         Route::resource('price_tiers', 'PriceTierController');
+        Route::resource('price_tier_items', 'PriceTierItemsController');
+
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');
         Route::resource('customer_discounts', 'CustomerDiscountController');

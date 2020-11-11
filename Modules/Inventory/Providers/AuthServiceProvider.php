@@ -19,6 +19,7 @@ use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\StockLocator;
 use Modules\Inventory\Entities\Measure;
 use Modules\Inventory\Entities\PriceTier;
+use Modules\Inventory\Entities\PriceTierItems;
 use Modules\Inventory\Entities\ProductCustomPrice;
 use Modules\Inventory\Entities\ProductImportSettings;
 use Modules\Inventory\Entities\ProductPromo;
@@ -45,6 +46,8 @@ use Modules\Inventory\Policies\ProductPolicy;
 use Modules\Inventory\Policies\StockLocatorPolicy;
 use Modules\Inventory\Policies\MeasurePolicy;
 use Modules\Inventory\Policies\PriceTierPolicy;
+use Modules\Inventory\Policies\PriceTierItemsPolicy;
+
 use Modules\Inventory\Policies\ProductCustomPricePolicy;
 use Modules\Inventory\Policies\ProductImportSettingsPolicy;
 use Modules\Inventory\Policies\ProductPromoPolicy;
@@ -100,5 +103,7 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::policy(ProductImportSettings::class, ProductImportSettingsPolicy::class);
         Gate::policy(PriceTier::class, PriceTierPolicy::class);
+        Gate::policy(PriceTierItems::class, PriceTierItemsPolicy::class);
+
     }
 }
