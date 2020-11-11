@@ -29,8 +29,9 @@ class ListResource extends ResourceService
                 $resource['cost']   = $this->cost;
                 break;
             case 'Parameter':
-                $resource['name']   = $this->name;
-                $resource['value']  = $this->value;
+                $resource['name']           = $this->name;
+                $resource['description']    = $this->description ?? $this->name;
+                $resource['value']          = $this->value;
                 break;
             case 'ParameterType':
                 $resource['value']  = $this->value;
