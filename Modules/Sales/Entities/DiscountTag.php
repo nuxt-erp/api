@@ -3,6 +3,7 @@
 namespace Modules\Sales\Entities;
 
 use App\Models\ModelService;
+use App\Models\Tag;
 use Illuminate\Validation\Rule;
 
 class DiscountTag extends ModelService

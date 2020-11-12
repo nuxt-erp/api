@@ -4,6 +4,7 @@ namespace Modules\Sales\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Modules\Sales\Entities\Discount;
 
 class DiscountPolicy
 {
@@ -19,7 +20,7 @@ class DiscountPolicy
         return $currentUser->isAdmin();
     }
 
-    public function show(User $currentUser, EntityName $target)
+    public function show(User $currentUser, Discount $target)
     {
         return $currentUser->isAdmin();
     }
@@ -29,12 +30,12 @@ class DiscountPolicy
         return $currentUser->isAdmin();
     }
 
-    public function update(User $currentUser, EntityName $target)
+    public function update(User $currentUser, Discount $target)
     {
         return $currentUser->isAdmin();
     }
 
-    public function destroy(User $currentUser, EntityName $target)
+    public function destroy(User $currentUser, Discount $target)
     {
         return $currentUser->isAdmin();
     }

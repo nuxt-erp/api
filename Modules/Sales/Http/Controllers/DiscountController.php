@@ -20,4 +20,5 @@ class DiscountController extends ControllerService implements CheckPolicies
         $this->resource = $resource;
         parent::__construct();
     }
+    
 }

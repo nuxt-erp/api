@@ -23,7 +23,6 @@ class DiscountRuleResource extends ResourceService
             'discount_application_id'  => $this->discount_application_id,
             'include'                  => $this->include,
             'exclude'                  => $this->exclude,
-            'stackable'                => $this->stackable,
             'all_products'             => $this->all_products,
             'created_at'               => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'               => optional($this->updated_at)->format('Y-m-d H:i:s'),
