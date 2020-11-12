@@ -12,7 +12,7 @@ use Modules\Inventory\Entities\Product;
 
 class PriceTierRepository extends RepositoryService
 {
-  /*  public function findBy(array $searchCriteria = [])
+    /*  public function findBy(array $searchCriteria = [])
     {
         if(empty($searchCriteria['order_by'])){
             $searchCriteria['order_by'] = [
@@ -30,7 +30,7 @@ class PriceTierRepository extends RepositoryService
 
         return parent::findBy($searchCriteria);
     }
-*/
+    */
 
     public function applyChanges(array $data = [])
     {
