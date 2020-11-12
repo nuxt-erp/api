@@ -145,7 +145,6 @@ class ProjectSamplesRepository extends RepositoryService
             elseif($rejected || $customer_rejected){
                 $data['phase_id']       = Phase::where('name', 'rework')->first()->id;
                 $data['status']         = 'rework';
-                $data['assignee_id']    = null;
                 $data['finished_at']    = null;
                 $data['started_at']     = null;
             }
