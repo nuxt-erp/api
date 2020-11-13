@@ -28,6 +28,11 @@ class ProjectRepository extends RepositoryService
             $this->queryBuilder->where('status', 'ILIKE', $text);
         }
 
+        if(!empty($searchCriteria['exclude_status'])){
+            $text = Arr::pull($searchCriteria, 'exclude_status');
+            $this->queryBuilder->where('status', '<>', $text);
+        }
+
         if(!empty($searchCriteria['sample_status'])){
             lad($searchCriteria['sample_status']);
             $text = '%' . Arr::pull($searchCriteria, 'sample_status') . '%';
