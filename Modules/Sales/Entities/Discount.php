@@ -21,8 +21,7 @@ class Discount extends ModelService
     {
         // generic rules
         $rules = [
-            'title'                          => ['string', 'max:255'],
-            'order_rule_value'               => ['string', 'max:255']
+            'title'                          => ['string', 'max:255']
         ];
 
         // rules when creating the item

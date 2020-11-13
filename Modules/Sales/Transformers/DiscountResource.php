@@ -27,6 +27,7 @@ class DiscountResource extends ResourceService
             'customer_tags'            => optional($tags->where('type' , 'customer')->pluck('tag')->pluck('id'))->toArray(),
             'tags'                     => optional($tags)->toArray(),
             'discount_rules'           => optional($this->discount_rules)->toArray(),
+            'discount_rules'           => optional($this->discount_rules->where('stackable' , 1))->toArray(),
             'start_date'               => optional($this->start_date)->format('Y-m-d H:i:s'),
             'end_date'                 => optional($this->end_date)->format('Y-m-d H:i:s'),
             'created_at'               => optional($this->created_at)->format('Y-m-d H:i:s'),

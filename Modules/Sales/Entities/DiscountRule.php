@@ -18,7 +18,7 @@ class DiscountRule extends ModelService
     protected $fillable = [
         'type', 'type_id', 'discount_id',
         'discount_application_id', 'include', 'exclude',
-        'all_products'
+        'all_products', 'stackable'
     ];
 
     public function getRules($request, $item = null)

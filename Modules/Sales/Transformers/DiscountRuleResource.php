@@ -19,6 +19,7 @@ class DiscountRuleResource extends ResourceService
             'type'                     => $this->type,
             'type_id'                  => $this->type_id,
             'type_name'                => optional($this->type_entity)->name,
+            'stackable'                => $this->stackable,
             'discount_id'              => $this->discount_id,
             'discount_application_id'  => $this->discount_application_id,
             'include'                  => $this->include,
