@@ -24,12 +24,12 @@ class ProjectRepository extends RepositoryService
         }
 
         if(!empty($searchCriteria['status'])){
-            $text = '%' . Arr::pull($searchCriteria, 'status') . '%';
-            $this->queryBuilder->where('status', 'ILIKE', $text);
+            $text = strtolower(Arr::pull($searchCriteria, 'status'));
+            $this->queryBuilder->where('status', $text);
         }
 
         if(!empty($searchCriteria['exclude_status'])){
-            $text = Arr::pull($searchCriteria, 'exclude_status');
+            $text = strtolower(Arr::pull($searchCriteria, 'exclude_status'));
             $this->queryBuilder->where('status', '<>', $text);
         }
 
