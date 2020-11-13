@@ -158,11 +158,9 @@ class ProjectSamplesRepository extends RepositoryService
             // FLAVORIST RECIPE UPDATE
             if(!empty($data['recipe'])){
 
-                $current_recipe      = !empty($model->recipe_id);
                 $recipe_from_scratch = empty($data['recipe']['id']);
-                $change_of_recipe    = $current_recipe && $model->recipe_id !== $data['recipe']['id'];
                 $new_version         = $data['recipe']['new_version'];
-
+                
                 if($recipe_from_scratch){
                     $recipe                     =  new Recipe();
                     $recipe->fill($data['recipe']);
@@ -180,9 +178,7 @@ class ProjectSamplesRepository extends RepositoryService
                     $recipe = Recipe::findOrFail($data['recipe']['id']);
 
                     // GENERATE A NEW VERSION
-                    // 1 - new version + no current recipe
-                    // 2 - new version + change recipe
-                    if($new_version && (!$current_recipe || $change_of_recipe)){
+                    if($new_version && $recipe){
                         // NEW VERSION BASED ON AN OLD RECIPE
                         if(!$recipe->last_version){
                             $last_recipe    = Recipe::where('last_version', TRUE)
@@ -221,15 +217,15 @@ class ProjectSamplesRepository extends RepositoryService
                         $recipe             = $new_recipe;
                     }
                     // UPDATE THE RECIPE
-                    else{
-                        // IF THE CARRIER IS CHANGED
-                        $recipe->carrier_id = $data['recipe']['carrier_id'];
-                        $recipe->save();
-                        // IF DEVELOPING A NEW VERSION, UPDATE INGREDIENTS
-                        if($new_version){
-                            $this->syncIngredients($data['recipe']['id'], $data['recipe']['ingredients']);
-                        }
-                    }
+                    // else{
+                    //     // IF THE CARRIER IS CHANGED
+                    //     $recipe->carrier_id = $data['recipe']['carrier_id'];
+                    //     $recipe->save();
+                    //     // IF DEVELOPING A NEW VERSION, UPDATE INGREDIENTS
+                    //     if($new_version){
+                    //         $this->syncIngredients($data['recipe']['id'], $data['recipe']['ingredients']);
+                    //     }
+                    // }               
                 }
 
                 // RECIPE UPDATE + assigned = IN PROGRESS
@@ -246,14 +242,14 @@ class ProjectSamplesRepository extends RepositoryService
             }
 
             parent::update($model, $data);
+            
+            $this->model->recipe = $recipe;
 
             if (Arr::has($data, 'attribute_ids')) {
                 $this->model->attributes()->sync($data['attribute_ids']);
             }
             $this->createLog($this->model);
         });
-
-
     }
 
     private function syncIngredients($recipe_id, $ingredients){
