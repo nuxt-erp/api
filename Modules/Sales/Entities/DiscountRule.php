@@ -6,7 +6,6 @@ use App\Models\Customer;
 use App\Models\ModelService;
 use App\Models\Tag;
 use Illuminate\Validation\Rule;
-use Modules\Inventory\Entities\Category;
 use Modules\Inventory\Entities\Brand;
 use Modules\Inventory\Entities\Product;
 
@@ -19,7 +18,7 @@ class DiscountRule extends ModelService
     protected $fillable = [
         'type', 'type_id', 'discount_id',
         'discount_application_id', 'include', 'exclude',
-        'stackable', 'all_products'
+        'all_products', 'stackable'
     ];
 
     public function getRules($request, $item = null)
@@ -55,6 +54,7 @@ class DiscountRule extends ModelService
     {
         return $this->morphTo(__FUNCTION__, 'type', 'type_id');
     }
+    
     // public function type_entity()
     // {
     //     $class= null;

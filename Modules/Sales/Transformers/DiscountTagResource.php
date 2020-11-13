@@ -18,6 +18,7 @@ class DiscountTagResource extends ResourceService
             'id'               => $this->id,
             'tag_id'           => $this->tag_id,
             'discount_id'      => $this->discount_id,
+            'tag_name'         => optional($this->tag)->name,
             'type'             => $this->type,
             'created_at'       => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'       => optional($this->updated_at)->format('Y-m-d H:i:s'),

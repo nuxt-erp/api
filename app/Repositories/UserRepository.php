@@ -68,6 +68,10 @@ class UserRepository extends RepositoryService
                 '--class' => 'RoleSeeder'
             ]);
 
+            Artisan::call('db:seed', [
+                '--class' => '\Modules\Inventory\Database\Seeders\ProvinceTaxSeeder'
+            ]);
+
             // set user as admin
             $role_admin = Role::where('code', 'admin')->first();
             $this->model->roles()->sync([$role_admin->id]);

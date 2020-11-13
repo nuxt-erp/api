@@ -23,6 +23,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('discount_tags', 'DiscountTagController');
         Route::resource('discount_rules', 'DiscountRuleController');
         Route::get('shopify_import', 'SaleController@importFromShopify');
+        Route::get('discount_with_info/{id}', 'DiscountController@getDiscountWithInfo');
     });
 
 });
