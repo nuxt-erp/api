@@ -64,6 +64,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('availabilities', 'AvailabilityController');
         Route::get('sku_suppliers', 'ProductSuppliersController@skuSuppliers');
         Route::resource('price_tiers', 'PriceTierController');
+        Route::post('price_tiers/apply', 'PriceTierController@applyChanges');
         Route::resource('price_tier_items', 'PriceTierItemsController');
 
         //Route::resource('specifications', 'SpecificationController');
