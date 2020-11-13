@@ -18,7 +18,7 @@ class InventoryDatabaseSeeder extends Seeder
 
         $this->call(ParameterSeederTableSeeder::class);
         $this->call(AttributeTableSeeder::class);
-        //$this->call(ProvinceTaxSeeder::class);
+        $this->call(ProvinceTaxSeeder::class);
         $this->call(ImportProductSettingsSeeder::class);
     }
 }
