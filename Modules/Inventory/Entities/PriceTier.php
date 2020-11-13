@@ -14,7 +14,7 @@ class PriceTier extends ModelService
     protected $table = 'inv_price_tiers';
 
     protected $fillable = [
-        'name', 'markup', 'markup_type',
+        'name', 'markup', 'markup_type', 'is_enabled',
         'custom_price', 'author_id', 'last_updater_id'
     ];
 
