@@ -134,6 +134,7 @@ trait ResponseTrait
 
         return response()->json([
             'status' => true,
+            'message' => '',
             'data' => $resource['data'],
             'pagination' => Arr::except($resource, 'data')
         ], $this->statusCode, [], JSON_NUMERIC_CHECK);
@@ -149,6 +150,7 @@ trait ResponseTrait
 
         return response()->json([
             'status' => true,
+            'message' => '',
             'data' => $resource,
         ], $this->statusCode, [], JSON_NUMERIC_CHECK);
     }

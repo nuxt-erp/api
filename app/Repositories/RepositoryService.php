@@ -62,6 +62,11 @@ abstract class RepositoryService implements RepositoryInterface
             }
         }
 
+        if(!empty($searchCriteria['include'])){
+            $find = $this->model->where($searchCriteria['include']['field'], $searchCriteria['include']['value']);
+            $this->queryBuilder->union($find);
+        }
+
         if(!empty($searchCriteria['exclude'])){
             $this->queryBuilder->where($searchCriteria['exclude']['field'], '!=', $searchCriteria['exclude']['value']);
         }
