@@ -25,6 +25,7 @@ class PriceTierController extends ControllerService implements CheckPolicies
     public function applyChanges(Request $request)
     {
         $items = $this->repository->applyChanges($request->all());
-        return $this->sendArray(['ok' => true]);
+        //return $this->sendArray(['ok' => true]);
+        return $this->sendObjectResource($items, $this->resource);
     }
 }

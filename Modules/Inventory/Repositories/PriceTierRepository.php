@@ -94,6 +94,7 @@ class PriceTierRepository extends RepositoryService
 
         });
 
+        return $this->model;
     }
 
     public function store(array $data)
