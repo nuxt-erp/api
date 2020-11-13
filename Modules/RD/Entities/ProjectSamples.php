@@ -113,7 +113,6 @@ class ProjectSamples extends ModelService
     }
     public function recipe()
     {   
-        lad($this->recipe_id);
         return $this->belongsTo(Recipe::class, 'recipe_id', 'id');
     }
     public function assignee()
