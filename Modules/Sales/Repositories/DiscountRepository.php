@@ -30,6 +30,8 @@ class DiscountRepository extends RepositoryService
                 'end_date'             => $data['end_date'], 
                 'stackable'            => $data['stackable']
             ];
+            parent::store($save_model);
+
             if(!empty($data['customer_tags'])){
                 foreach($data['customer_tags'] as $tag) {
                     DiscountTag::updateOrCreate([
@@ -40,13 +42,44 @@ class DiscountRepository extends RepositoryService
                 }
             }
 
-            parent::store($save_model);
+            if(!empty($data['stackable_include'])){
+                foreach($data['stackable_include'] as $stackable) {
+                    DiscountRule::updateOrCreate([
+                        'type'                      => 'App\\Models\\Tag', 
+                        'type_id'                   => $stackable, 
+                        'discount_id'               => $this->model->id,
+                        'discount_application_id'   => null,
+                        'include'                   => true,
+                        'exclude'                   => false,
+                        'all_products'              => false, 
+                        'stackable'                 => true
+                    ]);
+                }
+            }
+
+            if(!empty($data['stackable_exclude'])){
+
+                foreach($data['stackable_exclude'] as $stackable) {
+                    DiscountRule::updateOrCreate([
+                        'type'                      => 'App\\Models\\Tag', 
+                        'type_id'                   => $stackable, 
+                        'discount_id'               => $this->model->id,
+                        'discount_application_id'   => null,
+                        'include'                   => false,
+                        'exclude'                   => true,
+                        'all_products'              => false, 
+                        'stackable'                 => true
+                    ]);
+                } 
+            }
+
             if(!empty($data['applications'])){
                 foreach($data['applications'] as $application) {
                     DiscountRule::where('discount_application_id', '=', $this->model->id)->delete();
 
                     if(!empty($application['edited'])) {
                         $discount_app = DiscountApplication::updateOrCreate([
+                            'discount_id'  => $this->model->id, 
                             'percent_off'  => $application['percent_off'], 
                             'amount_off'   => $application['amount_off'], 
                             'custom_price' => $application['custom_price']
@@ -138,9 +171,7 @@ class DiscountRepository extends RepositoryService
                     }
                     if(!empty($application['new'])) {
                         $discount_app = DiscountApplication::updateOrCreate([
-                            'id'           => $application['id']
-                        ],
-                        [
+                            'discount_id'  => $this->model->id, 
                             'percent_off'  => $application['percent_off'], 
                             'amount_off'   => $application['amount_off'], 
                             'custom_price' => $application['custom_price']
@@ -239,6 +270,7 @@ class DiscountRepository extends RepositoryService
     {
         DB::transaction(function () use ($data, $model)
         {
+            lad($data['stackable']);
             $update_model = [
                 'title'                => $data['title'], 
                 'order_rule_operation' => $data['order_rule_operation'], 
@@ -273,12 +305,14 @@ class DiscountRepository extends RepositoryService
                         'include'                   => true,
                         'exclude'                   => false,
                         'all_products'              => false, 
-                        'stackable'                 => false
+                        'stackable'                 => true
                     ]);
                 }
             }
 
             if(!empty($data['stackable_exclude'])){
+                DiscountRule::where('discount_id', '=', $model->id)->where('stackable', '=', 1)->where('exclude', '=', 1)->delete();
+
                 foreach($data['stackable_exclude'] as $stackable) {
                     DiscountRule::updateOrCreate([
                         'type'                      => 'App\\Models\\Tag', 
@@ -288,7 +322,7 @@ class DiscountRepository extends RepositoryService
                         'include'                   => false,
                         'exclude'                   => true,
                         'all_products'              => false, 
-                        'stackable'                 => false
+                        'stackable'                 => true
                     ]);
                 } 
             }
@@ -302,6 +336,7 @@ class DiscountRepository extends RepositoryService
                             'id'           => $application['id']
                         ],
                         [
+                            'discount_id'  => $model->id,
                             'percent_off'  => $application['percent_off'], 
                             'amount_off'   => $application['amount_off'], 
                             'custom_price' => $application['custom_price']
@@ -393,9 +428,7 @@ class DiscountRepository extends RepositoryService
                     }
                     if(!empty($application['new'])) {
                         $discount_app = DiscountApplication::updateOrCreate([
-                            'id'           => $application['id']
-                        ],
-                        [
+                            'discount_id'  => $model->id,
                             'percent_off'  => $application['percent_off'], 
                             'amount_off'   => $application['amount_off'], 
                             'custom_price' => $application['custom_price']

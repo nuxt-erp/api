@@ -12,19 +12,19 @@ class DiscountApplication extends ModelService
     protected $table = 'sal_discount_applications';
 
     protected $fillable = [
-        'percent_off', 'amount_off', 'custom_price'
+        'percent_off', 'amount_off', 'custom_price', 'discount_id'
     ];
 
     public function getRules($request, $item = null)
     {
         // generic rules
         $rules = [
-            
+            'discount_id'                   => ['exists:tenant.sal_discounts,id'],
         ];
 
         // rules when creating the item
         if (is_null($item)) {
-            //$rules['field'][] = 'required';
+            $rules['discount_id'][] = 'required';
         }
         // rules when updating the item
         else{
@@ -32,5 +32,9 @@ class DiscountApplication extends ModelService
         }
 
         return $rules;
+    }
+    public function discount_rules()
+    {
+        return $this->hasMany(DiscountRule::class, 'discount_application_id', 'id')->with('type_entity');
     }
 }

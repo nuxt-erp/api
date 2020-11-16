@@ -29,7 +29,8 @@ class DiscountController extends ControllerService implements CheckPolicies
     {
         $discount = Discount::find($id);
         $customer_tags = $discount->customer_tags;
-        $discount_rule = $discount->discount_rules;
+        $discount_applications = $discount->discount_applications;
+        // lad($discount_applications);
         $keyValue   = [
             'id'                         => $discount->id,
             'title'                      => $discount->title,
@@ -39,24 +40,24 @@ class DiscountController extends ControllerService implements CheckPolicies
             'order_rule_operation'       => $discount->order_rule_operation,
             'order_rule_value'           => $discount->order_rule_value,
             'customer_tags'              => $customer_tags->pluck('tag')->pluck('id')->toArray(),
-            'stackable_include'          => [],
-            'stackable_exclude'          => [],
-            'stackable_include_label'    => '',
-            'stackable_exclude_label'    => ''
+            
             
         ];
+        $stackable_include          = [];
+        $stackable_exclude          = [];
+        $stackable_include_label    = '';
+        $stackable_exclude_label    = '';
+        
         $applications = [];
+        lad($discount_applications);
+        foreach ($discount_applications as $application) {
+            if(!array_key_exists(strval($application->id), $applications)) {
 
-        foreach ($discount_rule as $rule) {
-            if(!array_key_exists(strval($rule->discount_application_id), $applications)) {
-                $discount_application = $rule->discount_application;
-                // if(!empty($rule->discount_application_id))
-                lad($rule);
-                $applications[strval($rule->discount_application_id)] = [
-                    'id'                   => $rule->discount_application_id,
-                    'amount_off'           => optional($discount_application->amount_off),
-                    'custom_price'         => optional($discount_application->custom_price),
-                    'percent_off'          => optional($discount_application->percent_off),
+                $applications[strval($application->id)] = [
+                    'id'                   => $application->id,
+                    'amount_off'           => $application->amount_off,
+                    'custom_price'         => $application->custom_price,
+                    'percent_off'          => $application->percent_off,
                     'include_tag_arr'      => [],
                     'exclude_tag_arr'      => [],
                     'include_category_arr' => [],
@@ -72,92 +73,103 @@ class DiscountController extends ControllerService implements CheckPolicies
                     'include_brand'        => '',
                     'exclude_brand'        => '',
                     'include_product'      => '',
-                    'exclude_product'      => []
+                    'exclude_product'      => ''
                 ];
-
             }
-            switch ($rule->type) {
-                case 'App\\Models\\Tag':
-                    if ($rule->include) {
-                        if($rule->stackable) {
-                            array_push($keyValue['stackable_include'], $rule->type_id);
-                            if(strlen($applications[strval($rule->discount_application_id)]['stackable_include_label']) > 0) {
-                                $applications[strval($rule->discount_application_id)]['stackable_include_label'] .= ', ';
+            foreach ($application->discount_rules as $rule) {
+                
+                if(!empty($rule->discount_application_id)) {
+                    
+                    switch ($rule->type) {
+                        case 'App\\Models\\Tag':
+                            if ($rule->include) {
+                                array_push($applications[strval($rule->discount_application_id)]['include_tag_arr'], $rule->type_id);
+                                if(strlen($applications[strval($rule->discount_application_id)]['include_tag']) > 0) {
+                                    $applications[strval($rule->discount_application_id)]['include_tag'] .= ', ';
+                                }
+                                $applications[strval($rule->discount_application_id)]['include_tag'] .= $rule->type_entity->name;
+        
+                            } else if($rule->exclude) {
+                                array_push($applications[strval($rule->discount_application_id)]['exclude_tag_arr'], $rule->type_id);
+                                if(strlen($applications[strval($rule->discount_application_id)]['exclude_tag']) > 0) {
+                                    $applications[strval($rule->discount_application_id)]['exclude_tag'] .= ', ';
+                                }
+                                $applications[strval($rule->discount_application_id)]['exclude_tag'] .= $rule->type_entity->name;
                             }
-                            $applications[strval($rule->discount_application_id)]['stackable_include_label'] .= $rule->type_entity->name;
-                        } else {
-                            array_push($applications[strval($rule->discount_application_id)]['include_tag_arr'], $rule->type_id);
-                            if(strlen($applications[strval($rule->discount_application_id)]['include_tag']) > 0) {
-                                $applications[strval($rule->discount_application_id)]['include_tag'] .= ', ';
+                            break;
+                        case 'Modules\\Inventory\\Entities\Category':
+                            if ($rule->include) {
+                                array_push($applications[strval($rule->discount_application_id)]['include_category_arr'], $rule->type_id);
+                                if(strlen($applications[strval($rule->discount_application_id)]['include_category']) > 0) {
+                                    $applications[strval($rule->discount_application_id)]['include_category'] .= ', ';
+                                }
+                                $applications[strval($rule->discount_application_id)]['include_category'] .= $rule->type_entity->name;
+                            } else if($rule->exclude) {
+                                array_push($applications[strval($rule->discount_application_id)]['exclude_category_arr'], $rule->type_id);
+                                if(strlen($applications[strval($rule->discount_application_id)]['exclude_category']) > 0) {
+                                    $applications[strval($rule->discount_application_id)]['exclude_category'] .= ', ';
+                                }
+                                $applications[strval($rule->discount_application_id)]['exclude_category'] .= $rule->type_entity->name;
                             }
-                            $applications[strval($rule->discount_application_id)]['include_tag'] .= $rule->type_entity->name;
-
+                            break;
+                        case 'Modules\\Inventory\\Entities\\Brand':
+                            if ($rule->include) {
+                                array_push($applications[strval($rule->discount_application_id)]['include_brand_arr'], $rule->type_id);
+                                if(strlen($applications[strval($rule->discount_application_id)]['include_brand']) > 0) {
+                                    $applications[strval($rule->discount_application_id)]['include_brand'] .= ', ';
+                                }
+                                $applications[strval($rule->discount_application_id)]['include_brand'] .= $rule->type_entity->name;
+                            } else if($rule->exclude) {
+                                array_push($applications[strval($rule->discount_application_id)]['exclude_brand_arr'], $rule->type_id);
+                                if(strlen($applications[strval($rule->discount_application_id)]['exclude_brand']) > 0) {
+                                    $applications[strval($rule->discount_application_id)]['exclude_brand'] .= ', ';
+                                }
+                                $applications[strval($rule->discount_application_id)]['exclude_brand'] .= $rule->type_entity->name;
+        
+                            }                    
+                            break;
+                        case 'Modules\\Inventory\\Entities\\Product':
+                            if ($rule->include) {
+                                array_push($applications[strval($rule->discount_application_id)]['include_product_arr'], $rule->type_id);
+                                if(strlen($applications[strval($rule->discount_application_id)]['include_product']) > 0) {
+                                    $applications[strval($rule->discount_application_id)]['include_product'] .= ', ';
+                                }
+                                $applications[strval($rule->discount_application_id)]['include_product'] .= $rule->type_entity->name;
+                            } else if($rule->exclude) {
+                                array_push($applications[strval($rule->discount_application_id)]['exclude_product_arr'], $rule->type_id);
+                                if(strlen($applications[strval($rule->discount_application_id)]['exclude_product']) > 0) {
+                                    $applications[strval($rule->discount_application_id)]['exclude_product'] .= ', ';
+                                }
+                                $applications[strval($rule->discount_application_id)]['exclude_product'] .= $rule->type_entity->name;
+                            }
+                            break;
                         }
-                    } else if($rule->exclude) {
-                        if($rule->stackable) {
-                            array_push($keyValue['stackable_exclude'], $rule->type_id);
-                            if(strlen($applications[strval($rule->discount_application_id)]['stackable_exclude_label']) > 0) {
-                                $applications[strval($rule->discount_application_id)]['stackable_exclude_label'] .= ', ';
-                            }
-                            $applications[strval($rule->discount_application_id)]['stackable_exclude_label'] .= $rule->type_entity->name;
-                        } else {
-                            array_push($applications[strval($rule->discount_application_id)]['exclude_tag_arr'], $rule->type_id);
-                            if(strlen($applications[strval($rule->discount_application_id)]['exclude_tag']) > 0) {
-                                $applications[strval($rule->discount_application_id)]['exclude_tag'] .= ', ';
-                            }
-                            $applications[strval($rule->discount_application_id)]['exclude_tag'] .= $rule->type_entity->name;
+                } else {
+                    if($rule->stackable && $rule->type === 'App\\Models\\Tag' && $rule->include) {
+                        array_push($stackable_exclude, $rule->type_id);
+                        if(strlen($stackable_exclude_label) > 0) {
+                            $stackable_exclude_label .= ', ';
                         }
+                        $stackable_exclude_label .= $rule->type_entity->name;
                     }
-                    break;
-                case 'Modules\\Inventory\\Entities\Category':
-                    if ($rule->include) {
-                        array_push($applications[strval($rule->discount_application_id)]['include_category_arr'], $rule->type_id);
-                        if(strlen($applications[strval($rule->discount_application_id)]['include_category']) > 0) {
-                            $applications[strval($rule->discount_application_id)]['include_category'] .= ', ';
+                    if($rule->stackable && $rule->type === 'App\\Models\\Tag' && $rule->exclude) {
+                        array_push($stackable_include, $rule->type_id);
+                        if(strlen($stackable_include_label) > 0) {
+                            $stackable_include_label .= ', ';
                         }
-                        $applications[strval($rule->discount_application_id)]['include_category'] .= $rule->type_entity->name;
-                    } else if($rule->exclude) {
-                        array_push($applications[strval($rule->discount_application_id)]['exclude_category_arr'], $rule->type_id);
-                        if(strlen($applications[strval($rule->discount_application_id)]['exclude_category']) > 0) {
-                            $applications[strval($rule->discount_application_id)]['exclude_category'] .= ', ';
-                        }
-                        $applications[strval($rule->discount_application_id)]['exclude_category'] .= $rule->type_entity->name;
-                    }
-                    break;
-                case 'Modules\\Inventory\\Entities\\Brand':
-                    if ($rule->include) {
-                        array_push($applications[strval($rule->discount_application_id)]['include_brand_arr'], $rule->type_id);
-                        if(strlen($applications[strval($rule->discount_application_id)]['include_brand']) > 0) {
-                            $applications[strval($rule->discount_application_id)]['include_brand'] .= ', ';
-                        }
-                        $applications[strval($rule->discount_application_id)]['include_brand'] .= $rule->type_entity->name;
-                    } else if($rule->exclude) {
-                        array_push($applications[strval($rule->discount_application_id)]['exclude_brand_arr'], $rule->type_id);
-                        if(strlen($applications[strval($rule->discount_application_id)]['exclude_brand']) > 0) {
-                            $applications[strval($rule->discount_application_id)]['exclude_brand'] .= ', ';
-                        }
-                        $applications[strval($rule->discount_application_id)]['exclude_brand'] .= $rule->type_entity->name;
-
-                    }                    
-                    break;
-                case 'Modules\\Inventory\\Entities\\Product':
-                    if ($rule->include) {
-                        array_push($applications[strval($rule->discount_application_id)]['include_product_arr'], $rule->type_id);
-                        if(strlen($applications[strval($rule->discount_application_id)]['include_product']) > 0) {
-                            $applications[strval($rule->discount_application_id)]['include_product'] .= ', ';
-                        }
-                        $applications[strval($rule->discount_application_id)]['include_product'] .= $rule->type_entity->name;
-                    } else if($rule->exclude) {
-                        array_push($applications[strval($rule->discount_application_id)]['exclude_product_arr'], $rule->type_id);
-                        if(strlen($applications[strval($rule->discount_application_id)]['exclude_product']) > 0) {
-                            $applications[strval($rule->discount_application_id)]['exclude_product'] .= ', ';
-                        }
-                        $applications[strval($rule->discount_application_id)]['exclude_product'] .= $rule->type_entity->name;
-                    }
-                    break;
+                        $stackable_include_label .= $rule->type_entity->name;
+                    } 
                 }
+
+            
         }
-        $keyValue['applications'] = $applications;
+    }
+        
+        $keyValue['stackable_include']       = $stackable_include;
+        $keyValue['stackable_exclude']       = $stackable_exclude;
+        $keyValue['stackable_include_label'] = $stackable_include_label;
+        $keyValue['stackable_exclude_label'] = $stackable_exclude_label;
+        $keyValue['applications']            = $applications;
 
         return $this->sendArray($keyValue);
     }

@@ -35,6 +35,10 @@ class Discount extends ModelService
     {
         return $this->hasMany(DiscountRule::class, 'discount_id', 'id')->with(['discount_application', 'type_entity']);
     }
+    public function discount_applications()
+    {
+        return $this->hasMany(DiscountApplication::class, 'discount_id', 'id')->with('discount_rules');
+    }
     public function customer_tags()
     {
         return $this->hasMany(DiscountTag::class, 'discount_id', 'id')->with('tag')->where('type' , 'customer');
