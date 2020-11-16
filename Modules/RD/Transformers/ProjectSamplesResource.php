@@ -14,6 +14,7 @@ class ProjectSamplesResource extends ResourceService
      */
     public function toArray($request)
     {
+        lad($this);
         return [
             'id'                => $this->id,
             'project_id'        => $this->project_id,
@@ -24,8 +25,8 @@ class ProjectSamplesResource extends ResourceService
             'recipe_version_qty'=> $this->recipe_version_qty,
             'phase_id'          => $this->phase_id,
             'actions'           => $this->actions ?? [],
-            'attributes'        => implode(', ', $this->attributes->pluck('name')->toArray()),
-            'attribute_names'   => $this->attributes->pluck('name'),
+            'attributes'        => implode(', ', $this->attributes->pluck('value')->toArray()),
+            'attribute_names'   => $this->attributes->pluck('value'),
             'attribute_ids'     => optional($this->attributes)->pluck('id')->toArray(),
             'assignee_id'       => $this->assignee_id,
             'assignee_name'     => optional($this->assignee)->name,

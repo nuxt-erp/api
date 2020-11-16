@@ -18,6 +18,7 @@ class RecipeItemsResource extends ResourceService
             'id'               => $this->id,
             'product_id'       => $this->product_id,
             'product_name'     => optional($this->product)->name,
+            'product_full_name'=> $this->product ? $this->product->sku . ' - ' .$this->product->name : null,
             'product_sku'      => optional($this->product)->sku,
             'product_uom'      => $this->product->measure->name ?? '',
             'recipe_id'        => $this->recipe_id,

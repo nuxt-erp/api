@@ -33,6 +33,7 @@ class RecipeResource extends ResourceService
             'product_name'        => optional($this->product)->name,
             'status'              => $this->status,
             'name'                => $this->name,
+            'full_name'           => $this->type ? ($this->type->value . '-' . $this->id . ' - ' . $this->name) : $this->name,
             'category_id'         => $this->category_id,
             'category_name'       => optional($this->category)->name,
             'total'               => $this->total,
