@@ -24,7 +24,7 @@ class ProjectSamplesResource extends ResourceService
             'recipe_version_qty'=> $this->recipe_version_qty,
             'phase_id'          => $this->phase_id,
             'actions'           => $this->actions ?? [],
-            'attributes'        => implode(', ', $this->attributes->pluck('name')->toArray()),
+            'attributes'        => implode(', ', $this->attributes->pluck('value')->toArray()),
             'attribute_names'   => $this->attributes->pluck('name'),
             'attribute_ids'     => optional($this->attributes)->pluck('id')->toArray(),
             'assignee_id'       => $this->assignee_id,

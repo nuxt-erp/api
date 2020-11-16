@@ -83,4 +83,8 @@ class Customer extends ModelService
     {
         return $this->hasMany(CustomerTag::class, 'customer_id', 'id');
     }
+    public function tag_parents()
+    {
+        return $this->hasMany(CustomerTag::class, 'customer_id', 'id')->with('tag');
+    }
 }

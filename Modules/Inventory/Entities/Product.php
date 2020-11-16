@@ -150,6 +150,10 @@ class Product extends ModelService
     {
         return $this->hasMany(ProductTag::class, 'product_id', 'id');
     }
+    public function tag_parents()
+    {
+        return $this->hasMany(ProductTag::class, 'product_id', 'id')->with('tag');
+    }
     public function priceTierItems()
     {
         return $this->hasMany(PriceTierItems::class, 'product_id', 'id');

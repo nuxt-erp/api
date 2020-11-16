@@ -50,12 +50,13 @@ class DiscountController extends ControllerService implements CheckPolicies
         foreach ($discount_rule as $rule) {
             if(!array_key_exists(strval($rule->discount_application_id), $applications)) {
                 $discount_application = $rule->discount_application;
-
+                // if(!empty($rule->discount_application_id))
+                lad($rule);
                 $applications[strval($rule->discount_application_id)] = [
                     'id'                   => $rule->discount_application_id,
-                    'amount_off'           => $discount_application->amount_off,
-                    'custom_price'         => $discount_application->custom_price,
-                    'percent_off'          => $discount_application->percent_off,
+                    'amount_off'           => optional($discount_application->amount_off),
+                    'custom_price'         => optional($discount_application->custom_price),
+                    'percent_off'          => optional($discount_application->percent_off),
                     'include_tag_arr'      => [],
                     'exclude_tag_arr'      => [],
                     'include_category_arr' => [],
@@ -73,7 +74,6 @@ class DiscountController extends ControllerService implements CheckPolicies
                     'include_product'      => '',
                     'exclude_product'      => []
                 ];
-                lad($rule->discount_application_id);
 
             }
             switch ($rule->type) {

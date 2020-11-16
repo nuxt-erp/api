@@ -262,36 +262,36 @@ class DiscountRepository extends RepositoryService
                 }
             }
 
-            // if(!empty($data['stackable_include'])){
-            //     DiscountRule::where('discount_id', '=', $model->id)->where('stackable', '=', 1)->where('include', '=', 1)->delete();
-            //     foreach($data['stackable_include'] as $stackable) {
-            //         DiscountRule::updateOrCreate([
-            //             'type'                      => 'App\\Models\\Tag', 
-            //             'type_id'                   => $stackable, 
-            //             'discount_id'               => $model->id,
-            //             'discount_application_id'   => null,
-            //             'include'                   => true,
-            //             'exclude'                   => false,
-            //             'all_products'              => false, 
-            //             'stackable'                 => false
-            //         ]);
-            //     }
-            // }
+            if(!empty($data['stackable_include'])){
+                DiscountRule::where('discount_id', '=', $model->id)->where('stackable', '=', 1)->where('include', '=', 1)->delete();
+                foreach($data['stackable_include'] as $stackable) {
+                    DiscountRule::updateOrCreate([
+                        'type'                      => 'App\\Models\\Tag', 
+                        'type_id'                   => $stackable, 
+                        'discount_id'               => $model->id,
+                        'discount_application_id'   => null,
+                        'include'                   => true,
+                        'exclude'                   => false,
+                        'all_products'              => false, 
+                        'stackable'                 => false
+                    ]);
+                }
+            }
 
-            // if(!empty($data['stackable_exclude'])){
-            //     foreach($data['stackable_exclude'] as $stackable) {
-            //         DiscountRule::updateOrCreate([
-            //             'type'                      => 'App\\Models\\Tag', 
-            //             'type_id'                   => $stackable, 
-            //             'discount_id'               => $model->id,
-            //             'discount_application_id'   => null,
-            //             'include'                   => false,
-            //             'exclude'                   => true,
-            //             'all_products'              => false, 
-            //             'stackable'                 => false
-            //         ]);
-            //     } 
-            // }
+            if(!empty($data['stackable_exclude'])){
+                foreach($data['stackable_exclude'] as $stackable) {
+                    DiscountRule::updateOrCreate([
+                        'type'                      => 'App\\Models\\Tag', 
+                        'type_id'                   => $stackable, 
+                        'discount_id'               => $model->id,
+                        'discount_application_id'   => null,
+                        'include'                   => false,
+                        'exclude'                   => true,
+                        'all_products'              => false, 
+                        'stackable'                 => false
+                    ]);
+                } 
+            }
 
             if(!empty($data['applications'])){
                 foreach($data['applications'] as $application) {
