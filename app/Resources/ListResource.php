@@ -41,6 +41,9 @@ class ListResource extends ResourceService
                 $resource['name']   = ucwords($this->name);
                 $resource['value']  = $this->name;
                 break;
+            case 'Recipe':
+                $resource['name']    = $this->type ? ($this->type->value . '-' . $this->id . ' - ' . $this->name) : $this->name;
+                break;
         }
 
         return $resource;

@@ -14,6 +14,7 @@ class ProjectSamplesResource extends ResourceService
      */
     public function toArray($request)
     {
+        lad($this);
         return [
             'id'                => $this->id,
             'project_id'        => $this->project_id,
