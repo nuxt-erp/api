@@ -21,11 +21,17 @@ class DiscountRepository extends RepositoryService
     {
         DB::transaction(function () use ($data)
         {          
-
+            
+            $order_value = null;
+            $order_operation = null;
+            if(!empty($data['order_rule_operation']) && $data['order_rule_value'] !== 0) {
+                $order_operation = $data['order_rule_operation'];
+                $order_value = $data['order_rule_value'];
+            }
             $save_model = [
                 'title'                => $data['title'], 
-                'order_rule_operation' => $data['order_rule_operation'], 
-                'order_rule_value'     => $data['order_rule_value'],
+                'order_rule_operation' => $order_operation, 
+                'order_rule_value'     => $order_value,
                 'start_date'           => $data['start_date'], 
                 'end_date'             => $data['end_date'], 
                 'stackable'            => $data['stackable']
@@ -168,6 +174,34 @@ class DiscountRepository extends RepositoryService
                                 ]);
                             } 
                         }
+                        if(!empty($application['include_product_arr'])) {
+                            foreach($application['include_product_arr'] as $include_product) {
+                                DiscountRule::updateOrCreate([
+                                    'type'                      => 'Modules\\Inventory\\Entities\\Product', 
+                                    'type_id'                   => $include_product, 
+                                    'discount_id'               => $this->model->id,
+                                    'discount_application_id'   => $discount_app['id'],
+                                    'include'                   => 1,
+                                    'exclude'                   => 0,
+                                    'all_products'              => 0, 
+                                    'stackable'                 => 0
+                                ]);
+                            } 
+                        }
+                        if(!empty($application['exclude_product_arr'])) {
+                            foreach($application['exclude_product_arr'] as $exclude_product) {
+                                DiscountRule::updateOrCreate([
+                                    'type'                      => 'Modules\\Inventory\\Entities\\Product', 
+                                    'type_id'                   => $exclude_product, 
+                                    'discount_id'               => $this->model->id,
+                                    'discount_application_id'   => $discount_app['id'],
+                                    'include'                   => 0,
+                                    'exclude'                   => 1,
+                                    'all_products'              => 0, 
+                                    'stackable'                 => 0
+                                ]);
+                            } 
+                        }
                     }
                     if(!empty($application['new'])) {
                         $discount_app = DiscountApplication::updateOrCreate([
@@ -260,6 +294,34 @@ class DiscountRepository extends RepositoryService
                                 ]);
                             } 
                         }
+                        if(!empty($application['include_product_arr'])) {
+                            foreach($application['include_product_arr'] as $include_product) {
+                                DiscountRule::updateOrCreate([
+                                    'type'                      => 'Modules\\Inventory\\Entities\\Product', 
+                                    'type_id'                   => $include_product, 
+                                    'discount_id'               => $this->model->id,
+                                    'discount_application_id'   => $discount_app['id'],
+                                    'include'                   => 1,
+                                    'exclude'                   => 0,
+                                    'all_products'              => 0, 
+                                    'stackable'                 => 0
+                                ]);
+                            } 
+                        }
+                        if(!empty($application['exclude_product_arr'])) {
+                            foreach($application['exclude_product_arr'] as $exclude_product) {
+                                DiscountRule::updateOrCreate([
+                                    'type'                      => 'Modules\\Inventory\\Entities\\Product', 
+                                    'type_id'                   => $exclude_product, 
+                                    'discount_id'               => $this->model->id,
+                                    'discount_application_id'   => $discount_app['id'],
+                                    'include'                   => 0,
+                                    'exclude'                   => 1,
+                                    'all_products'              => 0, 
+                                    'stackable'                 => 0
+                                ]);
+                            } 
+                        }
                     }
                 }
             }
@@ -270,11 +332,17 @@ class DiscountRepository extends RepositoryService
     {
         DB::transaction(function () use ($data, $model)
         {
-            lad($data['stackable']);
+            $order_value = null;
+            $order_operation = null;
+            if(!empty($data['order_rule_operation']) && $data['order_rule_value'] !== 0) {
+                $order_operation = $data['order_rule_operation'];
+                $order_value = $data['order_rule_value'];
+            }
+            
             $update_model = [
                 'title'                => $data['title'], 
-                'order_rule_operation' => $data['order_rule_operation'], 
-                'order_rule_value'     => $data['order_rule_value'],
+                'order_rule_operation' => $order_operation, 
+                'order_rule_value'     => $order_value,
                 'start_date'           => $data['start_date'], 
                 'end_date'             => $data['end_date'], 
                 'stackable'            => $data['stackable']
@@ -425,6 +493,34 @@ class DiscountRepository extends RepositoryService
                                 ]);
                             } 
                         }
+                        if(!empty($application['include_product_arr'])) {
+                            foreach($application['include_product_arr'] as $include_product) {
+                                DiscountRule::updateOrCreate([
+                                    'type'                      => 'Modules\\Inventory\\Entities\\Product', 
+                                    'type_id'                   => $include_product, 
+                                    'discount_id'               => $model->id,
+                                    'discount_application_id'   => $discount_app['id'],
+                                    'include'                   => 1,
+                                    'exclude'                   => 0,
+                                    'all_products'              => 0, 
+                                    'stackable'                 => 0
+                                ]);
+                            } 
+                        }
+                        if(!empty($application['exclude_product_arr'])) {
+                            foreach($application['exclude_product_arr'] as $exclude_product) {
+                                DiscountRule::updateOrCreate([
+                                    'type'                      => 'Modules\\Inventory\\Entities\\Product', 
+                                    'type_id'                   => $exclude_product, 
+                                    'discount_id'               => $model->id,
+                                    'discount_application_id'   => $discount_app['id'],
+                                    'include'                   => 0,
+                                    'exclude'                   => 1,
+                                    'all_products'              => 0, 
+                                    'stackable'                 => 0
+                                ]);
+                            } 
+                        }
                     }
                     if(!empty($application['new'])) {
                         $discount_app = DiscountApplication::updateOrCreate([
@@ -508,6 +604,34 @@ class DiscountRepository extends RepositoryService
                                 DiscountRule::updateOrCreate([
                                     'type'                      => 'Modules\\Inventory\\Entities\\Brand', 
                                     'type_id'                   => $exclude_brand, 
+                                    'discount_id'               => $model->id,
+                                    'discount_application_id'   => $discount_app['id'],
+                                    'include'                   => 0,
+                                    'exclude'                   => 1,
+                                    'all_products'              => 0, 
+                                    'stackable'                 => 0
+                                ]);
+                            } 
+                        }
+                        if(!empty($application['include_product_arr'])) {
+                            foreach($application['include_product_arr'] as $include_product) {
+                                DiscountRule::updateOrCreate([
+                                    'type'                      => 'Modules\\Inventory\\Entities\\Product', 
+                                    'type_id'                   => $include_product, 
+                                    'discount_id'               => $model->id,
+                                    'discount_application_id'   => $discount_app['id'],
+                                    'include'                   => 1,
+                                    'exclude'                   => 0,
+                                    'all_products'              => 0, 
+                                    'stackable'                 => 0
+                                ]);
+                            } 
+                        }
+                        if(!empty($application['exclude_product_arr'])) {
+                            foreach($application['exclude_product_arr'] as $exclude_product) {
+                                DiscountRule::updateOrCreate([
+                                    'type'                      => 'Modules\\Inventory\\Entities\\Product', 
+                                    'type_id'                   => $exclude_product, 
                                     'discount_id'               => $model->id,
                                     'discount_application_id'   => $discount_app['id'],
                                     'include'                   => 0,
