@@ -5,6 +5,7 @@ namespace Modules\Sales\Repositories;
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Modules\Sales\Entities\DiscountRule;
 
 class DiscountApplicationRepository extends RepositoryService
 {
@@ -28,5 +29,23 @@ class DiscountApplicationRepository extends RepositoryService
         {
             parent::update($model, $data);
         });
+    }
+
+    public function delete($model)
+    {
+        $result = true;
+        DB::transaction(function () use ($model, &$result)
+        {
+            foreach($model->discount_rules as $rule) {
+                $deleted = DiscountRule::find($rule->id)->delete();
+                if(!$deleted) {
+                    $result = false;
+                }
+            }
+            parent::delete($model);
+
+        });
+        return $result;
+
     }
 }
