@@ -14,6 +14,19 @@ class DiscountRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {
+        lad($searchCriteria);
+        if(!empty($searchCriteria['customer_tags'])){
+            $customer_tags = Arr::pull($searchCriteria, 'customer_tags');
+            $this->queryBuilder->whereHas('customer_tags', function ($query) use($customer_tags) {
+                $query->where('tag_id', '=', $customer_tags);
+            });
+        }
+        if(!empty($searchCriteria['title'])){
+            $sku = '%' . Arr::pull($searchCriteria, 'title') . '%';
+            $this->queryBuilder
+                ->where('title', 'ILIKE', $sku);
+        }
+
         return parent::findBy($searchCriteria);
     }
 

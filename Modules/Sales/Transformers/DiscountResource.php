@@ -25,6 +25,7 @@ class DiscountResource extends ResourceService
             'stackable'                => $this->stackable,
             'customer_tag_names'       => optional($tags->where('type' , 'customer')->pluck('tag')->pluck('name'))->toArray(),
             'customer_tags'            => optional($tags->where('type' , 'customer')->pluck('tag')->pluck('id'))->toArray(),
+            'customer_discount_tags'   => optional($tags->where('type' , 'customer')->pluck('id'))->toArray(),
             'tags'                     => optional($tags)->toArray(),
             'discount_rules'           => optional($this->discount_rules)->toArray(),
             'discount_rules'           => optional($this->discount_rules->where('stackable' , 1))->toArray(),
