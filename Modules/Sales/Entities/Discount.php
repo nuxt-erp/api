@@ -17,6 +17,10 @@ class Discount extends ModelService
         'start_date', 'end_date', 'stackable'
     ];
 
+    protected $dates = [
+        'start_date', 'end_date'
+    ];
+
     public function getRules($request, $item = null)
     {
         // generic rules
