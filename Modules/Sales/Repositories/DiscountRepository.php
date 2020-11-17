@@ -81,8 +81,6 @@ class DiscountRepository extends RepositoryService
 
             if(!empty($data['applications'])){
                 foreach($data['applications'] as $application) {
-                    DiscountRule::where('discount_application_id', '=', $this->model->id)->delete();
-
                     if(!empty($application['edited'])) {
                         $discount_app = DiscountApplication::updateOrCreate([
                             'discount_id'  => $this->model->id, 
@@ -361,9 +359,9 @@ class DiscountRepository extends RepositoryService
                     ]);
                 }
             }
+            DiscountRule::where('discount_id', '=', $model->id)->where('stackable', '=', 1)->delete();
 
             if(!empty($data['stackable_include'])){
-                DiscountRule::where('discount_id', '=', $model->id)->where('stackable', '=', 1)->where('include', '=', 1)->delete();
                 foreach($data['stackable_include'] as $stackable) {
                     DiscountRule::updateOrCreate([
                         'type'                      => 'App\\Models\\Tag', 
@@ -379,7 +377,7 @@ class DiscountRepository extends RepositoryService
             }
 
             if(!empty($data['stackable_exclude'])){
-                DiscountRule::where('discount_id', '=', $model->id)->where('stackable', '=', 1)->where('exclude', '=', 1)->delete();
+                lad('stackable_exclude');
 
                 foreach($data['stackable_exclude'] as $stackable) {
                     DiscountRule::updateOrCreate([
@@ -397,9 +395,9 @@ class DiscountRepository extends RepositoryService
 
             if(!empty($data['applications'])){
                 foreach($data['applications'] as $application) {
-                    DiscountRule::where('discount_application_id', '=', $model->id)->delete();
 
                     if(!empty($application['edited'])) {
+                        DiscountRule::where('discount_application_id', '=', $application['id'])->delete();
                         $discount_app = DiscountApplication::updateOrCreate([
                             'id'           => $application['id']
                         ],
@@ -438,6 +436,8 @@ class DiscountRepository extends RepositoryService
                             } 
                         }
                         if(!empty($application['include_category_arr'])) {
+                            lad('include_category_arr');
+
                             foreach($application['include_category_arr'] as $include_category) {
                                 DiscountRule::updateOrCreate([
                                     'type'                      => 'Modules\\Inventory\\Entities\Category', 

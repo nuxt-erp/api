@@ -30,6 +30,29 @@ class DiscountController extends ControllerService implements CheckPolicies
         $discount = Discount::find($id);
         $customer_tags = $discount->customer_tags;
         $discount_applications = $discount->discount_applications;
+        $stackable_rules = DiscountRule::where('discount_id', $discount->id)->where('discount_application_id', '=', NULL)->where('stackable', true)->get();
+        $stackable_include          = [];
+        $stackable_exclude          = [];
+        $stackable_include_label    = '';
+        $stackable_exclude_label    = '';
+        lad($stackable_rules);
+        foreach($stackable_rules as $stackable_rule) {
+            if($stackable_rule->exclude) {
+                array_push($stackable_exclude, $stackable_rule->type_id);
+                if(strlen($stackable_exclude_label) > 0) {
+                    $stackable_exclude_label .= ', ';
+                }
+                $stackable_exclude_label .= $stackable_rule->type_entity->name;
+            }
+            if($stackable_rule->include) {
+                array_push($stackable_include, $stackable_rule->type_id);
+                if(strlen($stackable_include_label) > 0) {
+                    $stackable_include_label .= ', ';
+                }
+                $stackable_include_label .= $stackable_rule->type_entity->name;
+            } 
+        }
+
         // lad($discount_applications);
         $keyValue   = [
             'id'                         => $discount->id,
@@ -40,16 +63,16 @@ class DiscountController extends ControllerService implements CheckPolicies
             'order_rule_operation'       => $discount->order_rule_operation,
             'order_rule_value'           => $discount->order_rule_value,
             'customer_tags'              => $customer_tags->pluck('tag')->pluck('id')->toArray(),
-            
+            'customer_tag_names'         => implode(', ', $customer_tags->pluck('tag')->pluck('name')->toArray()),
+            'stackable_include'       => $stackable_include,
+            'stackable_exclude'       => $stackable_exclude,
+            'stackable_include_label' => $stackable_include_label,
+            'stackable_exclude_label' => $stackable_exclude_label
             
         ];
-        $stackable_include          = [];
-        $stackable_exclude          = [];
-        $stackable_include_label    = '';
-        $stackable_exclude_label    = '';
+       
         
         $applications = [];
-        lad($discount_applications);
         foreach ($discount_applications as $application) {
             if(!array_key_exists(strval($application->id), $applications)) {
 
@@ -144,31 +167,13 @@ class DiscountController extends ControllerService implements CheckPolicies
                             }
                             break;
                         }
-                } else {
-                    if($rule->stackable && $rule->type === 'App\\Models\\Tag' && $rule->include) {
-                        array_push($stackable_exclude, $rule->type_id);
-                        if(strlen($stackable_exclude_label) > 0) {
-                            $stackable_exclude_label .= ', ';
-                        }
-                        $stackable_exclude_label .= $rule->type_entity->name;
-                    }
-                    if($rule->stackable && $rule->type === 'App\\Models\\Tag' && $rule->exclude) {
-                        array_push($stackable_include, $rule->type_id);
-                        if(strlen($stackable_include_label) > 0) {
-                            $stackable_include_label .= ', ';
-                        }
-                        $stackable_include_label .= $rule->type_entity->name;
-                    } 
                 }
 
             
         }
     }
         
-        $keyValue['stackable_include']       = $stackable_include;
-        $keyValue['stackable_exclude']       = $stackable_exclude;
-        $keyValue['stackable_include_label'] = $stackable_include_label;
-        $keyValue['stackable_exclude_label'] = $stackable_exclude_label;
+        
         $keyValue['applications']            = $applications;
 
         return $this->sendArray($keyValue);
