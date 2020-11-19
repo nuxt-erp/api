@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Models\Company;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -25,6 +26,18 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+
+        $companies = Company::all();
+
+        foreach ($companies as $company) {
+
+            config(['database.connections.tenant.schema' => $company->schema]);
+            DB::reconnect('tenant');
+
+            $api    = resolve('Shopify\API');
+
+            # code...
+        }
 
         // $schedule->call(function () {
         //     $api    = resolve('Dear\API');
