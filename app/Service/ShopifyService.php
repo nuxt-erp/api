@@ -44,6 +44,7 @@ class ShopifyService
         $this->user = auth()->user() ?? User::where('name', 'admin')->first();
     }
 
+    // Sync order with Shopify
     public function syncOrders()
     {
 
