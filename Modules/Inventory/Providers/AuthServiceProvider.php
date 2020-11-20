@@ -29,6 +29,7 @@ use Modules\Inventory\Entities\StockAdjustment;
 use Modules\Inventory\Entities\StockAdjustmentDetail;
 use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
+use Modules\Inventory\Entities\StockCountFilter;
 use Modules\Inventory\Entities\Transfer;
 use Modules\Inventory\Entities\TransferDetails;
 // policies
@@ -57,6 +58,7 @@ use Modules\Inventory\Policies\StockAdjustmentDetailPolicy;
 use Modules\Inventory\Policies\StockAdjustmentPolicy;
 use Modules\Inventory\Policies\StockCountPolicy;
 use Modules\Inventory\Policies\StockCountDetailPolicy;
+use Modules\Inventory\Policies\StockCountFilterPolicy;
 use Modules\Inventory\Policies\TransferPolicy;
 use Modules\Inventory\Policies\TransferDetailsPolicy;
 
@@ -97,6 +99,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(StockLocator::class, StockLocatorPolicy::class);
         Gate::policy(Measure::class, MeasurePolicy::class);
         Gate::policy(StockCount::class, StockCountPolicy::class);
+        Gate::policy(StockCountFilter::class, StockCountFilterPolicy::class);
         Gate::policy(StockCountDetail::class, StockCountDetailPolicy::class);
         Gate::policy(StockAdjustment::class, StockAdjustmentPolicy::class);
         Gate::policy(StockAdjustmentDetail::class, StockAdjustmentDetailPolicy::class);

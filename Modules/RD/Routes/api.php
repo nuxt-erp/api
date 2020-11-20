@@ -28,6 +28,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('recipe_proposal_items', 'RecipeProposalItemsController');
         Route::resource('recipe_specification', 'RecipeSpecificationController');
         Route::resource('recipe_specification_attributes', 'RecipeSpecificationAttributesController');
+        Route::resource('recipe_import_settings', 'RecipeImportSettingsController');
 
         Route::resource('projects', 'ProjectController');
         Route::resource('project_samples', 'ProjectSamplesController');
@@ -45,5 +46,8 @@ Route::middleware('auth:api')->group(function () {
         Route::get('project_samples_statuses', 'ProjectSamplesController@getSampleStatuses');
 
         Route::get('sample_flows', 'FlowController@getSampleFlows');
+
+        Route::post('recipes_import/{type}', 'ImportController@recipesImport');
+
     });
 });

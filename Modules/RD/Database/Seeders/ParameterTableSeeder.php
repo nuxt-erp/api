@@ -40,15 +40,27 @@ class ParameterTableSeeder extends Seeder
             'is_internal' => true,
             'is_default' => false,
         ]);
-
-        Parameter::firstOrCreate([
+        Parameter::updateOrCreate(
+        [ 
             'name'  => 'recipe_type',
-            'value' => 'SL',
+            'value' => 'SL'        
+        ],    
+        [
+            'name'  => 'recipe_type',
+            'value' => 'SM',
             'order' => 3,
             'description' => 'Solution',
             'is_internal' => true,
             'is_default' => false,
         ]);
+        // Parameter::firstOrCreate([
+        //     'name'  => 'recipe_type',
+        //     'value' => 'SM',
+        //     'order' => 3,
+        //     'description' => 'Solution',
+        //     'is_internal' => true,
+        //     'is_default' => false,
+        // ]);
 
     }
 }
