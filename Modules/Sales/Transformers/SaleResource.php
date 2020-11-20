@@ -15,7 +15,7 @@ class SaleResource extends ResourceService
             'financial_status_id'       => $this->financial_status_id,
             'financial_status_name'     => ucfirst(optional($this->financial_status)->value),
             'fulfillment_status_id'     => $this->fulfillment_status_id,
-            'fulfillment_status_name'   => ucfirst(optional($this->fulfillment_status)->value),
+            'fulfillment_status_name'   => ucfirst(optional($this->fulfillment_status)->value ?? "UNFULFILLED"),
             'author_id'                 => $this->author_id,
             'author_name'               => optional($this->author)->name,
             'order_number'              => $this->order_number,
