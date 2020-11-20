@@ -149,7 +149,9 @@ class AvailabilityRepository extends RepositoryService
         $log->ref_code_id   = $ref_code;
         $log->type_id       = $type->id;
         $log->description   = $description;
-        $log->user_id       =  Auth::user()->id;
+        if (Auth::user()) {
+            $log->user_id       = Auth::user()->id;
+        }
 
         $log->save();
     }
