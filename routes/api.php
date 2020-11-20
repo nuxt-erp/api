@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('login', 'LoginController@issueToken');
 Route::post('register', 'RegisterController@create');
+Route::get('settings_images/{path}', 'General\SettingsImagesController@getImage');
 
 Route::middleware('auth:api')->group(function () {
 
