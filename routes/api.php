@@ -44,6 +44,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('parameter_types', 'General\ParameterTypeController');
         Route::resource('tags', 'General\TagController');
         Route::resource('customer_tags', 'General\CustomerTagController');
+        Route::resource('settings_images', 'General\SettingsImagesController');
 
     });
 
