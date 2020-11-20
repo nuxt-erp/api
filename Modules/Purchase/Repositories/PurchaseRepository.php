@@ -99,8 +99,10 @@ class PurchaseRepository extends RepositoryService
                     $price          = $item['price'] ?? 0;
                     $ref            = $item['ref'] ?? '';
                     $product_id     = $item['product_id'] ?? null;
-                    $tax_rule_id     = $item['tax_rule_id'] ?? null;
-                   
+                    $tax_rule_id    = $item['tax_rule_id'] ?? null;
+                    $bin_id         = $item['bin_id'] ?? null;
+                    $location_id    = $item['location_id'] ?? null;
+
                     $new_status     = $qty == $qty_received;
                    
                     if ($product_id) {
@@ -123,7 +125,9 @@ class PurchaseRepository extends RepositoryService
                                 'total'          => $total_item,
                                 
                                 'item_status'    => $new_status, // Fulfillment status for item
-                                'tax_rule_id'    => $tax_rule_id
+                                'tax_rule_id'    => $tax_rule_id,
+                                'bin_id'         => $bin_id,
+                                'location_id'    => $location_id
                             ]
                         );
 
@@ -132,13 +136,13 @@ class PurchaseRepository extends RepositoryService
                         // We need to check update stock
                         if ($data['status']) { // Do not update when the stock is already received
                             // Increase stock quantity
-                            $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], null, '+', 'Purchase', $id, 0, 0, 'Recieved');
+                            $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], $bin_id, '+', 'Purchase', $id, 0, 0, 'Received');
 
                             // Decrease on order quantity
-                            $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], null, '-', 'Purchase', $id, $qty, 0, 'Ordered');
+                            $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], $bin_id, '-', 'Purchase', $id, $qty, 0, 'Ordered');
                         }
                         else{ // Not fulfilled, update on order quantity
-                            $availability_repository->updateStock($product_id, $qty, $data['location_id'], null, '+', 'Purchase', $id, $qty, 0, ' Ordered');
+                            $availability_repository->updateStock($product_id, $qty, $data['location_id'], $bin_id, '+', 'Purchase', $id, $qty, 0, 'Ordered');
                         }
                     }
                 }
