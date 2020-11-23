@@ -5,7 +5,7 @@ namespace Modules\Inventory\Http\Controllers;
 use App\Http\Controllers\ControllerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use Modules\Inventory\Imports\ProductsImport;
+use Modules\RD\Imports\RecipesImport;
 use Modules\Inventory\Imports\StockAdjustmentImport;
 use Modules\Inventory\Imports\StockCountImport;
 use stdClass;

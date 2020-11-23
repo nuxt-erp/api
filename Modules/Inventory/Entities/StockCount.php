@@ -11,6 +11,10 @@ class StockCount extends ModelService
 
     public $table       = "inv_stock_counts";
 
+    protected $dates = [
+        'date',
+    ];
+
     protected $fillable = [
         'name', 'date', 'brand_id',
         'category_id', 'location_id', 'target',

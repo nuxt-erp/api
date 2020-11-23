@@ -42,6 +42,7 @@ Route::middleware('auth:api')->group(function () {
 
         Route::resource('location_bins', 'LocationBinController');
 
+        Route::resource('stock_count_filters', 'StockCountFilterController');
         Route::resource('stock_adjustments', 'StockAdjustmentController');
         Route::resource('stock_adjustment_details', 'StockAdjustmentDetailController');
         Route::resource('stock_count', 'StockCountController');
