@@ -14,7 +14,6 @@ class ProjectSamplesResource extends ResourceService
      */
     public function toArray($request)
     {
-        lad($this);
         return [
             'id'                => $this->id,
             'project_id'        => $this->project_id,
@@ -23,6 +22,9 @@ class ProjectSamplesResource extends ResourceService
             'recipe_version'    => optional($this->recipe)->version,
             'recipe_type'       => $this->recipe ? optional($this->recipe->type)->name : null,
             'recipe_version_qty'=> $this->recipe_version_qty,
+            'recipe_ingredients'=> $this->recipe ? RecipeItemsResource::collection($this->recipe->ingredients) : null,
+            'carrier_id'        => optional($this->recipe)->carrier_id,
+            'carrier'           => optional($this->recipe)->carrier,
             'phase_id'          => $this->phase_id,
             'actions'           => $this->actions ?? [],
             'attributes'        => implode(', ', $this->attributes->pluck('value')->toArray()),
