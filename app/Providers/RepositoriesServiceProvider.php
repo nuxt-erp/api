@@ -14,6 +14,7 @@ use App\Models\ParameterType;
 use App\Models\Province;
 use App\Models\Role;
 use App\Models\SalesRep;
+use App\Models\SettingsImages;
 use App\Models\Supplier;
 use App\Models\Tag;
 use App\Models\TaxRule;
@@ -32,6 +33,7 @@ use App\Repositories\ParameterTypeRepository;
 use App\Repositories\ProvinceRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\SalesRepRepository;
+use App\Repositories\SettingsImagesRepository;
 use App\Repositories\SupplierRepository;
 use App\Repositories\TagRepository;
 use App\Repositories\TaxRuleComponentRepository;
@@ -50,6 +52,7 @@ use App\Resources\ParameterTypeResource;
 use App\Resources\ProvinceResource;
 use App\Resources\RoleResource;
 use App\Resources\SalesRepResource;
+use App\Resources\SettingsImagesResource;
 use App\Resources\SupplierResource;
 use App\Resources\TagResource;
 use App\Resources\TaxRuleComponentResource;
@@ -210,6 +213,14 @@ class RepositoriesServiceProvider extends ServiceProvider
         $this->app->bind(CustomerTagResource::class, function () {
             return new CustomerTagResource(new CustomerTag());
         });
+
+        $this->app->bind(SettingsImagesRepository::class, function () {
+            return new SettingsImagesRepository(new SettingsImages());
+        });
+
+        $this->app->bind(SettingsImagesResource::class, function () {
+            return new SettingsImagesResource(new SettingsImages());
+        });
     }
 
     /**
@@ -236,7 +247,8 @@ class RepositoriesServiceProvider extends ServiceProvider
             TaxRuleScopeRepository::class,
             SalesRepRepository::class,
             TagRepository::class,
-            CustomerTagRepository::class
+            CustomerTagRepository::class,
+            SettingsImagesRepository::class
         ];
     }
 }

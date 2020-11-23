@@ -20,6 +20,7 @@ use Modules\RD\Repositories\PhaseRepository;
 use Modules\RD\Repositories\PhaseRoleRepository;
 use Modules\RD\Repositories\RecipeSpecificationRepository;
 use Modules\RD\Repositories\RecipeSpecificationAttributesRepository;
+use Modules\RD\Repositories\RecipeImportSettingsRepository;
 
 
 // RESOURCES
@@ -38,6 +39,7 @@ use Modules\RD\Transformers\PhaseResource;
 use Modules\RD\Transformers\PhaseRoleResource;
 use Modules\RD\Transformers\RecipeSpecificationResource;
 use Modules\RD\Transformers\RecipeSpecificationAttributesResource;
+use Modules\RD\Transformers\RecipeImportSettingsResource;
 
 // MODELS
 use Modules\RD\Entities\Project;
@@ -53,9 +55,9 @@ use Modules\RD\Entities\Recipe;
 use Modules\RD\Entities\Flow;
 use Modules\RD\Entities\Phase;
 use Modules\RD\Entities\PhaseRole;
+use Modules\RD\Entities\RecipeImportSettings;
 use Modules\RD\Entities\RecipeSpecification;
 use Modules\RD\Entities\RecipeSpecificationAttributes;
-
 
 class RDServiceProvider extends ServiceProvider
 {
@@ -171,6 +173,14 @@ class RDServiceProvider extends ServiceProvider
             return new RecipeProposalsResource(new RecipeProposals());
         });
 
+        $this->app->bind(RecipeImportSettingsRepository::class, function () {
+            return new RecipeImportSettingsRepository(new RecipeImportSettings());
+        });
+
+        $this->app->bind(RecipeImportSettingsResource::class, function () {
+            return new RecipeImportSettingsResource(new RecipeImportSettings());
+        });
+
         $this->app->bind(RecipeSpecificationRepository::class, function () {
             return new RecipeSpecificationRepository(new RecipeSpecification());
         });
@@ -230,6 +240,7 @@ class RDServiceProvider extends ServiceProvider
             RecipeProposalsRepository::class,
             RecipeSpecificationRepository::class,
             RecipeSpecificationAttributesRepository::class,
+            RecipeImportSettingsRepository::class,
             ProjectLogsRepository::class,
             ProjectSampleLogsRepository::class,
             PhaseRepository::class,

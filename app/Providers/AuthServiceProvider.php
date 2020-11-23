@@ -12,6 +12,7 @@ use App\Models\ParameterType;
 use App\Models\Province;
 use App\Models\Role;
 use App\Models\SalesRep;
+use App\Models\SettingsImages;
 use App\Models\Supplier;
 use App\Models\Tag;
 use App\Models\TaxRule;
@@ -29,6 +30,7 @@ use App\Policies\ParameterTypePolicy;
 use App\Policies\ProvincePolicy;
 use App\Policies\RolePolicy;
 use App\Policies\SalesRepPolicy;
+use App\Policies\SettingsImagesPolicy;
 use App\Policies\SupplierPolicy;
 use App\Policies\TagPolicy;
 use App\Policies\TaxRuleComponentPolicy;
@@ -72,6 +74,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(SalesRep::class, SalesRepPolicy::class);
         Gate::policy(Tag::class, TagPolicy::class);        
         Gate::policy(CustomerTag::class, CustomerTagPolicy::class);        
+        Gate::policy(SettingsImages::class, SettingsImagesPolicy::class);        
 
     }
 }

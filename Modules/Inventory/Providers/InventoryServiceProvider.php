@@ -35,6 +35,7 @@ use Modules\Inventory\Entities\ProductImportSettings;
 use Modules\Inventory\Entities\ProductTag;
 use Modules\Inventory\Entities\StockAdjustment;
 use Modules\Inventory\Entities\StockAdjustmentDetail;
+use Modules\Inventory\Entities\StockCountFilter;
 // repositories
 use Modules\Inventory\Repositories\AttributeRepository;
 use Modules\Inventory\Repositories\AvailabilityRepository;
@@ -66,6 +67,7 @@ use Modules\Inventory\Repositories\ProductImportSettingsRepository;
 use Modules\Inventory\Repositories\ProductTagRepository;
 use Modules\Inventory\Repositories\StockAdjustmentDetailRepository;
 use Modules\Inventory\Repositories\StockAdjustmentRepository;
+use Modules\Inventory\Repositories\StockCountFilterRepository;
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
 use Modules\Inventory\Transformers\AvailabilityResource;
@@ -97,6 +99,7 @@ use Modules\Inventory\Transformers\ProductImportSettingsResource;
 use Modules\Inventory\Transformers\ProductTagResource;
 use Modules\Inventory\Transformers\StockAdjustmentDetailResource;
 use Modules\Inventory\Transformers\StockAdjustmentResource;
+use Modules\Inventory\Transformers\StockCountFilterResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -283,6 +286,14 @@ class InventoryServiceProvider extends ServiceProvider
             return new StockCountDetailResource(new StockCountDetail());
         });
 
+        $this->app->bind(StockCountFilterRepository::class, function () {
+            return new StockCountFilterRepository(new StockCountFilter());
+        });
+
+        $this->app->bind(StockCountFilterResource::class, function () {
+            return new StockCountFilterResource(new StockCountFilter());
+        });
+
         $this->app->bind(StockCountResource::class, function () {
             return new StockCountResource(new StockCount());
         });
@@ -388,6 +399,7 @@ class InventoryServiceProvider extends ServiceProvider
             ProductReorderLevelRepository::class,
             ProductPromoRepository::class,
             ProductCustomPriceRepository::class,
+            StockCountFilterRepository::class,
             StockAdjustmentRepository::class,
             StockAdjustmentDetailRepository::class,
             ProductTagRepository::class,

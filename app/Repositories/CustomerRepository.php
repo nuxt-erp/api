@@ -12,8 +12,13 @@ class CustomerRepository extends RepositoryService
 {
 
     public function findBy(array $searchCriteria = [])
-
     {
+
+        $searchCriteria['order_by'] = [
+            'field'         => 'name',
+            'direction'     => 'asc'
+        ];
+
         if (!empty($searchCriteria['text'])) {
             $text = '%' . Arr::pull($searchCriteria, 'text') . '%';
             $this->queryBuilder->where(function ($query) use($text) {
@@ -23,13 +28,14 @@ class CustomerRepository extends RepositoryService
         }
         return parent::findBy($searchCriteria);
     }
+
     public function store(array $data)
     {
 
         DB::transaction(function () use ($data)
         {
             parent::store($data);
-            
+
             if(!empty($data['contacts'])) {
                 foreach ($data['contacts'] as $contact) {
                     $new                = new Contact();
@@ -71,13 +77,13 @@ class CustomerRepository extends RepositoryService
     {
 
         DB::transaction(function () use ($data, $model)
-        {    
+        {
             parent::update($model, $data);
             if(!empty($data['contacts'])) {
                 foreach ($data['contacts'] as $contact) {
                     $contact['entity_id']   = $model->id;
                     $contact['entity_type'] = 'customer';
-                    
+
                     Contact::updateOrCreate(
                         ['id' => $contact['id']],
                         $contact
@@ -88,7 +94,7 @@ class CustomerRepository extends RepositoryService
                 foreach ($data['custom_product_prices'] as $custom_product_price) {
                     $custom_product_price['customer_id']   = $model->id;
                     $custom_product_price['entity_type']   = 'customer';
-                    
+
                     if (empty($custom_product_price['disabled_at']) && $custom_product_price['is_enabled'] === 0) {
                         $custom_product_price['disabled_at'] = now();
                     }
@@ -103,16 +109,16 @@ class CustomerRepository extends RepositoryService
 
                 $current_tags = $this->model->tags->pluck('tag_id')->toArray();
                 $deleted_tags = array_diff($current_tags, $data["tag_ids"]);
-                
+
                 foreach($data["tag_ids"] as $tag_id) {
                     if ( !in_array($tag_id, $current_tags)) {
                         CustomerTag::create([
                             'customer_id'    => $this->model->id,
-                            'tag_id'        => $tag_id,                            
+                            'tag_id'        => $tag_id,
                         ]);
                     }
                 }
-    
+
                 foreach($deleted_tags as $tag_id) {
                     CustomerTag::where('customer_id', $this->model->id)->where('tag_id', $tag_id)->delete();
                 }
