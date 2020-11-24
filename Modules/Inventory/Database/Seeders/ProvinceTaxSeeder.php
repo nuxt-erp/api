@@ -24,7 +24,7 @@ class ProvinceTaxSeeder extends Seeder
 
         $provinces = [
             'NL' => Province::updateOrcreate([
-                'name'      => 'Newfoundland and Labrador'
+                'code'      => 'NL',
                 ],
                 [
                 'name'      => 'Newfoundland and Labrador',
@@ -32,7 +32,7 @@ class ProvinceTaxSeeder extends Seeder
                 'country_id'=> $canada->id
             ]),
             'PE' => Province::updateOrcreate([
-                'name'      => 'Prince Edward Island'
+                'code'      => 'PE',
             ],
             [
                 'name'      => 'Prince Edward Island',
@@ -40,7 +40,7 @@ class ProvinceTaxSeeder extends Seeder
                 'country_id'=> $canada->id
             ]),
             'NS' => Province::updateOrcreate([
-                'name'      => 'Nova Scotia'
+                'code'      => 'NS',
                 ],
                 [
                 'name'      => 'Nova Scotia',
@@ -48,7 +48,7 @@ class ProvinceTaxSeeder extends Seeder
                 'country_id'=> $canada->id
             ]),
             'NB' => Province::updateOrcreate([
-                'name'      => 'New Brunswick'
+                'code'      => 'NB',
             ],
             [
                 'name'      => 'New Brunswick',
@@ -57,7 +57,7 @@ class ProvinceTaxSeeder extends Seeder
             ]),
             'QC' => Province::updateOrcreate(
                 [
-                    'name'      => 'Quebec',
+                    'code'      => 'QC',
                 ],
                 [
                 'name'      => 'Quebec',
@@ -65,7 +65,7 @@ class ProvinceTaxSeeder extends Seeder
                 'country_id'=> $canada->id
             ]),
             'ON' => Province::updateOrcreate([
-                'name'      => 'Ontario',
+                 'code'      => 'ON',
                 ],
                 [
                 'name'      => 'Ontario',
@@ -73,7 +73,7 @@ class ProvinceTaxSeeder extends Seeder
                 'country_id'=> $canada->id
             ]),
             'MB' => Province::updateOrcreate([
-                'name'      => 'Manitoba'
+                'code'      => 'MB',
             ],
             [
                 'name'      => 'Manitoba',
@@ -81,7 +81,7 @@ class ProvinceTaxSeeder extends Seeder
                 'country_id'=> $canada->id
             ]),
             'SK' => Province::updateOrcreate([
-                'name'      => 'Saskatchewan'
+                'code'      => 'SK',
             ],
             [
                 'name'      => 'Saskatchewan',
@@ -89,7 +89,7 @@ class ProvinceTaxSeeder extends Seeder
                 'country_id'=> $canada->id
             ]),
             'AB' => Province::updateOrcreate([
-                'name'      => 'Alberta'
+                'code'      => 'AB',
             ],
             [
                 'name'      => 'Alberta',
@@ -97,7 +97,7 @@ class ProvinceTaxSeeder extends Seeder
                 'country_id'=> $canada->id
             ]),
             'BC' => Province::updateOrcreate([
-                'name'      => 'British Columbia',
+                'code'      => 'BC',
             ],
             [
                 'name'      => 'British Columbia',
@@ -105,7 +105,7 @@ class ProvinceTaxSeeder extends Seeder
                 'country_id'=> $canada->id
             ]),
             'YT' => Province::updateOrcreate([
-                'name'      => 'Yukon'
+                'code'      => 'YT',
             ],
             [
                 'name'      => 'Yukon',
@@ -113,7 +113,7 @@ class ProvinceTaxSeeder extends Seeder
                 'country_id'=> $canada->id
             ]),
             'NT' => Province::updateOrcreate([
-                'name'      => 'Northwest Territories'
+                'code'      => 'NT',
             ],
             [
                 'name'      => 'Northwest Territories',
@@ -121,7 +121,7 @@ class ProvinceTaxSeeder extends Seeder
                 'country_id'=> $canada->id
             ]),
             'NU' => Province::updateOrcreate([
-                'name'      => 'Nunavut'
+                'code'      => 'NU',
             ],
             [
                 'name'      => 'Nunavut',
