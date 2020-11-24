@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFlowsTable extends Migration
+class CreateSettingsImagesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateFlowsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('tenant')->create('prod_flows', function (Blueprint $table) {
-            $table->bigIncrements('id');
-
-            $table->foreignId('first_phase_id')->nullable()->constrained('prod_phases')->onDelete('set null');
-            $table->string('name')->unique();
-
+        Schema::create('settings_images', function (Blueprint $table) {
+            $table->id();
+            $table->string('path');
+            $table->string('type')->nullable();
+            $table->string('thumb_path')->nullable();
+            $table->tinyInteger('order')->default(1);
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ class CreateFlowsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->dropIfExists('prod_flows');
+        Schema::dropIfExists('settings_images');
     }
 }

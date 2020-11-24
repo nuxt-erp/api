@@ -17,20 +17,62 @@ class ParameterSeederTableSeeder extends Seeder
     {
         Model::unguard();
 
-        $param = Parameter::updateOrCreate([
-            'name'      => 'count_type',
-            'value'     => 'Low Stock Check'
-        ]);
+        // value fix
+        $low_stock = Parameter::where('name', 'count_type')->where('value', 'Low Stock Check')->first();
+        if($low_stock){
+            $low_stock->value       = 'low_stock_check';
+            $low_stock->description = 'Low Stock Check';
+            $low_stock->save();
+        }
+        else{
+            $low_stock = Parameter::updateOrCreate(
+                [
+                    'name'          => 'count_type',
+                    'value'         => 'low_stock_check'
+                ],
+                [
+                'description'   => 'Low Stock Check'
+                ]
+            );
+        }
 
-        $param = Parameter::updateOrCreate([
-            'name'      => 'count_type',
-            'value'     => 'Weekly Count'
-        ]);
+        // value fix
+        $weekly_count = Parameter::where('name', 'count_type')->where('value', 'Weekly Count')->first();
+        if($weekly_count){
+            $weekly_count->value       = 'weekly_count';
+            $weekly_count->description = 'Weekly Count';
+            $weekly_count->save();
+        }
+        else{
+            $weekly_count = Parameter::updateOrCreate(
+                [
+                    'name'          => 'count_type',
+                    'value'         => 'weekly_count'
+                ],
+                [
+                    'description'   => 'Weekly Count'
+                ]
+            );
+        }
 
-        $param = Parameter::updateOrCreate([
-            'name'      => 'count_type',
-            'value'     => 'Full Count'
-        ]);
+        // value fix
+        $full_count = Parameter::where('name', 'count_type')->where('value', 'Full Count')->first();
+        if($full_count){
+            $full_count->value       = 'full_count';
+            $full_count->description = 'Full Count';
+            $full_count->save();
+        }
+        else{
+            $full_count = Parameter::updateOrCreate(
+                [
+                    'name'          => 'count_type',
+                    'value'         => 'full_count'
+                ],
+                [
+                    'description'   => 'Full Count'
+                ]
+            );
+        }
 
         // Carriers
         $param = Parameter::updateOrCreate([

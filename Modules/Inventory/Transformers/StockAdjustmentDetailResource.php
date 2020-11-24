@@ -16,12 +16,14 @@ class StockAdjustmentDetailResource extends ResourceService
             'sku'                   => optional($this->product)->sku,
             'location_id'           => $this->location_id,
             'location_name'         => optional($this->location)->name,
+            'bin_id'                => $this->bin_id,
+            'bin_name'              => optional($this->bin)->name,
             'qty'                   => $this->qty,
             'on_hand'               => $this->stock_on_hand,
             'variance'              => $this->variance,
             'notes'                 => $this->notes,
             'created_at'            => optional($this->created_at)->format('Y-m-d H:i:s'),
-            'updated_at'            => optional($this->updated_at)->format('Y-m-d H:i:s'),            
+            'updated_at'            => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];
     }
 }

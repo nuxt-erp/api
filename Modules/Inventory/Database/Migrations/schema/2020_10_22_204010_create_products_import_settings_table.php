@@ -20,7 +20,7 @@ class CreateProductsImportSettingsTable extends Migration
             $table->string('custom_name')->nullable();
             $table->string('entity');
 
-            $table->unique('column_name', 'entity');
+            $table->unique(['column_name', 'entity']);
 
             $table->timestamps();
         });

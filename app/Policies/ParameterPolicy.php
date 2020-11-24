@@ -17,7 +17,7 @@ class ParameterPolicy
 
     public function index(User $currentUser)
     {
-        return $currentUser->hasRole('rd_flavorist', 'rd_requester', 'rd_supervisor', 'admin');
+        return $currentUser->hasRole('rd_flavorist', 'rd_requester', 'rd_supervisor', 'rd_quality_control', 'admin');
     }
 
     public function show(User $currentUser, Parameter $target)

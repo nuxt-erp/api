@@ -4,6 +4,7 @@ namespace Modules\Inventory\Http\Controllers;
 
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
+use App\Models\SettingsImages;
 use Modules\Inventory\Repositories\ProductImagesRepository;
 use Modules\Inventory\Transformers\ProductImagesResource;
 use Illuminate\Http\Request;
@@ -49,6 +50,22 @@ class ProductImagesController extends ControllerService
                 $img->resize(null, 150, function ($constraint) {
                     $constraint->aspectRatio();
                 });
+                if ($request->filled('watermark')) {
+                    lad($request->watermark);
+                    lad($request->watermark_location);
+                    lad($request->watermark_opacity);
+                    lad($request->watermark_size);
+                    $watermark = Image::make(base64_encode(Storage::disk('s3')->get(SettingsImages::where('type', '=', 'watermark')->first()->path)));
+                    $resizePercentage = $request->watermark_size;//70% less then an actual image (play with this value)
+                    $watermarkSize = round($img->width() * ($resizePercentage / 100), 2); //watermark will be $resizePercentage less then the actual width of the image
+                    $watermark->resize($watermarkSize, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                    $watermark->opacity($request->watermark_opacity);
+
+                    $img->insert($watermark, $request->watermark_location);
+                }
+                $img->save();
                 // Secret to get the image back
                 $resource       = $img->stream()->detach();
 

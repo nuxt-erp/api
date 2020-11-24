@@ -40,7 +40,6 @@ class ProductResource extends ResourceService
             'is_enabled'            => $this->is_enabled,
             'sales_channel'         => $this->sales_channel,
             'stock_locator'         => $this->stock_locator,
-            'stock_locator_name'    => optional($this->stock_locator)->name,
             'measure_id'            => $this->measure_id,
             'measure_name'          => optional($this->measure)->name,
             'name_full'             => $this->full_description,
@@ -53,6 +52,7 @@ class ProductResource extends ResourceService
             'updated_at'            => optional($this->updated_at)->format('Y-m-d H:i:s'),
             'can_be_deleted'        => true,
             'tag_ids'               => $this->tags()->pluck('tag_id'),
+            'tag_names'                => implode(', ', optional($this->tag_parents)->pluck('tag')->pluck('name')->toArray()),
             'taxable'               =>$this->taxable,
             'price_tier_items'      =>$this->priceTierItems
         ];

@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class ControllerService extends LaravelController implements ControllerInterface
 {
@@ -55,7 +56,18 @@ class ControllerService extends LaravelController implements ControllerInterface
             }
         }
 
-        return $this->repository->findBy($request->all());
+        if($isList){
+            //@todo add flag for make new requests wait until the result is ready
+            $model_name = (new \ReflectionClass($this->repository->model))->getShortName();
+            $key        = $model_name.'_'.serialize($request->all());
+            return Cache::remember($key, 60, function () use($request){
+                return $this->repository->findBy($request->all());
+            });
+        }
+        else{
+            return $this->repository->findBy($request->all());
+        }
+
     }
 
     public function indexResponse(Request $request, $items){

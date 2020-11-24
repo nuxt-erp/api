@@ -6,12 +6,9 @@ use App\Models\Parameter;
 use Illuminate\Support\Arr;
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Facades\DB;
-use Modules\Inventory\Entities\StockCount;
-use Modules\Inventory\Entities\StockCountDetail;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\StockAdjustmentDetail;
-use Auth;
 class StockAdjustmentRepository extends RepositoryService
 {
 
@@ -64,7 +61,8 @@ class StockAdjustmentRepository extends RepositoryService
                 StockAdjustmentDetail::updateOrCreate([
                     'stock_adjustment_id' => $id,
                     'product_id'    => $product['product_id'],
-                    'location_id'   => $product['location_id']
+                    'location_id'   => $product['location_id'],
+                    'bin_id'        => $product['bin_id'] ?? null
                 ],[
                     'qty'           => $qty,
                     'stock_on_hand' => $product['on_hand'],
@@ -76,7 +74,8 @@ class StockAdjustmentRepository extends RepositoryService
                 // UPDATE PRODUCT AVAILABILITY
                 Availability::updateOrCreate([
                     'product_id'  => $product['product_id'],
-                    'location_id' => $product['location_id']
+                    'location_id' => $product['location_id'],
+                    'bin_id'      => $product['bin_id'] ?? null
                 ],
                 [
                     'on_hand'   => $qty
@@ -89,11 +88,12 @@ class StockAdjustmentRepository extends RepositoryService
                 $log                = new ProductLog();
                 $log->product_id    = $product['product_id'];
                 $log->location_id   = $product['location_id'];
+                $log->bin_id        = $product['bin_id'] ?? null;
                 $log->quantity      = $qty;
                 $log->ref_code_id   = $id;
                 $log->type_id       = $type->id;
                 $log->description   = 'Finished stock adjustment - changing quantity';
-                
+
                 $log->save();
             }
         }

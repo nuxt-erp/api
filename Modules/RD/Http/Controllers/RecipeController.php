@@ -12,6 +12,7 @@ use Modules\RD\Repositories\RecipeRepository;
 use Modules\RD\Transformers\RecipeResource;
 use PDF;
 use Illuminate\Support\Facades\DB;
+use Modules\RD\Entities\Recipe;
 use Modules\RD\Entities\RecipeSpecification;
 
 class RecipeController extends ControllerService
@@ -89,12 +90,13 @@ class RecipeController extends ControllerService
         ];
 
         if($recipe){
-            return view('rd::recipe', ['recipe' => $recipe]);
-            //$pdf = PDF::loadView('rd::recipe', ['recipe' => $recipe]);
+            return view('rd::recipe', $data);
+            //$pdf = PDF::loadView('rd::recipe', $data);
             //return $pdf->stream('recipe.pdf');
         }
 
     }
+
     public function printSpecification($user_id, $recipe_specification_id){
 
         $user = User::find($user_id);

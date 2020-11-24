@@ -22,6 +22,7 @@ class RDDatabaseSeeder extends Seeder
         $this->call(PhaseRoleSeeder::class);
         $this->call(RoleTableSeeder::class);
         $this->call(RecipeSpecificationSeeder::class);
+        $this->call(ImportRecipeSettingsSeeder::class);
 
         // sample data
         if (env('APP_ENV', 'local') === 'local') {

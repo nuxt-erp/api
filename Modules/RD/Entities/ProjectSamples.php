@@ -112,7 +112,7 @@ class ProjectSamples extends ModelService
         return $this->belongsTo(Phase::class, 'phase_id', 'id');
     }
     public function recipe()
-    {
+    {   
         return $this->belongsTo(Recipe::class, 'recipe_id', 'id');
     }
     public function assignee()

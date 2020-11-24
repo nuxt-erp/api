@@ -46,10 +46,10 @@ class PurchaseDetailRepository extends RepositoryService
 
                 if ($getItem->status == 1) { // Completed
                     // Decrement stock on hand qty
-                    //$this->updateStock(Auth::user()->company_id, $getItem->product_id, $getItem->qty, $getItem->location_id, "-", "Purchase", $id, 0, 0, "Removed item");
+                    //$this->updateStock(Auth::user()->company_id, $getItem->product_id, $getItem->qty, $getItem->location_id, null, "-", "Purchase", $id, 0, 0, "Removed item");
                 } else {
                     // Decrement stock on order qty
-                    //$this->updateStock(Auth::user()->company_id, $getItem->product_id, 0, $getItem->location_id, "-", "Purchase", $id, $getItem->qty, 0, 0, "Removed item");
+                    //$this->updateStock(Auth::user()->company_id, $getItem->product_id, 0, $getItem->location_id, null, "-", "Purchase", $id, $getItem->qty, 0, 0, "Removed item");
                 }
 
             }

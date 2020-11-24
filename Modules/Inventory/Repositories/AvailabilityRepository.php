@@ -23,7 +23,7 @@ class AvailabilityRepository extends RepositoryService
 
         $this->queryBuilder->leftJoin('inv_products', 'inv_availabilities.product_id', 'inv_products.id');
 
-        $this->queryBuilder->select('inv_products.sku', 'inv_availabilities.location_id', 'inv_products.brand_id', 'inv_products.category_id', 'inv_availabilities.id', 'inv_availabilities.product_id', 'inv_availabilities.available', 'inv_availabilities.on_hand', 'inv_availabilities.on_order', 'inv_availabilities.allocated');
+        $this->queryBuilder->select('inv_products.sku', 'inv_availabilities.location_id', 'inv_availabilities.bin_id', 'inv_products.brand_id', 'inv_products.category_id', 'inv_availabilities.id', 'inv_availabilities.product_id', 'inv_availabilities.available', 'inv_availabilities.on_hand', 'inv_availabilities.on_order', 'inv_availabilities.allocated');
 
         if (!empty($searchCriteria['category_id'])) {
             $this->queryBuilder
@@ -33,6 +33,16 @@ class AvailabilityRepository extends RepositoryService
         if (!empty($searchCriteria['location_id'])) {
             $this->queryBuilder
                 ->where('inv_availabilities.location_id', Arr::pull($searchCriteria, 'location_id'));
+        }
+
+        if (!empty($searchCriteria['bin_id'])) {
+            if($searchCriteria['bin_id'] > 0){
+                $this->queryBuilder
+                ->where('inv_availabilities.bin_id', Arr::pull($searchCriteria, 'bin_id'));
+            }
+            else{
+                $this->queryBuilder->whereNull('bin_id');
+            }
         }
 
         if (!empty($searchCriteria['product_name'])) {
@@ -63,6 +73,7 @@ class AvailabilityRepository extends RepositoryService
             $log                = new ProductLog();
             $log->product_id    = $data['product_id'];
             $log->location_id   = $data['location_id'];
+            $log->bin_id        = $data['bin_id'] ?? null;
             $log->quantity      = $data['on_hand'];
             $log->ref_code_id   = null;
             $log->type_id       = $type->id;
@@ -91,7 +102,7 @@ class AvailabilityRepository extends RepositoryService
     *
     */
     //  $product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty, $allocated_qty, $description
-    public function updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
+    public function updateStock($product_id, $qty, $location_id, $bin_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
     {
         $field_to_update = 'on_hand'; // Default option
 
@@ -106,12 +117,16 @@ class AvailabilityRepository extends RepositoryService
         if(!empty($location_id)){
             $qb->where('location_id', $location_id);
         }
+        if(!empty($bin_id)){
+            $qb->where('bin_id', $bin_id);
+        }
 
         $availability = $qb->first();
         if(!$availability){
             $availability = Availability::create([
                 'product_id'    => $product_id,
-                'location_id'   => $location_id
+                'location_id'   => $location_id,
+                'bin_id'        => $bin_id
             ]);
         }
 
@@ -129,11 +144,14 @@ class AvailabilityRepository extends RepositoryService
         $log = new ProductLog();
         $log->product_id    = $product_id;
         $log->location_id   = $location_id;
+        $log->bin_id        = $bin_id;
         $log->quantity      = ($operator == "-" ? -$qty : $qty);
         $log->ref_code_id   = $ref_code;
         $log->type_id       = $type->id;
         $log->description   = $description;
-        $log->user_id       =  Auth::user()->id;
+        if (Auth::user()) {
+            $log->user_id       = Auth::user()->id;
+        }
 
         $log->save();
     }
@@ -153,6 +171,7 @@ class AvailabilityRepository extends RepositoryService
         $this->queryBuilder->rightJoin('inv_products', 'inv_availabilities.product_id', 'inv_products.id');
         $this->queryBuilder->leftJoin('inv_brands', 'inv_brands.id', 'inv_products.brand_id');
         $this->queryBuilder->leftJoin('inv_categories', 'inv_categories.id', 'inv_products.category_id');
+        $this->queryBuilder->leftJoin('inv_location_bins', 'inv_location_bins.id', 'inv_availabilities.bin_id');
         $this->queryBuilder->select(
             'inv_brands.name as brand_name',
             'inv_categories.name as category_name',
@@ -165,6 +184,9 @@ class AvailabilityRepository extends RepositoryService
 
             'l2.id as location_id2',
             'l2.name as location_name2',
+
+            'inv_availabilities.bin_id',
+            'inv_location_bins.name as bin_name',
 
             'inv_availabilities.on_hand',
             'inv_products.category_id',
@@ -187,6 +209,12 @@ class AvailabilityRepository extends RepositoryService
             unset($searchCriteria['location_id']);
         } else {
             $this->queryBuilder->leftJoin('locations', 'locations.id', 'inv_products.location_id');
+        }
+
+        if (!empty($searchCriteria['bin_id'])) {
+            $this->queryBuilder
+                ->where('bin_id', Arr::pull($searchCriteria, 'bin_id'));
+            unset($searchCriteria['bin_id']);
         }
 
         if (!empty($searchCriteria['add_discontinued'])) {
@@ -221,8 +249,8 @@ class AvailabilityRepository extends RepositoryService
             'product_id'    => $product_id,
             'location_id'   => $location_id
         ])->first();
-        
+
        return isset($item)?$item->on_hand:0;
     }
-    
+
 }

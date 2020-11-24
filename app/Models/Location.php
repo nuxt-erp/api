@@ -2,6 +2,7 @@
 
 namespace App\Models;
 use Illuminate\Validation\Rule;
+use Modules\Inventory\Entities\LocationBin;
 
 class Location extends ModelService
 {
@@ -44,5 +45,10 @@ class Location extends ModelService
         }
 
         return $rules;
+    }
+
+    public function bins()
+    {
+        return $this->hasMany(LocationBin::class, 'location_id', 'id');
     }
 }
