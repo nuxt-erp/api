@@ -111,7 +111,7 @@ class ProjectSamplesRepository extends RepositoryService
     {
 
         DB::transaction(function () use ($model, &$data){
-
+            
             $approved                    = !empty($data['supervisor_approval']) && $data['supervisor_approval'];
             $rejected                    = !empty($data['supervisor_reject']) && $data['supervisor_reject'];
             $finished                    = !empty($data['flavorist_finish']) && $data['flavorist_finish'];
@@ -128,6 +128,7 @@ class ProjectSamplesRepository extends RepositoryService
                 $flow = Flow::where('phase_id', $model->phase_id)->first();
                 $data['phase_id']   = $flow->next_phase_id;
                 $data['status']     = strtolower($flow->next_phase->name);
+                $data['feedback']   = null;
             }
             elseif($finished){
                 $flow = Flow::where('phase_id', $model->phase_id)->first();
