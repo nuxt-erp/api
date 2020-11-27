@@ -12,6 +12,7 @@ use Modules\Inventory\Entities\StockCountDetail;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\Product;
+use Modules\Inventory\Entities\StockCountFilter;
 
 class StockCountRepository extends RepositoryService
 {
@@ -197,10 +198,68 @@ class StockCountRepository extends RepositoryService
     {
         DB::transaction(function () use ($data)
         {
+            if(empty($data['date'])) {
+                $data['date'] = now();
+            }
             // SAVE STOCK TAKE
             parent::store($data);
             // SAVE STOCK TAKE PRODUCTS
-            $this->model->details()->sync($data['list_products']);
+            if(!empty($data['stock_count_filters'])) {
+                foreach($data['stock_count_filters'] as $key => $list) {
+                    if($key === 'tag_ids') {
+                        foreach($list as $val) {
+                            StockCountFilter::create([
+                                'type' => 'App\\Models\\Tag',
+                                'type_id' => $val,
+                                'stocktake_id' => $this->model->id,
+                            ]);
+                        }
+                        
+                    }
+                    else if($key === 'stock_locator_ids') {
+                        foreach($list as $val) {
+                            StockCountFilter::create([
+                                'type' => 'Modules\\Inventory\\Entities\\StockLocator',
+                                'type_id' => $val,
+                                'stocktake_id' => $this->model->id,
+                            ]);
+                        }
+                    }
+                    else if($key === 'bin_ids') {
+                        
+                        foreach($list as $val) {
+                            StockCountFilter::create([
+                                'type' => 'Modules\\Inventory\\Entities\\LocationBin',
+                                'type_id' => $val,
+                                'stocktake_id' => $this->model->id,
+                            ]);
+                        }
+                    }
+                    else if($key === 'category_ids') {
+                        
+                        foreach($list as $val) {
+                            StockCountFilter::create([
+                                'type' => 'Modules\\Inventory\\Entities\\Category',
+                                'type_id' => $val,
+                                'stocktake_id' => $this->model->id,
+                            ]);
+                        }
+                    }
+                    else if($key === 'brand_ids') {
+                        foreach($list as $val) {
+                            StockCountFilter::create([
+                                'type' => 'Modules\\Inventory\\Entities\\Brand',
+                                'type_id' => $val,
+                                'stocktake_id' => $this->model->id,
+                            ]);
+                        }
+                        
+                    }
+                }
+            }
+            if(!empty($data['list_products'])) {
+                $this->model->details()->sync($data['list_products']);
+            }
         });
     }
 

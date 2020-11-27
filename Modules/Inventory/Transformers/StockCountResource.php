@@ -11,7 +11,7 @@ class StockCountResource extends ResourceService
         return [
             'id'                        => $this->id,
             'name'                      => $this->name,
-            'date'                      => $this->date->format('Y-m-d'),
+            'date'                      => optional($this->date)->format('Y-m-d'),
             'target'                    => $this->target,
             'count_type_id'             => $this->count_type_id,
             'is_enabled'                => $this->add_discontinued,
