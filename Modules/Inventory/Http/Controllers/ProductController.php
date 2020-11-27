@@ -6,7 +6,6 @@ use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 use App\Resources\ListResource;
 use Modules\Inventory\Repositories\ProductRepository;
-use Modules\Inventory\Transformers\AvailabilityStockCountResource;
 use Modules\Inventory\Transformers\ProductResource;
 use Illuminate\Http\Request;
 use Modules\Inventory\Entities\ProductCategory;
@@ -21,12 +20,6 @@ class ProductController extends ControllerService implements CheckPolicies
         $this->repository = $repository;
         $this->resource = $resource;
         parent::__construct();
-    }
-
-    public function productAvailabilities(Request $request)
-    {
-        $items = $this->repository->productAvailabilities($request->all());
-        return $this->sendFullCollectionResponse($items, AvailabilityStockCountResource::class);
     }
 
     public function findCarriers(Request $request)
@@ -90,5 +83,5 @@ class ProductController extends ControllerService implements CheckPolicies
         $items = $this->repository->stockCountData($request->all());
         return $items;
     }
-    
+
 }

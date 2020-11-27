@@ -2,9 +2,10 @@
 
 namespace App\Console;
 
+use App\Models\Company;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-
+use Illuminate\Support\Facades\DB;
 class Kernel extends ConsoleKernel
 {
     /**
@@ -26,7 +27,20 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-        // $schedule->call(function () {
+
+        $schedule->call(function () {
+
+            $companies = Company::all();
+
+            foreach ($companies as $company) {
+                config(['database.connections.tenant.schema' => $company->schema]);
+                DB::reconnect('tenant');
+
+                $api = resolve('Shopify\API');
+                $api->syncOrders();
+                # code...
+            }
+
         //     $api    = resolve('Dear\API');
         //     $user = User::where('email', 'ILIKE', '%dear%')->first();
 
@@ -46,7 +60,7 @@ class Kernel extends ConsoleKernel
         //         'status'    => 'cron_update'
         //     ]);
 
-        // })->dailyAt('00:00');
+         })->everyMinute();
     }
 
     /**

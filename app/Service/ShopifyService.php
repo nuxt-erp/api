@@ -11,6 +11,8 @@ use App\Models\Province;
 use App\Models\User;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\Product;
+use Modules\Inventory\Entities\Category;
+use Modules\Inventory\Entities\Brand;
 use Modules\Inventory\Repositories\AvailabilityRepository;
 use Modules\Sales\Entities\Sale;
 use Modules\Sales\Entities\SaleDetails;
@@ -42,14 +44,16 @@ class ShopifyService
         $this->user = auth()->user() ?? User::where('name', 'admin')->first();
     }
 
+    // Sync order with Shopify
     public function syncOrders()
     {
+
         //@todo change all date functions calls to use Carbon package
 
-        // date_default_timezone_set('America/Toronto');
-        $time_zone = '-4:00';
+        //date_default_timezone_set('America/Toronto');
+        $time_zone = '-5:00';
         // -2 minutes (Orders from the last 2 minutes)
-        $date = date('Y-m-d\TH:i:s', strtotime('-30 minutes', strtotime(date('Y-m-d\TH:i:s'))));
+        $date = date('Y-m-d\TH:i:s', strtotime('-3 minutes', strtotime(date('Y-m-d\TH:i:s'))));
 
         $params = [
             'updated_at_min' => $date  . $time_zone,
@@ -58,20 +62,25 @@ class ShopifyService
             'limit'          => $this->limit
         ];
 
+        $cont = 0;
+
         if ($this->client) {
             $orders = $this->client->Order->get($params);
 
-            DB::transaction(function () use ($orders)
+            DB::transaction(function () use ($orders, $cont)
             {
                 $fulfillment_status_list= [];
                 $financial_status_list  = [];
+
                 foreach ($orders as $order) {
+
+                    $cont++;
 
                     // Remove # character from the Shopify order name
                     $order_number = filter_var($order['name'], FILTER_SANITIZE_NUMBER_INT);
 
-                    // Get financial status - Remove order if refunded
-                    if ($order['financial_status'] == 'refunded') {
+                    // Get financial status - Remove order if refunded - or cancelled
+                    if ($order['financial_status'] == 'refunded' || ($order['cancelled_at'] != '' || $order['cancel_reason'] != '')) {
                         $sale_id = Sale::where('order_number', $order_number)->pluck('id')->first();
                         $this->removeSale($sale_id); // Refunded
                     } else {
@@ -116,7 +125,7 @@ class ShopifyService
                         $data['financial_status_name']  = $order['financial_status'] ?? '';
                         $data['fulfillment_status_id']  = $fulfillment_status_list[$order['fulfillment_status']] ?? null;
                         $data['fulfillment_status_name']= $order['fulfillment_status'] ?? '';
-                        $data['author_id']              = $this->user->id;
+                        //$data['author_id']              = $this->user->id;
                         $data['subtotal']               = $order['subtotal_price'];
                         $data['discount']               = $order['total_discounts'];
                         $data['taxes']                  = $order['total_tax'];
@@ -129,7 +138,7 @@ class ShopifyService
                             $sale->fill([
                                 'financial_status_id'   => $data['financial_status_id'],
                                 'fulfillment_status_id' => $data['fulfillment_status_id'],
-                                'author_id'             => $this->user->id,
+                                //'author_id'             => $this->user->id,
                                 'subtotal'              => isset($order['current_subtotal_price']) ? $order['current_subtotal_price'] : $order['subtotal_price'],
                                 'discount'              => isset($order['current_total_discounts']) ? $order['current_total_discounts'] : $order['total_discounts'],
                                 'taxes'                 => isset($order['current_total_tax']) ? $order['current_total_tax'] : $order['total_tax'],
@@ -155,25 +164,60 @@ class ShopifyService
                                 $fulfillment_status_list[$items['fulfillment_status']] = $fulfillment_status->id;
                             }
 
-                            if ($product_id) {
-                                array_push(
-                                    $parse_items,
-                                    [
-                                        'sale_id'               => $sale->id,
-                                        'product_id'            => $product_id,
-                                        'qty'                   => $items['quantity'],
-                                        'price'                 => $items['price'],
-                                        'discount_value'        => $items['total_discount'],
-                                        'total_item'            => ($items['quantity'] * $items['price']),
-                                        'shopify_id'            => $items['id'],
-                                        'fulfillment_status_id' => $fulfillment_status_list[$items['fulfillment_status']] ?? null
-                                    ]
-                                );
+                            // If not found, create a new product
+                            if ($product_id == null) {
 
-                                // Allocated quantity
-                                $this->updateStock($product_id, 0, null, '+', 'Sale', $sale->id, 0, $items['quantity'], 'Allocated quantity');
-                                //updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
+                                $variant = $this->client->ProductVariant($items["variant_id"])->get(); // Get more details from prod variant
+                                $prod = $this->client->Product($items["product_id"])->get(); // Shopify Product
+
+                                $variant2 = "";
+                                if (isset($variant['option2'])) {
+                                    $variant2 = $variant['option2'];
+                                }
+
+                                // Product name
+                                $name = $items['title'] . ' - ' . (isset($variant['option1']) ? $variant['option1'] : "") . ($variant2!="" ? (' - ' . $variant2) : '');
+
+                                // Category
+                                $category = Category::firstOrCreate(['name' => trim(strtoupper($prod["product_type"]))], ['is_enabled' => 1]);
+
+                                // Brand
+                                $brand = Brand::firstOrCreate(['name' => trim(strtoupper($prod["vendor"]))], ['is_enabled' => 1]);
+
+                                $product_id = Product::where('sku', $items['sku'])->pluck('id')->first();
+
+                                if ($product_id == null) {
+                                    // New product
+                                    $new_prod = new Product;
+                                    $new_prod->sku = $items["sku"];
+                                    $new_prod->name = $name;
+                                    $new_prod->category_id = $category->id;
+                                    $new_prod->brand_id = $brand->id;
+                                    $new_prod->save();
+
+                                    $product_id = $new_prod->id;
+                                }
+
                             }
+
+                            array_push(
+                                $parse_items,
+                                [
+                                    'sale_id'               => $sale->id,
+                                    'product_id'            => $product_id,
+                                    'qty'                   => $items['quantity'],
+                                    'price'                 => $items['price'],
+                                    'discount_value'        => $items['total_discount'],
+                                    'total_item'            => ($items['quantity'] * $items['price']),
+                                    'shopify_id'            => $items['id'],
+                                    'fulfillment_status_id' => $fulfillment_status_list[$items['fulfillment_status']] ?? null
+                                ]
+                            );
+
+                            if ($product_id != null) {
+                                $this->updateStock($product_id, 0, null, null, '+', 'Sale', $sale->id, 0, $items['quantity'], 'Allocated quantity');
+                            }
+
                         }
 
                         // Save products
@@ -227,6 +271,7 @@ class ShopifyService
                 }
             });
         }
+
     }
 
     private function syncCustomer($order)
@@ -272,10 +317,9 @@ class ShopifyService
         return $country;
     }
 
-    public function updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
+    public function updateStock($product_id, $qty, $location_id, $bin_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
     {
-        // UPDATE STOCK AVAILABILITY
-        $this->availabilityRepository->updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty, $allocated_qty, $description);
+        $this->availabilityRepository->updateStock($product_id, $qty, $location_id, $bin_id, $operator, $type, $ref_code, $on_order_qty, $allocated_qty, $description);
     }
 
     private function checkFulfillments($data, $sale_id)
@@ -319,7 +363,7 @@ class ShopifyService
                     }
                 }
 
-                if ($product_id != 0) {
+                if (!$product_id) {
                     $operation = ($fulfillment_status_name == 'success' ? '-' : ($fulfillment_status_name == 'cancelled' ? '+' : '-') );
                     //     setItemFulfilled($product_id, $quantity, $location_id, $operation, $fulfillment_status_id, $fulfillment_date, $sale_id)
                     $this->setItemFulfilled($product_id, $quantity, $location_id, $operation, $fulfillment_status_id, $fulfillment_date, $sale_id);
@@ -343,12 +387,10 @@ class ShopifyService
     public function setItemFulfilled($product_id, $quantity, $location_id, $operation, $fulfillment_status_id, $fulfillment_date, $sale_id)
     {
         // Update stock on hand
-                        // ($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
-        $this->updateStock($product_id, $quantity, $location_id, $operation, 'Sale', $sale_id, 0, 0, ($operation == '+' ? 'Item cancelled fulfillment' : 'Item fulfilled'));
+        $this->updateStock($product_id, $quantity, $location_id, null, $operation, 'Sale', $sale_id, 0, 0, ($operation == '+' ? 'Item cancelled fulfillment' : 'Item fulfilled'));
 
         // Update allocated quantity
-              //updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
-        $this->updateStock($product_id, 0, $location_id, $operation, 'Sale', $sale_id, 0, $quantity, ($operation == '+' ? 'Item cancelled returning allocated quantity' : 'Allocated quantity'));
+        $this->updateStock($product_id, 0, $location_id, null, $operation, 'Sale', $sale_id, 0, $quantity, ($operation == '+' ? 'Item cancelled returning allocated quantity' : 'Allocated quantity'));
 
         // Update Sale Details
         SaleDetails::where(['product_id' => $product_id, 'sale_id' => $sale_id])->update([
@@ -392,16 +434,14 @@ class ShopifyService
             if (count($sale->details) > 0) {
                 foreach ($sale->details as $detail) {
                     // Undo stock on hand just when fulfilled
-                    if ($sale->fulfillment_status->name == 'fulfilled') {
-                        $this->updateStock($detail->product_id, $detail->qty_fulfilled, $detail->location_id, '+', 'Sale', $id, 0, 0, 'Returning stock - item deleted');
-                        //updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
+                    if (isset($sale->fulfillment_status->name) && $sale->fulfillment_status->name == 'fulfilled') {
+                        $this->updateStock($detail->product_id, $detail->qty_fulfilled, $detail->location_id, null, '+', 'Sale', $id, 0, 0, 'Returning stock - item deleted');
                     } else { // Update allocated qty
-                        $this->updateStock($detail->product_id, 0, $detail->location_id, '-', 'Sale', $id, 0, $detail->qty, 'Remove allocated qtd - item deleted');
-                        //updateStock($product_id, $qty, $location_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
+                        $this->updateStock($detail->product_id, 0, $detail->location_id, null, '-', 'Sale', $id, 0, $detail->qty, 'Remove allocated qtd - item deleted');
                     }
                 }
             }
+            $sale->delete();
         }
-        $sale->delete();
     }
 }

@@ -27,6 +27,11 @@ class CategoryRepository extends RepositoryService
             $searchCriteria['name'] = '%' . Arr::pull($searchCriteria, 'name') . '%';
         }
 
+        if (!empty($searchCriteria['text']))
+        {
+            $this->queryBuilder->where('name', 'ILIKE', '%' . Arr::pull($searchCriteria, 'text') . '%');
+        }
+
         return parent::findBy($searchCriteria);
     }
 

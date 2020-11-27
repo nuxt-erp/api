@@ -10,6 +10,10 @@ class RecipeRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {
+        if(!empty($searchCriteria['list'])) {
+            $this->queryBuilder->orderBy('name', 'asc');
+        }
+
         if(empty($searchCriteria['version'])){
             $this->queryBuilder->where('last_version', TRUE);
         }

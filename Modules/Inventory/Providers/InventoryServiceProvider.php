@@ -27,6 +27,7 @@ use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\Transfer;
 use Modules\Inventory\Entities\TransferDetails;
 use Modules\Inventory\Entities\CustomerDiscount;
+use Modules\Inventory\Entities\LocationBin;
 use Modules\Inventory\Entities\PriceTier;
 use Modules\Inventory\Entities\PriceTierItems;
 use Modules\Inventory\Entities\ProductCustomPrice;
@@ -34,6 +35,7 @@ use Modules\Inventory\Entities\ProductImportSettings;
 use Modules\Inventory\Entities\ProductTag;
 use Modules\Inventory\Entities\StockAdjustment;
 use Modules\Inventory\Entities\StockAdjustmentDetail;
+use Modules\Inventory\Entities\StockCountFilter;
 // repositories
 use Modules\Inventory\Repositories\AttributeRepository;
 use Modules\Inventory\Repositories\AvailabilityRepository;
@@ -56,6 +58,7 @@ use Modules\Inventory\Repositories\ProductReorderLevelRepository;
 use Modules\Inventory\Repositories\TransferRepository;
 use Modules\Inventory\Repositories\TransferDetailsRepository;
 use Modules\Inventory\Repositories\CustomerDiscountRepository;
+use Modules\Inventory\Repositories\LocationBinRepository;
 use Modules\Inventory\Repositories\PriceTierRepository;
 use Modules\Inventory\Repositories\PriceTierItemsRepository;
 
@@ -64,6 +67,7 @@ use Modules\Inventory\Repositories\ProductImportSettingsRepository;
 use Modules\Inventory\Repositories\ProductTagRepository;
 use Modules\Inventory\Repositories\StockAdjustmentDetailRepository;
 use Modules\Inventory\Repositories\StockAdjustmentRepository;
+use Modules\Inventory\Repositories\StockCountFilterRepository;
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
 use Modules\Inventory\Transformers\AvailabilityResource;
@@ -86,6 +90,7 @@ use Modules\Inventory\Transformers\ProductReorderLevelResource;
 use Modules\Inventory\Transformers\TransferResource;
 use Modules\Inventory\Transformers\TransferDetailsResource;
 use Modules\Inventory\Transformers\CustomerDiscountResource;
+use Modules\Inventory\Transformers\LocationBinResource;
 use Modules\Inventory\Transformers\PriceTierResource;
 use Modules\Inventory\Transformers\PriceTierItemsResource;
 
@@ -94,6 +99,7 @@ use Modules\Inventory\Transformers\ProductImportSettingsResource;
 use Modules\Inventory\Transformers\ProductTagResource;
 use Modules\Inventory\Transformers\StockAdjustmentDetailResource;
 use Modules\Inventory\Transformers\StockAdjustmentResource;
+use Modules\Inventory\Transformers\StockCountFilterResource;
 
 class InventoryServiceProvider extends ServiceProvider
 {
@@ -280,6 +286,14 @@ class InventoryServiceProvider extends ServiceProvider
             return new StockCountDetailResource(new StockCountDetail());
         });
 
+        $this->app->bind(StockCountFilterRepository::class, function () {
+            return new StockCountFilterRepository(new StockCountFilter());
+        });
+
+        $this->app->bind(StockCountFilterResource::class, function () {
+            return new StockCountFilterResource(new StockCountFilter());
+        });
+
         $this->app->bind(StockCountResource::class, function () {
             return new StockCountResource(new StockCount());
         });
@@ -339,6 +353,14 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(PriceTierResource::class, function () {
             return new PriceTierResource(new PriceTier());
         });
+
+        $this->app->bind(LocationBinRepository::class, function () {
+            return new LocationBinRepository(new LocationBin());
+        });
+        $this->app->bind(LocationBinResource::class, function () {
+            return new LocationBinResource(new LocationBin());
+        });
+
         $this->app->bind(PriceTierItemsRepository::class, function () {
             return new PriceTierItemsRepository(new PriceTierItems());
         });
@@ -377,11 +399,13 @@ class InventoryServiceProvider extends ServiceProvider
             ProductReorderLevelRepository::class,
             ProductPromoRepository::class,
             ProductCustomPriceRepository::class,
+            StockCountFilterRepository::class,
             StockAdjustmentRepository::class,
             StockAdjustmentDetailRepository::class,
             ProductTagRepository::class,
             ProductImportSettingsRepository::class,
             PriceTierRepository::class,
+            LocationBinRepository::class,
             PriceTierItemsRepository::class
 
         ];

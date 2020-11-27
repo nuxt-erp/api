@@ -7,14 +7,14 @@ use App\Models\Location;
 
 class StockCountDetail extends ModelService
 {
-    protected $connection = 'tenant';
+    protected $connection   = 'tenant';
 
-    public $table       = "inv_stock_count_details";
+    public $table           = "inv_stock_count_details";
 
     protected $fillable = [
         'stockcount_id', 'product_id', 'qty',
         'stock_on_hand', 'variance', 'notes',
-        'location_id', 'abs_variance'
+        'location_id', 'abs_variance', 'bin_id'
     ];
 
     public function product()
@@ -25,5 +25,10 @@ class StockCountDetail extends ModelService
     public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');
+    }
+
+    public function bin()
+    {
+        return $this->belongsTo(LocationBin::class, 'bin_id');
     }
 }

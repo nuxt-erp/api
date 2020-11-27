@@ -9,21 +9,21 @@ class StockCountDetailResource extends ResourceService
     public function toArray($request)
     {
         return [
-            'id'            => $this->id,
-            'stockcount_id' => $this->stockcount_id,
-            'product_id'    => $this->product_id,
-            'name'          => optional($this->product)->getFullDescriptionAttribute(),
-            'sku'           => optional($this->product)->sku,
-            'qty'           => $this->qty,
-            'on_hand'       => $this->stock_on_hand,
-            'variance'      => $this->variance,
-            'notes'         => $this->notes,
-            'brand_id'      => optional($this->product)->brand_id,
-            'brand_name'    => optional($this->product->brand)->name,
-            'category_id'   => optional($this->product)->category_id,
-            'category_name' => optional($this->product->category)->name,
-            'location_id'   => $this->location_id,
-            'location_name' => optional($this->location)->name
+            'id'                => $this->id,
+            'stockcount_id'     => $this->stockcount_id,
+            'product_id'        => $this->product_id,
+            'product_name'      => $this->product->sku .' - '.$this->product->name,
+            'product_brand'     => optional($this->product->brand)->name,
+            'product_category'  => optional($this->product->category)->name,
+            'location_id'       => $this->location_id,
+            'location_name'     => optional($this->location)->name,
+            'bin_id'            => $this->bin_id,
+            'bin_name'          => optional($this->bin)->name,
+            'on_hand'           => $this->on_hand ?? 0,
+            'available'         => 0, //@todo we are not using available rn
+            'qty'               => $this->qty,
+            'variance'          => $this->variance,
+            'notes'             => $this->notes
         ];
     }
 }

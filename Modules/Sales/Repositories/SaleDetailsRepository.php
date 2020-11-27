@@ -35,10 +35,10 @@ class SaleDetailsRepository extends RepositoryService
 
                 if ($sale_detail->fulfillment_status->name == 'success') {
                     // Decrement on hand qty
-                    $availability_repository->updateStock($sale_detail->product_id, $sale_detail->qty, $sale_detail->location_id, "+", "Sale", $id, 0, 0, "Remove item");
+                    $availability_repository->updateStock($sale_detail->product_id, $sale_detail->qty, $sale_detail->location_id, null, "+", "Sale", $id, 0, 0, "Remove item");
                 } else {
                     // Decrement allocated qty
-                    $availability_repository->updateStock($sale_detail->product_id, 0, $sale_detail->location_id, "+", "Sale", $id, 0, $sale_detail->qty, "Remove Item");
+                    $availability_repository->updateStock($sale_detail->product_id, 0, $sale_detail->location_id, null, "+", "Sale", $id, 0, $sale_detail->qty, "Remove Item");
                 }
             }
 

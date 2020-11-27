@@ -24,6 +24,11 @@ class ProjectSamplesRepository extends RepositoryService
         if(!empty($searchCriteria['status'])){
             $this->queryBuilder->where('status', strtolower(Arr::pull($searchCriteria, 'status')));
         }
+
+        if(!empty($searchCriteria['exclude_status'])){
+            $this->queryBuilder->where('status', '<>',strtolower(Arr::pull($searchCriteria, 'exclude_status')));
+        }
+
         elseif($user->hasRole('rd_quality_control')){
             $this->queryBuilder->where('status', 'ILIKE', 'waiting qc')
             ->orWhere('status', 'ILIKE', 'ready');
@@ -106,7 +111,7 @@ class ProjectSamplesRepository extends RepositoryService
     {
 
         DB::transaction(function () use ($model, &$data){
-
+            
             $approved                    = !empty($data['supervisor_approval']) && $data['supervisor_approval'];
             $rejected                    = !empty($data['supervisor_reject']) && $data['supervisor_reject'];
             $finished                    = !empty($data['flavorist_finish']) && $data['flavorist_finish'];
@@ -123,6 +128,7 @@ class ProjectSamplesRepository extends RepositoryService
                 $flow = Flow::where('phase_id', $model->phase_id)->first();
                 $data['phase_id']   = $flow->next_phase_id;
                 $data['status']     = strtolower($flow->next_phase->name);
+                $data['feedback']   = null;
             }
             elseif($finished){
                 $flow = Flow::where('phase_id', $model->phase_id)->first();
@@ -145,7 +151,6 @@ class ProjectSamplesRepository extends RepositoryService
             elseif($rejected || $customer_rejected){
                 $data['phase_id']       = Phase::where('name', 'rework')->first()->id;
                 $data['status']         = 'rework';
-                $data['assignee_id']    = null;
                 $data['finished_at']    = null;
                 $data['started_at']     = null;
             }
@@ -159,11 +164,9 @@ class ProjectSamplesRepository extends RepositoryService
             // FLAVORIST RECIPE UPDATE
             if(!empty($data['recipe'])){
 
-                $current_recipe      = !empty($model->recipe_id);
                 $recipe_from_scratch = empty($data['recipe']['id']);
-                $change_of_recipe    = $current_recipe && $model->recipe_id !== $data['recipe']['id'];
                 $new_version         = $data['recipe']['new_version'];
-
+                
                 if($recipe_from_scratch){
                     $recipe                     =  new Recipe();
                     $recipe->fill($data['recipe']);
@@ -181,9 +184,7 @@ class ProjectSamplesRepository extends RepositoryService
                     $recipe = Recipe::findOrFail($data['recipe']['id']);
 
                     // GENERATE A NEW VERSION
-                    // 1 - new version + no current recipe
-                    // 2 - new version + change recipe
-                    if($new_version && (!$current_recipe || $change_of_recipe)){
+                    if($new_version && $recipe){
                         // NEW VERSION BASED ON AN OLD RECIPE
                         if(!$recipe->last_version){
                             $last_recipe    = Recipe::where('last_version', TRUE)
@@ -222,15 +223,15 @@ class ProjectSamplesRepository extends RepositoryService
                         $recipe             = $new_recipe;
                     }
                     // UPDATE THE RECIPE
-                    else{
-                        // IF THE CARRIER IS CHANGED
-                        $recipe->carrier_id = $data['recipe']['carrier_id'];
-                        $recipe->save();
-                        // IF DEVELOPING A NEW VERSION, UPDATE INGREDIENTS
-                        if($new_version){
-                            $this->syncIngredients($data['recipe']['id'], $data['recipe']['ingredients']);
-                        }
-                    }
+                    // else{
+                    //     // IF THE CARRIER IS CHANGED
+                    //     $recipe->carrier_id = $data['recipe']['carrier_id'];
+                    //     $recipe->save();
+                    //     // IF DEVELOPING A NEW VERSION, UPDATE INGREDIENTS
+                    //     if($new_version){
+                    //         $this->syncIngredients($data['recipe']['id'], $data['recipe']['ingredients']);
+                    //     }
+                    // }               
                 }
 
                 // RECIPE UPDATE + assigned = IN PROGRESS
@@ -247,14 +248,14 @@ class ProjectSamplesRepository extends RepositoryService
             }
 
             parent::update($model, $data);
+            
+            $this->model->recipe = $recipe;
 
             if (Arr::has($data, 'attribute_ids')) {
                 $this->model->attributes()->sync($data['attribute_ids']);
             }
             $this->createLog($this->model);
         });
-
-
     }
 
     private function syncIngredients($recipe_id, $ingredients){
