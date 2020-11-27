@@ -142,33 +142,69 @@ class FamilyRepository extends RepositoryService
             $product_name       = $data["name"];
             $sku_increment      = 1;
             $attributes_concat  = [];
-            $my_array=$object;
 
             $row = 0;
-            lad($object[0]);
 
-            if(isset($object[0][0]->columns)){
                 foreach ($object as $attributes) // EACH ATTRIBUTE
                 {
-                    lad($attributes);
-                    foreach ($attributes as $attribute) // EACH ATTRIBUTE
-                    {
-                        foreach ($attribute->columns as $columns) // EACH ATTRIBUTE
-                    {
-                        if ($columns->value != 0) {
-                            $get_array = $columns->value;
-                            // SAVING ALL FAMILY ATTRIBUTES
-                            FamilyAttribute::updateOrCreate(['family_id' => $data["family_id"], 'attribute_id' => $columns->id, 'value' => $columns->value]);
-                           // $attributes_concat[$i] = $get_array["id"] . "|" . $get_array["value"];
+                    if(isset($attributes['columns'])){
+                        $flag=0;
+                        foreach ($attributes['columns'] as $attribute) // EACH ATTRIBUTE
+                        {
+                                if ($attribute['value'] != 0) {
+                                    $get_array = $attribute['value'];
+                                    // SAVING ALL FAMILY ATTRIBUTES
+                                    FamilyAttribute::updateOrCreate(['family_id' => $data["family_id"], 'attribute_id' => $attribute['id'], 'value' => $attribute['value']]);
+                               //  $attributes_concat[$i] = $get_array["id"] . "|" . $get_array["value"];
+    
+                                }
+                            
+                        }
+                    }else{
+                        $flag=1;
 
+                        $row++;
+                        $tot = count($attributes); // TOTAL ATTRIBUTES
+        
+                        if ($row == 1) // ONE ROW CONTAINS ALL ATTRIBUTES
+                        {
+                            for ($i = 0; $i < $tot; $i++) // WHILE FOUND ATTRIBUTES
+                            {
+                                if (isset($attributes[$i])) {
+                                    if ($attributes[$i] != 0) {
+                                        $get_array = $attributes[$i];
+                                        // SAVING ALL FAMILY ATTRIBUTES
+                                    FamilyAttribute::updateOrCreate(['family_id' => $data["family_id"], 'attribute_id' => $get_array["id"], 'value' => $get_array["value"]]);
+                                    $attributes_concat[$i] = $get_array["id"] . "|" . $get_array["value"];
+        
+                                    }
+                                }
+                            }
                         }
                     }
-                    }
+                    
 
 
                 }
+                if($flag==1){
+                    $tot_attributes = FamilyAttribute::distinct('attribute_id')->count('attribute_id');
+                    $r              = $tot_attributes;
+                    lad($tot_attributes);
 
-            }else{
+                    $n              = sizeof($attributes_concat);
+        
+                    $this->printCombination($attributes_concat, $n, $r);
+                    lad($n);
+
+                    $my_array       = [];
+                    $my_array       = $this->result;    
+                }else{
+                    $my_array       = [];
+                    $my_array       = $object;
+
+                }
+       /*    }else
+            {
                 foreach ($object as $attributes) // EACH ATTRIBUTE
                 {
                     $row++;
@@ -201,17 +237,15 @@ class FamilyRepository extends RepositoryService
     
 
 
-            }
+            }*/
             
-
-            lad($my_array);
             foreach ($my_array as $index => $element) {
                 // CONCAT ATTRIBUTES TO SAVE ON PRODUCT NAME
                 $concat_name = "";
 
                 // NEW SKU 
-                if(isset($element->sku)){
-                    $data["sku"]=$element->sku;
+                if(isset($element['sku'])){
+                    $data["sku"]=$element['sku'];
                 }else{
                     $data["sku"] = $sku_family . " - " . $sku_increment;
 
@@ -258,19 +292,18 @@ class FamilyRepository extends RepositoryService
                 array_push($all_products_id, $new_product_id);
 
                 // [0] => 3|sour,2|50ml,1|50mg - EXAMPLE
-                $attributes = explode(',', $element);
 
                 // LOOP ROW OF ATTRIBUTES
-                lad($element->columns);
-                if(isset($element->columns)){
-                    foreach ($element->columns as $v) {
-                        if (isset($v->value)) {
-                            $get_array = explode('|', $v); // 3|sour 2|50ml 1|50mg - ALL ATTRIBUTES FOR ONE PRODUCT
-                            $this->saveProductAttribute($new_product_id, $v->id, $v->name, $family_id); // CREATE NEW PRODUCT ATTRIBUTE
-                            $concat_name .= " - " . $v->name;
+                if(isset($element['columns'])){
+                    foreach ($element['columns'] as $v) {
+                        if (($v['value'])!=0 && ($v['value'])!=null) {
+                            $this->saveProductAttribute($new_product_id, $v['id'], $v['value'], $family_id); // CREATE NEW PRODUCT ATTRIBUTE
+                            $concat_name .= " - " . $v['value'];
                         }
                     }
                 }else{
+                    $attributes = explode(',', $element);
+
                     foreach ($attributes as $v) {
                         if (isset($v[0])) {
                             $get_array = explode('|', $v); // 3|sour 2|50ml 1|50mg - ALL ATTRIBUTES FOR ONE PRODUCT
@@ -279,7 +312,7 @@ class FamilyRepository extends RepositoryService
                         }
                     }
                 }
-                
+
 
                 // CONCAT PRODUCT NAME WITH ATTRIBUTE VALUE
                 Product::where('id', $new_product_id)->update(['name' => $data["name"] . $concat_name]);
@@ -298,10 +331,6 @@ class FamilyRepository extends RepositoryService
                 'value' => $value
             ]
         );
-        lad($attribute_id);
-
-        lad($value);
-
     }
 
     private function printCombination($arr, $n, $r)

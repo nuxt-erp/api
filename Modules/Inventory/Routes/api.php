@@ -34,7 +34,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_custom_prices', 'ProductCustomPriceController');
         Route::resource('product_import_settings', 'ProductImportSettingsController');
         Route::resource('product_tags', 'ProductTagController');
-
+        
         Route::resource('product_images', 'ProductImagesController');
         Route::get('carrier_products', 'ProductController@findCarriers');
         Route::get('raw_material_products', 'ProductController@findRawMaterials');
@@ -61,6 +61,8 @@ Route::middleware('auth:api')->group(function () {
         //Route::get('families/get_products', 'ProductFamilyController@getListProducts'); //@todo review this
         Route::get('getListProducts/{id?}', 'FamilyController@getListProducts');
         Route::resource('families', 'FamilyController');
+        Route::post('families_store', 'FamilyController@storeProductImage');
+
         Route::resource('family_attributes', 'FamilyAttributeController');
         Route::resource('availabilities', 'AvailabilityController');
         Route::get('sku_suppliers', 'ProductSuppliersController@skuSuppliers');

@@ -32,4 +32,10 @@ class FamilyController extends ControllerService implements CheckPolicies
         $this->repository->remove($request->id);
         return $this->sendArray(['ok' => true]);
     }
+    public function storeProductImage(Request $request) {
+       lad($request->all());
+       $this->repository->store($request);
+
+    }
+    
 }
