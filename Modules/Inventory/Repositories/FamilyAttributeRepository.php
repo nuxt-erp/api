@@ -37,5 +37,45 @@ class FamilyAttributeRepository extends RepositoryService
     {
         parent::update($model, $data);
     }
+    public function getAttributeValue(array $searchCriteria = [])
+    {
+        $searchCriteria['order_by'] = [
+            'field'         => 'id',
+            'direction'     => 'asc'
+        ];
 
+        $searchCriteria['per_page'] = 20;
+       
+        if (!empty($searchCriteria['id'])) {
+
+            $this->queryBuilder->where('id', $searchCriteria['id']);
+
+            unset($searchCriteria['id']);
+        }
+        if (!empty($searchCriteria['location_id'])) {
+            $this->queryBuilder->with(['availabilities' => function ($query) use($searchCriteria) {
+                $query->where('location_id', $searchCriteria['location_id']);
+            }]);
+            unset($searchCriteria['location_id']);
+        }
+        return parent::findBy($searchCriteria);
+
+    }
+   /* public function getAttributeValue($family_id,$attribute_id)
+    {
+      
+       
+        if (!empty($family_id)) {
+
+            $this->queryBuilder->where('family_id', $family_id);
+
+        }
+        if (!empty($attribute_id)) {
+            $this->queryBuilder->where('attribute_id ',$attribute_id);
+        }
+        return $this->queryBuilder->get();
+
+
+    }*/
+    
 }

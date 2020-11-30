@@ -98,7 +98,16 @@ class FamilyRepository extends RepositoryService
     public function update($model, array $data)
     {
         parent::update($model,$data);
-        $this->createAttribute($data);
+        
+        FamilyAttribute::where('family_id', $model->id)->delete();
+        $products=Product::where('family_id', $model->id)->get();
+        foreach($products as $product){
+            ProductAttributes::where('product_id', $product->id)->delete();
+            Product::where('id', $product->id)->delete();
+        }
+      
+        $this->generateFamily($data, $model->id); // GENERATE FAMILY
+      //  $this->createAttribute($data);
     }
     private function createFamily($data)
     {
@@ -144,14 +153,13 @@ class FamilyRepository extends RepositoryService
             $attributes_concat  = [];
 
             $row = 0;
-
                 foreach ($object as $attributes) // EACH ATTRIBUTE
                 {
                     if(isset($attributes['columns'])){
                         $flag=0;
                         foreach ($attributes['columns'] as $attribute) // EACH ATTRIBUTE
                         {
-                                if ($attribute['value'] != 0) {
+                                if ($attribute['value'] != '') {
                                     $get_array = $attribute['value'];
                                     // SAVING ALL FAMILY ATTRIBUTES
                                     FamilyAttribute::updateOrCreate(['family_id' => $data["family_id"], 'attribute_id' => $attribute['id'], 'value' => $attribute['value']]);
@@ -186,16 +194,14 @@ class FamilyRepository extends RepositoryService
 
 
                 }
+                
                 if($flag==1){
                     $tot_attributes = FamilyAttribute::distinct('attribute_id')->count('attribute_id');
                     $r              = $tot_attributes;
-                    lad($tot_attributes);
 
                     $n              = sizeof($attributes_concat);
         
                     $this->printCombination($attributes_concat, $n, $r);
-                    lad($n);
-
                     $my_array       = [];
                     $my_array       = $this->result;    
                 }else{
