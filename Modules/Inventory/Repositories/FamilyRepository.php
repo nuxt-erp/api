@@ -261,6 +261,7 @@ class FamilyRepository extends RepositoryService
                 // NEW SKU 
                 if(isset($element['sku'])){
                     $data["sku"]=$element['sku'];
+                    $sku_increment++;
                 }else{
                     $data["sku"] = $sku_family . " - " . $sku_increment;
 
