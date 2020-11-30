@@ -159,7 +159,9 @@ class FamilyRepository extends RepositoryService
                         $flag=0;
                         foreach ($attributes['columns'] as $attribute) // EACH ATTRIBUTE
                         {
-                                if ($attribute['value'] != '') {
+                                if ($attribute['value'] != null) {
+                                    lad($attribute);
+
                                     $get_array = $attribute['value'];
                                     // SAVING ALL FAMILY ATTRIBUTES
                                     FamilyAttribute::updateOrCreate(['family_id' => $data["family_id"], 'attribute_id' => $attribute['id'], 'value' => $attribute['value']]);
@@ -198,10 +200,13 @@ class FamilyRepository extends RepositoryService
                 if($flag==1){
                     $tot_attributes = FamilyAttribute::distinct('attribute_id')->count('attribute_id');
                     $r              = $tot_attributes;
+                    lad($tot_attributes);
 
                     $n              = sizeof($attributes_concat);
         
                     $this->printCombination($attributes_concat, $n, $r);
+                    lad($n);
+
                     $my_array       = [];
                     $my_array       = $this->result;    
                 }else{
@@ -302,7 +307,7 @@ class FamilyRepository extends RepositoryService
                 // LOOP ROW OF ATTRIBUTES
                 if(isset($element['columns'])){
                     foreach ($element['columns'] as $v) {
-                        if (($v['value'])!=0 && ($v['value'])!=null) {
+                        if ( ($v['value'])!=null) {
                             $this->saveProductAttribute($new_product_id, $v['id'], $v['value'], $family_id); // CREATE NEW PRODUCT ATTRIBUTE
                             $concat_name .= " - " . $v['value'];
                         }
