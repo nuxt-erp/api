@@ -60,6 +60,11 @@ class Product extends ModelService
         return $this->name . ' ' . $this->details;
     }
 
+    public function getFullNameAttribute()
+    {
+        return $this->sku . ' - ' . $this->name;
+    }
+
     // GET ALL ATTRIBUTES FROM PRODUCT
     public function getDetailsAttribute()
     {
