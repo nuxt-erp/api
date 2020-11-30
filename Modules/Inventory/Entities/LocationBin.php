@@ -12,13 +12,14 @@ class LocationBin extends ModelService
     protected $table = 'inv_location_bins';
 
     protected $fillable = [
-        'name', 'location_id', 'is_enabled'
+        'name', 'barcode', 'location_id', 'is_enabled'
     ];
 
     public function getRules($request, $item = null)
     {
         $rules = [
             'name'          => ['string', 'max:255'],
+            'barcode'       => ['nullable', 'string', 'max:255'],
             'location_id'   => ['exists:tenant.locations,id'],
             'is_enabled'    => ['nullable', 'boolean']
         ];

@@ -11,6 +11,7 @@ class LocationBinResource extends ResourceService
         return [
             'id'            => $this->id,
             'name'          => $this->name,
+            'barcode'       => $this->barcode,
             'location_id'   => $this->location_id,
             'location_name' => optional($this->location)->name,
             'is_enabled'    => $this->is_enabled,

@@ -63,9 +63,10 @@ Route::middleware('auth:api')->group(function () {
         //Route::get('families/get_products', 'ProductFamilyController@getListProducts'); //@todo review this
         Route::get('getListProducts/{id?}', 'FamilyController@getListProducts');
         Route::resource('families', 'FamilyController');
-        Route::post('family_attribute_value', 'FamilyAttributeController@getAttributeValue');
         
         Route::resource('availabilities', 'AvailabilityController');
+        Route::resource('family_attributes', 'FamilyAttributeController');
+
         Route::get('sku_suppliers', 'ProductSuppliersController@skuSuppliers');
         Route::resource('price_tiers', 'PriceTierController');
         Route::post('price_tiers/apply', 'PriceTierController@applyChanges');
@@ -77,6 +78,9 @@ Route::middleware('auth:api')->group(function () {
         // XLS IMPORT
         Route::post('products_import/{type}', 'ImportController@productsImport');
 
+        // Availabilities
+        Route::resource('availabilities', 'AvailabilityController');
+        Route::get('product_availabilities', 'AvailabilityController@productAvailabilities');
     });
 
     Route::group(['prefix' => 'import'], function () {
