@@ -223,6 +223,18 @@ class AvailabilityRepository extends RepositoryService
             unset($searchCriteria['add_discontinued']);
         }
 
+        if (!empty($searchCriteria['product_id'])) {
+            $this->queryBuilder
+                ->where('inv_products.id', Arr::pull($searchCriteria, 'product_id'));
+            unset($searchCriteria['product_id']);
+        }
+
+        if (!empty($searchCriteria['barcode'])) {
+            $this->queryBuilder
+                ->where('inv_products.barcode', Arr::pull($searchCriteria, 'barcode'));
+            unset($searchCriteria['barcode']);
+        }
+
         if (!empty($searchCriteria['stockcount_id'])) {
             $this->queryBuilder
                 ->where('stockcount_id', Arr::pull($searchCriteria, 'stockcount_id'));
