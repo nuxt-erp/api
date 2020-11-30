@@ -90,7 +90,9 @@ class FamilyRepository extends RepositoryService
     {
         DB::transaction(function () use ($data) {
             $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
-            $this->generateFamily($data, $data['family_id']); // GENERATE FAMILY
+            $flag=$data['auto_generate'];
+
+            $this->generateFamily($data, $data['family_id'],$flag); // GENERATE FAMILY
 
         });
 
@@ -101,12 +103,13 @@ class FamilyRepository extends RepositoryService
         
         FamilyAttribute::where('family_id', $model->id)->delete();
         $products=Product::where('family_id', $model->id)->get();
+        $flag=$data['auto_generate'];
         foreach($products as $product){
             ProductAttributes::where('product_id', $product->id)->delete();
             Product::where('id', $product->id)->delete();
         }
       
-        $this->generateFamily($data, $model->id); // GENERATE FAMILY
+        $this->generateFamily($data, $model->id,$flag); // GENERATE FAMILY
       //  $this->createAttribute($data);
     }
     private function createFamily($data)
@@ -138,7 +141,7 @@ class FamilyRepository extends RepositoryService
 
         return $new->id;
     }
-    public function generateFamily($data, $family_id = null)
+    public function generateFamily($data, $family_id = null,$flag)
     {
         if (isset($data["family_attributes"])) {
 
@@ -155,23 +158,24 @@ class FamilyRepository extends RepositoryService
             $row = 0;
                 foreach ($object as $attributes) // EACH ATTRIBUTE
                 {
-                    if(isset($attributes['columns'])){
-                        $flag=0;
-                        foreach ($attributes['columns'] as $attribute) // EACH ATTRIBUTE
-                        {
-                                if ($attribute['value'] != null) {
-                                    lad($attribute);
-
-                                    $get_array = $attribute['value'];
-                                    // SAVING ALL FAMILY ATTRIBUTES
-                                    FamilyAttribute::updateOrCreate(['family_id' => $data["family_id"], 'attribute_id' => $attribute['id'], 'value' => $attribute['value']]);
-                               //  $attributes_concat[$i] = $get_array["id"] . "|" . $get_array["value"];
+                    if($flag==0){
+                        if(isset($attributes['columns'])){
+                            foreach ($attributes['columns'] as $attribute) // EACH ATTRIBUTE
+                            {
+                                    if ($attribute['value'] != null) {
+                                        lad($attribute);
     
-                                }
-                            
+                                        $get_array = $attribute['value'];
+                                        // SAVING ALL FAMILY ATTRIBUTES
+                                        FamilyAttribute::updateOrCreate(['family_id' => $data["family_id"], 'attribute_id' => $attribute['id'], 'value' => $attribute['value']]);
+                                   //  $attributes_concat[$i] = $get_array["id"] . "|" . $get_array["value"];
+        
+                                    }
+                                
+                            }
                         }
-                    }else{
-                        $flag=1;
+                    }
+                    else{
 
                         $row++;
                         $tot = count($attributes); // TOTAL ATTRIBUTES
@@ -305,7 +309,7 @@ class FamilyRepository extends RepositoryService
                 // [0] => 3|sour,2|50ml,1|50mg - EXAMPLE
 
                 // LOOP ROW OF ATTRIBUTES
-                if(isset($element['columns'])){
+                if($flag==0){
                     foreach ($element['columns'] as $v) {
                         if ( ($v['value'])!=null) {
                             $this->saveProductAttribute($new_product_id, $v['id'], $v['value'], $family_id); // CREATE NEW PRODUCT ATTRIBUTE
