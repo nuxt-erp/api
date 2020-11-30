@@ -54,7 +54,8 @@ class ProductResource extends ResourceService
             'tag_ids'               => $this->tags()->pluck('tag_id'),
             'tag_names'                => implode(', ', optional($this->tag_parents)->pluck('tag')->pluck('name')->toArray()),
             'taxable'               =>$this->taxable,
-            'price_tier_items'      =>$this->priceTierItems
+            'price_tier_items'      =>$this->priceTierItems,
+            'attributes_value'      =>$this->product_attributes
         ];
     }
 }

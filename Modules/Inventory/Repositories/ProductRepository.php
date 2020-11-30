@@ -34,7 +34,6 @@ class ProductRepository extends RepositoryService
         ];
         //@todo add important relations (improve performance for queries)
         // $this->queryBuilder->with([])
-
         if (!empty($searchCriteria['list']))
         {
             $this->queryBuilder->where('is_enabled', true);

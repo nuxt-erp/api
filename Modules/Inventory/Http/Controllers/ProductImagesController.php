@@ -35,6 +35,9 @@ class ProductImagesController extends ControllerService
     {
         $user = auth()->user();
         $files = [];
+
+        lad($request->all());
+        
         if ($request->hasFile('files') && $request->filled('product_id')) {
             $x = 0;
 
