@@ -22,7 +22,7 @@ class SaleDetails extends ModelService
         'sale_id', 'product_id', 'location_id',
         'fulfillment_status_id', 'shopify_id', 'qty',
         'price', 'discount_value', 'discount_percent',
-        'total_item', 'qty_fulfilled', 'fulfillment_date'
+        'total_item', 'qty_fulfilled', 'fulfillment_date','tax_rule_id'
     ];
 
     public function getRules($request, $item = null)
@@ -68,7 +68,10 @@ class SaleDetails extends ModelService
     {
         return $this->belongsTo(Parameter::class, 'fulfillment_status_id');
     }
-
+    public function tax_rules()
+    {
+        return $this->belongsTo(TaxRule::class, 'tax_rule_id');
+    }
 
 
 }
