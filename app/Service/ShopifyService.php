@@ -420,6 +420,7 @@ class ShopifyService
                         'discount_value'        => $item['discount_value'] ?? 0,
                         'price'                 => $item['price'] ?? 0,
                         'total_item'            => (($item['price'] ?? 0) * ($item['qty'] ?? 0)),
+                        'tax_rule_id'           =>  $item['tax_rule_id'],
                     ]);
                 }
             }
