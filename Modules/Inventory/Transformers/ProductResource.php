@@ -56,6 +56,7 @@ class ProductResource extends ResourceService
             'taxable'               =>$this->taxable,
             'price_tier_items'      =>$this->priceTierItems,
             'attributes_value'      =>$this->product_attributes
+          
         ];
     }
 }
