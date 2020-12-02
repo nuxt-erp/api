@@ -41,7 +41,10 @@ class StockCount extends ModelService
     {
         return $this->hasManySync(StockCountDetail::class, 'stockcount_id', 'id');
     }
-
+    public function stock_filters()
+    {
+        return $this->hasMany(StockCountFilter::class, 'stocktake_id', 'id')->with('tag')->where('type' , 'customer');
+    }
     public function brand()
     {
         return $this->belongsTo(Brand::class, 'brand_id');
