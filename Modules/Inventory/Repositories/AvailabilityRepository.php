@@ -20,7 +20,7 @@ class AvailabilityRepository extends RepositoryService
         $this->queryBuilder->with('product');
 
         $searchCriteria['order_by'] = [
-            'field'         => 'inv_products.name',
+            'field'         => 'id',
             'direction'     => 'asc'
         ];
 

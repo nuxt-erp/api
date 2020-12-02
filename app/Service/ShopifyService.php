@@ -276,11 +276,13 @@ class ShopifyService
 
     private function syncCustomer($order)
     {
-        $customer_id = Customer::where('shopify_id', $order['customer']['id'])->pluck('id')->first();
+        $customer_id = Customer::where(['shopify_id' => $order['customer']['id'], 'email' => substr($order['customer']['email'],0,160)])->pluck('id')->first();
+
         if (!$customer_id) {
             $country                    = $order['customer']['default_address']['country'] ? $this->checkCountry($order['customer']['default_address']['country']) : null;
             $province                   = $country ? $this->checkProvince($country->id, $order['customer']['default_address']['province_code'], $order['customer']['default_address']['province']) : null;
             $name                       = $order['customer']['default_address']['first_name'];
+
             if(!empty($name) && !empty($order['customer']['default_address']['last_name'])){
                 $name                  .=  ' ' . $order['customer']['default_address']['last_name'];
             }
