@@ -21,7 +21,7 @@ class AvailabilityRepository extends RepositoryService
         $searchCriteria['where']      = 'OR';
 
         $searchCriteria['order_by'] = [
-            'field'         => 'id',
+            'field'         => 'inv_availabilities.id',
             'direction'     => 'desc'
         ];
 
