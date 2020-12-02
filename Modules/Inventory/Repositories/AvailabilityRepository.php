@@ -17,27 +17,19 @@ class AvailabilityRepository extends RepositoryService
     public function findBy(array $searchCriteria = [])
     {
 
+        $searchCriteria['query_type'] = 'ILIKE';
+        $searchCriteria['where']      = 'OR';
+
         $this->queryBuilder->with('product');
 
-        $searchCriteria['order_by'] = [
-            'field'         => 'inv_products.name',
-            'direction'     => 'asc'
-        ];
-
         if (!empty($searchCriteria['category_id'])) {
-            $this->queryBuilder
-                ->where('inv_products.category_id', Arr::pull($searchCriteria, 'category_id'));
-        }
-
-        if (!empty($searchCriteria['location_id'])) {
-            $this->queryBuilder
-                ->where('inv_availabilities.location_id', Arr::pull($searchCriteria, 'location_id'));
+            $this->queryBuilder->where('inv_products.category_id', Arr::pull($searchCriteria, 'category_id'));
         }
 
         if (isset($searchCriteria['bin_id'])) {
             if($searchCriteria['bin_id'] > 0){
                 $this->queryBuilder
-                ->where('inv_availabilities.bin_id', Arr::pull($searchCriteria, 'bin_id'));
+                ->where('bin_id', Arr::pull($searchCriteria, 'bin_id'));
             }
             else{
                 $this->queryBuilder->whereNull('bin_id');
@@ -46,15 +38,18 @@ class AvailabilityRepository extends RepositoryService
 
         if (!empty($searchCriteria['product_name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'product_name') . '%';
-            $this->queryBuilder
-                ->where('inv_products.name', 'ILIKE', $name)
-                ->orWhere('inv_products.sku', 'ILIKE', $name);
+            $this->queryBuilder->where(function ($query) use($name) {
+                $query->where('inv_products.name', 'ILIKE', $name);
+                $query->orWhere('inv_products.sku', 'ILIKE', $name);
+            });
         }
 
         if (!empty($searchCriteria['brand_id'])) {
-            $this->queryBuilder
-                ->where('inv_products.brand_id', Arr::pull($searchCriteria, 'brand_id'));
+            $this->queryBuilder->where('inv_products.brand_id', Arr::pull($searchCriteria, 'brand_id'));
         }
+
+        $this->queryBuilder->join('inv_products', 'inv_products.id', '=', 'inv_availabilities.product_id')
+        ->orderBy('inv_products.name', 'ASC');
 
         return parent::findBy($searchCriteria);
     }
