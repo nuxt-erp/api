@@ -32,4 +32,8 @@ class FamilyController extends ControllerService implements CheckPolicies
         $this->repository->remove($request->id);
         return $this->sendArray(['ok' => true]);
     }
+   
+
+    
+    
 }

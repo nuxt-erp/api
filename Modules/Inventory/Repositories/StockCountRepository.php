@@ -83,6 +83,10 @@ class StockCountRepository extends RepositoryService
             $qb->where('id', $filter['product_id']);
         }
 
+        if(!empty($filter['barcode'])){
+            $qb->where('barcode', $filter['barcode']);
+        }
+
         if(!empty($filter['category_id'])){
             $qb->where('category_id', $filter['category_id']);
         }
@@ -103,16 +107,16 @@ class StockCountRepository extends RepositoryService
             $products = $qb->paginate($filter['per_page']);
         }
         else{
-            $products = $qb->limit(1)->get();
+            $products = $qb->limit(1)->get(); // get product with all bins
         }
-
 
         $location       = Location::find($filter['location_id']);
         $bins           = $location->bins;
         $availabilities = [];
         foreach ($products as $product) {
 
-            if(!empty($bins) && isset($filter['bin_ids'])){
+            // LOCATION HAS  BINS
+            if(!empty($bins)){
                 foreach ($bins as $bin) {
                     // no bin filter OR the bin match the filter
                     if(empty($filter['bin_ids']) || in_array($bin->id, $filter['bin_ids'])){
@@ -126,14 +130,10 @@ class StockCountRepository extends RepositoryService
                 }
             }
             else{
-                lad('else');
                 $availability = $product->availabilities()
                     ->where('location_id', $location->id)
                     ->whereNull('bin_id')
                     ->first();
-
-                lad('$availability', $availability);
-
                 $availabilities[] = $this->getAvailability($product, $location, $availability);
             }
         }

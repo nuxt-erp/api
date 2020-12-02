@@ -29,11 +29,11 @@ class AvailabilityResource extends ResourceService
             'on_hand'               => $this->on_hand,
             'on_order'              => $this->on_order,
             'allocated'             => $this->allocated,
-            'sku'                   => optional($this->product)->sku,
+            'sku'                   => $this->product ? optional($this->product)->sku : '',
             'brand_id'              => $this->brand_id,
-            'brand_name'            => optional($this->product->brand)->name,
+            'brand_name'            => $this->product ? optional($this->product->brand)->name : '',
             'category_id'           => $this->category_id,
-            'category_name'         => optional($this->product->category)->name,
+            'category_name'         => $this->product ? optional($this->product->category)->name : '',
             'total'                 => $this->count()
         ];
     }

@@ -24,6 +24,7 @@ class SaleDetailsResource extends ResourceService
             'qty_fulfilled'             => $this->qty_fulfilled,
             'fulfillment_date'          => $this->fulfillment_date,
             'product_name'              => optional($this->product)->full_description,
+            'tax_rule_id'               =>  $this->tax_rule_id,
             'name'                      => optional($this->product)->sku . ' - ' . optional($this->product)->full_description,
         ];
     }
