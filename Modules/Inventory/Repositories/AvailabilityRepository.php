@@ -20,7 +20,10 @@ class AvailabilityRepository extends RepositoryService
         $searchCriteria['query_type'] = 'ILIKE';
         $searchCriteria['where']      = 'OR';
 
-        $this->queryBuilder->with('product');
+        $searchCriteria['order_by'] = [
+            'field'         => 'id',
+            'direction'     => 'desc'
+        ];
 
         if (!empty($searchCriteria['category_id'])) {
             $this->queryBuilder->where('inv_products.category_id', Arr::pull($searchCriteria, 'category_id'));

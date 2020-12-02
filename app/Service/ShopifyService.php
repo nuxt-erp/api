@@ -71,6 +71,7 @@ class ShopifyService
             {
                 $fulfillment_status_list= [];
                 $financial_status_list  = [];
+                $is_updating = false;
 
                 foreach ($orders as $order) {
 
@@ -135,6 +136,7 @@ class ShopifyService
                         $sale = Sale::where('order_number', $order_number)->first();
 
                         if ($sale) { // Update
+                            $is_updating = true; // We don't need updateStock again
                             $sale->fill([
                                 'financial_status_id'   => $data['financial_status_id'],
                                 'fulfillment_status_id' => $data['fulfillment_status_id'],
@@ -276,11 +278,13 @@ class ShopifyService
 
     private function syncCustomer($order)
     {
-        $customer_id = Customer::where('shopify_id', $order['customer']['id'])->pluck('id')->first();
+        $customer_id = Customer::where(['shopify_id' => $order['customer']['id'], 'email' => substr($order['customer']['email'],0,160)])->pluck('id')->first();
+
         if (!$customer_id) {
             $country                    = $order['customer']['default_address']['country'] ? $this->checkCountry($order['customer']['default_address']['country']) : null;
             $province                   = $country ? $this->checkProvince($country->id, $order['customer']['default_address']['province_code'], $order['customer']['default_address']['province']) : null;
             $name                       = $order['customer']['default_address']['first_name'];
+
             if(!empty($name) && !empty($order['customer']['default_address']['last_name'])){
                 $name                  .=  ' ' . $order['customer']['default_address']['last_name'];
             }
@@ -420,7 +424,7 @@ class ShopifyService
                         'discount_value'        => $item['discount_value'] ?? 0,
                         'price'                 => $item['price'] ?? 0,
                         'total_item'            => (($item['price'] ?? 0) * ($item['qty'] ?? 0)),
-                        'tax_rule_id'           =>  $item['tax_rule_id'],
+                        'tax_rule_id'           => $item['tax_rule_id'] ?? null,
                     ]);
                 }
             }

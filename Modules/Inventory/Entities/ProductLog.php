@@ -1,11 +1,11 @@
 <?php
 
 namespace Modules\Inventory\Entities;
-use Modules\Purchase\Entities\Purchase;
 
 use App\Models\Location;
 use App\Models\Parameter;
-use App\Models\Sale;
+use Modules\Sales\Entities\Sale;
+use Modules\Purchase\Entities\Purchase;
 use App\Models\User;
 
 use App\Models\ModelService;
@@ -42,7 +42,6 @@ class ProductLog extends ModelService
             'quantity'      => ['nullable', 'number'],
             'description'   => ['nullable', 'string', 'max:255'],
             'user_id'       => ['nullable', 'exists:tenant.users,id']
-
         ];
 
         // CREATE
@@ -72,12 +71,12 @@ class ProductLog extends ModelService
     public function getSourceAttribute()
     {
 
-        if ($this->type->name == self::TYPE_LOG_SALE) {
+        if ($this->type->value == self::TYPE_LOG_SALE) {
             $get = Sale::where('id', $this->ref_code_id)->with('customer')->first();
             if ($get) {
                 return $get->customer->name;
             }
-        }elseif ($this->type->name == self::TYPE_LOG_PURCHASE) {
+        }elseif ($this->type->value == self::TYPE_LOG_PURCHASE) {
             $get = Purchase::where('id', $this->ref_code_id)->with('supplier')->first();
             if ($get) {
                 return $get->supplier->name;
