@@ -10,12 +10,10 @@ class SaleRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {
-        if(empty($searchCriteria['order_by'])){
-            $searchCriteria['order_by'] = [
-                'field'         => 'order_number',
-                'direction'     => 'desc'
-            ];
-        }
+        $searchCriteria['order_by'] = [
+            'field'         => 'id',
+            'direction'     => 'desc'
+        ];
 
         if (!empty($searchCriteria['order_number']))
         {
@@ -29,7 +27,7 @@ class SaleRepository extends RepositoryService
     public function store($data)
     {
         DB::transaction(function () use ($data)
-        {          
+        {
 
             parent::store($data);
             // Save all products
