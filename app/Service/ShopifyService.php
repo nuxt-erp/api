@@ -71,6 +71,7 @@ class ShopifyService
             {
                 $fulfillment_status_list= [];
                 $financial_status_list  = [];
+                $is_updating = false;
 
                 foreach ($orders as $order) {
 
@@ -135,6 +136,7 @@ class ShopifyService
                         $sale = Sale::where('order_number', $order_number)->first();
 
                         if ($sale) { // Update
+                            $is_updating = true; // We don't need updateStock again
                             $sale->fill([
                                 'financial_status_id'   => $data['financial_status_id'],
                                 'fulfillment_status_id' => $data['fulfillment_status_id'],
