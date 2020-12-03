@@ -23,6 +23,7 @@ class StockCountResource extends ResourceService
             'category_name'             => optional($this->category)->name,
             'location_id'               => $this->location_id,
             'location_name'             => optional($this->location)->name,
+            'stock_filters'             => optional($this->stock_filters)->toArray(),
             'net_variance'              => $this->net_variance,
             'abs_variance'              => $this->abs_variance,
             'success_rate'              => $this->success_rate,
