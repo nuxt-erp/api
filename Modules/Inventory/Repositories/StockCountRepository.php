@@ -75,8 +75,8 @@ class StockCountRepository extends RepositoryService
 
         $qb = Product::with(['brand', 'product_attributes.attribute', 'category']);
 
-        if(!empty($filter['brand_id'])){
-            $qb->where('brand_id', $filter['brand_id']);
+        if(!empty($filter['brand_ids'])){
+            $qb->whereIn('brand_id', $filter['brand_ids']);
         }
 
         if(!empty($filter['product_id'])){
@@ -87,16 +87,18 @@ class StockCountRepository extends RepositoryService
             $qb->where('barcode', $filter['barcode']);
         }
 
-        if(!empty($filter['category_id'])){
-            $qb->where('category_id', $filter['category_id']);
+        if(!empty($filter['category_ids'])){
+            $qb->whereIn('category_id', $filter['category_ids']);
         }
 
-        if(!empty($filter['stock_locator'])){
-            $qb->where('stock_locator', $filter['stock_locator']);
+        if(!empty($filter['stock_locator_ids'])){
+            $qb->whereIn('stock_locator', $filter['stock_locator_ids']);
         }
-        // @todo check, tag is a many relation
-        if(!empty($filter['tag_ids'])){
-            $qb->whereIn('tag_ids', $filter['tag_ids']);
+
+        if (!empty($filter['tag_ids'])) {
+            $qb->whereHas('tags', function ($query) use($filter) {
+                $query->whereIn('id', $filter['tag_ids']);
+            });
         }
 
         if(isset($filter['is_enabled'])){
@@ -214,7 +216,7 @@ class StockCountRepository extends RepositoryService
                                 'stocktake_id' => $this->model->id,
                             ]);
                         }
-                        
+
                     }
                     else if($key === 'stock_locator_ids') {
                         foreach($list as $val) {
@@ -226,7 +228,7 @@ class StockCountRepository extends RepositoryService
                         }
                     }
                     else if($key === 'bin_ids') {
-                        
+
                         foreach($list as $val) {
                             StockCountFilter::create([
                                 'type' => 'Modules\\Inventory\\Entities\\LocationBin',
@@ -236,7 +238,7 @@ class StockCountRepository extends RepositoryService
                         }
                     }
                     else if($key === 'category_ids') {
-                        
+
                         foreach($list as $val) {
                             StockCountFilter::create([
                                 'type' => 'Modules\\Inventory\\Entities\\Category',
@@ -253,7 +255,7 @@ class StockCountRepository extends RepositoryService
                                 'stocktake_id' => $this->model->id,
                             ]);
                         }
-                        
+
                     }
                 }
             }

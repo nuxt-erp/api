@@ -201,6 +201,10 @@ class AvailabilityRepository extends RepositoryService
             if (!empty($searchCriteria['bin_id'])) {
                 $join->where('inv_availabilities.bin_id', Arr::pull($searchCriteria, 'bin_id'));
             }
+            // multiple bin set
+            if (!empty($searchCriteria['bin_ids'])) {
+                $join->whereIn('inv_availabilities.bin_id', Arr::pull($searchCriteria, 'bin_ids'));
+            }
 
         });
 
@@ -224,6 +228,27 @@ class AvailabilityRepository extends RepositoryService
         if (!empty($searchCriteria['brand_id'])) {
             $qb->where('inv_products.brand_id', Arr::pull($searchCriteria, 'brand_id'));
         }
+
+        // multiple options
+        if (!empty($searchCriteria['stock_locator_ids'])) {
+            $qb->whereIn('inv_products.stock_locator', Arr::pull($searchCriteria, 'stock_locator_ids'));
+        }
+
+        if (!empty($searchCriteria['category_ids'])) {
+            $qb->whereIn('inv_products.category_id', Arr::pull($searchCriteria, 'category_ids'));
+        }
+
+        if (!empty($searchCriteria['brand_ids'])) {
+            $qb->whereIn('inv_products.brand_id', Arr::pull($searchCriteria, 'brand_ids'));
+        }
+
+        if (!empty($searchCriteria['tag_ids'])) {
+            $qb->join('inv_product_tags', function ($join) use($searchCriteria) {
+                $join->on('inv_product_tags.product_id', '=', 'inv_products.id')
+                    ->whereIn('inv_product_tags.id', '=', Arr::pull($searchCriteria, 'tag_ids'));
+            });
+        }
+
 
         return $qb->limit(300)->get();
     }
