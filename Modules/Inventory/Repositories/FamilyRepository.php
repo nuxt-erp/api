@@ -204,13 +204,9 @@ class FamilyRepository extends RepositoryService
                 if($flag==1){
                     $tot_attributes = FamilyAttribute::distinct('attribute_id')->count('attribute_id');
                     $r              = $tot_attributes;
-                    lad($tot_attributes);
-
                     $n              = sizeof($attributes_concat);
         
                     $this->printCombination($attributes_concat, $n, $r);
-                    lad($n);
-
                     $my_array       = [];
                     $my_array       = $this->result;    
                 }else{
@@ -286,7 +282,7 @@ class FamilyRepository extends RepositoryService
                $new->measure_id    = $data["measure_id"];
                $new->supplier_id   = $data["supplier_id"];
                $new->sku           = $data["sku"];
-               $new->barcode       = rand();
+               $new->barcode       = isset($element['barcode'])?$element['barcode']:rand();
                $new->family_id     = $family_id;
                $new->sales_channel = 1;
                $new->price         = $data["price"];
@@ -298,7 +294,7 @@ class FamilyRepository extends RepositoryService
                $new->carton_height = $data["carton_height"];
                $new->carton_length = $data["carton_length"];
                $new->carton_weight = $data["carton_weight"];
-               $new->launch_at     = $data["launch_at"];
+               $new->launch_at     = isset($element["launch_at"])?$element["launch_at"]:$data["launch_at"];
                $new->is_enabled    = $data["is_enabled"];
                $new->save();
                 //GETTING PRODUCT ID CREATED
