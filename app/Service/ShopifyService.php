@@ -426,13 +426,13 @@ class ShopifyService
             foreach ($data as $item) {
                 if (!empty($item['product_id'])) {
 
-                    $prod = SaleDetails::where(['sale_id' => $id, 'product_id' => $item['product_id']])->get();
+                    $prod = SaleDetails::where(['sale_id' => $id, 'product_id' => $item['product_id']])->first();
 
                     if ($prod) { // Update
 
                         // If updating, we need to know if we are adding more quantity or removing quantity from the original order
                         if ($prod->qty != $item['qty']) {
-                            $this->updateStock($item['product_id'], 0, null, null, ($prod->qty > $item['qty'] ? '-' : '+'), 'Sale', $id, 0, abs($item['qty']-$prod->qty), 'Change Allocated quantity');
+                            $this->updateStock($item['product_id'], 0, null, null, ($prod->qty > $item['qty'] ? '-' : '+'), 'Sale', $id, 0, abs($item['qty'] - $prod->qty), 'Change Allocated quantity');
                         }
 
                         $prod->qty              = $item['qty'] ?? 0;
@@ -473,7 +473,6 @@ class ShopifyService
             if (count($sale->details) > 0) {
                 foreach ($sale->details as $detail) {
                     // Undo stock on hand just when fulfilled
-                    echo "ful name? " . $sale->fulfillment_status->name;
                     if (isset($sale->fulfillment_status->name) && $sale->fulfillment_status->name == 'fulfilled') {
                         $this->updateStock($detail->product_id, $detail->qty_fulfilled, $detail->location_id, null, '+', 'Sale', $id, 0, 0, 'Returning stock - item deleted');
                     } else { // Update allocated qty
