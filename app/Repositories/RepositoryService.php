@@ -183,7 +183,8 @@ abstract class RepositoryService implements RepositoryInterface
                 }
                 // update only fillAble properties
                 if ($this->model->isFillable($key)) {
-                    $this->model->{$key} = $value;
+                    $cast = $this->getCastType($key);
+                    $this->model->{$key} = $cast === 'string' ? (string) $value : $value;
                 }
             }
             // update the model
