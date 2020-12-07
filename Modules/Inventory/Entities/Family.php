@@ -35,7 +35,12 @@ class Family extends ModelService
     {
         $this->attributes['sku'] = strval($value);
     }
-   
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = strval($value);
+    }
+
     public function getDetailsAttribute()
     {
         $string = '';
@@ -53,15 +58,15 @@ class Family extends ModelService
             'supplier_id'   => ['nullable', 'exists:tenant.suppliers,id'],
             'location_id'   => ['nullable', 'exists:tenant.locations,id'],
             'dear_id'       => ['nullable', 'string', 'max:255'],
-            'name'          => ['string', 'max:100'],
+            'name'          => ['max:100'],
             'description'   => ['nullable', 'string', 'max:500'],
-            'sku'           => ['nullable', 'string', 'max:255'],
+            'sku'           => ['nullable', 'max:255'],
             'launch_at'     => ['nullable', 'date'],
             'is_enabled'    => ['nullable', 'boolean'],
             'stock_locator' => ['nullable', 'exists:tenant.inv_stock_locator,id'],
             'measure'       => ['nullable', 'exists:tenant.inv_measure,id'],
         ];
-       
+
         // CREATE
         if (is_null($item))
         {
@@ -76,7 +81,7 @@ class Family extends ModelService
           //  $rules['sku'][]     = Rule::unique('tenant.inv_families')->ignore($item->id);
         }
         return $rules;
-       
+
     }
     public function getFullDescriptionAttribute()
     {
