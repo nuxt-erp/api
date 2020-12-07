@@ -30,14 +30,12 @@ class Family extends ModelService
         'carton_length', 'carton_width', 'carton_height',
         'carton_weight'
     ];
-    public function getSkuAttribute($val)
+
+    public function setSkuAttribute($value)
     {
-        return strval($val);
+        $this->attributes['sku'] = strval($value);
     }
-    public function getNameAttribute($val)
-    {
-        return strval($val);
-    }
+   
     public function getDetailsAttribute()
     {
         $string = '';

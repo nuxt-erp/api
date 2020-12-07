@@ -62,7 +62,7 @@ class Product extends ModelService
 
     public function setSkuAttribute($value)
     {
-        $this->attributes['sku'] = strval($value);
+        $this->attributes['name'] = strval($value);
     }
 
     public function getFullDescriptionAttribute()
