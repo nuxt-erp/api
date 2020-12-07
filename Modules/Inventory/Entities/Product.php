@@ -18,6 +18,11 @@ class Product extends ModelService
         'disabled_at', 'launch_at'
     ];
 
+    protected $casts = [
+        'sku' => 'string',
+        'name' => 'string',
+    ];
+
     protected $fillable = [
         'brand_id', 'category_id', 'supplier_id',
         'family_id', 'location_id', 'dear_id',
@@ -53,6 +58,11 @@ class Product extends ModelService
         }
 
         return $rules;
+    }
+
+    public function setSkuAttribute($value)
+    {
+        $this->attributes['sku'] = strval($value);
     }
 
     public function getFullDescriptionAttribute()
