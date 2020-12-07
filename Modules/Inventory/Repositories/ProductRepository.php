@@ -20,6 +20,7 @@ use Modules\Inventory\Entities\ProductSuppliers;
 use Modules\Inventory\Entities\CustomerDiscount;
 use Modules\Inventory\Entities\ProductCustomPrice;
 use Modules\Inventory\Entities\ProductTag;
+use Modules\Inventory\Entities\StockCountFilter;
 
 class ProductRepository extends RepositoryService
 {
@@ -34,7 +35,6 @@ class ProductRepository extends RepositoryService
         ];
         //@todo add important relations (improve performance for queries)
         // $this->queryBuilder->with([])
-
         if (!empty($searchCriteria['list']))
         {
             $this->queryBuilder->where('is_enabled', true);
@@ -46,7 +46,6 @@ class ProductRepository extends RepositoryService
                 ->where('sku', 'ILIKE', $sku)
                 ->orWhere('name', 'ILIKE', $sku);
         }
-
 
         if (!empty($searchCriteria['id']) && empty($searchCriteria['list'])) {
             $this->queryBuilder

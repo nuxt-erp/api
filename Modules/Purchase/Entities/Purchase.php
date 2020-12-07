@@ -12,6 +12,9 @@ class Purchase extends ModelService
 
     protected $table = 'pur_purchases';
 
+    protected $dates = [
+        'purchase_date',
+    ];
     protected $fillable = [
         'supplier_id', 'author_id', 'location_id',
         'status', 'ref_code', 'invoice_number', 'tracking_number',

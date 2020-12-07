@@ -12,6 +12,7 @@ use Modules\Inventory\Entities\StockCountDetail;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\Product;
+use Modules\Inventory\Entities\StockCountFilter;
 
 class StockCountRepository extends RepositoryService
 {
@@ -74,24 +75,30 @@ class StockCountRepository extends RepositoryService
 
         $qb = Product::with(['brand', 'product_attributes.attribute', 'category']);
 
-        if(!empty($filter['brand_id'])){
-            $qb->where('brand_id', $filter['brand_id']);
+        if(!empty($filter['brand_ids'])){
+            $qb->whereIn('brand_id', $filter['brand_ids']);
         }
 
         if(!empty($filter['product_id'])){
             $qb->where('id', $filter['product_id']);
         }
 
-        if(!empty($filter['category_id'])){
-            $qb->where('category_id', $filter['category_id']);
+        if(!empty($filter['barcode'])){
+            $qb->where('barcode', $filter['barcode']);
         }
 
-        if(!empty($filter['stock_locator'])){
-            $qb->where('stock_locator', $filter['stock_locator']);
+        if(!empty($filter['category_ids'])){
+            $qb->whereIn('category_id', $filter['category_ids']);
         }
-        // @todo check, tag is a many relation
-        if(!empty($filter['tag_ids'])){
-            $qb->whereIn('tag_ids', $filter['tag_ids']);
+
+        if(!empty($filter['stock_locator_ids'])){
+            $qb->whereIn('stock_locator', $filter['stock_locator_ids']);
+        }
+
+        if (!empty($filter['tag_ids'])) {
+            $qb->whereHas('tags', function ($query) use($filter) {
+                $query->whereIn('id', $filter['tag_ids']);
+            });
         }
 
         if(isset($filter['is_enabled'])){
@@ -102,16 +109,16 @@ class StockCountRepository extends RepositoryService
             $products = $qb->paginate($filter['per_page']);
         }
         else{
-            $products = $qb->limit(1)->get();
+            $products = $qb->limit(1)->get(); // get product with all bins
         }
-
 
         $location       = Location::find($filter['location_id']);
         $bins           = $location->bins;
         $availabilities = [];
         foreach ($products as $product) {
 
-            if(!empty($bins) && isset($filter['bin_ids'])){
+            // LOCATION HAS  BINS
+            if(!empty($bins)){
                 foreach ($bins as $bin) {
                     // no bin filter OR the bin match the filter
                     if(empty($filter['bin_ids']) || in_array($bin->id, $filter['bin_ids'])){
@@ -125,14 +132,10 @@ class StockCountRepository extends RepositoryService
                 }
             }
             else{
-                lad('else');
                 $availability = $product->availabilities()
                     ->where('location_id', $location->id)
                     ->whereNull('bin_id')
                     ->first();
-
-                lad('$availability', $availability);
-
                 $availabilities[] = $this->getAvailability($product, $location, $availability);
             }
         }
@@ -197,10 +200,68 @@ class StockCountRepository extends RepositoryService
     {
         DB::transaction(function () use ($data)
         {
+            if(empty($data['date'])) {
+                $data['date'] = now();
+            }
             // SAVE STOCK TAKE
             parent::store($data);
             // SAVE STOCK TAKE PRODUCTS
-            $this->model->details()->sync($data['list_products']);
+            if(!empty($data['stock_count_filters'])) {
+                foreach($data['stock_count_filters'] as $key => $list) {
+                    if($key === 'tag_ids') {
+                        foreach($list as $val) {
+                            StockCountFilter::create([
+                                'type' => 'App\\Models\\Tag',
+                                'type_id' => $val,
+                                'stocktake_id' => $this->model->id,
+                            ]);
+                        }
+
+                    }
+                    else if($key === 'stock_locator_ids') {
+                        foreach($list as $val) {
+                            StockCountFilter::create([
+                                'type' => 'Modules\\Inventory\\Entities\\StockLocator',
+                                'type_id' => $val,
+                                'stocktake_id' => $this->model->id,
+                            ]);
+                        }
+                    }
+                    else if($key === 'bin_ids') {
+
+                        foreach($list as $val) {
+                            StockCountFilter::create([
+                                'type' => 'Modules\\Inventory\\Entities\\LocationBin',
+                                'type_id' => $val,
+                                'stocktake_id' => $this->model->id,
+                            ]);
+                        }
+                    }
+                    else if($key === 'category_ids') {
+
+                        foreach($list as $val) {
+                            StockCountFilter::create([
+                                'type' => 'Modules\\Inventory\\Entities\\Category',
+                                'type_id' => $val,
+                                'stocktake_id' => $this->model->id,
+                            ]);
+                        }
+                    }
+                    else if($key === 'brand_ids') {
+                        foreach($list as $val) {
+                            StockCountFilter::create([
+                                'type' => 'Modules\\Inventory\\Entities\\Brand',
+                                'type_id' => $val,
+                                'stocktake_id' => $this->model->id,
+                            ]);
+                        }
+
+                    }
+                }
+            }
+            if(!empty($data['list_products'])) {
+                $this->model->details()->sync($data['list_products']);
+            }
         });
     }
 

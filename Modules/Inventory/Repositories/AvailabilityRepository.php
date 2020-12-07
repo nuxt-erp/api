@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Auth;
 use Illuminate\Support\Arr;
 use Modules\Inventory\Entities\Availability;
+use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductLog;
 
 class AvailabilityRepository extends RepositoryService
@@ -16,29 +17,22 @@ class AvailabilityRepository extends RepositoryService
     public function findBy(array $searchCriteria = [])
     {
 
+        $searchCriteria['query_type'] = 'ILIKE';
+        $searchCriteria['where']      = 'OR';
+
         $searchCriteria['order_by'] = [
-            'field'         => 'inv_products.name',
-            'direction'     => 'asc'
+            'field'         => 'inv_availabilities.id',
+            'direction'     => 'desc'
         ];
 
-        $this->queryBuilder->leftJoin('inv_products', 'inv_availabilities.product_id', 'inv_products.id');
-
-        $this->queryBuilder->select('inv_products.sku', 'inv_availabilities.location_id', 'inv_availabilities.bin_id', 'inv_products.brand_id', 'inv_products.category_id', 'inv_availabilities.id', 'inv_availabilities.product_id', 'inv_availabilities.available', 'inv_availabilities.on_hand', 'inv_availabilities.on_order', 'inv_availabilities.allocated');
-
         if (!empty($searchCriteria['category_id'])) {
-            $this->queryBuilder
-                ->where('inv_products.category_id', Arr::pull($searchCriteria, 'category_id'));
+            $this->queryBuilder->where('inv_products.category_id', Arr::pull($searchCriteria, 'category_id'));
         }
 
-        if (!empty($searchCriteria['location_id'])) {
-            $this->queryBuilder
-                ->where('inv_availabilities.location_id', Arr::pull($searchCriteria, 'location_id'));
-        }
-
-        if (!empty($searchCriteria['bin_id'])) {
+        if (isset($searchCriteria['bin_id'])) {
             if($searchCriteria['bin_id'] > 0){
                 $this->queryBuilder
-                ->where('inv_availabilities.bin_id', Arr::pull($searchCriteria, 'bin_id'));
+                ->where('bin_id', Arr::pull($searchCriteria, 'bin_id'));
             }
             else{
                 $this->queryBuilder->whereNull('bin_id');
@@ -47,15 +41,18 @@ class AvailabilityRepository extends RepositoryService
 
         if (!empty($searchCriteria['product_name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'product_name') . '%';
-            $this->queryBuilder
-                ->where('inv_products.name', 'ILIKE', $name)
-                ->orWhere('inv_products.sku', 'ILIKE', $name);
+            $this->queryBuilder->where(function ($query) use($name) {
+                $query->where('inv_products.name', 'ILIKE', $name);
+                $query->orWhere('inv_products.sku', 'ILIKE', $name);
+            });
         }
 
         if (!empty($searchCriteria['brand_id'])) {
-            $this->queryBuilder
-                ->where('inv_products.brand_id', Arr::pull($searchCriteria, 'brand_id'));
+            $this->queryBuilder->where('inv_products.brand_id', Arr::pull($searchCriteria, 'brand_id'));
         }
+
+        $this->queryBuilder->join('inv_products', 'inv_products.id', '=', 'inv_availabilities.product_id')
+        ->orderBy('inv_products.name', 'ASC');
 
         return parent::findBy($searchCriteria);
     }
@@ -156,34 +153,27 @@ class AvailabilityRepository extends RepositoryService
         $log->save();
     }
 
-    // USED TO LOAD PRODUCT AVAILABILITIES, STOCK TAKE AND PRODUCTS
-
+    // USED TO LOAD PRODUCT AVAILABILITIES, STOCK COUNT
     public function productAvailabilities(array $searchCriteria = [])
     {
+        $qb = $this->queryBuilder;
 
-        $searchCriteria['order_by'] = [
-            'field'         => 'name',
-            'direction'     => 'asc'
-        ];
+        $qb->leftJoin('inv_brands', 'inv_brands.id', 'inv_products.brand_id');
+        $qb->leftJoin('inv_categories', 'inv_categories.id', 'inv_products.category_id');
+        $qb->leftJoin('inv_location_bins', 'inv_location_bins.id', 'inv_availabilities.bin_id');
+        $qb->leftJoin('locations', 'locations.id', 'inv_availabilities.location_id');
 
-        $searchCriteria['per_page'] = 20;
+        $qb->orderBy('inv_products.sku', 'ASC');
 
-        $this->queryBuilder->rightJoin('inv_products', 'inv_availabilities.product_id', 'inv_products.id');
-        $this->queryBuilder->leftJoin('inv_brands', 'inv_brands.id', 'inv_products.brand_id');
-        $this->queryBuilder->leftJoin('inv_categories', 'inv_categories.id', 'inv_products.category_id');
-        $this->queryBuilder->leftJoin('inv_location_bins', 'inv_location_bins.id', 'inv_availabilities.bin_id');
-        $this->queryBuilder->select(
+        $qb->select(
             'inv_brands.name as brand_name',
             'inv_categories.name as category_name',
             'inv_products.id',
             'inv_products.name',
             'inv_products.sku',
 
-            'inv_products.location_id',
+            'inv_availabilities.location_id',
             'locations.name as location_name',
-
-            'l2.id as location_id2',
-            'l2.name as location_name2',
 
             'inv_availabilities.bin_id',
             'inv_location_bins.name as bin_name',
@@ -192,57 +182,77 @@ class AvailabilityRepository extends RepositoryService
             'inv_products.category_id',
             'inv_products.brand_id'
         );
+
+        // get qty from stockcount details not availabilities
+        // @todo check
         if (!empty($searchCriteria['stockcount_id'])) {
-            $this->queryBuilder->addSelect('dt.qty as qty');
-            $this->queryBuilder->leftJoin('inv_stock_count_details dt', 'dt.product_id', 'inv_products.id');
+            $qb->addSelect('dt.qty as qty');
+            $qb->leftJoin('inv_stock_count_details dt', 'dt.product_id', 'inv_products.id');
             unset($searchCriteria['stockcount_id']);
         }
 
-        if (!empty($searchCriteria['location_id'])) {
-            $this->queryBuilder->leftJoin('locations', 'locations.id', 'inv_products.location_id')
-            ->leftJoin('locations as l2', 'l2.id', 'inv_availabilities.location_id');
+        // STOCK COUNT IS MADE BASED ON WHAT QTY WE HAVE IN THE LOCATION AND BIN (IF BIN IS SET) ---->
+        $qb->join('inv_availabilities', function ($join) use($searchCriteria) {
+            // GET QTY BASED ON THE
+            $join->on('inv_availabilities.product_id', '=', 'inv_products.id')
+                 ->where('inv_availabilities.location_id', '=', Arr::pull($searchCriteria, 'location_id'));
 
-            $this->queryBuilder->where(function($query) use($searchCriteria) {
-                $query->where('inv_products.location_id', $searchCriteria['location_id'])
-                      ->orWhere('inv_availabilities.location_id', $searchCriteria['location_id']);
-            });
-            unset($searchCriteria['location_id']);
-        } else {
-            $this->queryBuilder->leftJoin('locations', 'locations.id', 'inv_products.location_id');
-        }
+            // FILTER AVAILABILITY BY BIN IF IS SET
+            if (!empty($searchCriteria['bin_id'])) {
+                $join->where('inv_availabilities.bin_id', Arr::pull($searchCriteria, 'bin_id'));
+            }
+            // multiple bin set
+            if (!empty($searchCriteria['bin_ids'])) {
+                $join->whereIn('inv_availabilities.bin_id', Arr::pull($searchCriteria, 'bin_ids'));
+            }
 
-        if (!empty($searchCriteria['bin_id'])) {
-            $this->queryBuilder
-                ->where('bin_id', Arr::pull($searchCriteria, 'bin_id'));
-            unset($searchCriteria['bin_id']);
-        }
+        });
 
+        // PRODUCTS FILTER START ---->
         if (!empty($searchCriteria['add_discontinued'])) {
-            $this->queryBuilder
-                ->where('inv_products.is_enabled', Arr::pull($searchCriteria, 'add_discontinued'));
-            unset($searchCriteria['add_discontinued']);
+            $qb->where('inv_products.is_enabled', Arr::pull($searchCriteria, 'add_discontinued'));
         }
 
-        if (!empty($searchCriteria['stockcount_id'])) {
-            $this->queryBuilder
-                ->where('stockcount_id', Arr::pull($searchCriteria, 'stockcount_id'));
-            unset($searchCriteria['stockcount_id']);
+        if (!empty($searchCriteria['product_id'])) {
+            $qb->where('inv_products.id', Arr::pull($searchCriteria, 'product_id'));
+        }
+
+        if (!empty($searchCriteria['barcode'])) {
+            $qb->where('inv_products.barcode', Arr::pull($searchCriteria, 'barcode'));
         }
 
         if (!empty($searchCriteria['category_id'])) {
-            $this->queryBuilder
-                ->where('category_id', Arr::pull($searchCriteria, 'category_id'));
-            unset($searchCriteria['category_id']);
+            $qb->where('inv_products.category_id', Arr::pull($searchCriteria, 'category_id'));
         }
 
         if (!empty($searchCriteria['brand_id'])) {
-            $this->queryBuilder
-                ->where('brand_id', Arr::pull($searchCriteria, 'brand_id'));
-            unset($searchCriteria['brand_id']);
+            $qb->where('inv_products.brand_id', Arr::pull($searchCriteria, 'brand_id'));
         }
 
-        return parent::findBy($searchCriteria);
+        // multiple options
+        if (!empty($searchCriteria['stock_locator_ids'])) {
+            $qb->whereIn('inv_products.stock_locator', Arr::pull($searchCriteria, 'stock_locator_ids'));
+        }
+
+        if (!empty($searchCriteria['category_ids'])) {
+            $qb->whereIn('inv_products.category_id', Arr::pull($searchCriteria, 'category_ids'));
+        }
+
+        if (!empty($searchCriteria['brand_ids'])) {
+            $qb->whereIn('inv_products.brand_id', Arr::pull($searchCriteria, 'brand_ids'));
+        }
+
+        if (!empty($searchCriteria['tag_ids'])) {
+            $qb->join('inv_product_tags', function ($join) use($searchCriteria) {
+                $join->on('inv_product_tags.product_id', '=', 'inv_products.id')
+                    ->whereIn('inv_product_tags.id', '=', Arr::pull($searchCriteria, 'tag_ids'));
+            });
+        }
+
+
+        return $qb->limit(300)->get();
     }
+
     public function stockOnHand($product_id,$location_id)
     {
        $item= Availability::where([

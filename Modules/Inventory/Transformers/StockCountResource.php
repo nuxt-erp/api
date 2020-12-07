@@ -9,12 +9,12 @@ class StockCountResource extends ResourceService
     public function toArray($request)
     {
         $filters = $this->stock_filters;
+        lad($filters);
         $tag_ids = [];
         $brand_ids = [];
         $category_ids = [];
         $stock_locator_ids = [];
         $bin_ids = [];
-        
         foreach($filters as $filter) {
             if($filter->type === 'App\\Models\\Tag') {
                 array_push($tag_ids, $filter->type_id);
