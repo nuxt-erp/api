@@ -53,7 +53,7 @@ class ShopifyService
         //date_default_timezone_set('America/Toronto');
         $time_zone = '-5:00';
         // -2 minutes (Orders from the last 2 minutes)
-        $date = date('Y-m-d\TH:i:s', strtotime('-3 minutes', strtotime(date('Y-m-d\TH:i:s'))));
+        $date = date('Y-m-d\TH:i:s', strtotime('-2 minutes', strtotime(date('Y-m-d\TH:i:s'))));
 
         $params = [
             'updated_at_min' => $date  . $time_zone,
@@ -71,7 +71,7 @@ class ShopifyService
             {
                 $fulfillment_status_list= [];
                 $financial_status_list  = [];
-                $is_updating = false;
+                $allow_stock_move = true;
 
                 foreach ($orders as $order) {
 
@@ -79,6 +79,10 @@ class ShopifyService
 
                     // Remove # character from the Shopify order name
                     $order_number = filter_var($order['name'], FILTER_SANITIZE_NUMBER_INT);
+
+                    /*if ($order_number == '194587') {
+                        var_dump($order);
+                    }*/
 
                     // Get financial status - Remove order if refunded - or cancelled
                     if ($order['financial_status'] == 'refunded' || ($order['cancelled_at'] != '' || $order['cancel_reason'] != '')) {
@@ -136,7 +140,7 @@ class ShopifyService
                         $sale = Sale::where('order_number', $order_number)->first();
 
                         if ($sale) { // Update
-                            $is_updating = true; // We don't need updateStock again
+                            $allow_stock_move = ($sale->fulfillment_status_id == null || ($sale->fulfillment_status_id != $data['fulfillment_status_id'])); // Allow movement stock when updating existent order just if the fulfillment status had changed
                             $sale->fill([
                                 'financial_status_id'   => $data['financial_status_id'],
                                 'fulfillment_status_id' => $data['fulfillment_status_id'],
@@ -216,10 +220,11 @@ class ShopifyService
                                 ]
                             );
 
-                            if ($product_id != null) {
-                                $this->updateStock($product_id, 0, null, null, '+', 'Sale', $sale->id, 0, $items['quantity'], 'Allocated quantity');
-                            }
-
+                            /*if ($product_id != null) {
+                                if ($allow_stock_move == true) { // Do not update again stock when update sale
+                                    $this->updateStock($product_id, 0, null, null, '+', 'Sale', $sale->id, 0, $items['quantity'], 'Allocated quantity');
+                                }
+                            }*/
                         }
 
                         // Save products
@@ -229,45 +234,48 @@ class ShopifyService
                         $parse_fulfillments = array();
 
                         // Fulfillments
-                        if (!empty($order['fulfillments'])) {
+                        if (isset($order['fulfillments'][0])) {
 
-                            $fulfillment_date   = $order['fulfillments'][0]['updated_at'] ?? null;
+                            if ($allow_stock_move == true) { // Do not update again stock when update sale
 
-                            if(!empty($order['fulfillments'][0]['status']) && !isset($fulfillment_status_list[$order['fulfillments'][0]['status']])){
-                                $fulfillment_status = Parameter::firstOrCreate(
-                                    ['name' => 'sales_fulfillment_status', 'value' => $order['fulfillments'][0]['status']]
-                                );
-                                $fulfillment_status_list[$order['fulfillments'][0]['status']] = $fulfillment_status->id;
-                            }
+                                $fulfillment_date   = $order['fulfillments'][0]['updated_at'] ?? null;
 
-                            // Search location based on Shopify location_id
-                            $location_id = null;
-                            if (isset($order['fulfillments'][0]['location_id'])) {
-                                $location_id = Location::where('shopify_id', $order['fulfillments'][0]['location_id'])->pluck('id')->first();
-                            }
-
-                            foreach ($order['fulfillments'][0]['line_items'] as $items) {
-
-                                $product_id = Product::where('sku', $items['sku'])->pluck('id')->first();
-
-                                if ($product_id) {
-                                    array_push(
-                                        $parse_fulfillments,
-                                        [
-                                            'product_id'                => $product_id,
-                                            'quantity'                  => $items['quantity'],
-                                            'location_id'               => $location_id,
-                                            'fulfillment_status_id'     => $fulfillment_status_list[$order['fulfillments'][0]['status']] ?? null,
-                                            'fulfillment_status_name'   => $order['fulfillments'][0]['status'] ?? '',
-                                            'fulfillment_date'          => $fulfillment_date
-                                        ]
+                                if(!empty($order['fulfillments'][0]['status']) && !isset($fulfillment_status_list[$order['fulfillments'][0]['status']])){
+                                    $fulfillment_status = Parameter::firstOrCreate(
+                                        ['name' => 'sales_fulfillment_status', 'value' => $order['fulfillments'][0]['status']]
                                     );
+                                    $fulfillment_status_list[$order['fulfillments'][0]['status']] = $fulfillment_status->id;
                                 }
-                            }
 
-                            // Set fulfillments
-                            $this->checkFulfillments($parse_fulfillments, $sale->id);
-                            $data['fulfillments'] = array();
+                                // Search location based on Shopify location_id
+                                $location_id = null;
+                                if (isset($order['fulfillments'][0]['location_id'])) {
+                                    $location_id = Location::where('shopify_id', $order['fulfillments'][0]['location_id'])->pluck('id')->first();
+                                }
+
+                                foreach ($order['fulfillments'][0]['line_items'] as $items) {
+
+                                    $product_id = Product::where('sku', $items['sku'])->pluck('id')->first();
+
+                                    if ($product_id) {
+                                        array_push(
+                                            $parse_fulfillments,
+                                            [
+                                                'product_id'                => $product_id,
+                                                'quantity'                  => $items['quantity'],
+                                                'location_id'               => $location_id,
+                                                'fulfillment_status_id'     => $fulfillment_status_list[$order['fulfillments'][0]['status']] ?? null,
+                                                'fulfillment_status_name'   => $order['fulfillments'][0]['status'] ?? '',
+                                                'fulfillment_date'          => $fulfillment_date
+                                            ]
+                                        );
+                                    }
+                                }
+
+                                // Set fulfillments
+                                $this->checkFulfillments($parse_fulfillments, $sale->id);
+                                $data['fulfillments'] = array();
+                            }
                         }
                     }
                 }
@@ -328,10 +336,11 @@ class ShopifyService
 
     private function checkFulfillments($data, $sale_id)
     {
-        if (!empty($data)) {
+        if (isset($data)) {
 
             // Foreach row
             foreach ($data as $v) {
+
 
                 $quantity               = 0;
                 $fulfillment_status_id  = null;
@@ -367,7 +376,7 @@ class ShopifyService
                     }
                 }
 
-                if (!$product_id) {
+                if ($product_id != 0) {
                     $operation = ($fulfillment_status_name == 'success' ? '-' : ($fulfillment_status_name == 'cancelled' ? '+' : '-') );
                     //     setItemFulfilled($product_id, $quantity, $location_id, $operation, $fulfillment_status_id, $fulfillment_date, $sale_id)
                     $this->setItemFulfilled($product_id, $quantity, $location_id, $operation, $fulfillment_status_id, $fulfillment_date, $sale_id);
@@ -394,7 +403,7 @@ class ShopifyService
         $this->updateStock($product_id, $quantity, $location_id, null, $operation, 'Sale', $sale_id, 0, 0, ($operation == '+' ? 'Item cancelled fulfillment' : 'Item fulfilled'));
 
         // Update allocated quantity
-        $this->updateStock($product_id, 0, $location_id, null, $operation, 'Sale', $sale_id, 0, $quantity, ($operation == '+' ? 'Item cancelled returning allocated quantity' : 'Allocated quantity'));
+        $this->updateStock($product_id, 0, $location_id, null, $operation, 'Sale', $sale_id, 0, $quantity, ($operation == '+' ? 'Item cancelled returning allocated quantity' : 'Decreased allocated quantity'));
 
         // Update Sale Details
         SaleDetails::where(['product_id' => $product_id, 'sale_id' => $sale_id])->update([
@@ -411,21 +420,46 @@ class ShopifyService
         if (!empty($data)) {
 
             // Delete to insert them again
-            SaleDetails::where('sale_id', $id)->delete();
+            //SaleDetails::where('sale_id', $id)->delete();
 
             // Foreach row
             foreach ($data as $item) {
                 if (!empty($item['product_id'])) {
-                    SaleDetails::create([
-                        'sale_id'               => $id,
-                        'product_id'            => $item['product_id'],
-                        'qty'                   => $item['qty'] ?? 0,
-                        'shopify_id'            => $item['shopify_id'] ?? null,
-                        'discount_value'        => $item['discount_value'] ?? 0,
-                        'price'                 => $item['price'] ?? 0,
-                        'total_item'            => (($item['price'] ?? 0) * ($item['qty'] ?? 0)),
-                        'tax_rule_id'           => $item['tax_rule_id'] ?? null,
-                    ]);
+
+                    $prod = SaleDetails::where(['sale_id' => $id, 'product_id' => $item['product_id']])->get();
+
+                    if ($prod) { // Update
+
+                        // If updating, we need to know if we are adding more quantity or removing quantity from the original order
+                        if ($prod->qty != $item['qty']) {
+                            $this->updateStock($item['product_id'], 0, null, null, ($prod->qty > $item['qty'] ? '-' : '+'), 'Sale', $id, 0, abs($item['qty']-$prod->qty), 'Change Allocated quantity');
+                        }
+
+                        $prod->qty              = $item['qty'] ?? 0;
+                        $prod->shopify_id       = $item['shopify_id'] ?? null;
+                        $prod->discount_value   = $item['discount_value'] ?? 0;
+                        $prod->price            = $item['price'] ?? 0;
+                        $prod->total_item       = (($item['price'] ?? 0) * ($item['qty'] ?? 0));
+                        $prod->tax_rule_id      = $item['tax_rule_id'] ?? null;
+                        $prod->save();
+
+                    } else { // Create
+
+                        SaleDetails::create([
+                            'sale_id'               => $id,
+                            'product_id'            => $item['product_id'],
+                            'qty'                   => $item['qty'] ?? 0,
+                            'shopify_id'            => $item['shopify_id'] ?? null,
+                            'discount_value'        => $item['discount_value'] ?? 0,
+                            'price'                 => $item['price'] ?? 0,
+                            'total_item'            => (($item['price'] ?? 0) * ($item['qty'] ?? 0)),
+                            'tax_rule_id'           => $item['tax_rule_id'] ?? null,
+                        ]);
+
+                        $this->updateStock($item['product_id'], 0, null, null, '+', 'Sale', $id, 0, $item['qty'], 'Allocated quantity');
+
+                    }
+
                 }
             }
         }
@@ -439,6 +473,7 @@ class ShopifyService
             if (count($sale->details) > 0) {
                 foreach ($sale->details as $detail) {
                     // Undo stock on hand just when fulfilled
+                    echo "ful name? " . $sale->fulfillment_status->name;
                     if (isset($sale->fulfillment_status->name) && $sale->fulfillment_status->name == 'fulfilled') {
                         $this->updateStock($detail->product_id, $detail->qty_fulfilled, $detail->location_id, null, '+', 'Sale', $id, 0, 0, 'Returning stock - item deleted');
                     } else { // Update allocated qty

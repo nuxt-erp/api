@@ -26,7 +26,8 @@ class SaleResource extends ResourceService
             'total'                     => $this->total,
             'fulfillment_date'          => optional($this->fulfillment_date)->format('Y-m-d H:i:s'),
             'sales_date'                => optional($this->sales_date)->format('Y-m-d H:i:s'),
-            'payment_date'              => optional($this->payment_date)->format('Y-m-d H:i:s')
+            'payment_date'              => optional($this->payment_date)->format('Y-m-d H:i:s'),
+            'updated_at'                => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];
     }
 }
