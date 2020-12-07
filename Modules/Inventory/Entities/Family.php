@@ -16,7 +16,10 @@ class Family extends ModelService
     protected $dates = [
         'launch_at', 'disabled_at',
     ];
-
+    protected $casts = [
+        'sku' => 'string',
+        'name' => 'string',
+    ];
     protected $fillable = [
         'brand_id', 'category_id', 'supplier_id',
         'location_id', 'dear_id', 'name',
@@ -27,6 +30,14 @@ class Family extends ModelService
         'carton_length', 'carton_width', 'carton_height',
         'carton_weight'
     ];
+    public function getSkuAttribute($val)
+    {
+        return strval($val);
+    }
+    public function getNameAttribute($val)
+    {
+        return strval($val);
+    }
     public function getDetailsAttribute()
     {
         $string = '';
@@ -52,22 +63,22 @@ class Family extends ModelService
             'stock_locator' => ['nullable', 'exists:tenant.inv_stock_locator,id'],
             'measure'       => ['nullable', 'exists:tenant.inv_measure,id'],
         ];
-
+       
         // CREATE
         if (is_null($item))
         {
             $rules['name'][]    = 'required';
             $rules['dear_id'][] = 'unique:tenant.inv_families';
-          //  $rules['name'][]    = 'unique:tenant.inv_families';
-          //  $rules['sku'][]     = 'unique:tenant.inv_families';
+            $rules['name'][]    = 'unique:tenant.inv_families';
+            $rules['sku'][]     = 'unique:tenant.inv_families';
         } else {
             //update
           //  $rules['dear_id'][] = Rule::unique('tenant.inv_families')->ignore($item->id);
-           // $rules['name'][]    = Rule::unique('tenant.inv_families')->ignore($item->id);
+          //  $rules['name'][]    = Rule::unique('tenant.inv_families')->ignore($item->id);
           //  $rules['sku'][]     = Rule::unique('tenant.inv_families')->ignore($item->id);
         }
-
         return $rules;
+       
     }
     public function getFullDescriptionAttribute()
     {
