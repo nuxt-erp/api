@@ -60,6 +60,11 @@ class Product extends ModelService
         return $rules;
     }
 
+    public function setSkuAttribute($value)
+    {
+        $this->attributes['sku'] = strval($value);
+    }
+
     public function getFullDescriptionAttribute()
     {
         return $this->name . ' ' . $this->details;
