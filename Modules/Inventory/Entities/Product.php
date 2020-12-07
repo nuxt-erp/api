@@ -19,8 +19,9 @@ class Product extends ModelService
     ];
 
     protected $casts = [
-        'sku' => 'string',
-        'name' => 'string',
+
+        
+            'name' => 'string',
     ];
 
     protected $fillable = [
@@ -35,7 +36,6 @@ class Product extends ModelService
         'carton_height', 'carton_weight', 'msrp',
         'carton_barcode', 'carton_qty','taxable'
     ];
-
 
     public function getRules($request, $item = null)
     {
@@ -60,11 +60,7 @@ class Product extends ModelService
         return $rules;
     }
 
-    public function setSkuAttribute($value)
-    {
-        $this->attributes['name'] = strval($value);
-    }
-
+   
     public function getFullDescriptionAttribute()
     {
         return $this->name . ' ' . $this->details;

@@ -89,7 +89,7 @@ class FamilyRepository extends RepositoryService
     public function store($data)
     {
         DB::transaction(function () use ($data) {
-            $data['family_id'] = $this->createFamily(null,$data); // FIRST WE CREATE THE FAMILY
+            $data['family_id'] = $this->createFamily($data); // FIRST WE CREATE THE FAMILY
             $flag=$data['auto_generate'];
 
             $this->generateFamily($data, $data['family_id'],$flag); // GENERATE FAMILY
@@ -99,9 +99,8 @@ class FamilyRepository extends RepositoryService
     }
     public function update($model, array $data)
     {
-        $this->createFamily($model,$data); // FIRST WE CREATE THE FAMILY
-
-       // parent::update($model,$data);        
+        parent::update($model,$data);
+        
         FamilyAttribute::where('family_id', $model->id)->delete();
         $products=Product::where('family_id', $model->id)->get();
         $flag=$data['auto_generate'];
@@ -113,9 +112,9 @@ class FamilyRepository extends RepositoryService
         $this->generateFamily($data, $model->id,$flag); // GENERATE FAMILY
       //  $this->createAttribute($data);
     }
-    private function createFamily($id,$data)
+    private function createFamily($data)
     {
-       /* $new                = new Family();
+        $new                = new Family();
         $new->name          = $data["name"];
         $new->description   = $data["description"];
         $new->is_enabled    = $data["is_enabled"];
@@ -139,32 +138,7 @@ class FamilyRepository extends RepositoryService
         $new->launch_at     = $data["launch_at"];
         $new->is_enabled    = $data["is_enabled"];
         $new->save();
-*/
-        $new=Family::updateOrCreate(['id'=>$id],
-        ['name'         =>$data['name'],
-        'description'   =>$data['description'],
-        'is_enabled'    =>$data['is_enabled'],
-        'brand_id'      =>$data['brand_id'],
-        'location_id'   =>$data['location_id'],
-        'category_id'   =>$data['category_id'],
-        'stock_locator' =>$data['stock_locator'],
-        'measure_id'    =>$data['measure_id'],
-        'supplier_id'   =>$data['supplier_id'],
-        'sku'           =>$data['sku'],
-        'barcode'       =>$data['barcode'],
-        'price'         =>$data['price'],
-        'width'         =>$data['width'],
-        'height'        =>$data['height'],
-        'length'        =>$data['length'],
-        'weight'        =>$data['weight'],
-        'carton_width'  =>$data['carton_width'],
-        'carton_height' =>$data['carton_height'],
-        'carton_length' =>$data['carton_length'],
-        'carton_weight' =>$data['carton_weight'],
-        'launch_at'     =>$data['launch_at'],
-        'is_enabled'    =>$data['is_enabled']]);
 
-        
         return $new->id;
     }
     public function generateFamily($data, $family_id = null,$flag)
@@ -189,7 +163,6 @@ class FamilyRepository extends RepositoryService
                             foreach ($attributes['columns'] as $attribute) // EACH ATTRIBUTE
                             {
                                     if ($attribute['value'] != null) {
-                                        lad($attribute);
     
                                         $get_array = $attribute['value'];
                                         // SAVING ALL FAMILY ATTRIBUTES
@@ -275,12 +248,16 @@ class FamilyRepository extends RepositoryService
 
 
             }*/
-            
+
             foreach ($my_array as $index => $element) {
                 // CONCAT ATTRIBUTES TO SAVE ON PRODUCT NAME
                 $concat_name = "";
+                if($index==1){
+                    lad($element);
 
-                // NEW SKU 
+                }
+
+                // NEW SKU \
                 if(isset($element['sku'])){
                     $data["sku"]=$element['sku'];
                     $sku_increment++;
@@ -294,6 +271,7 @@ class FamilyRepository extends RepositoryService
 
                 // SET FAMILY ID FOR THIS PRODUCT
                 $data["family_id"] = $family_id;
+                lad($data["sku"]);
 
                 // CREATE A NEW PRODUCT
                // parent::store($data);
@@ -307,7 +285,7 @@ class FamilyRepository extends RepositoryService
                $new->stock_locator = $data["stock_locator"];
                $new->measure_id    = $data["measure_id"];
                $new->supplier_id   = $data["supplier_id"];
-               $new->sku           = $data["sku"];
+               $new->sku           = isset($element['sku'])?$element['sku']:$data["sku"];
                $new->barcode       = isset($element['barcode'])?$element['barcode']:rand();
                $new->family_id     = $family_id;
                $new->sales_channel = 1;
