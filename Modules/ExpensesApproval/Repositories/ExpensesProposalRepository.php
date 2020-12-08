@@ -320,7 +320,7 @@ class ExpensesProposalRepository extends RepositoryService
         }
 
         // NEED PRIMARY SPONSOR APPROVAL
-        if($rule->sponsor_approval && $approved && !$is_primary_author){
+        if($rule->sponsor_approval && $approved && !$is_primary_author && $primary_sponsor){
             $approved = $approved && ExpensesApproval::where('expenses_proposal_id', $proposal->id)->where('approver_id', $primary_sponsor->id)->count() > 0;
         }
 
