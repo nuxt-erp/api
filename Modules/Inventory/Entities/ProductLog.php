@@ -74,12 +74,12 @@ class ProductLog extends ModelService
         if ($this->type->value == self::TYPE_LOG_SALE) {
             $get = Sale::where('id', $this->ref_code_id)->with('customer')->first();
             if ($get) {
-                return $get->customer->name;
+                return optional($get->customer)->name;
             }
         }elseif ($this->type->value == self::TYPE_LOG_PURCHASE) {
             $get = Purchase::where('id', $this->ref_code_id)->with('supplier')->first();
             if ($get) {
-                return $get->supplier->name;
+                return optional($get->supplier)->name;
             }
         }
 
@@ -90,6 +90,10 @@ class ProductLog extends ModelService
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    public function bin()
+    {
+        return $this->belongsTo(LocationBin::class, 'bin_id', 'id');
+    }
 
 }
 
