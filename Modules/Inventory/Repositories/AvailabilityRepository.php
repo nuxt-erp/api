@@ -24,6 +24,8 @@ class AvailabilityRepository extends RepositoryService
             'field'         => 'inv_availabilities.id',
             'direction'     => 'desc'
         ];
+        $this->queryBuilder->join('inv_products', 'inv_products.id', '=', 'inv_availabilities.product_id')
+        ->orderBy('inv_products.name', 'ASC');
 
         if (!empty($searchCriteria['category_id'])) {
             $this->queryBuilder->where('inv_products.category_id', Arr::pull($searchCriteria, 'category_id'));
@@ -38,6 +40,7 @@ class AvailabilityRepository extends RepositoryService
                 $this->queryBuilder->whereNull('bin_id');
             }
         }
+       
 
         if (!empty($searchCriteria['product_name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'product_name') . '%';
@@ -50,10 +53,13 @@ class AvailabilityRepository extends RepositoryService
         if (!empty($searchCriteria['brand_id'])) {
             $this->queryBuilder->where('inv_products.brand_id', Arr::pull($searchCriteria, 'brand_id'));
         }
+        if (isset($searchCriteria['location_id'])) {
+            $this->queryBuilder->where('inv_products.location_id', Arr::pull($searchCriteria, 'location_id'));
 
-        $this->queryBuilder->join('inv_products', 'inv_products.id', '=', 'inv_availabilities.product_id')
-        ->orderBy('inv_products.name', 'ASC');
+    }
+        lad($searchCriteria);
 
+       
         return parent::findBy($searchCriteria);
     }
 
