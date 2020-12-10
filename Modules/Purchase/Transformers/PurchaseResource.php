@@ -2,9 +2,9 @@
 
 namespace Modules\Purchase\Transformers;
 
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Resources\ResourceService;
 
-class PurchaseResource extends JsonResource
+class PurchaseResource extends ResourceService
 {
     /**
      * Transform the resource into an array.
@@ -12,6 +12,7 @@ class PurchaseResource extends JsonResource
      * @param  \Illuminate\Http\Request
      * @return array
      */
+    
     public function toArray($request)
     {
 
