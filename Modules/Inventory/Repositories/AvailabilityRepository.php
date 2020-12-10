@@ -55,10 +55,7 @@ class AvailabilityRepository extends RepositoryService
         }
         if (isset($searchCriteria['location_id'])) {
             $this->queryBuilder->where('inv_products.location_id', Arr::pull($searchCriteria, 'location_id'));
-
-    }
-        lad($searchCriteria);
-
+        }
        
         return parent::findBy($searchCriteria);
     }
