@@ -43,6 +43,8 @@ Route::middleware('auth:api')->group(function () {
         Route::get('find_sku/{sku} ', 'ProductController@findBySKU');
 
         Route::resource('location_bins', 'LocationBinController');
+        Route::resource('receiving', 'ReceivingController');
+        Route::resource('receiving_details', 'ReceivingDetailController');
 
         Route::resource('stock_count_filters', 'StockCountFilterController');
         Route::resource('stock_adjustments', 'StockAdjustmentController');

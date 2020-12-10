@@ -33,6 +33,8 @@ use Modules\Inventory\Entities\PriceTierItems;
 use Modules\Inventory\Entities\ProductCustomPrice;
 use Modules\Inventory\Entities\ProductImportSettings;
 use Modules\Inventory\Entities\ProductTag;
+use Modules\Inventory\Entities\Receiving;
+use Modules\Inventory\Entities\ReceivingDetail;
 use Modules\Inventory\Entities\StockAdjustment;
 use Modules\Inventory\Entities\StockAdjustmentDetail;
 use Modules\Inventory\Entities\StockCountFilter;
@@ -65,6 +67,8 @@ use Modules\Inventory\Repositories\PriceTierItemsRepository;
 use Modules\Inventory\Repositories\ProductCustomPriceRepository;
 use Modules\Inventory\Repositories\ProductImportSettingsRepository;
 use Modules\Inventory\Repositories\ProductTagRepository;
+use Modules\Inventory\Repositories\ReceivingDetailRepository;
+use Modules\Inventory\Repositories\ReceivingRepository;
 use Modules\Inventory\Repositories\StockAdjustmentDetailRepository;
 use Modules\Inventory\Repositories\StockAdjustmentRepository;
 use Modules\Inventory\Repositories\StockCountFilterRepository;
@@ -97,6 +101,8 @@ use Modules\Inventory\Transformers\PriceTierItemsResource;
 use Modules\Inventory\Transformers\ProductCustomPriceResource;
 use Modules\Inventory\Transformers\ProductImportSettingsResource;
 use Modules\Inventory\Transformers\ProductTagResource;
+use Modules\Inventory\Transformers\ReceivingDetailResource;
+use Modules\Inventory\Transformers\ReceivingResource;
 use Modules\Inventory\Transformers\StockAdjustmentDetailResource;
 use Modules\Inventory\Transformers\StockAdjustmentResource;
 use Modules\Inventory\Transformers\StockCountFilterResource;
@@ -367,6 +373,20 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(PriceTierItemsResource::class, function () {
             return new PriceTierItemsResource(new PriceTierItems());
         });
+
+        $this->app->bind(ReceivingRepository::class, function () {
+            return new ReceivingRepository(new Receiving());
+        });
+        $this->app->bind(ReceivingResource::class, function () {
+            return new ReceivingResource(new Receiving());
+        });
+
+        $this->app->bind(ReceivingDetailRepository::class, function () {
+            return new ReceivingDetailRepository(new ReceivingDetail());
+        });
+        $this->app->bind(ReceivingDetailResource::class, function () {
+            return new ReceivingDetailResource(new ReceivingDetail());
+        });
     }
 
     /**
@@ -406,7 +426,9 @@ class InventoryServiceProvider extends ServiceProvider
             ProductImportSettingsRepository::class,
             PriceTierRepository::class,
             LocationBinRepository::class,
-            PriceTierItemsRepository::class
+            PriceTierItemsRepository::class,
+            ReceivingRepository::class,
+            ReceivingDetailRepository::class
 
         ];
     }

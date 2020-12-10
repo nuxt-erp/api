@@ -25,6 +25,8 @@ use Modules\Inventory\Entities\ProductImportSettings;
 use Modules\Inventory\Entities\ProductPromo;
 use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\ProductTag;
+use Modules\Inventory\Entities\Receiving;
+use Modules\Inventory\Entities\ReceivingDetail;
 use Modules\Inventory\Entities\StockAdjustment;
 use Modules\Inventory\Entities\StockAdjustmentDetail;
 use Modules\Inventory\Entities\StockCount;
@@ -54,6 +56,8 @@ use Modules\Inventory\Policies\ProductImportSettingsPolicy;
 use Modules\Inventory\Policies\ProductPromoPolicy;
 use Modules\Inventory\Policies\ProductReorderLevelPolicy;
 use Modules\Inventory\Policies\ProductTagPolicy;
+use Modules\Inventory\Policies\ReceivingDetailPolicy;
+use Modules\Inventory\Policies\ReceivingPolicy;
 use Modules\Inventory\Policies\StockAdjustmentDetailPolicy;
 use Modules\Inventory\Policies\StockAdjustmentPolicy;
 use Modules\Inventory\Policies\StockCountPolicy;
@@ -107,6 +111,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(ProductImportSettings::class, ProductImportSettingsPolicy::class);
         Gate::policy(PriceTier::class, PriceTierPolicy::class);
         Gate::policy(PriceTierItems::class, PriceTierItemsPolicy::class);
+        Gate::policy(Receiving::class, ReceivingPolicy::class);
+        Gate::policy(ReceivingDetail::class, ReceivingDetailPolicy::class);
 
     }
 }
