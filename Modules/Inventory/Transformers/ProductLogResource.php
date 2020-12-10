@@ -19,6 +19,8 @@ class ProductLogResource extends ResourceService
             'product_id'        => $this->product_id,
             'location_id'       => $this->location_id,
             'location_name'     => optional($this->location)->name,
+            'bin_id'            => $this->bin_id,
+            'bin_name'          => optional($this->bin)->name,
             'type_id'           => $this->type_id,
             'type_name'         => optional($this->type)->value,
             'quantity'          => $this->quantity,
@@ -28,7 +30,7 @@ class ProductLogResource extends ResourceService
             'created_at'        => optional($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at'        => optional($this->updated_at)->format('Y-m-d H:i:s'),
             'user_id'           => $this->id,
-            'user_name'         =>optional($this->user)->name,
+            'user_name'         => optional($this->user)->name,
         ];
     }
 }
