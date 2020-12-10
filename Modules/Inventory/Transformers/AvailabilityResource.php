@@ -14,6 +14,7 @@ class AvailabilityResource extends ResourceService
      */
     public function toArray($request)
     {
+        lad($this);
         return [
             'id'                    => $this->id,
             'product_id'            => $this->product_id,
