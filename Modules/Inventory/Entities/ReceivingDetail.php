@@ -17,7 +17,7 @@ class ReceivingDetail extends ModelService
         'item_status',
         'ref',
         'qty_received',
-        'qty',
+        'qty_allocated',
         'received_date'
     ];
 

@@ -24,6 +24,7 @@ class ReceivingResource extends ResourceService
             'invoice_number'    => $this->invoice_number,
             'location_id'       => $this->location_id,
             'location_name'     => optional($this->location)->name,
+            'receiving_details' => ReceivingDetailResource::collection($this->receiving_details),
             'created_at'        => optional($this->created_at)->format('Y-m-d'),
             'updated_at'        => optional($this->updated_at)->format('Y-m-d'),
         ];

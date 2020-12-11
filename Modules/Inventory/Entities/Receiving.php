@@ -49,4 +49,9 @@ class Receiving extends ModelService
     {
         return $this->belongsTo(Supplier::class, 'supplier_id');
     }
+
+    public function receiving_details()
+    {
+        return $this->hasMany(ReceivingDetail::class, 'receiving_id', 'id');
+    }
 }
