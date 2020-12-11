@@ -87,6 +87,10 @@ class StockCountRepository extends RepositoryService
             $qb->where('barcode', $filter['barcode']);
         }
 
+        if(!empty($filter['searchable'])){
+            $qb->where('barcode', 'ILIKE', $filter['searchable'])->orWhere('sku', 'ILIKE',  $filter['searchable']);
+        }
+
         if(!empty($filter['category_ids'])){
             $qb->whereIn('category_id', $filter['category_ids']);
         }
