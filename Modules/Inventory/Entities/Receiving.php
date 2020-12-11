@@ -39,6 +39,10 @@ class Receiving extends ModelService
 
         return $rules;
     }
+    public function details()
+    {
+        return $this->hasManySync(ReceivingDetail::class, 'receiving_id', 'id');
+    }
 
     public function location()
     {

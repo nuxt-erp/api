@@ -52,6 +52,14 @@ class ProductRepository extends RepositoryService
                 ->where('id', $searchCriteria['id']);
         }
 
+   
+        if(!empty($searchCriteria['searchable'])){
+            $this->queryBuilder
+            ->where('barcode', 'ILIKE', $searchCriteria['searchable'])
+            ->orWhere('sku', 'ILIKE',  $searchCriteria['searchable']);
+        }
+
+
         if (!empty($searchCriteria['category_name'])) {
             $category = Arr::pull($searchCriteria, 'category_name');
             $this->queryBuilder->whereHas('category', function ($query) use ($category) {

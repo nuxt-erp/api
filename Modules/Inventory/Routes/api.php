@@ -45,6 +45,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('location_bins', 'LocationBinController');
         Route::resource('receiving', 'ReceivingController');
         Route::resource('receiving_details', 'ReceivingDetailController');
+        Route::get('receiving/finish/{id?}', 'ReceivingController@finish'); // ADJUST AND FINISH RECEIVING
 
         Route::resource('stock_count_filters', 'StockCountFilterController');
         Route::resource('stock_adjustments', 'StockAdjustmentController');
