@@ -52,10 +52,12 @@ class ProductResource extends ResourceService
             'updated_at'            => optional($this->updated_at)->format('Y-m-d H:i:s'),
             'can_be_deleted'        => true,
             'tag_ids'               => $this->tags()->pluck('tag_id'),
-            'tag_names'                => implode(', ', optional($this->tag_parents)->pluck('tag')->pluck('name')->toArray()),
+            'tag_names'             => implode(', ', optional($this->tag_parents)->pluck('tag')->pluck('name')->toArray()),
             'taxable'               =>$this->taxable,
             'price_tier_items'      =>$this->priceTierItems,
-            'attributes_value'      =>$this->product_attributes
+            'attributes_value'      =>$this->product_attributes,
+            'searchable'            => $this->barcode ?? $this->sku,
+
           
         ];
     }

@@ -18,7 +18,7 @@ class AvailabilityResource extends ResourceService
             'id'                    => $this->id,
             'product_id'            => $this->product_id,
             'name'                  => optional($this->product)->getFullDescriptionAttribute(),
-            'searchable'            => optional($this->product)->barcode ?? optional($this->product)->sku,
+            'searchable'            => optional($this->product)->sku ?? optional($this->product)->barcode,
             'product_name'          => optional($this->product)->getFullDescriptionAttribute(),
             'in_transit_suppliers'  => optional($this->product)->getInTransitAttribute($this->product_id),
             'in_transit_transfers'  => optional($this->product)->getInTransitTransferAttribute($this->product_id),

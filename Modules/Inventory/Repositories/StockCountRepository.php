@@ -164,6 +164,7 @@ class StockCountRepository extends RepositoryService
             'product_sku'       => $product->sku,
             'product_brand'     => optional($product->brand)->name,
             'product_category'  => optional($product->category)->name,
+            'searchable'        => $product->barcode ?? $product->sku,
             'location_id'       => $location_id,
             'location_name'     => $location_name,
             'bin_id'            => $bin_id,
