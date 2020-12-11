@@ -20,4 +20,11 @@ class ReceivingController extends ControllerService implements CheckPolicies
         $this->resource = $resource;
         parent::__construct();
     }
+    
+    public function finish($receiving_id)
+    {
+        $status = $this->repository->finish($receiving_id);
+        return $this->send();
+    }
+
 }
