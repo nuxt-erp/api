@@ -21,10 +21,11 @@ class ReceivingResource extends ResourceService
             'supplier_id'       => $this->supplier_id,
             'supplier_name'     => optional($this->supplier)->name,
             'status'            => $this->status,
+            'allocation_status' => $this->allocation_status,
             'invoice_number'    => $this->invoice_number,
             'location_id'       => $this->location_id,
             'location_name'     => optional($this->location)->name,
-            'receiving_details' => ReceivingDetailResource::collection($this->receiving_details),
+            'receiving_details' => ReceivingDetailResource::collection($this->details),
             'created_at'        => optional($this->created_at)->format('Y-m-d'),
             'updated_at'        => optional($this->updated_at)->format('Y-m-d'),
         ];

@@ -9,18 +9,20 @@ use Illuminate\Validation\Rule;
 
 class Receiving extends ModelService
 {
+    const NEW_RECEIVING         = 'new';
+    const PARTIALLY_RECEIVED    = 'partially received';
+    const RECEIVED              = 'received';
+    const PARTIALLY_ALLOCATED   = 'partially allocated';
+    const ALLOCATED             = 'allocated';
+
     protected $connection = 'tenant';
 
     protected $table = 'inv_receiving';
 
     protected $fillable = [
-        'name',
-        'po_number',
-        'invoice_number',
-        'status',
-        'supplier_id',
-        'author_id',
-        'location_id'  
+        'name', 'po_number', 'invoice_number',
+        'status', 'supplier_id', 'author_id',
+        'location_id' , 'allocation_status'
     ];
     
 
@@ -54,8 +56,4 @@ class Receiving extends ModelService
         return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 
-    public function receiving_details()
-    {
-        return $this->hasMany(ReceivingDetail::class, 'receiving_id', 'id');
-    }
 }
