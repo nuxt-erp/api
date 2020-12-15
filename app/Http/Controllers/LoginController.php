@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Exception;
 use Laravel\Passport\Http\Controllers\AccessTokenController;
 use Illuminate\Http\Request;
+use Laravel\Passport\Exceptions\OAuthServerException;
 use Psr\Http\Message\ServerRequestInterface;
 use League\OAuth2\Server\Exception\OAuthServerException as LeagueException;
 
@@ -55,7 +57,7 @@ class LoginController extends AccessTokenController
                 $this->setStatus(true);
                 $this->setStatusCode(200);
             }
-        } catch (LeagueException $e) {
+        } catch (OAuthServerException $e) {
             $payload = $e->getPayload();
             $this->setStatus(false);
             $this->setStatusCode(500);
@@ -64,17 +66,59 @@ class LoginController extends AccessTokenController
 
         return $this->sendArray($data);
     }
+    public function refreshToken(ServerRequestInterface $request) {
+        $validatorResponse = $this->validateRequest($request, [
+            'grant_type'    => ['required', 'in:refresh_token'],
+            'refresh_token' => 'required',
+            'client_id'     => 'required',
+            'client_secret' => 'required'
+        ]);
 
+        if (!empty($validatorResponse)) {
+            lad($validatorResponse);
+
+            return $this->setStatus(FALSE)
+                ->setStatusCode(400)
+                ->setMessage('validation_error')
+                ->sendArray($validatorResponse);
+        }
+
+        $data = [];
+        try {
+            $tokenResponse = parent::issueToken($request);
+            $content = $tokenResponse->content();
+            $tokenData = json_decode($content, true);
+            if (isset($tokenData["error"])) {
+                lad("ERROR");
+
+                $this->setStatus(false);
+                $this->setMessage('invalid_credentials');
+                $this->setStatusCode(401);
+            } else {
+                lad("NOERROR");
+
+                $data = $tokenData;
+                $this->setStatus(true);
+                $this->setStatusCode(200);
+            }
+        } catch (OAuthServerException $e) {
+
+            $payload = $e->getMessage();
+            $this->setStatus(false);
+            $this->setStatusCode(500);
+            $this->setMessage($payload);
+        }
+
+        return $this->sendArray($data);
+    }
     public function logout()
     {
         $user = auth()->user();
         $user->token()->revoke();
         $user->token()->delete();
-
         $this->setStatus(true);
         $this->setStatusCode(200);
         $this->setMessage('logged_out');
-
         return $this->send();
     }
 

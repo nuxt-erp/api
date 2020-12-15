@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('login', 'LoginController@issueToken');
+Route::post('renew_token', 'LoginController@refreshToken');
 Route::post('register', 'RegisterController@create');
 Route::get('settings_images/{path}', 'General\SettingsImagesController@getImage');
 
@@ -23,6 +24,7 @@ Route::middleware('auth:api')->group(function () {
     // Route::get('shopify_orders', 'ShopifyController@getShopifyOrder');
     Route::get('me', 'General\UserController@findMe');
     Route::post('profile', 'DashboardController@updateProfile');
+    Route::get('logout', 'LoginController@logout');
 
     Route::group(['prefix' => 'general'], function () {
         Route::resource('configs', 'General\ConfigController');
