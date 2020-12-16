@@ -30,8 +30,7 @@ class PurchaseRepository extends RepositoryService
         ];
        
         if (!empty($searchCriteria['id'])) {
-            $this->queryBuilder
-            ->where('id', Arr::pull($searchCriteria, 'id'));
+            $this->queryBuilder->where('id', Arr::pull($searchCriteria, 'id'));
         }
 
         if (!empty($searchCriteria['supplier_name'])) {
@@ -46,6 +45,11 @@ class PurchaseRepository extends RepositoryService
                 ->orWhere('invoice_number', 'ILIKE', $name);
 
         }
+
+        if (!empty($searchCriteria['exclude_received'])) {
+            $this->queryBuilder->where('status', 0);
+        }
+        
         return parent::findBy($searchCriteria);
     }
 

@@ -28,20 +28,12 @@ class ReceivingDetailRepository extends RepositoryService
 
             // SAVE RECEIVING DETAIL
             parent::store($data);
-
-            //update availability if create by admin
-            if(!empty($data['update_availability']) && $this->model) {
-                $availability_repo = new AvailabilityRepository(new Availability());
-                $availability_repo->updateStock($this->model->product_id, $this->model->qty_received, $this->model->receiving->location_id, null, '+', 'Receiving', $this->model->receiving_id, null, null,'Received product - changing quantity');
-            }
         });
     }
 
     public function update($model, array $data)
     {
-        DB::transaction(function () use ($data, $model){           
-            $original_qty_received = $model->qty_received ?? 0;
-
+        DB::transaction(function () use ($data, $model){
             $data['item_status'] = $this->updateItemStatus($model, $data);
 
             parent::update($model, $data);
@@ -51,14 +43,6 @@ class ReceivingDetailRepository extends RepositoryService
                 $receiving_repo = new ReceivingRepository(new Receiving());
                 $receiving->allocation_status = $receiving_repo->updateAllocationStatus($receiving, $this->model);
                 $receiving->save();
-
-                // update availability if quantity received change
-                if(!empty($data['update_availability']) && $receiving->location_id && ($this->model->qty_received <> $original_qty_received)){
-                    $availability_repo = new AvailabilityRepository(new Availability());
-                    $variation = $this->model->qty_received - $original_qty_received;
-                    $operator = $variation >= 0 ? '+' : '-';
-                    $availability_repo->updateStock($this->model->product_id, abs($variation), $receiving->location_id, null, $operator,  'Receiving', $receiving->id, null, null,'Received product - changing quantity');
-                }
             } 
         });
     }

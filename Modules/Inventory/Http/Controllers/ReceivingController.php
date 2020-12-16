@@ -23,14 +23,13 @@ class ReceivingController extends ControllerService implements CheckPolicies
     
     public function finish($receiving_id)
     {
-        $status = $this->repository->finish($receiving_id);
-        return $this->send();
+        $receiving = $this->repository->finish($receiving_id);
+        return $this->sendObjectResource($receiving, $this->resource);
     }
 
     public function poAllocation(Request $request)
     {
         $receiving = $this->repository->poAllocation($request->all());
-        lad($receiving);
         return $this->sendObjectResource($receiving, $this->resource);
     }
 
