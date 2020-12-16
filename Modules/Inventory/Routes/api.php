@@ -46,6 +46,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('receiving', 'ReceivingController');
         Route::resource('receiving_details', 'ReceivingDetailController');
         Route::get('receiving/finish/{id?}', 'ReceivingController@finish'); // ADJUST AND FINISH RECEIVING
+        Route::post('receiving/po_allocate', 'ReceivingController@poAllocation'); // ALLOCATE QTY RECEIVED TO PURCHASES
 
         Route::resource('stock_count_filters', 'StockCountFilterController');
         Route::resource('stock_adjustments', 'StockAdjustmentController');
@@ -74,6 +75,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('price_tiers', 'PriceTierController');
         Route::post('price_tiers/apply', 'PriceTierController@applyChanges');
         Route::resource('price_tier_items', 'PriceTierItemsController');
+
 
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');

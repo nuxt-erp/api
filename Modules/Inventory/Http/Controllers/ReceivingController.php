@@ -27,4 +27,11 @@ class ReceivingController extends ControllerService implements CheckPolicies
         return $this->send();
     }
 
+    public function poAllocation(Request $request)
+    {
+        $receiving = $this->repository->poAllocation($request->all());
+        lad($receiving);
+        return $this->sendObjectResource($receiving, $this->resource);
+    }
+
 }

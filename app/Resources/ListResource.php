@@ -45,6 +45,10 @@ class ListResource extends ResourceService
             case 'Recipe':
                 $resource['name']    = $this->type ? ($this->type->value . '-' . $this->id . ' - ' . $this->name) : $this->name;
                 break;
+            case 'Purchase':
+                $resource['name']   = $this->po_number;
+                $resource['label']  = $this->po_number;
+                break;
         }
 
         return $resource;

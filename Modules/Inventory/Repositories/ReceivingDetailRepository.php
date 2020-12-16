@@ -10,6 +10,8 @@ use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\Receiving;
 use Modules\Inventory\Entities\ReceivingDetail;
+use Modules\Purchase\Entities\Purchase;
+use Modules\Purchase\Entities\PurchaseDetail;
 
 class ReceivingDetailRepository extends RepositoryService
 {
@@ -28,7 +30,7 @@ class ReceivingDetailRepository extends RepositoryService
             parent::store($data);
 
             //update availability if create by admin
-            if(!empty($data['admin_create']) && $this->model) {
+            if(!empty($data['update_availability']) && $this->model) {
                 $availability_repo = new AvailabilityRepository(new Availability());
                 $availability_repo->updateStock($this->model->product_id, $this->model->qty_received, $this->model->receiving->location_id, null, '+', 'Receiving', $this->model->receiving_id, null, null,'Received product - changing quantity');
             }
@@ -40,54 +42,50 @@ class ReceivingDetailRepository extends RepositoryService
         DB::transaction(function () use ($data, $model){           
             $original_qty_received = $model->qty_received ?? 0;
 
-            // HANDLE ITEM STATUS
-            if(!empty($data['qty_allocated']) && $data['qty_allocated']) {
-                if(!empty($data['qty_received']) && $data['qty_received']) {
-                    if($data['qty_received'] === $data['qty_allocated']) {
-                        $data['item_status'] = ReceivingDetail::ALLOCATED;
-                    } else {
-                        $data['item_status'] = ReceivingDetail::PARTIALLY_ALLOCATED;
-                    }
-                } else {
-                    if($model->qty_received === $data['qty_allocated']) {
-                        $data['item_status'] = ReceivingDetail::ALLOCATED;
-                    } else {
-                        $data['item_status'] = ReceivingDetail::PARTIALLY_ALLOCATED;
-                    }
-                }
-            } else {
-                $data['item_status'] = ReceivingDetail::NEW_RECEIVING;
-            }
+            $data['item_status'] = $this->updateItemStatus($model, $data);
 
             parent::update($model, $data);
 
             if($this->model) {
-                // CHECK IF ALL PRODUCTS WHERE ALLOCATED AND HANDLE RECEIVING STATUS
                 $receiving = Receiving::find($this->model->receiving_id);
-                $receiving_details = $receiving->details;
-
-                $finished = true;
-                foreach ($receiving_details as $detail) {
-                    if($detail->item_status <> ReceivingDetail::ALLOCATED) $finished = false;
-                }
-
-                if ($finished) {
-                    $receiving->allocation_status = Receiving::RECEIVED;
-                } else {
-                    if($this->model->qty_allocated > 0) $receiving->allocation_status = Receiving::PARTIALLY_ALLOCATED;
-                }
+                $receiving_repo = new ReceivingRepository(new Receiving());
+                $receiving->allocation_status = $receiving_repo->updateAllocationStatus($receiving, $this->model);
                 $receiving->save();
 
                 // update availability if quantity received change
-                if(!empty($data['admin_update']) && $receiving->location_id && ($this->model->qty_received <> $original_qty_received)){
+                if(!empty($data['update_availability']) && $receiving->location_id && ($this->model->qty_received <> $original_qty_received)){
                     $availability_repo = new AvailabilityRepository(new Availability());
                     $variation = $this->model->qty_received - $original_qty_received;
                     $operator = $variation >= 0 ? '+' : '-';
                     $availability_repo->updateStock($this->model->product_id, abs($variation), $receiving->location_id, null, $operator,  'Receiving', $receiving->id, null, null,'Received product - changing quantity');
-
                 }
-            }
-            
+            } 
         });
     }
+
+    public function updateItemStatus($model, array $data)
+    {
+        // HANDLE ITEM STATUS
+        if(!empty($data['qty_allocated']) && $data['qty_allocated']) {
+            if(!empty($data['qty_received']) && $data['qty_received']) {
+                if($data['qty_received'] === $data['qty_allocated']) {
+                    $data['item_status'] = ReceivingDetail::ALLOCATED;
+                } else {
+                    $data['item_status'] = ReceivingDetail::PARTIALLY_ALLOCATED;
+                }
+            } else {
+                if($model->qty_received === $data['qty_allocated']) {
+                    $data['item_status'] = ReceivingDetail::ALLOCATED;
+                } else {
+                    $data['item_status'] = ReceivingDetail::PARTIALLY_ALLOCATED;
+                }
+            }
+        } else {
+            $data['item_status'] = ReceivingDetail::NEW_RECEIVING;
+        }
+
+        return $data['item_status'];
+    }
+
+    
 }

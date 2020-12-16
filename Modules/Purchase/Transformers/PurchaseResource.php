@@ -18,6 +18,8 @@ class PurchaseResource extends ResourceService
 
         return [
             'id'                => $this->id,
+            'po_number'         => $this->po_number,
+            'name'              => $this->po_number,
             'ref_code'          => $this->ref_code,
             'purchase_date'     => optional($this->purchase_date)->format('Y-m-d'),
             'supplier_id'       => $this->supplier_id,

@@ -53,10 +53,14 @@ class PurchaseRepository extends RepositoryService
     {
         DB::transaction(function () use ($data)
         {
+            if(!empty($data['name']) && $data['name']) $data['po_number']  = $data['name'];
+
             parent::store($data);
 
-            // Update supplier date last purchase
-            Supplier::where('id', $data["supplier_id"])->update(['last_order_at' => date('Y-m-d')]);
+            if(!empty($data["supplier_id"])){
+                // Update supplier date last purchase
+                Supplier::where('id', $data["supplier_id"])->update(['last_order_at' => date('Y-m-d')]);
+            }            
 
             // Save purchase details
             

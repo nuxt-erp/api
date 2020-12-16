@@ -11,6 +11,7 @@ use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\Receiving;
 use Modules\Inventory\Entities\ReceivingDetail;
+use Modules\Purchase\Entities\PurchaseDetail;
 
 class ReceivingRepository extends RepositoryService
 {
@@ -26,6 +27,10 @@ class ReceivingRepository extends RepositoryService
         if(!empty($searchCriteria['name']) && $searchCriteria['name']) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
             $this->queryBuilder->where('name', 'ILIKE', $name);
+        }
+
+        if(!empty($searchCriteria['exclude_allocated']) && $searchCriteria['exclude_allocated']) {
+            $this->queryBuilder->where('allocation_status', '<>', Receiving::ALLOCATED);
         }
 
         return parent::findBy($searchCriteria);
@@ -101,5 +106,61 @@ class ReceivingRepository extends RepositoryService
         });
     }
 
+    public function poAllocation($data)
+    {
+        $receiving = DB::transaction(function () use ($data)
+        {
+            $selected_items = (!empty($data['selected_items']) && count($data['selected_items']) > 0 ) ? $data['selected_items'] : [];
+            $purchase_id = (!empty($data['purchase_id']) && $data['purchase_id']) ? $data['purchase_id'] : null;
 
+            foreach ($selected_items as $row) {
+                $purchase_item = PurchaseDetail::where('purchase_id', $purchase_id)->where('product_id', $row['product_id'])->first();
+                if($purchase_item) { 
+                    $purchase_item->qty_received += $row['qty'];
+                    $purchase_item->save();
+                } else {
+                    PurchaseDetail::create([
+                        'purchase_id'   => $purchase_id,
+                        'product_id'    => $row['product_id'],
+                        'qty_received'  => $row['qty'],
+                        'qty'           => $row['qty'],
+                    ]);
+                }
+
+                $receiving_item =   ReceivingDetail::where('receiving_id', $data['id'])->where('product_id', $row['product_id'])->first();
+                if($receiving_item) { 
+                    $receiving_item->qty_allocated = $row['qty_allocated'];
+                    if($receiving_item->qty_allocated == $receiving_item->qty_received) $receiving_item->item_status = ReceivingDetail::ALLOCATED;
+                    $receiving_item->save();
+                }           
+            }
+
+            $receiving = Receiving::find($data['id']);
+            $receiving->allocation_status = $this->updateAllocationStatus($receiving, $this->model);
+            $receiving->save();
+
+            return $receiving;
+        });
+
+        return $receiving;
+    }
+
+    public function updateAllocationStatus($receiving, $model)
+    {
+        // CHECK IF ALL PRODUCTS WHERE ALLOCATED AND HANDLE RECEIVING STATUS
+        $receiving_details = $receiving->details;
+
+        $finished = true;
+        foreach ($receiving_details as $detail) {
+            if($detail->item_status <> ReceivingDetail::ALLOCATED) $finished = false;
+        }
+
+        if ($finished) {
+            $receiving->allocation_status = Receiving::ALLOCATED;
+        } else {
+            if($model->qty_allocated > 0) $receiving->allocation_status = Receiving::PARTIALLY_ALLOCATED;
+        }
+
+        return $receiving->allocation_status;
+    }
 }
