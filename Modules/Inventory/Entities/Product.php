@@ -19,9 +19,7 @@ class Product extends ModelService
     ];
 
     protected $casts = [
-
-        
-            'name' => 'string',
+        'name' => 'string',
     ];
 
     protected $fillable = [
@@ -34,13 +32,15 @@ class Product extends ModelService
         'disabled_at', 'sales_channel','stock_locator',
         'measure_id', 'carton_length', 'carton_width',
         'carton_height', 'carton_weight', 'msrp',
-        'carton_barcode', 'carton_qty','taxable'
+        'carton_barcode', 'carton_qty','taxable',
+        'flavor_id'
     ];
 
     public function getRules($request, $item = null)
     {
         $rules = [
             'name'          => ['string', 'max:100'],
+            'flavor_id'     => ['nullable', 'exists:tenant.inv_flavors,id'],
             'brand_id'      => ['nullable', 'exists:tenant.inv_brands,id'],
             'category_id'   => ['nullable', 'exists:tenant.inv_categories,id'],
             'supplier_id'   => ['nullable', 'exists:tenant.suppliers,id'],
@@ -60,7 +60,7 @@ class Product extends ModelService
         return $rules;
     }
 
-   
+
     public function getFullDescriptionAttribute()
     {
         return $this->name . ' ' . $this->details;
@@ -125,6 +125,11 @@ class Product extends ModelService
     public function brand()
     {
         return $this->belongsTo(Brand::class, 'brand_id');
+    }
+
+    public function flavor()
+    {
+        return $this->belongsTo(Flavor::class, 'flavor_id');
     }
 
     public function location()

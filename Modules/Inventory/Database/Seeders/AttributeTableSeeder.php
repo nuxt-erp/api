@@ -30,5 +30,10 @@ class AttributeTableSeeder extends Seeder
             ['name' => 'Variant'],
             ['code' => 'variant']
         );
+
+        // Attribute::updateOrCreate(
+        //     ['name' => 'Size'],
+        //     ['code' => 'size']
+        // );
     }
 }
