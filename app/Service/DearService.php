@@ -6,6 +6,7 @@ use App\Models\User;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Client;
 use Auth;
+use App\Models\Config;
 use Modules\Inventory\Entities\Attribute;
 use Modules\Inventory\Entities\Brand;
 use Modules\Inventory\Entities\Category;
@@ -26,14 +27,17 @@ class DearService
     private $limit;
     private $user;
 
-    public function __construct($dear_id, $dear_key, $dear_url)
+    public function __construct()
     {
-        $this->dear_id = $dear_id;
-        $this->dear_key = $dear_key;
-        $this->dear_url = $dear_url;
-        $this->client = new Client([
-            'base_uri' => $this->dear_url,
-        ]);
+        $config = Config::first();
+        if ($config) {
+            $this->dear_id = $config->dear_id;
+            $this->dear_key = $config->dear_key;
+            $this->dear_url = $config->dear_url;
+            $this->client = new Client([
+                'base_uri' => $this->dear_url,
+            ]);
+        }
 
         $this->limit = 1000;
         $this->user = auth()->user() ?? User::where('name', 'admin')->first();

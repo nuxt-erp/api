@@ -16,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind('Dear\API', function(){
-            return new DearService(config('dear.id'), config('dear.key'), config('dear.url'));
+            return new DearService();
         });
 
         $this->app->bind('Shopify\API', function(){
