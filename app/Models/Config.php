@@ -18,6 +18,27 @@ class Config extends ModelService
         'shopify_location'
     ];
 
+    protected $casts = [
+        'dear_id' => 'string',
+        'dear_url' => 'string',
+        'shopify_location' => 'string'
+    ];
+
+    public function setDearIdAttribute($value)
+    {
+        $this->attributes['dear_id'] = strval($value);
+    }
+
+    public function setShopifyLocationAttribute($value)
+    {
+        $this->attributes['shopify_location'] = strval($value);
+    }
+
+    public function setDearUrlAttribute($value)
+    {
+        $this->attributes['dear_url'] = strval($value);
+    }
+
     public function getRules($request, $item = null)
     {
         $rules = [
@@ -31,11 +52,9 @@ class Config extends ModelService
             'phone_number'      => ['nullable', 'string', 'max:20'],
             'postal_code'       => ['nullable', 'string', 'max:20'],
             'website'           => ['nullable', 'string', 'max:255'],
-
             'dear_id'           => ['nullable', 'string', 'max:255'],
             'dear_key'          => ['nullable', 'string', 'max:255'],
             'dear_url'          => ['nullable', 'string', 'max:255'],
-
             'shopify_key'       => ['nullable', 'string', 'max:255'],
             'shopify_password'  => ['nullable', 'string', 'max:255'],
             'shopify_store_name'=> ['nullable', 'string', 'max:255'],
