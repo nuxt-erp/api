@@ -178,7 +178,7 @@ abstract class RepositoryService implements RepositoryInterface
             $this->model = $model;
             foreach ($data as $key => $value) {
                 // WHEN ID IS 0 > SET NULL ON DB
-                if (strpos($key, '_id') !== FALSE && $value == 0) {
+                if (strpos($key, '_id') !== FALSE && $value === 0) {
                     $value = null;
                 }
                 // update only fillAble properties
