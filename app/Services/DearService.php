@@ -243,6 +243,9 @@ class DearService
         $page = 1;
         $count = 0;
 
+        // Sync locations - it's importante for availabilities
+        $this->syncLocations();
+
         do
         {
             $filters = [
