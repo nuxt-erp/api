@@ -13,6 +13,8 @@ class ProductResource extends ResourceService
             'id'                    => $this->id,
             'brand_id'              => $this->brand_id,
             'brand_name'            => optional($this->brand)->name,
+            'flavor_id'             => $this->flavor_id,
+            'flavor_name'           => optional($this->flavor)->name,
             'category_id'           => $this->category_id,
             'category_name'         => optional($this->category)->name,
             'supplier_id'           => $this->supplier_id,
@@ -58,7 +60,7 @@ class ProductResource extends ResourceService
             'attributes_value'      =>$this->product_attributes,
             'searchable'            => $this->barcode ?? $this->sku,
 
-          
+
         ];
     }
 }
