@@ -15,10 +15,10 @@ class LoginController extends AccessTokenController
     public function issueToken(ServerRequestInterface $request)
     {
         $validatorResponse = $this->validateRequest($request, [
-            'grant_type'    => ['required', 'in:password'],
+            'grant_type'    => ['required', 'in:password,client'],
             'client_id'     => 'required',
-            'username'      => 'required',
-            'password'      => 'required',
+            'username'      => 'required_if:grant_type,password',
+            'password'      => 'required_if:grant_type,password',
             'client_secret' => 'required'
         ]);
 
@@ -40,6 +40,7 @@ class LoginController extends AccessTokenController
                 $this->setMessage('invalid_credentials');
                 $this->setStatusCode(401);
             } else {
+                lad('aa', $request->getParsedBody());
                 $email = $request->getParsedBody()['username'];
                 $user = User::where('email', $email)
                     ->where('is_enabled', 1)
