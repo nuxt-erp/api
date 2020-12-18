@@ -19,8 +19,7 @@ class Config extends ModelService
     ];
 
     protected $casts = [
-        'dear_id'           => 'string',
-        'shopify_location'  => 'string'
+        'dear_id'           => 'string'
     ];
 
     public function setDearIdAttribute($value)
