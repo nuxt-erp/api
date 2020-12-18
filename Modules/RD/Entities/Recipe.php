@@ -7,6 +7,8 @@ use App\Models\Parameter;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\Category;
 use Illuminate\Validation\Rule;
+use Modules\Inventory\Entities\Brand;
+use Modules\Inventory\Entities\Flavor;
 
 class Recipe extends ModelService
 {
@@ -21,7 +23,8 @@ class Recipe extends ModelService
         'type_id', 'product_id', 'status',
         'name', 'category_id', 'total',
         'code', 'cost', 'version',
-        'approved_at', 'last_version', 'carrier_id'
+        'approved_at', 'last_version', 'carrier_id',
+        'dear_id', 'brand_id', 'flavor_id'
     ];
 
     public function getRules($request, $item = null)
@@ -33,7 +36,7 @@ class Recipe extends ModelService
             'last_updater_id'       => ['nullable', 'exists:public.users,id'],
             'approver_id'           => ['nullable', 'exists:public.users,id'],
             'type_id'               => ['nullable', 'exists:tenant.parameters,id'], // recipe_type
-            'carrier_id'            => ['nullable', 'exists:tenant.inv_products,id'], // category = Carrier
+            'carrier_id'            => ['nullable', 'exists:tenant.inv_products,id'], // product where category = Carrier
             'product_id'            => ['nullable', 'exists:tenant.inv_products,id'],
             'category_id'           => ['exists:tenant.inv_categories,id'],
             'status'                => ['string', 'max:255'],
@@ -77,10 +80,22 @@ class Recipe extends ModelService
         return $this->belongsToMany(Parameter::class, 'rd_recipe_attributes', 'recipe_id', 'attribute_id');
 
     }
+
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'brand_id');
+    }
+
+    public function flavor()
+    {
+        return $this->belongsTo(Flavor::class, 'flavor_id');
+    }
+
     public function last_updater()
     {
         return $this->belongsTo(User::class, 'last_updater_id');

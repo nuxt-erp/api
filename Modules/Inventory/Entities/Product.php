@@ -19,6 +19,7 @@ class Product extends ModelService
     ];
 
     protected $casts = [
+        'sku' => 'string',
         'name' => 'string',
     ];
 
