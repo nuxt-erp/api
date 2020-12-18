@@ -119,7 +119,7 @@ class DearService
                     ];
 
                     $new_prod = Product::updateOrCreate(
-                        ['dear_id' => $prod->ID],
+                        ['sku' => $prod->SKU],
                         $values
                     );
 
@@ -258,8 +258,9 @@ class DearService
                 $list  = $result->ProductAvailabilityList;
                 if ($total > 0) {
                     foreach ($list as $item) {
-                        $product = Product::where('dear_id', $item->ID)
+                        $product = Product::where('sku', $item->SKU)
                         ->first();
+
                         $location = !empty($item->Location) ? Location::where('name', $item->Location)
                         ->first() : null;
 
@@ -311,7 +312,7 @@ class DearService
         {
             foreach ($dear_result->LocationList as $item)
             {
-                $final_item = Location::updateOrCreate(['company_id' => $this->user->company_id, 'name' => formatName($item->Name)]);
+                $final_item = Location::updateOrCreate(['name' => formatName($item->Name)]);
             }
         }
 
