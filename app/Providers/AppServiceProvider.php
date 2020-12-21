@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Service\ShopifyService;
+use App\Services\ShopifyService;
 use App\Services\DearService;
 use Illuminate\Support\ServiceProvider;
 

@@ -19,9 +19,7 @@ class Config extends ModelService
     ];
 
     protected $casts = [
-        'dear_id' => 'string',
-        'dear_url' => 'string',
-        'shopify_location' => 'string'
+        'dear_id'           => 'string'
     ];
 
     public function setDearIdAttribute($value)
@@ -32,11 +30,6 @@ class Config extends ModelService
     public function setShopifyLocationAttribute($value)
     {
         $this->attributes['shopify_location'] = strval($value);
-    }
-
-    public function setDearUrlAttribute($value)
-    {
-        $this->attributes['dear_url'] = strval($value);
     }
 
     public function getRules($request, $item = null)
