@@ -30,5 +30,40 @@ class AttributeTableSeeder extends Seeder
             ['name' => 'Variant'],
             ['code' => 'variant']
         );
+
+        Attribute::updateOrCreate(
+            ['name' => 'Density'],
+            ['code' => 'density']
+        );
+
+        Attribute::updateOrCreate(
+            ['name' => 'Batch Code Prefix'],
+            ['code' => 'batch_code_prefix']
+        );
+
+        Attribute::updateOrCreate(
+            ['name' => 'Qty Per Tray'],
+            ['code' => 'qty_per_tray']
+        );
+
+        Attribute::updateOrCreate(
+            ['name' => 'Previous Name'],
+            ['code' => 'previous_name']
+        );
+
+        Attribute::updateOrCreate(
+            ['name' => 'Material'],
+            ['code' => 'material']
+        );
+
+        Attribute::updateOrCreate(
+            ['name' => 'Color'],
+            ['code' => 'color']
+        );
+
+        Attribute::updateOrCreate(
+            ['name' => 'Cap Color'],
+            ['code' => 'cap_color']
+        );
     }
 }

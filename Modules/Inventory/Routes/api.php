@@ -20,6 +20,7 @@ Route::middleware('auth:api')->group(function () {
     // INVENTORY
     Route::group(['prefix' => 'inventory'], function () {
         Route::resource('brands', 'BrandController');
+        Route::resource('flavors', 'FlavorController');
         Route::resource('categories', 'CategoryController');
         Route::resource('attributes', 'AttributeController');
         Route::resource('stock_locator', 'StockLocatorController');
@@ -36,7 +37,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_tags', 'ProductTagController');
         Route::resource('family_attributes', 'FamilyAttributeController');
 
-        
+
         Route::resource('product_images', 'ProductImagesController');
         Route::get('carrier_products', 'ProductController@findCarriers');
         Route::get('raw_material_products', 'ProductController@findRawMaterials');
@@ -46,6 +47,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('receiving', 'ReceivingController');
         Route::resource('receiving_details', 'ReceivingDetailController');
         Route::get('receiving/finish/{id?}', 'ReceivingController@finish'); // ADJUST AND FINISH RECEIVING
+        Route::post('receiving/po_allocate', 'ReceivingController@poAllocation'); // ALLOCATE QTY RECEIVED TO PURCHASES
 
         Route::resource('stock_count_filters', 'StockCountFilterController');
         Route::resource('stock_adjustments', 'StockAdjustmentController');
@@ -66,7 +68,7 @@ Route::middleware('auth:api')->group(function () {
         //Route::get('families/get_products', 'ProductFamilyController@getListProducts'); //@todo review this
         Route::get('getListProducts/{id?}', 'FamilyController@getListProducts');
         Route::resource('families', 'FamilyController');
-        
+
         Route::resource('availabilities', 'AvailabilityController');
         Route::resource('family_attributes', 'FamilyAttributeController');
 
@@ -74,6 +76,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('price_tiers', 'PriceTierController');
         Route::post('price_tiers/apply', 'PriceTierController@applyChanges');
         Route::resource('price_tier_items', 'PriceTierItemsController');
+
 
         //Route::resource('specifications', 'SpecificationController');
         //Route::resource('subspecifications', 'SubSpecificationController');

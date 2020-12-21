@@ -27,6 +27,7 @@ use Modules\Inventory\Entities\ProductReorderLevel;
 use Modules\Inventory\Entities\Transfer;
 use Modules\Inventory\Entities\TransferDetails;
 use Modules\Inventory\Entities\CustomerDiscount;
+use Modules\Inventory\Entities\Flavor;
 use Modules\Inventory\Entities\LocationBin;
 use Modules\Inventory\Entities\PriceTier;
 use Modules\Inventory\Entities\PriceTierItems;
@@ -60,6 +61,7 @@ use Modules\Inventory\Repositories\ProductReorderLevelRepository;
 use Modules\Inventory\Repositories\TransferRepository;
 use Modules\Inventory\Repositories\TransferDetailsRepository;
 use Modules\Inventory\Repositories\CustomerDiscountRepository;
+use Modules\Inventory\Repositories\FlavorRepository;
 use Modules\Inventory\Repositories\LocationBinRepository;
 use Modules\Inventory\Repositories\PriceTierRepository;
 use Modules\Inventory\Repositories\PriceTierItemsRepository;
@@ -94,6 +96,7 @@ use Modules\Inventory\Transformers\ProductReorderLevelResource;
 use Modules\Inventory\Transformers\TransferResource;
 use Modules\Inventory\Transformers\TransferDetailsResource;
 use Modules\Inventory\Transformers\CustomerDiscountResource;
+use Modules\Inventory\Transformers\FlavorResource;
 use Modules\Inventory\Transformers\LocationBinResource;
 use Modules\Inventory\Transformers\PriceTierResource;
 use Modules\Inventory\Transformers\PriceTierItemsResource;
@@ -387,6 +390,13 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(ReceivingDetailResource::class, function () {
             return new ReceivingDetailResource(new ReceivingDetail());
         });
+
+        $this->app->bind(FlavorRepository::class, function () {
+            return new FlavorRepository(new Flavor());
+        });
+        $this->app->bind(FlavorResource::class, function () {
+            return new FlavorResource(new Flavor());
+        });
     }
 
     /**
@@ -428,8 +438,8 @@ class InventoryServiceProvider extends ServiceProvider
             LocationBinRepository::class,
             PriceTierItemsRepository::class,
             ReceivingRepository::class,
-            ReceivingDetailRepository::class
-
+            ReceivingDetailRepository::class,
+            FlavorRepository::class
         ];
     }
 
