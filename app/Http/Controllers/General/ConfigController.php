@@ -18,4 +18,21 @@ class ConfigController extends ControllerService
         $this->resource = $resource;
         parent::__construct();
     }
+
+    public function show($id)
+    {
+        $item = $this->repository->findOne($id);
+        if(!$item){
+            $this->repository->store([
+                'email' => 'email@email.com'
+            ]);
+            $item = $this->repository->model;
+        }
+
+        if ($item) {
+            return $this->sendObjectResource($item, $this->resource);
+        } else {
+            return $this->notFoundResponse(['id' => $id]);
+        }
+    }
 }

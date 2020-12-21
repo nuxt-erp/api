@@ -9,9 +9,7 @@ class ProductImportSettingsRepository extends RepositoryService
 
     public function store(array $data)
     {
-        lad('data', $data);
         foreach ($data['columns'] as $item) {
-            lad('item', $item);
             $model = $this->findOne($item['id']);
             parent::update($model, $item);
         }

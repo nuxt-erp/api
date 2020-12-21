@@ -7,6 +7,10 @@ use Illuminate\Validation\Rule;
 
 class ReceivingDetail extends ModelService
 {
+    const NEW_RECEIVING         = 'new';
+    const PARTIALLY_ALLOCATED   = 'partially allocated';
+    const ALLOCATED             = 'allocated';
+    
     protected $connection = 'tenant';
 
     protected $table = 'inv_receiving_details';
@@ -25,8 +29,8 @@ class ReceivingDetail extends ModelService
     {
         // generic rules
         $rules = [
-            'product_id'    => ['exists:inv_products,id'],
-            'location_id'   => ['exists:tenant.locations,id'],
+            'receiving_id'  => ['exists:tenant.inv_receiving,id'],
+            'product_id'    => ['exists:tenant.inv_products,id']
         ];
 
         return $rules;

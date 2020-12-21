@@ -20,7 +20,7 @@ class Purchase extends ModelService
         'status', 'ref_code', 'invoice_number', 'tracking_number',
         'notes', 'discount', 'taxes',
         'shipping', 'subtotal', 'total',
-        'purchase_date'
+        'purchase_date', 'po_number'
     ];
 
     public function getRules($request, $item = null)

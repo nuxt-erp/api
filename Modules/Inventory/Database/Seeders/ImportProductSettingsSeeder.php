@@ -18,24 +18,24 @@ class ImportProductSettingsSeeder extends Seeder
     {
         Model::unguard();
 
-        // ProductImportSettings::firstOrCreate(
-        //     ['column_name' => 'sku', 'entity' => 'product']
-        // );
-        // ProductImportSettings::firstOrCreate(
-        //     ['column_name' => 'name', 'entity' => 'product']
-        // );
-        // ProductImportSettings::firstOrCreate(
-        //     ['column_name' => 'name', 'entity' => 'category']
-        // );
-        // ProductImportSettings::firstOrCreate(
-        //     ['column_name' => 'name', 'entity' => 'measure']
-        // );
-        // ProductImportSettings::firstOrCreate(
-        //     ['column_name' => 'barcode', 'entity' => 'product']
-        // );
-        // ProductImportSettings::firstOrCreate(
-        //     ['column_name' => 'description', 'entity' => 'product']
-        // );
+        ProductImportSettings::firstOrCreate(
+            ['column_name' => 'sku', 'entity' => 'product']
+        );
+        ProductImportSettings::firstOrCreate(
+            ['column_name' => 'name', 'entity' => 'product']
+        );
+        ProductImportSettings::firstOrCreate(
+            ['column_name' => 'name', 'entity' => 'category']
+        );
+        ProductImportSettings::firstOrCreate(
+            ['column_name' => 'name', 'entity' => 'measure']
+        );
+        ProductImportSettings::firstOrCreate(
+            ['column_name' => 'barcode', 'entity' => 'product']
+        );
+        ProductImportSettings::firstOrCreate(
+            ['column_name' => 'description', 'entity' => 'product']
+        );
 
     }
 }

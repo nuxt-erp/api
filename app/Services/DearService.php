@@ -6,6 +6,7 @@ use App\Models\User;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Client;
 use Auth;
+use App\Models\Config;
 use Modules\Inventory\Entities\Attribute;
 use Modules\Inventory\Entities\Brand;
 use Modules\Inventory\Entities\Category;
@@ -26,14 +27,17 @@ class DearService
     private $limit;
     private $user;
 
-    public function __construct($dear_id, $dear_key, $dear_url)
+    public function __construct()
     {
-        $this->dear_id = $dear_id;
-        $this->dear_key = $dear_key;
-        $this->dear_url = $dear_url;
-        $this->client = new Client([
-            'base_uri' => $this->dear_url,
-        ]);
+        $config = Config::first();
+        if ($config) {
+            $this->dear_id = $config->dear_id;
+            $this->dear_key = $config->dear_key;
+            $this->dear_url = $config->dear_url;
+            $this->client = new Client([
+                'base_uri' => $this->dear_url,
+            ]);
+        }
 
         $this->limit = 1000;
         $this->user = auth()->user() ?? User::where('name', 'admin')->first();
@@ -115,7 +119,7 @@ class DearService
                     ];
 
                     $new_prod = Product::updateOrCreate(
-                        ['dear_id' => $prod->ID],
+                        ['sku' => $prod->SKU],
                         $values
                     );
 
@@ -177,7 +181,7 @@ class DearService
 
         if ($dear_result->status) {
             foreach ($dear_result->SupplierList as $item) {
-                $final_item = Supplier::updateOrCreate(['company_id' => $this->user->company_id, 'name' => formatName($item->Name)]);
+                $final_item = Supplier::updateOrCreate(['name' => formatName($item->Name)]);
             }
         }
 
@@ -239,6 +243,9 @@ class DearService
         $page = 1;
         $count = 0;
 
+        // Sync locations - it's importante for availabilities
+        $this->syncLocations();
+
         do
         {
             $filters = [
@@ -254,8 +261,9 @@ class DearService
                 $list  = $result->ProductAvailabilityList;
                 if ($total > 0) {
                     foreach ($list as $item) {
-                        $product = Product::where('dear', $item->ID)
+                        $product = Product::where('sku', $item->SKU)
                         ->first();
+
                         $location = !empty($item->Location) ? Location::where('name', $item->Location)
                         ->first() : null;
 
@@ -263,8 +271,7 @@ class DearService
                         {
                             $final_item = Availability::updateOrCreate(
                                 [
-                                    'product_id' => $product->id,
-                                    'company_id' => Auth::user()->company_id
+                                    'product_id' => $product->id
                                 ],
                                 [
                                     'location_id'   => $location->id ?? null,
@@ -308,8 +315,7 @@ class DearService
         {
             foreach ($dear_result->LocationList as $item)
             {
-                echo formatName($item->Name);
-                $final_item = Location::updateOrCreate(['company_id' => $this->user->company_id, 'name' => formatName($item->Name)]);
+                $final_item = Location::updateOrCreate(['name' => formatName($item->Name)]);
             }
         }
 

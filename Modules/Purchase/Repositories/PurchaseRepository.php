@@ -30,8 +30,7 @@ class PurchaseRepository extends RepositoryService
         ];
        
         if (!empty($searchCriteria['id'])) {
-            $this->queryBuilder
-            ->where('id', Arr::pull($searchCriteria, 'id'));
+            $this->queryBuilder->where('id', Arr::pull($searchCriteria, 'id'));
         }
 
         if (!empty($searchCriteria['supplier_name'])) {
@@ -46,6 +45,11 @@ class PurchaseRepository extends RepositoryService
                 ->orWhere('invoice_number', 'ILIKE', $name);
 
         }
+
+        if (!empty($searchCriteria['exclude_received'])) {
+            $this->queryBuilder->where('status', 0);
+        }
+        
         return parent::findBy($searchCriteria);
     }
 
@@ -53,10 +57,14 @@ class PurchaseRepository extends RepositoryService
     {
         DB::transaction(function () use ($data)
         {
+            if(!empty($data['name']) && $data['name']) $data['po_number']  = $data['name'];
+
             parent::store($data);
 
-            // Update supplier date last purchase
-            Supplier::where('id', $data["supplier_id"])->update(['last_order_at' => date('Y-m-d')]);
+            if(!empty($data["supplier_id"])){
+                // Update supplier date last purchase
+                Supplier::where('id', $data["supplier_id"])->update(['last_order_at' => date('Y-m-d')]);
+            }            
 
             // Save purchase details
             
