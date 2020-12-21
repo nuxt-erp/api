@@ -17,9 +17,9 @@ Route::post('login', 'LoginController@issueToken');
 Route::post('register', 'RegisterController@create');
 Route::get('settings_images/{path}', 'General\SettingsImagesController@getImage');
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:api')->group(function () { // ['auth:api', 'client_credentials']
 
-    Route::get('dashboard', 'DashboardController@index');
+    //Route::get('dashboard', 'DashboardController@index');
     // Route::get('shopify_orders', 'ShopifyController@getShopifyOrder');
     Route::get('me', 'General\UserController@findMe');
     Route::post('profile', 'DashboardController@updateProfile');
