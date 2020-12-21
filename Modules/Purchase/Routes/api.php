@@ -21,5 +21,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('purchase_details', 'PurchaseDetailController');
         Route::get('remove_item/{id?}', 'PurchaseDetailController@remove');
         Route::get('purchase/delete/{id?}', 'PurchaseController@destroy');
+        Route::get('get_po_number', 'PurchaseController@getNextPONumber');
+        Route::get('check_po_number/{po_number}', 'PurchaseController@checkPoNumber');
     });
 });

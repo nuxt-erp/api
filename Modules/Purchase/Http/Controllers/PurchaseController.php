@@ -19,4 +19,21 @@ class PurchaseController extends ControllerService implements CheckPolicies
         parent::__construct();
     }
 
+    public function getNextPONumber()
+    {
+        $next_po_number = $this->repository->getNextPONumber();       
+        return $this->setStatus(true)->sendArray([ 'po_number' => 'PO-' . $next_po_number ]);
+    }
+
+    public function checkPoNumber($po_number)
+    {
+        $purchase = $this->repository->checkPoNumber($po_number);
+
+        if ($purchase) {
+            $next_po_number = $this->repository->getNextPONumber();       
+            return $this->setStatus(false)->sendArray([ 'po_number' => 'PO-' . $next_po_number ]);
+        } else {
+            return $this->setStatus(true)->send();
+        }
+    }
 }
