@@ -15,7 +15,7 @@ class LoginController extends AccessTokenController
     public function issueToken(ServerRequestInterface $request)
     {
         $validatorResponse = $this->validateRequest($request, [
-            'grant_type'    => ['required', 'in:password,client'],
+            'grant_type'    => ['required', 'in:password,client_credentials'],
             'client_id'     => 'required',
             'username'      => 'required_if:grant_type,password',
             'password'      => 'required_if:grant_type,password',
@@ -40,15 +40,17 @@ class LoginController extends AccessTokenController
                 $this->setMessage('invalid_credentials');
                 $this->setStatusCode(401);
             } else {
-                lad('aa', $request->getParsedBody());
-                $email = $request->getParsedBody()['username'];
-                $user = User::where('email', $email)
-                    ->where('is_enabled', 1)
-                    ->first();
+                $body = $request->getParsedBody();
+                if(!empty($body['username'])){
+                    $email = $body['username'];
+                    $user = User::where('email', $email)
+                        ->where('is_enabled', 1)
+                        ->first();
 
-                foreach ($user->tokens as $key => $token) {
-                    if ($key > 0) {
-                        $token->delete();
+                    foreach ($user->tokens as $key => $token) {
+                        if ($key > 0) {
+                            $token->delete();
+                        }
                     }
                 }
 

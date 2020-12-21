@@ -19,7 +19,7 @@ Route::get('settings_images/{path}', 'General\SettingsImagesController@getImage'
 
 Route::middleware('auth:api')->group(function () {
 
-    // Route::get('dashboard', 'DashboardController@index');
+    Route::get('dashboard', 'DashboardController@index');
     // Route::get('shopify_orders', 'ShopifyController@getShopifyOrder');
     Route::get('me', 'General\UserController@findMe');
     Route::post('profile', 'DashboardController@updateProfile');

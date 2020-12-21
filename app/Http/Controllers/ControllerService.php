@@ -19,8 +19,11 @@ class ControllerService extends LaravelController implements ControllerInterface
 
     public function __construct()
     {
+        lad('ControllerService construct');
         $this->middleware(function ($request, $next) {
             $user = auth()->user();
+            lad('user', $user);
+
             if($user && empty(config('database.connections.tenant.schema'))){
                 $company = DB::table('companies')->find($user->company_id);
                 config(['database.connections.tenant.schema' => $company->schema]);

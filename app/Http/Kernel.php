@@ -45,6 +45,13 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             JsonMiddleware::class
         ],
+
+        'client_credentials' => [
+            \Laravel\Passport\Http\Middleware\CheckClientCredentials::class,
+            'throttle:120,1',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            JsonMiddleware::class
+        ]
     ];
 
     /**

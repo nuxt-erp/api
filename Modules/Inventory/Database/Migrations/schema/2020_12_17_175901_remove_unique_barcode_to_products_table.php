@@ -14,7 +14,7 @@ class RemoveUniqueBarcodeToProductsTable extends Migration
     public function up()
     {
         Schema::connection('tenant')->table('inv_products', function (Blueprint $table) {
-            $table->dropUnique(['barcode']);
+            $table->dropUnique('inv_products_barcode_unique');
         });
     }
 
