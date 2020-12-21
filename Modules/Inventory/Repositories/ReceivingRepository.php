@@ -6,6 +6,7 @@ use App\Models\Parameter;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\RepositoryService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductLog;
@@ -95,8 +96,10 @@ class ReceivingRepository extends RepositoryService
 
             foreach ($selected_items as $row) {
                 $purchase_item = PurchaseDetail::where('purchase_id', $purchase_id)->where('product_id', $row['product_id'])->first();
-                if($purchase_item) { 
+                if($purchase_item) {
+                    if($purchase_item->qty < $row['qty']) $purchase_item->qty += $row['qty'];
                     $purchase_item->qty_received += $row['qty'];
+                    $purchase_item->received_date = Carbon::now()->format('Y-m-d');
                     $purchase_item->save();
                 } else {
                     PurchaseDetail::create([
@@ -104,6 +107,7 @@ class ReceivingRepository extends RepositoryService
                         'product_id'    => $row['product_id'],
                         'qty_received'  => $row['qty'],
                         'qty'           => $row['qty'],
+                        'received_date' => Carbon::now()->format('Y-m-d')
                     ]);
                 }
 
