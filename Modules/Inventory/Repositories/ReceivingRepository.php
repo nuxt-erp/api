@@ -39,6 +39,7 @@ class ReceivingRepository extends RepositoryService
             $model->details()->sync($data['list_products']);
         });
     }
+    
      // ADJUST & FINISH STOCK COUNT
      public function finish($receiving_id)
      {
