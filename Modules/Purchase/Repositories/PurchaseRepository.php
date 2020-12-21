@@ -181,4 +181,16 @@ class PurchaseRepository extends RepositoryService
             Purchase::where('id', $id)->delete();
         });
     }
+
+    public function getNextPONumber()
+    {
+        $last_id = Purchase::latest('id')->pluck('id')->first();
+        return $last_id > 0 ? ($last_id + 1) : 1;
+    }
+
+    public function checkPoNumber($po_number)
+    {
+        $purchase = Purchase::where('po_number', $po_number)->first();
+        return $purchase;
+    }
 }
