@@ -74,6 +74,10 @@ class StockCountRepository extends RepositoryService
     public function findProductsAvailabilities($filter){
 
         $qb = Product::with(['brand', 'product_attributes.attribute', 'category']);
+        
+        $qb->whereHas('availabilities', function ($query) {
+            $query->where('on_hand', '>', 0);
+        });
 
         if(!empty($filter['brand_ids'])){
             $qb->whereIn('brand_id', $filter['brand_ids']);
@@ -133,6 +137,13 @@ class StockCountRepository extends RepositoryService
 
                         $availabilities[] = $this->getAvailability($product, $location, $availability, $bin);
                     }
+                }
+                if(empty($filter['bin_ids'])) {
+                    $availability = $product->availabilities()
+                        ->where('location_id', $location->id)
+                        ->whereNull('bin_id')
+                        ->first();
+                        $availabilities[] = $this->getAvailability($product, $location, $availability);
                 }
             }
             else{

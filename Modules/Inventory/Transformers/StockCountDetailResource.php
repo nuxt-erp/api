@@ -20,6 +20,7 @@ class StockCountDetailResource extends ResourceService
             'bin_id'            => $this->bin_id,
             'bin_name'          => optional($this->bin)->name,
             'on_hand'           => $this->on_hand ?? 0,
+            'searchable'        => optional($this->product)->barcode ?? optional($this->product)->sku,
             'available'         => 0, //@todo we are not using available rn
             'qty'               => $this->qty,
             'variance'          => $this->variance,
