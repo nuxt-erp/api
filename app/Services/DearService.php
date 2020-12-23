@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
+use App\Exceptions\DearException;
 use App\Models\User;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Client;
-use Auth;
 use App\Models\Config;
 use Modules\Inventory\Entities\Attribute;
 use Modules\Inventory\Entities\Brand;
@@ -13,38 +13,36 @@ use Modules\Inventory\Entities\Category;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductAttributes;
-
 use App\Models\Location;
 use App\Models\Supplier;
+use Modules\Inventory\Entities\LocationBin;
 
 class DearService
 {
 
-    private $dear_id;
-    private $dear_key;
-    private $dear_url;
+    private $config;
     private $client;
     private $limit;
     private $user;
 
     public function __construct()
     {
-        $config = Config::first();
-        if ($config) {
-            $this->dear_id = $config->dear_id;
-            $this->dear_key = $config->dear_key;
-            $this->dear_url = $config->dear_url;
+        $this->config = Config::first();
+        if ($this->config) {
             $this->client = new Client([
-                'base_uri' => $this->dear_url,
+                'base_uri' => $this->config->dear_url,
             ]);
+            $this->limit = 1000;
+            $this->user = auth()->user() ?? User::where('name', 'admin')->first();
         }
-
-        $this->limit = 1000;
-        $this->user = auth()->user() ?? User::where('name', 'admin')->first();
+        else{
+            throw new DearException('config_not_found');
+        }
     }
 
     public function syncProds($sku = null)
     {
+
         $result     = FALSE;
         $flagLoop   = FALSE;
         $total      = 0;
@@ -59,6 +57,9 @@ class DearService
         $size_id  = Attribute::where('code', 'size')
         ->pluck('id')->first();
 
+        $categories_list    = [];
+        $brands_list        = [];
+
         do {
 
             $filters = [
@@ -70,9 +71,6 @@ class DearService
                 $filters['Sku'] = $sku;
             }
 
-            $categories_list    = [];
-            $brands_list        = [];
-
             $dear_result = cache()->remember('products_'.implode('_', $filters), 60 * 60, function () use($filters) {
                 return $this->makeRequest('product', $filters);
             });
@@ -80,7 +78,18 @@ class DearService
             if ($dear_result->status && $dear_result->Total > 0) {
                 $total = $dear_result->Total;
                 foreach ($dear_result->Products as $prod) {
-                    //$prod
+                    /*
+                        formatted product example:
+                        [sku] => _1_
+                        [name] => Sales
+                        [size] => 0
+                        [strength] => 0
+                        [category] => Other
+                        [brand] =>
+                        [description] =>
+                        [barcode] =>
+                        [dear] => 3c31a536-779e-4317-978d-1689dab49e0c
+                    */
                     $formatted_product = $this->formatProduct($prod);
 
                     // CATEGORY HANDLE
@@ -100,6 +109,7 @@ class DearService
                     $brand = null;
                     if(!empty($formatted_product->brand)){
                         if(!isset($brands_list[$formatted_product->brand])){
+                            //if($config->dear_sync_existing_brands){
                             $brand = Brand::firstOrCreate(['name' => $formatted_product->brand]);
                             $brands_list[$formatted_product->brand] = $brand;
                         }
@@ -111,38 +121,67 @@ class DearService
                     $values = [
                         'category_id'   => $category->id ?? null,
                         'brand_id'      => $brand->id ?? null,
-                        'sku'           => !empty($formatted_product->sku) ? $formatted_product->sku : null,
                         'name'          => $formatted_product->name,
                         'description'   => $formatted_product->description,
-                        'barcode'       => !empty($formatted_product->barcode) ? $formatted_product->barcode : null,
-                        //'cost'          => mt_rand(2*1000000,50*1000000)/1000000
+                        'barcode'       => $formatted_product->barcode ?? null
                     ];
 
-                    $new_prod = Product::updateOrCreate(
-                        ['sku' => $prod->SKU],
-                        $values
-                    );
+                    if($this->config->dear_sync_existing_products){
+                        $new_prod = Product::updateOrCreate(
+                            ['sku' => $formatted_product->sku],
+                            $values
+                        );
+                    }
+                    else{
+                        $new_prod = Product::firstOrCreate(
+                            ['sku' => $formatted_product->sku],
+                            $values
+                        );
+                    }
+
 
                     // SAVE ATTRIBUTE BY PRODUCT
                     if(!empty($formatted_product->strength)){
-                        ProductAttributes::updateOrCreate([
-                            'product_id'    => $new_prod->id,
-                            'attribute_id'  => $strength_id,
-                        ],
-                        [
-                            'value'         => $formatted_product->strength
-                        ]);
+                        if($this->config->dear_sync_existing_product_strengths){
+                            ProductAttributes::updateOrCreate([
+                                'product_id'    => $new_prod->id,
+                                'attribute_id'  => $strength_id,
+                            ],
+                            [
+                                'value'         => $formatted_product->strength
+                            ]);
+                        }
+                        else{
+                            ProductAttributes::firstOrCreate([
+                                'product_id'    => $new_prod->id,
+                                'attribute_id'  => $strength_id,
+                            ],
+                            [
+                                'value'         => $formatted_product->strength
+                            ]);
+                        }
                     }
 
                     // SAVE ATTRIBUTE BY PRODUCT
                     if(!empty($formatted_product->size)){
-                        ProductAttributes::updateOrCreate([
-                            'product_id'    => $new_prod->id,
-                            'attribute_id'  => $size_id,
-                        ],
-                        [
-                            'value'         => $formatted_product->size
-                        ]);
+                        if($this->config->dear_sync_existing_product_sizes){
+                            ProductAttributes::updateOrCreate([
+                                'product_id'    => $new_prod->id,
+                                'attribute_id'  => $size_id,
+                            ],
+                            [
+                                'value'         => $formatted_product->size
+                            ]);
+                        }
+                        else{
+                            ProductAttributes::firstOrCreate([
+                                'product_id'    => $new_prod->id,
+                                'attribute_id'  => $size_id,
+                            ],
+                            [
+                                'value'         => $formatted_product->size
+                            ]);
+                        }
                     }
 
 
@@ -236,72 +275,121 @@ class DearService
 
     public function syncAvailability()
     {
-        $result = FALSE;
-        $flagLoop = FALSE;
-        $final_item = FALSE;
-        $total = 0;
-        $page = 1;
-        $count = 0;
+        $flagLoop   = FALSE;
+        $total      = 0;
+        $page       = 1;
+        $count      = 0;
 
-        // Sync locations - it's importante for availabilities
+        // Sync locations - it's important for availabilities
         $this->syncLocations();
+
+        $location_list = [];
+        $bin_list      = [];
 
         do
         {
             $filters = [
                 'Page'  => $page,
-                'Limit' => 100
+                'Limit' => $this->limit
             ];
 
-            $result = $this->makeRequest('ref/productavailability', $filters);
+            $result = cache()->remember('availability_'.implode('_', $filters), 60 * 60, function () use($filters) {
+                return $this->makeRequest('ref/productavailability', $filters);
+            });
 
-            if ($result->status)
-            {
+            if ($result->status){
+
                 $total = $result->Total;
                 $list  = $result->ProductAvailabilityList;
                 if ($total > 0) {
                     foreach ($list as $item) {
-                        $product = Product::where('sku', $item->SKU)
-                        ->first();
 
-                        $location = !empty($item->Location) ? Location::where('name', $item->Location)
-                        ->first() : null;
+                        $product = Product::where('sku', trim($item->SKU))->first();
+
+                         // LOCATION HANDLE
+                        $location = null;
+                        if(!empty($item->Location)){
+                            $location_name = formatName($item->Location);
+                            if(!isset($location_list[$location_name])){
+                                $location                       = Location::firstOrCreate(['name' => $location_name]);
+                                $location_list[$location_name]  = $location;
+                            }
+                            else{
+                                $location                       = $location_list[$location_name];
+                            }
+                        }
+
+                        // BIN HANDLE
+                        $bin = null;
+                        if($location && !empty($item->Bin)){
+                            $binName = formatName($item->Bin);
+                            if(!isset($bin_list[$binName])){
+                                $bin                = LocationBin::firstOrCreate(['location_id'   => $location->id, 'name' => $binName]);
+                                $bin_list[$binName] = $location;
+                            }
+                            else{
+                                $bin                = $bin_list[$binName];
+                            }
+                        }
 
                         if ($product)
                         {
-                            $final_item = Availability::updateOrCreate(
-                                [
-                                    'product_id' => $product->id
-                                ],
-                                [
-                                    'location_id'   => $location->id ?? null,
-                                    'available'     => $item->Available >= 0 ? $item->Available : 0,
-                                    'on_hand'       => $item->OnHand >= 0 ? $item->OnHand : 0
-                                ]
-                            );
+                            if($this->config->dear_sync_existing_availabilities){
+                                Availability::updateOrCreate(
+                                    [
+                                        'product_id'    => $product->id,
+                                        'location_id'   => $location->id ?? null,
+                                        'bin_id'        => $bin->id ?? null,
+                                    ],
+                                    [
+                                        'available'     => $item->Available ?? 0,
+                                        'on_hand'       => $item->OnHand ?? 0,
+                                        //'allocated'     => $item->Allocated ?? 0,
+                                        //'on_order'      => $item->OnOrder ?? 0,
+                                    ]
+                                );
+                            }
+                            else{
+                                Availability::firstOrCreate(
+                                    [
+                                        'product_id'    => $product->id,
+                                        'location_id'   => $location->id ?? null,
+                                        'bin_id'        => $bin->id ?? null,
+                                    ],
+                                    [
+                                        'available'     => $item->Available ?? 0,
+                                        'on_hand'       => $item->OnHand ?? 0,
+                                        //'allocated'     => $item->Allocated ?? 0,
+                                        //'on_order'      => $item->OnOrder ?? 0,
+                                    ]
+                                );
+                            }
+                            $count++;
                         }
-                        $count++;
+
                     }
                 }
 
-                $flagLoop = $total > 100 && $page <= ($total / 100);
+                $flagLoop = $total > $this->limit && $page <= ($total / $this->limit);
                 $page++;
             } else {
                 $flagLoop = FALSE;
             }
         } while ($flagLoop);
 
-        return $final_item;
+        return $count;
 
     }
 
-    public function syncLocations()
+    public function syncLocations($name = null)
     {
-        $page = 1;
-        $final_item = FALSE;
+        $page       = 1;
+        $count      = 0;
+        $result     = 0;
+
         $filters = [
             'Page'              => $page,
-            'Limit'             => !empty($name) ? 1 : $this->limit
+            'Limit'             => !empty($name) ? 1 : $this->limit // sync one or sync all
         ];
 
         if(!empty($name))
@@ -309,17 +397,29 @@ class DearService
             $filters['Name'] = $name;
         }
 
-        $dear_result = $this->makeRequest('ref/location', $filters);
+        $dear_result = cache()->remember('location_'.implode('_', $filters), 60 * 60, function () use($filters) {
+            return $this->makeRequest('ref/location', $filters);
+        });
 
         if ($dear_result->status)
         {
             foreach ($dear_result->LocationList as $item)
             {
-                $final_item = Location::updateOrCreate(['name' => formatName($item->Name)]);
+                $location = Location::firstOrCreate(['name' => formatName($item->Name)]);
+                $count++;
+            }
+
+            // if sync one item, return the item
+            if(!empty($name)){
+                $result = $location;
+            }
+            // else return the count of inserted/updated items
+            else{
+                $result = $count;
             }
         }
 
-        return $final_item;
+        return $result;
     }
 
     public function makeRequest($uri, $params)
@@ -328,8 +428,8 @@ class DearService
             $response = $this->client->get($uri, [
                 'headers' => [
                     'Content-type' => 'application/json',
-                    'api-auth-accountid' => $this->dear_id,
-                    'api-auth-applicationkey' => $this->dear_key
+                    'api-auth-accountid' => $this->config->dear_id,
+                    'api-auth-applicationkey' => $this->config->dear_key
                 ],
                 'query' => $params
             ]);

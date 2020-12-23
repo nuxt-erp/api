@@ -2,5 +2,12 @@
     "files.associations": { "*.module": "php" },
     "cSpell.words": [
         "phpredis"
+    ],
+    "cSpell.ignoreWords": [
+        "ahng",
+        "productavailability",
+        "seb",
+        "valor",
+        "yyMMDD"
     ]
 }
