@@ -8,6 +8,7 @@ use Illuminate\Console\Scheduling\Schedule;
 // models
 use Modules\Inventory\Entities\Attribute;
 use Modules\Inventory\Entities\Availability;
+use Modules\Inventory\Entities\BinImportSettings;
 use Modules\Inventory\Entities\Brand;
 use Modules\Inventory\Entities\Category;
 use Modules\Inventory\Entities\Family;
@@ -42,6 +43,7 @@ use Modules\Inventory\Entities\StockCountFilter;
 // repositories
 use Modules\Inventory\Repositories\AttributeRepository;
 use Modules\Inventory\Repositories\AvailabilityRepository;
+use Modules\Inventory\Repositories\BinImportSettingsRepository;
 use Modules\Inventory\Repositories\BrandRepository;
 use Modules\Inventory\Repositories\StockLocatorRepository;
 use Modules\Inventory\Repositories\CategoryRepository;
@@ -77,6 +79,7 @@ use Modules\Inventory\Repositories\StockCountFilterRepository;
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
 use Modules\Inventory\Transformers\AvailabilityResource;
+use Modules\Inventory\Transformers\BinImportSettingsResource;
 use Modules\Inventory\Transformers\BrandResource;
 use Modules\Inventory\Transformers\StockLocatorResource;
 use Modules\Inventory\Transformers\CategoryResource;
@@ -394,8 +397,17 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(FlavorRepository::class, function () {
             return new FlavorRepository(new Flavor());
         });
+
         $this->app->bind(FlavorResource::class, function () {
             return new FlavorResource(new Flavor());
+        });
+
+        $this->app->bind(BinImportSettingsRepository::class, function () {
+            return new BinImportSettingsRepository(new BinImportSettings());
+        });
+        
+        $this->app->bind(BinImportSettingsResource::class, function () {
+            return new BinImportSettingsResource(new BinImportSettings());
         });
     }
 

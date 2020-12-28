@@ -5,6 +5,8 @@ namespace Modules\Inventory\Http\Controllers;
 use App\Http\Controllers\ControllerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Modules\Inventory\Imports\ProductsImport;
+use Modules\Inventory\Imports\BinsImport;
 use Modules\RD\Imports\RecipesImport;
 use Modules\Inventory\Imports\StockAdjustmentImport;
 use Modules\Inventory\Imports\StockCountImport;
@@ -20,6 +22,22 @@ class ImportController extends ControllerService
         if ($request->hasFile('excel') && $request->file('excel')->isValid()) {
             $path = $request->excel->store('imports');
             $import = new ProductsImport;
+            $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
+        }
+        if(!isset($import->rows) || $import->rows <= 0){
+            $this->setStatus(FALSE);
+            $this->setMessage('No rows processed');
+        }
+        return $this->sendObject($import);
+
+    }
+
+    public function binsImport(Request $request){
+
+        $import = new stdClass;
+        if ($request->hasFile('excel') && $request->file('excel')->isValid()) {
+            $path = $request->excel->store('imports');
+            $import = new BinsImport;
             $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
         }
         if(!isset($import->rows) || $import->rows <= 0){

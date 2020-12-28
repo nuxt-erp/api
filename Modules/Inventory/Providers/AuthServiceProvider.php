@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 // models
 use Modules\Inventory\Entities\Attribute;
 use Modules\Inventory\Entities\Availability;
+use Modules\Inventory\Entities\BinImportSettings;
 use Modules\Inventory\Entities\Brand;
 use Modules\Inventory\Entities\Category;
 use Modules\Inventory\Entities\Family;
@@ -38,6 +39,7 @@ use Modules\Inventory\Entities\TransferDetails;
 // policies
 use Modules\Inventory\Policies\AttributePolicy;
 use Modules\Inventory\Policies\AvailabilityPolicy;
+use Modules\Inventory\Policies\BinImportSettingsPolicy;
 use Modules\Inventory\Policies\BrandPolicy;
 use Modules\Inventory\Policies\CategoryPolicy;
 use Modules\Inventory\Policies\FamilyPolicy;
@@ -112,6 +114,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(StockAdjustmentDetail::class, StockAdjustmentDetailPolicy::class);
 
         Gate::policy(ProductImportSettings::class, ProductImportSettingsPolicy::class);
+        Gate::policy(BinImportSettings::class, BinImportSettingsPolicy::class);
         Gate::policy(PriceTier::class, PriceTierPolicy::class);
         Gate::policy(PriceTierItems::class, PriceTierItemsPolicy::class);
         Gate::policy(Receiving::class, ReceivingPolicy::class);
