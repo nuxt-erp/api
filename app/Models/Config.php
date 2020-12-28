@@ -15,7 +15,9 @@ class Config extends ModelService
         'city', 'phone_number', 'postal_code',
         'website', 'dear_id', 'dear_key', 'dear_url',
         'shopify_key', 'shopify_password', 'shopify_store_name',
-        'shopify_location'
+        'shopify_location', 'dear_automatic_sync', 'dear_sync_existing_brands',
+        'dear_sync_existing_categories', 'dear_sync_existing_products', 'dear_sync_existing_product_sizes',
+        'dear_sync_existing_product_strengths', 'dear_sync_existing_availabilities'
     ];
 
     protected $casts = [
@@ -52,6 +54,13 @@ class Config extends ModelService
             'shopify_password'  => ['nullable', 'string', 'max:255'],
             'shopify_store_name'=> ['nullable', 'string', 'max:255'],
             'shopify_location'  => ['nullable', 'string', 'max:255'],
+            'dear_automatic_sync'                   => ['nullable', 'boolean'],
+            'dear_sync_existing_brands'             => ['nullable', 'boolean'],
+            'dear_sync_existing_categories'         => ['nullable', 'boolean'],
+            'dear_sync_existing_products'           => ['nullable', 'boolean'],
+            'dear_sync_existing_product_sizes'      => ['nullable', 'boolean'],
+            'dear_sync_existing_product_strengths'  => ['nullable', 'boolean'],
+            'dear_sync_existing_availabilities'     => ['nullable', 'boolean'],
         ];
 
         // CREATE
