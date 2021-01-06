@@ -59,6 +59,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('stock_on_hand', 'AvailabilityController@stockOnHand');
         Route::get('stock_count_data', 'ProductController@stockCountData');
         Route::get('start_stock_count', 'StockCountController@start');
+        Route::get('start_stock_count_mobile', 'StockCountController@startMobile');
 
         Route::resource('transfers', 'TransferController');
         Route::get('transfer/remove/{id?}', 'TransferController@remove');

@@ -19,6 +19,8 @@ class StockCountDetailResource extends ResourceService
             'location_name'     => optional($this->location)->name,
             'bin_id'            => $this->bin_id,
             'bin_name'          => optional($this->bin)->name,
+            'bin_searchable'    => optional($this->bin)->barcode,
+            'searchable'        => optional($this->product)->barcode ?? optional($this->product)->sku, 
             'on_hand'           => $this->on_hand ?? 0,
             'available'         => 0, //@todo we are not using available rn
             'qty'               => $this->qty,

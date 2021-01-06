@@ -27,6 +27,12 @@ class StockCountController extends ControllerService implements CheckPolicies
         return $this->sendArray($result);
     }
 
+    public function startMobile(Request $request)
+    {
+        $result = $this->repository->findProductsAvailabilitiesMobile($request->all());
+        return $this->sendArray($result);
+    }
+
     public function finish($stockcount_id)
     {
         $status = $this->repository->finish($stockcount_id);

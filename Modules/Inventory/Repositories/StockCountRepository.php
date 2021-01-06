@@ -11,6 +11,7 @@ use Modules\Inventory\Entities\StockCount;
 use Modules\Inventory\Entities\StockCountDetail;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductLog;
+use Modules\Inventory\Entities\LocationBin;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\StockCountFilter;
 
@@ -148,6 +149,75 @@ class StockCountRepository extends RepositoryService
 
         return !empty($filter['per_page']) ? ['list' => $availabilities, 'pagination' => Arr::except($collection, 'data')] : $availabilities;
     }
+    public function findProductsAvailabilitiesMobile($filter){
+
+        $qb = Product::with(['brand', 'product_attributes.attribute', 'category']);
+
+        if(!empty($filter['brand_ids'])){
+            $qb->whereIn('brand_id', $filter['brand_ids']);
+        }
+
+        if(!empty($filter['product_id'])){
+            $qb->where('id', $filter['product_id']);
+        }
+
+        if(!empty($filter['barcode'])){
+            $qb->where('barcode', $filter['barcode']);
+        }
+
+        if(!empty($filter['searchable'])){
+            $qb->where('barcode', 'ILIKE', $filter['searchable'])->orWhere('sku', 'ILIKE',  $filter['searchable']);
+        }
+
+        if(!empty($filter['category_ids'])){
+            $qb->whereIn('category_id', $filter['category_ids']);
+        }
+
+        if(!empty($filter['stock_locator_ids'])){
+            $qb->whereIn('stock_locator', $filter['stock_locator_ids']);
+        }
+
+        if (!empty($filter['tag_ids'])) {
+            $qb->whereHas('tags', function ($query) use($filter) {
+                $query->whereIn('id', $filter['tag_ids']);
+            });
+        }
+
+        if(isset($filter['is_enabled'])){
+            $qb->where('is_enabled', $filter['is_enabled']);
+        }
+
+        if(!empty($filter['per_page'])){
+            $products = $qb->paginate($filter['per_page']);
+        }
+        else{
+            $products = $qb->limit(1)->get(); // get product with all bins
+        }
+
+        $location       = Location::find($filter['location_id']);
+        $availabilities_to_send = [];
+        foreach ($products as $product) {
+            $availabilities = $product->availabilities()
+            ->where('location_id', $location->id)
+            ->get();
+            foreach ($availabilities as $availability) {
+                if(!empty($filter['bin_ids']) && !empty($availability->bin_id)) {
+                    if(in_array($availability->bin_id, $filter['bin_ids'])) {
+                        $bin = LocationBin::find($availability->bin_id);
+                        $availabilities_to_send[] = $this->getAvailability($product, $location, $availability, $bin);
+                    }
+                } else {
+                    $availabilities_to_send[] = $this->getAvailability($product, $location, $availability);
+                }
+                
+            }
+
+        }
+
+        $collection = $products->toArray();
+
+        return !empty($filter['per_page']) ? ['list' => $availabilities_to_send, 'pagination' => Arr::except($collection, 'data')] : $availabilities_to_send;
+    }
 
     private function getAvailability($product, $location, $availability, $bin = null){
 
@@ -157,6 +227,7 @@ class StockCountRepository extends RepositoryService
         $location_name  = $availability ? optional($availability->location)->name : $location->name;
         $bin_id         = $availability ? $availability->bin_id : ($bin->id ?? null);
         $bin_name       = $availability ? optional($availability->bin)->name : ($bin->name ?? null);
+        $bin_searchable = $availability ? optional($availability->bin)->barcode : ($bin->barcode ?? null);
 
         return [
             'product_id'        => $product->id,
@@ -169,6 +240,7 @@ class StockCountRepository extends RepositoryService
             'location_name'     => $location_name,
             'bin_id'            => $bin_id,
             'bin_name'          => $bin_name,
+            'bin_searchable'    => $bin_searchable,
             'on_hand'           => $on_hand,
             'available'         => $available,
             'qty'               => 0,
