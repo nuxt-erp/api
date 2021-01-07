@@ -24,6 +24,10 @@ class ReceivingRepository extends RepositoryService
                 $query->where('name', 'ILIKE', $supplier_name);
             });
         }
+        if(!empty($searchCriteria['not_received'])) {
+            $not_received = '%' . Arr::pull($searchCriteria, 'not_received') . '%';
+            $this->queryBuilder->where('status', 'ILIKE', Receiving::NEW_RECEIVING)->orWhere('status', 'ILIKE', Receiving::PARTIALLY_RECEIVED);
+        }
 
         if(!empty($searchCriteria['name']) && $searchCriteria['name']) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
@@ -40,6 +44,7 @@ class ReceivingRepository extends RepositoryService
     {
         DB::transaction(function () use ($data)
         {
+
             $data['status'] = Receiving::NEW_RECEIVING;
             $data['allocation_status'] = Receiving::NEW_RECEIVING;
 
