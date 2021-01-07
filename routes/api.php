@@ -18,6 +18,8 @@ Route::post('register', 'RegisterController@create');
 Route::get('settings_images/{path}', 'General\SettingsImagesController@getImage');
 
 Route::middleware('auth:api')->group(function () { // ['auth:api', 'client_credentials']
+    Route::post('renew_token', 'LoginController@refreshToken');
+    Route::get('logout', 'LoginController@logout');
 
     //Route::get('dashboard', 'DashboardController@index');
     // Route::get('shopify_orders', 'ShopifyController@getShopifyOrder');
