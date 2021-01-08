@@ -8,6 +8,7 @@ use Illuminate\Console\Scheduling\Schedule;
 // models
 use Modules\Inventory\Entities\Attribute;
 use Modules\Inventory\Entities\Availability;
+use Modules\Inventory\Entities\AvailabilityImportSettings;
 use Modules\Inventory\Entities\BinImportSettings;
 use Modules\Inventory\Entities\Brand;
 use Modules\Inventory\Entities\Category;
@@ -42,6 +43,7 @@ use Modules\Inventory\Entities\StockAdjustmentDetail;
 use Modules\Inventory\Entities\StockCountFilter;
 // repositories
 use Modules\Inventory\Repositories\AttributeRepository;
+use Modules\Inventory\Repositories\AvailabilityImportSettingsRepository;
 use Modules\Inventory\Repositories\AvailabilityRepository;
 use Modules\Inventory\Repositories\BinImportSettingsRepository;
 use Modules\Inventory\Repositories\BrandRepository;
@@ -78,6 +80,7 @@ use Modules\Inventory\Repositories\StockAdjustmentRepository;
 use Modules\Inventory\Repositories\StockCountFilterRepository;
 // resources
 use Modules\Inventory\Transformers\AttributeResource;
+use Modules\Inventory\Transformers\AvailabilityImportSettingsResource;
 use Modules\Inventory\Transformers\AvailabilityResource;
 use Modules\Inventory\Transformers\BinImportSettingsResource;
 use Modules\Inventory\Transformers\BrandResource;
@@ -409,6 +412,12 @@ class InventoryServiceProvider extends ServiceProvider
         $this->app->bind(BinImportSettingsResource::class, function () {
             return new BinImportSettingsResource(new BinImportSettings());
         });
+        $this->app->bind(AvailabilityImportSettingsRepository::class, function () {
+            return new AvailabilityImportSettingsRepository(new AvailabilityImportSettings());
+        });
+        $this->app->bind(AvailabilityImportSettingsResource::class, function () {
+            return new AvailabilityImportSettingsResource(new AvailabilityImportSettings());
+        });
     }
 
     /**
@@ -446,6 +455,7 @@ class InventoryServiceProvider extends ServiceProvider
             StockAdjustmentDetailRepository::class,
             ProductTagRepository::class,
             ProductImportSettingsRepository::class,
+            AvailabilityImportSettingsRepository::class,
             PriceTierRepository::class,
             LocationBinRepository::class,
             PriceTierItemsRepository::class,

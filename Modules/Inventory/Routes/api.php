@@ -34,6 +34,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('product_promos', 'ProductPromoController');
         Route::resource('product_custom_prices', 'ProductCustomPriceController');
         Route::resource('product_import_settings', 'ProductImportSettingsController');
+        Route::resource('availability_import_settings', 'AvailabilityImportSettingsController');
         Route::resource('bin_import_settings', 'BinImportSettingsController');
         Route::resource('product_tags', 'ProductTagController');
         Route::resource('family_attributes', 'FamilyAttributeController');
@@ -86,6 +87,7 @@ Route::middleware('auth:api')->group(function () {
         // XLS IMPORT
         Route::post('products_import/{type}', 'ImportController@productsImport');
         Route::post('bins_import/{type}', 'ImportController@binsImport');
+        Route::post('availabilities_import/{type}', 'ImportController@availabilityImport');
 
         // Availabilities
         Route::resource('availabilities', 'AvailabilityController');

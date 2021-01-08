@@ -191,31 +191,50 @@ class StockCountRepository extends RepositoryService
             $products = $qb->paginate($filter['per_page']);
         }
         else{
-            $products = $qb->limit(1)->get(); // get product with all bins
+            $products = $qb->get(); // get product with all bins
         }
-
+        $multiple = false; 
         $location       = Location::find($filter['location_id']);
         $availabilities_to_send = [];
+        if(count($products) > 1) {
+            $multiple = true;
+        }
+        $availabilities_to_send['multiple'] = $multiple;
+
         foreach ($products as $product) {
             $availabilities = $product->availabilities()
             ->where('location_id', $location->id)
             ->get();
-            foreach ($availabilities as $availability) {
-                if(!empty($filter['bin_ids']) && !empty($availability->bin_id)) {
-                    if(in_array($availability->bin_id, $filter['bin_ids'])) {
-                        $bin = LocationBin::find($availability->bin_id);
-                        $availabilities_to_send[] = $this->getAvailability($product, $location, $availability, $bin);
-                    }
-                } else {
-                    $availabilities_to_send[] = $this->getAvailability($product, $location, $availability);
-                }
-                
-            }
+            if ($multiple) {
+                foreach ($availabilities as $availability) {
+                    // lad($availability);
 
+                    if(!empty($filter['bin_ids']) && !empty($availability->bin_id)) {
+                        if(in_array($availability->bin_id, $filter['bin_ids'])) {
+                            $bin = LocationBin::find($availability->bin_id);
+                            $availabilities_to_send[$product->id][] = $this->getAvailability($product, $location, $availability, $bin);
+                        }
+                    } else {
+                        $availabilities_to_send[$product->id][] = $this->getAvailability($product, $location, $availability);
+                    }
+                }
+            } else {
+                foreach ($availabilities as $availability) {
+                    // lad($availability);
+                    if(!empty($filter['bin_ids']) && !empty($availability->bin_id)) {
+                        if(in_array($availability->bin_id, $filter['bin_ids'])) {
+                            $bin = LocationBin::find($availability->bin_id);
+                            $availabilities_to_send[] = $this->getAvailability($product, $location, $availability, $bin);
+                        }
+                    } else {
+                        $availabilities_to_send[] = $this->getAvailability($product, $location, $availability);
+                    }
+                }
+            }
+            
         }
 
         $collection = $products->toArray();
-
         return !empty($filter['per_page']) ? ['list' => $availabilities_to_send, 'pagination' => Arr::except($collection, 'data')] : $availabilities_to_send;
     }
 
