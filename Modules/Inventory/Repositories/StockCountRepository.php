@@ -191,11 +191,13 @@ class StockCountRepository extends RepositoryService
             $products = $qb->paginate($filter['per_page']);
         }
         else{
-            $products = $qb->limit(1)->get(); // get product with all bins
+            $products = $qb->get(); // get product with all bins
         }
         $multiple = false; 
         $location       = Location::find($filter['location_id']);
         $availabilities_to_send = [];
+        lad("TEST");
+        // lad($products);
         // if(count($products) > 1) {
         //     $multiple = true;
         // }
@@ -220,7 +222,7 @@ class StockCountRepository extends RepositoryService
             //     }
             // } else {
                 foreach ($availabilities as $availability) {
-                    // lad($availability);
+                    lad($availability);
                     if(!empty($filter['bin_ids']) && !empty($availability->bin_id)) {
                         if(in_array($availability->bin_id, $filter['bin_ids'])) {
                             $bin = LocationBin::find($availability->bin_id);
@@ -250,7 +252,7 @@ class StockCountRepository extends RepositoryService
 
         return [
             'product_id'        => $product->id,
-            'product_name'      => $product->name,
+            'product_name'      => $this->product->sku .' - '.$this->product->name,
             'product_sku'       => $product->sku,
             'product_brand'     => optional($product->brand)->name,
             'product_category'  => optional($product->category)->name,
