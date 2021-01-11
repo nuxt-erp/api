@@ -63,7 +63,7 @@ class AvailabilityImport implements ToArray, WithHeadingRow
                         Availability::updateOrCreate(
                             ['product_id'       => $product->id],
                             [
-                             'on_hand'          => $availability_quantity ?? 0,
+                             'available'          => $availability_quantity ?? 0,
                              'bin_id'           => optional($bin)->id ?? null,
                              'location_id'      => optional($location)->id ?? null,
                         ]);
@@ -75,7 +75,7 @@ class AvailabilityImport implements ToArray, WithHeadingRow
                         Availability::updateOrCreate(
                             ['product_id'       => $product->id],
                             [
-                             'on_hand'          => $availability_quantity ?? 0,
+                             'available'          => $availability_quantity ?? 0,
                              'bin_id'           => optional($bin)->id ?? null,
                              'location_id'      => optional($location)->id ?? null,
                         ]);
