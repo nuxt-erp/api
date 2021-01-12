@@ -21,7 +21,7 @@ class ReceivingDetailResource extends ResourceService
             'product_sku'           => optional($this->product)->sku,
             'product_name'          => $this->product->sku .' - '.$this->product->name,
             'searchable'            => optional($this->product)->barcode ?? optional($this->product)->sku,
-            'product_full_name'     => $this->product ? $this->product->sku . ' - ' . $this->product->name : null,
+            'product_full_name'     => optional($this->product)->full_description ?? null,
             'original_qty_allocated'=> $this->qty_allocated,
             'qty_allocated'         => $this->qty_allocated,
             'qty_received'          => $this->qty_received,

@@ -253,6 +253,7 @@ class StockCountRepository extends RepositoryService
         return [
             'product_id'        => $product->id,
             'product_name'      => $this->product->sku .' - '.$this->product->name,
+            'product_full_name' => $this->product->full_description,
             'product_sku'       => $product->sku,
             'product_brand'     => optional($product->brand)->name,
             'product_category'  => optional($product->category)->name,

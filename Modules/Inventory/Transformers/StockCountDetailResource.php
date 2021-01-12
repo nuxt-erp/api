@@ -13,6 +13,7 @@ class StockCountDetailResource extends ResourceService
             'stockcount_id'     => $this->stockcount_id,
             'product_id'        => $this->product_id,
             'product_name'      => $this->product->sku .' - '.$this->product->name,
+            'product_full_name' => optional($this->product)->full_description ?? null,
             'product_sku'       => optional($this->product)->sku ?? null,
             'product_brand'     => optional($this->product->brand)->name,
             'product_category'  => optional($this->product->category)->name,
