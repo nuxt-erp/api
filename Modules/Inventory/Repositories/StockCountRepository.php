@@ -85,7 +85,6 @@ class StockCountRepository extends RepositoryService
         }
 
         if(!empty($filter['bin_ids'])){
-            lad($filter['bin_ids']);
             $qb->with(['availabilities' => function ($query) use($filter) {
                 $query->whereIn('bin_id', $filter['bin_ids']);
             }, 'availabilities.bin']);
@@ -131,35 +130,10 @@ class StockCountRepository extends RepositoryService
         $availabilities = [];
 
         foreach ($products as $product) {
-
             foreach($product['availabilities'] as $availability) {
                 $availabilities[] = $this->getAvailability($product, $location, $availability, !empty($availability['bin']) ? $availability['bin'] : null);
             }
         }
-
-        // foreach ($products as $product) {
-        //     // LOCATION HAS  BINS
-        //     if(!empty($bins)){
-        //         foreach ($bins as $bin) {
-        //             // no bin filter OR the bin match the filter
-        //             if(empty($filter['bin_ids']) || in_array($bin->id, $filter['bin_ids'])){
-        //                 $availability = $product->availabilities()
-        //                 ->where('location_id', $location->id)
-        //                 ->where('bin_id', $bin->id)
-        //                 ->first();
-
-        //                 $availabilities[] = $this->getAvailability($product, $location, $availability, $bin);
-        //             }
-        //         }
-        //     }
-        //     else{
-        //         $availability = $product->availabilities()
-        //             ->where('location_id', $location->id)
-        //             ->whereNull('bin_id')
-        //             ->first();
-        //         $availabilities[] = $this->getAvailability($product, $location, $availability);
-        //     }
-        // }
 
         $collection = $products->toArray();
 
