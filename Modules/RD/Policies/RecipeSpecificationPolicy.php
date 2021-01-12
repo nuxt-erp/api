@@ -17,12 +17,12 @@ class RecipeSpecificationPolicy
 
     public function index(User $currentUser)
     {
-        return $currentUser->hasRole('rd_quality_control', 'admin');
+        return $currentUser->hasRole('rd_quality_control', 'admin', 'rd_flavorist');
     }
 
     public function show(User $currentUser, RecipeSpecification $target)
     {
-        return $currentUser->hasRole('rd_quality_control', 'admin');
+        return $currentUser->hasRole('rd_quality_control', 'admin', 'rd_flavorist');
     }
 
     public function store(User $currentUser)

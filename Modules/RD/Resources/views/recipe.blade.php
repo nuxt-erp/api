@@ -50,12 +50,12 @@
         @endif
 
         @if (!empty($recipe->type))
-            <span class="title">Type:</span> {{ $recipe->type->name }}
+            <span class="title">Type:</span> {{ $recipe->type->value }}
         @endif
 
         @if (count($recipe->attributes) > 0)
             <span class="title">Regulory Status:</span>
-            {{ implode(', ', $recipe->attributes->pluck('name')->toArray()) }}
+            {{ implode(', ', $recipe->attributes->pluck('value')->toArray()) }}
         @endif
 
     </p>

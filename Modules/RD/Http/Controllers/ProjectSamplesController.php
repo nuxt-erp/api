@@ -94,6 +94,13 @@ class ProjectSamplesController extends ControllerService
                             'type'  => 'primary'
                         ];
                     }
+                    else if ($user->hasRole('rd_flavorist')) {
+                        $actions[] = [
+                            'name'  => 'Preview',
+                            'code'  => 'sample',
+                            'type'  => 'primary'
+                        ];
+                    }
                 break;
 
                 case 'ready':
