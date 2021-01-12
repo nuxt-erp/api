@@ -74,7 +74,7 @@ class StockCountRepository extends RepositoryService
 
     public function findProductsAvailabilities($filter){
 
-        $qb = Product::has('availabilities')->with(['brand', 'product_attributes.attribute', 'availabilities', 'availabilities.bin','category']);
+        $qb = Product::has('availabilities')->with(['brand', 'product_attributes.attribute', 'category']);
 
         if(!empty($filter['brand_ids'])){
             $qb->whereIn('brand_id', $filter['brand_ids']);
@@ -86,9 +86,12 @@ class StockCountRepository extends RepositoryService
 
         if(!empty($filter['bin_ids'])){
             lad($filter['bin_ids']);
-            $qb->whereHas('availabilities', function ($query) use($filter) {
+            $qb->with(['availabilities' => function ($query) use($filter) {
                 $query->whereIn('bin_id', $filter['bin_ids']);
-            });
+            }, 'availabilities.bin']);
+        }
+        else {
+            $qb->with(['availabilities', 'availabilities.bin']);
         }
 
         if(!empty($filter['barcode'])){
@@ -126,7 +129,7 @@ class StockCountRepository extends RepositoryService
 
         $location       = Location::find($filter['location_id']);
         $availabilities = [];
-    
+
         foreach ($products as $product) {
 
             foreach($product['availabilities'] as $availability) {
@@ -206,7 +209,7 @@ class StockCountRepository extends RepositoryService
         else{
             $products = $qb->get(); // get product with all bins
         }
-        $multiple = false; 
+        $multiple = false;
         $location       = Location::find($filter['location_id']);
         $availabilities_to_send = [];
         lad("TEST");
@@ -246,7 +249,7 @@ class StockCountRepository extends RepositoryService
                     }
                 }
             // }
-            
+
         }
 
         $collection = $products->toArray();
