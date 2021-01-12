@@ -37,10 +37,10 @@ class RecipeSpecification extends ModelService
             'approver_id'         => ['exists:public.users,id'],
             'appearance'          => ['string', 'max:255'],
             'aroma'               => ['string', 'max:255'],
-            // 'flavor'              => ['string', 'max:255'],
+            'flavor'              => ['string', 'max:255'],
             // 'viscosity'           => ['string', 'max:255'],
             // 'specific_gravity'    => ['string', 'max:255'],
-            'flash_point'         => ['string', 'max:255'],
+            //'flash_point'         => ['string', 'max:255'],
             // 'shelf_life'          => ['string', 'max:255'],
         ];
 
@@ -80,5 +80,5 @@ class RecipeSpecification extends ModelService
     public function spec_attributes(){
         return $this->attributes()->where('name', '=', 'recipe_spec_attributes');
     }
-    
+
 }
