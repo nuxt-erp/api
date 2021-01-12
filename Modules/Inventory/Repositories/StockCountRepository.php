@@ -74,7 +74,7 @@ class StockCountRepository extends RepositoryService
 
     public function findProductsAvailabilities($filter){
 
-        $qb = Product::with(['brand', 'product_attributes.attribute', 'category']);
+        $qb = Product::has('availabilities')->with(['brand', 'product_attributes.attribute', 'availabilities', 'availabilities.bin','category']);
 
         if(!empty($filter['brand_ids'])){
             $qb->whereIn('brand_id', $filter['brand_ids']);
@@ -82,6 +82,13 @@ class StockCountRepository extends RepositoryService
 
         if(!empty($filter['product_id'])){
             $qb->where('id', $filter['product_id']);
+        }
+
+        if(!empty($filter['bin_ids'])){
+            lad($filter['bin_ids']);
+            $qb->whereHas('availabilities', function ($query) use($filter) {
+                $query->whereIn('bin_id', $filter['bin_ids']);
+            });
         }
 
         if(!empty($filter['barcode'])){
@@ -118,32 +125,38 @@ class StockCountRepository extends RepositoryService
         }
 
         $location       = Location::find($filter['location_id']);
-        $bins           = $location->bins;
         $availabilities = [];
+    
         foreach ($products as $product) {
 
-            // LOCATION HAS  BINS
-            if(!empty($bins)){
-                foreach ($bins as $bin) {
-                    // no bin filter OR the bin match the filter
-                    if(empty($filter['bin_ids']) || in_array($bin->id, $filter['bin_ids'])){
-                        $availability = $product->availabilities()
-                        ->where('location_id', $location->id)
-                        ->where('bin_id', $bin->id)
-                        ->first();
-
-                        $availabilities[] = $this->getAvailability($product, $location, $availability, $bin);
-                    }
-                }
-            }
-            else{
-                $availability = $product->availabilities()
-                    ->where('location_id', $location->id)
-                    ->whereNull('bin_id')
-                    ->first();
-                $availabilities[] = $this->getAvailability($product, $location, $availability);
+            foreach($product['availabilities'] as $availability) {
+                $availabilities[] = $this->getAvailability($product, $location, $availability, !empty($availability['bin']) ? $availability['bin'] : null);
             }
         }
+
+        // foreach ($products as $product) {
+        //     // LOCATION HAS  BINS
+        //     if(!empty($bins)){
+        //         foreach ($bins as $bin) {
+        //             // no bin filter OR the bin match the filter
+        //             if(empty($filter['bin_ids']) || in_array($bin->id, $filter['bin_ids'])){
+        //                 $availability = $product->availabilities()
+        //                 ->where('location_id', $location->id)
+        //                 ->where('bin_id', $bin->id)
+        //                 ->first();
+
+        //                 $availabilities[] = $this->getAvailability($product, $location, $availability, $bin);
+        //             }
+        //         }
+        //     }
+        //     else{
+        //         $availability = $product->availabilities()
+        //             ->where('location_id', $location->id)
+        //             ->whereNull('bin_id')
+        //             ->first();
+        //         $availabilities[] = $this->getAvailability($product, $location, $availability);
+        //     }
+        // }
 
         $collection = $products->toArray();
 
