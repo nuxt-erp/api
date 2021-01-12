@@ -21,20 +21,27 @@ class RecipeSpecification extends ModelService
         'specific_gravity', 'flash_point', 'storage_conditions',
         'shelf_life', 'ingredient_list'
     ];
+    protected $casts = [
+        'viscosity' => 'string',
+        'flash_point' => 'string',
+        'shelf_life' => 'string',
+        'specific_gravity' => 'string',
+    ];
 
     public function getRules($request, $item = null)
     {
+        //TODO: fix cast, we shouldn't skip the length validation this is a temporary fix.
         // generic rules
         $rules = [
             'project_sample_id'   => ['exists:tenant.rd_project_samples,id'],
             'approver_id'         => ['exists:public.users,id'],
             'appearance'          => ['string', 'max:255'],
             'aroma'               => ['string', 'max:255'],
-            'flavor'              => ['string', 'max:255'],
-            'viscosity'           => ['string', 'max:255'],
-            'specific_gravity'    => ['string', 'max:255'],
+            // 'flavor'              => ['string', 'max:255'],
+            // 'viscosity'           => ['string', 'max:255'],
+            // 'specific_gravity'    => ['string', 'max:255'],
             'flash_point'         => ['string', 'max:255'],
-            'shelf_life'          => ['string', 'max:255'],
+            // 'shelf_life'          => ['string', 'max:255'],
         ];
 
         // rules when creating the item

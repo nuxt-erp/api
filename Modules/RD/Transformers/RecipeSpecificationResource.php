@@ -24,7 +24,7 @@ class RecipeSpecificationResource extends ResourceService
             'description'              => optional($this->project_sample)->name,
             'external_code'            => optional($this->project_sample)->external_code,
             'attributes'               => optional($this->attributes)->pluck('id')->toArray(),
-            'attribute_names'          => optional($this->attributes)->pluck('name')->toArray(),
+            'attribute_names'          => optional($this->attributes)->pluck('value')->toArray(),
             'packing'                  => optional($this->packing->first())->id,
             'packing_name'             => optional($this->packing->first())->value,
             'storage_conditions'       => $this->storage_conditions,

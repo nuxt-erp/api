@@ -155,21 +155,21 @@
         @if (!empty($recipe_specification->specific_gravity))
         <tr>
             <td>
-                <h1 class="details-title">Specific Gravity: <span class="details cut-width"> {{ $recipe_specification->specific_gravity }} </span></h1>
+                <h1 class="details-title">Specific Gravity: <span class="details cut-width"> {{ $recipe_specification->specific_gravity }}  +/-0.05</span></h1>
             </td>
         </tr>
         @endif
         @if (!empty($recipe_specification->viscosity))
         <tr>
             <td>
-                <h1 class="details-title">Viscosity: <span class="details cut-width"> {{ $recipe_specification->viscosity }} </span></h1>
+                <h1 class="details-title">Viscosity: <span class="details cut-width"> {{ $recipe_specification->viscosity }} +/- 10 cps</span></h1>
             </td>
         </tr>
         @endif
         @if (!empty($recipe_specification->flash_point))
         <tr>
             <td>
-                <h1 class="details-title">Flash Point: <span class="details cut-width"> {{ $recipe_specification->flash_point }} </span></h1>
+                <h1 class="details-title">Flash Point: <span class="details cut-width"> {{ $recipe_specification->flash_point }} +/- 5 Celsius</span></h1>
             </td>
         </tr>
         @endif
