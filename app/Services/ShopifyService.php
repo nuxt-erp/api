@@ -9,6 +9,8 @@ use App\Models\Location;
 use App\Models\Parameter;
 use App\Models\Province;
 use App\Models\User;
+use Carbon\Carbon;
+use Carbon\CarbonTimeZone;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\Category;
@@ -51,13 +53,17 @@ class ShopifyService
         //@todo change all date functions calls to use Carbon package
 
         //date_default_timezone_set('America/Toronto');
-        $time_zone = '-5:00';
+
+        //$time_zone = '-5:00';
         // -2 minutes (Orders from the last 2 minutes)
-        $date = date('Y-m-d\TH:i:s', strtotime('-2 minutes', strtotime(date('Y-m-d\TH:i:s'))));
+        //$date = date('Y-m-d\TH:i:s', strtotime('-2 minutes', strtotime(date('Y-m-d\TH:i:s'))));
+
+        $date = Carbon::now()->format('Y-m-d\TH:i:s\Z');
+        $date_min = Carbon::now()->addMinutes(-2)->format('Y-m-d\TH:i:s\Z');
 
         $params = [
-            'updated_at_min' => $date  . $time_zone,
-            'updated_at_max' => date('Y-m-d\TH:i:s')  . $time_zone,
+            'updated_at_min' => $date_min,
+            'updated_at_max' => $date,
             'status'         => 'any',
             'limit'          => $this->limit
         ];
