@@ -27,6 +27,7 @@ class ConfigResource extends ResourceService
             'shopify_password'                      => $this->shopify_password,
             'shopify_store_name'                    => $this->shopify_store_name,
             'shopify_location'                      => $this->shopify_location,
+            'shopify_sync_sales'                    => $this->shopify_sync_sales,
             'dear_automatic_sync'                   => $this->dear_automatic_sync,
             'dear_sync_existing_brands'             => $this->dear_sync_existing_brands,
             'dear_sync_existing_categories'         => $this->dear_sync_existing_categories,

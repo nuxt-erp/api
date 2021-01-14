@@ -3,9 +3,11 @@
 namespace App\Console;
 
 use App\Models\Company;
+use App\Models\Config;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\DB;
+
 class Kernel extends ConsoleKernel
 {
     /**
@@ -35,9 +37,19 @@ class Kernel extends ConsoleKernel
             foreach ($companies as $company) {
                 config(['database.connections.tenant.schema' => $company->schema]);
                 DB::reconnect('tenant');
+                DB::transaction(function () 
+                {
+                    
+                    $config = Config::find(1);
 
-                $api = resolve('Shopify\API');
-                $api->syncOrders();
+                    if(!empty($config) && !empty($config->shopify_sync_sales)) {
+                        echo($config->shopify_sync_sales);
+
+                        $api = resolve('Shopify\API');
+                        $api->syncOrders();
+                    }
+                });
+                
                 # code...
             }
 
