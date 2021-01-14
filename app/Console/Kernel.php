@@ -29,9 +29,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-
         $schedule->call(function () {
-
+            
             $companies = Company::all();
 
             foreach ($companies as $company) {
@@ -71,8 +70,10 @@ class Kernel extends ConsoleKernel
         //         'rows'      => $result,
         //         'status'    => 'cron_update'
         //     ]);
+          })->everyMinute()
+          ->name('shopify_sales')
+          ->withoutOverlapping();
 
-         })->everyMinute();
     }
 
     /**
