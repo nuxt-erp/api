@@ -309,8 +309,8 @@ class ShopifyService
                 'address1'              => substr($order['customer']['default_address']['address1'],0,100),
                 'address2'              => substr($order['customer']['default_address']['address2'],0,100),
                 'email'                 => substr($order['customer']['email'],0,160),
-                'country_id'            => $country->id,
-                'province_id'           => $province->id,
+                'country_id'            => !empty($country) ? $country->id : null,
+                'province_id'           => !empty($province) ? $province->id : null,
                 'city'                  => $order['customer']['default_address']['city'],
                 'postal_code'           => $order['customer']['default_address']['zip'],
                 'phone_number'          => substr($order['customer']['default_address']['phone'],0,20)
