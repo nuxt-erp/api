@@ -40,10 +40,7 @@ class Kernel extends ConsoleKernel
                 {
                     
                     $config = Config::find(1);
-
                     if(!empty($config) && !empty($config->shopify_sync_sales)) {
-                        echo($config->shopify_sync_sales);
-
                         $api = resolve('Shopify\API');
                         $api->syncOrders();
                     }
