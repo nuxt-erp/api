@@ -20,6 +20,7 @@ use Modules\Sales\Entities\Sale;
 use Modules\Sales\Entities\SaleDetails;
 use PHPShopify\ShopifySDK;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ShopifyService
 {
@@ -85,10 +86,6 @@ class ShopifyService
 
                     // Remove # character from the Shopify order name
                     $order_number = filter_var($order['name'], FILTER_SANITIZE_NUMBER_INT);
-
-                    /*if ($order_number == '194587') {
-                        var_dump($order);
-                    }*/
 
                     // Get financial status - Remove order if refunded - or cancelled
                     if ($order['financial_status'] == 'refunded' || ($order['cancelled_at'] != '' || $order['cancel_reason'] != '')) {
@@ -164,6 +161,7 @@ class ShopifyService
 
                         // Reset array
                         $parse_items = [];
+
                         // Search products
                         foreach ($order['line_items'] as $items) {
 
@@ -226,11 +224,6 @@ class ShopifyService
                                 ]
                             );
 
-                            /*if ($product_id != null) {
-                                if ($allow_stock_move == true) { // Do not update again stock when update sale
-                                    $this->updateStock($product_id, 0, null, null, '+', 'Sale', $sale->id, 0, $items['quantity'], 'Allocated quantity');
-                                }
-                            }*/
                         }
 
                         // Save products
@@ -255,8 +248,20 @@ class ShopifyService
 
                                 // Search location based on Shopify location_id
                                 $location_id = null;
-                                if (isset($order['fulfillments'][0]['location_id'])) {
-                                    $location_id = Location::where('shopify_id', $order['fulfillments'][0]['location_id'])->pluck('id')->first();
+
+                                // Check fulfillment event
+                                $events = $this->client->Order($order["id"])->Fulfillment($order['fulfillments'][0]['id'])->Event->get();
+
+                                if ($events) {
+                                    $parse_location = explode(" ", $events[0]["message"]);
+                                    if (isset($parse_location[0])) {
+                                        $location_id = Location::where('name', 'like', '%' . $parse_location[0] . '%')->pluck('id')->first();
+                                    }
+                                } else {
+
+                                    if (isset($order['fulfillments'][0]['location_id'])) {
+                                        $location_id = Location::where('shopify_id', $order['fulfillments'][0]['location_id'])->pluck('id')->first();
+                                    }
                                 }
 
                                 foreach ($order['fulfillments'][0]['line_items'] as $items) {
