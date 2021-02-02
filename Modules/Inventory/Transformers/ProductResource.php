@@ -33,6 +33,8 @@ class ProductResource extends ResourceService
             'width'                 => $this->width,
             'height'                => $this->height,
             'weight'                => $this->weight,
+            'carton_barcode'        => $this->carton_barcode,
+            'carton_qty'            => $this->carton_qty,
             'carton_length'         => $this->carton_length,
             'carton_width'          => $this->carton_width,
             'carton_height'         => $this->carton_height,
