@@ -111,7 +111,7 @@ class ProjectSamplesRepository extends RepositoryService
     {
 
         DB::transaction(function () use ($model, &$data){
-            
+
             $approved                    = !empty($data['supervisor_approval']) && $data['supervisor_approval'];
             $rejected                    = !empty($data['supervisor_reject']) && $data['supervisor_reject'];
             $finished                    = !empty($data['flavorist_finish']) && $data['flavorist_finish'];
@@ -166,7 +166,7 @@ class ProjectSamplesRepository extends RepositoryService
 
                 $recipe_from_scratch = empty($data['recipe']['id']);
                 $new_version         = $data['recipe']['new_version'];
-                
+
                 if($recipe_from_scratch){
                     $recipe                     =  new Recipe();
                     $recipe->fill($data['recipe']);
@@ -231,7 +231,7 @@ class ProjectSamplesRepository extends RepositoryService
                     //     if($new_version){
                     //         $this->syncIngredients($data['recipe']['id'], $data['recipe']['ingredients']);
                     //     }
-                    // }               
+                    // }
                 }
 
                 // RECIPE UPDATE + assigned = IN PROGRESS
@@ -248,7 +248,7 @@ class ProjectSamplesRepository extends RepositoryService
             }
 
             parent::update($model, $data);
-            
+
             $this->model->recipe = $recipe;
 
             if (Arr::has($data, 'attribute_ids')) {

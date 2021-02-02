@@ -11,6 +11,12 @@ class ProjectRepository extends RepositoryService
     public function findBy(array $searchCriteria = [])
     {
         $user = auth()->user();
+
+        $searchCriteria['order_by'] = [
+            'field'         => 'id',
+            'direction'     => 'desc'
+        ];
+
         if(!empty($searchCriteria['search'])){
             $text = '%' . Arr::pull($searchCriteria, 'search') . '%';
             $this->queryBuilder->where(function ($query) use($text) {
