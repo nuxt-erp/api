@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Contact;
 use App\Models\Country;
+use App\Models\CronLog;
 use App\Models\Customer;
 use App\Models\CustomerTag;
 use App\Models\Location;
@@ -22,6 +23,7 @@ use App\Models\User;
 // Policies
 use App\Policies\ContactPolicy;
 use App\Policies\CountryPolicy;
+use App\Policies\CronLogPolicy;
 use App\Policies\CustomerPolicy;
 use App\Policies\CustomerTagPolicy;
 use App\Policies\LocationPolicy;
@@ -72,9 +74,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(TaxRuleComponent::class, TaxRuleComponentPolicy::class);
         Gate::policy(TaxRuleScope::class, TaxRuleScopePolicy::class);
         Gate::policy(SalesRep::class, SalesRepPolicy::class);
-        Gate::policy(Tag::class, TagPolicy::class);        
-        Gate::policy(CustomerTag::class, CustomerTagPolicy::class);        
-        Gate::policy(SettingsImages::class, SettingsImagesPolicy::class);        
-
+        Gate::policy(Tag::class, TagPolicy::class);
+        Gate::policy(CustomerTag::class, CustomerTagPolicy::class);
+        Gate::policy(SettingsImages::class, SettingsImagesPolicy::class);
+        Gate::policy(CronLog::class, CronLogPolicy::class);
     }
 }

@@ -48,7 +48,6 @@ Route::middleware('auth:api')->group(function () { // ['auth:api', 'client_crede
         Route::resource('tags', 'General\TagController');
         Route::resource('customer_tags', 'General\CustomerTagController');
         Route::resource('settings_images', 'General\SettingsImagesController');
-
+        Route::resource('cron_logs', 'General\CronLogController');
     });
-
 });

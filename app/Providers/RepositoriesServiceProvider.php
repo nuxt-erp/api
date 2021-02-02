@@ -6,6 +6,7 @@ namespace App\Providers;
 use App\Models\Config;
 use App\Models\Contact;
 use App\Models\Country;
+use App\Models\CronLog;
 use App\Models\Customer;
 use App\Models\CustomerTag;
 use App\Models\Location;
@@ -25,6 +26,7 @@ use App\Models\User;
 use App\Repositories\ConfigRepository;
 use App\Repositories\ContactRepository;
 use App\Repositories\CountryRepository;
+use App\Repositories\CronLogRepository;
 use App\Repositories\CustomerRepository;
 use App\Repositories\CustomerTagRepository;
 use App\Repositories\LocationRepository;
@@ -44,6 +46,7 @@ use App\Repositories\UserRepository;
 use App\Resources\ConfigResource;
 use App\Resources\ContactResource;
 use App\Resources\CountryResource;
+use App\Resources\CronLogResource;
 use App\Resources\CustomerResource;
 use App\Resources\CustomerTagResource;
 use App\Resources\LocationResource;
@@ -169,7 +172,7 @@ class RepositoriesServiceProvider extends ServiceProvider
         $this->app->bind(TaxRuleRepository::class, function () {
             return new TaxRuleRepository(new TaxRule());
         });
-        
+
         $this->app->bind(TaxRuleResource::class, function () {
             return new TaxRuleResource(new TaxRule());
         });
@@ -221,6 +224,14 @@ class RepositoriesServiceProvider extends ServiceProvider
         $this->app->bind(SettingsImagesResource::class, function () {
             return new SettingsImagesResource(new SettingsImages());
         });
+
+        $this->app->bind(CronLogRepository::class, function () {
+            return new CronLogRepository(new CronLog());
+        });
+
+        $this->app->bind(CronLogResource::class, function () {
+            return new CronLogResource(new CronLog());
+        });
     }
 
     /**
@@ -248,7 +259,8 @@ class RepositoriesServiceProvider extends ServiceProvider
             SalesRepRepository::class,
             TagRepository::class,
             CustomerTagRepository::class,
-            SettingsImagesRepository::class
+            SettingsImagesRepository::class,
+            CronLogRepository::class
         ];
     }
 }
