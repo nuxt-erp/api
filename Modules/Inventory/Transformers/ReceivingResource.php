@@ -23,6 +23,7 @@ class ReceivingResource extends ResourceService
             'status'            => $this->status,
             'allocation_status' => $this->allocation_status,
             'invoice_number'    => $this->invoice_number,
+            'tracking_number'   => $this->tracking_number,
             'location_id'       => $this->location_id,
             'location_name'     => optional($this->location)->name,
             'receiving_details' => ReceivingDetailResource::collection($this->details),

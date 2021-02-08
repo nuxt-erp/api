@@ -22,16 +22,17 @@ class Receiving extends ModelService
     protected $fillable = [
         'name', 'po_number', 'invoice_number',
         'status', 'supplier_id', 'author_id',
-        'location_id' , 'allocation_status'
+        'location_id', 'allocation_status', 'tracking_number'
     ];
-    
+
 
     public function getRules($request, $item = null)
     {
         // generic rules
         $rules = [
             'supplier_id'   => ['nullable', 'exists:tenant.suppliers,id'],
-            'location_id'   => ['nullable', 'exists:tenant.locations,id']
+            'location_id'   => ['nullable', 'exists:tenant.locations,id'],
+            'po_number'     => ['nullable', 'exists:tenant.pur_purchases,po_number']
         ];
 
         // rules when creating the item
@@ -55,5 +56,4 @@ class Receiving extends ModelService
     {
         return $this->belongsTo(Supplier::class, 'supplier_id');
     }
-
 }
