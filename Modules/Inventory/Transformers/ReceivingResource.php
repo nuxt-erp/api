@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Transformers;
 
 use App\Resources\ResourceService;
+use Modules\Inventory\Entities\Receiving;
 
 class ReceivingResource extends ResourceService
 {
@@ -22,6 +23,7 @@ class ReceivingResource extends ResourceService
             'supplier_name'     => optional($this->supplier)->name,
             'status'            => $this->status,
             'allocation_status' => $this->allocation_status,
+            'is_allocated'      => $this->allocation_status === Receiving::ALLOCATED,
             'invoice_number'    => $this->invoice_number,
             'tracking_number'   => $this->tracking_number,
             'location_id'       => $this->location_id,

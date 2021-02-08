@@ -22,12 +22,13 @@ class ReceivingRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {
-        if (!empty($searchCriteria['supplier_name']) && $searchCriteria['supplier_name']) {
-            $supplier_name = '%' . Arr::pull($searchCriteria, 'supplier_name') . '%';
-            $this->queryBuilder->whereHas('supplier', function (Builder $query) use ($supplier_name) {
-                $query->where('name', 'ILIKE', $supplier_name);
-            });
+        if (!empty($searchCriteria['is_allocated'])) {
+            $is_allocated = '%' . Arr::pull($searchCriteria, 'is_allocated') . '%';
+            $this->queryBuilder->where('allocation_status', 'ILIKE', Receiving::ALLOCATED);
+        } else {
+            $this->queryBuilder->where('allocation_status', '<>', Receiving::ALLOCATED);
         }
+
         if (!empty($searchCriteria['not_received'])) {
             $not_received = '%' . Arr::pull($searchCriteria, 'not_received') . '%';
             $this->queryBuilder->where('status', 'ILIKE', Receiving::NEW_RECEIVING)->orWhere('status', 'ILIKE', Receiving::PARTIALLY_RECEIVED);
@@ -36,10 +37,6 @@ class ReceivingRepository extends RepositoryService
         if (!empty($searchCriteria['name']) && $searchCriteria['name']) {
             $name = '%' . Arr::pull($searchCriteria, 'name') . '%';
             $this->queryBuilder->where('name', 'ILIKE', $name);
-        }
-
-        if (!empty($searchCriteria['exclude_allocated']) && $searchCriteria['exclude_allocated']) {
-            $this->queryBuilder->where('allocation_status', '<>', Receiving::ALLOCATED);
         }
 
         return parent::findBy($searchCriteria);
