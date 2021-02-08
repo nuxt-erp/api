@@ -46,17 +46,6 @@ class ReceivingRepository extends RepositoryService
     }
     public function store($data)
     {
-        // if (!empty($data['po_number'])) {
-        //     $po_result = Purchase::where('po_number', $data['po_number'])->first();
-        //     if ($po_result === null) {
-        //         lad('fghfgh');
-        //         //throw new Exception('PO number is required');
-        //         //abort(404, 'aborting le po number');
-
-        //         return response()->json((['status' => false, 'message' => 'po_number_not_found']), 404);
-        //     }
-        // }
-
         DB::transaction(function () use ($data) {
 
             $data['status'] = Receiving::NEW_RECEIVING;
@@ -102,13 +91,9 @@ class ReceivingRepository extends RepositoryService
                 }
             }
 
-            //todo continue with $qty = $row['qty'] ?? $row['qty_allocated']
-            //go poAllocation() line 107
             if (!empty($po_number)) {
                 $purchase_id = Purchase::where('po_number', $po_number)->first();
-                //$po_allocation['selected_items'] = $receiving_details->toArray();
                 $po_allocation['purchase_id'] = $purchase_id->id;
-                //$po_allocation['id'] = $receiving_id;
                 $this->poAllocation($po_allocation);
             }
 
