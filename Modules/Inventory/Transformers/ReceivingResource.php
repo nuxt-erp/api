@@ -29,6 +29,9 @@ class ReceivingResource extends ResourceService
             'location_id'       => $this->location_id,
             'location_name'     => optional($this->location)->name,
             'receiving_details' => ReceivingDetailResource::collection($this->details),
+            'received_date'     => optional($this->received_date)->format('Y-m-d'),
+            'author_id'         => $this->author_id,
+            'author_name'       => optional($this->author)->name,
             'created_at'        => optional($this->created_at)->format('Y-m-d'),
             'updated_at'        => optional($this->updated_at)->format('Y-m-d'),
         ];

@@ -45,6 +45,7 @@ class ReceivingRepository extends RepositoryService
     {
         DB::transaction(function () use ($data) {
 
+            $data['author_id'] = auth()->id();
             $data['status'] = Receiving::NEW_RECEIVING;
             $data['allocation_status'] = Receiving::NEW_RECEIVING;
 

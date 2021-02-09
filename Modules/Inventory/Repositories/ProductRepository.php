@@ -35,8 +35,7 @@ class ProductRepository extends RepositoryService
         ];
         //@todo add important relations (improve performance for queries)
         // $this->queryBuilder->with([])
-        if (!empty($searchCriteria['list']))
-        {
+        if (!empty($searchCriteria['list'])) {
             $this->queryBuilder->where('is_enabled', true);
         }
 
@@ -52,11 +51,12 @@ class ProductRepository extends RepositoryService
                 ->where('id', $searchCriteria['id']);
         }
 
-   
-        if(!empty($searchCriteria['searchable'])){
+
+        if (!empty($searchCriteria['searchable'])) {
             $this->queryBuilder
-            ->where('barcode', 'ILIKE', $searchCriteria['searchable'])
-            ->orWhere('sku', 'ILIKE',  $searchCriteria['searchable']);
+                ->where('barcode', 'ILIKE', $searchCriteria['searchable'])
+                ->orWhere('sku', 'ILIKE',  $searchCriteria['searchable'])
+                ->orWhere('carton_barcode', 'ILIKE',  $searchCriteria['searchable']);
         }
 
 
@@ -90,7 +90,7 @@ class ProductRepository extends RepositoryService
 
             $this->queryBuilder
                 ->where('is_enabled', $searchCriteria['is_enabled']);
-        }else{
+        } else {
 
             $this->queryBuilder
                 ->where('is_enabled', 1);
@@ -116,7 +116,8 @@ class ProductRepository extends RepositoryService
         return parent::findBy($searchCriteria);
     }
 
-    public function findBySKU($sku) {
+    public function findBySKU($sku)
+    {
         return $this->queryBuilder->where('sku', $sku)->first();
     }
 
@@ -134,18 +135,18 @@ class ProductRepository extends RepositoryService
 
                 $this->generateFamily($data, $data['family_id']);                    // GENERATE FAMILY
 
-            }else {
+            } else {
 
                 parent::store($data);
                 $this->createAttribute($data); // CREATE ATTRIBUTE
-                if($this->suppliers) {
+                if ($this->suppliers) {
                     $this->createSuppliers($data); // CREATE ATTRIBUTE
                 }
-                if($this->discounts) {
+                if ($this->discounts) {
                     $this->createDiscounts($data); // CREATE ATTRIBUTE
                 }
-                if(!empty($data["reorder_levels"])) {
-                    foreach($data["reorder_levels"] as $reorder_level) {
+                if (!empty($data["reorder_levels"])) {
+                    foreach ($data["reorder_levels"] as $reorder_level) {
                         ProductReorderLevel::create([
                             'product_id'    => $this->model->id,
                             'location_id'   => $reorder_level['location_id'],
@@ -155,8 +156,8 @@ class ProductRepository extends RepositoryService
                     }
                 }
 
-                if(!empty($data["promos"])) {
-                    foreach($data["promos"] as $promo) {
+                if (!empty($data["promos"])) {
+                    foreach ($data["promos"] as $promo) {
                         ProductPromo::create([
                             'product_id'            => $this->model->id,
                             'discount_percentage'   => $promo['discount_percentage'] ?? 0,
@@ -169,8 +170,8 @@ class ProductRepository extends RepositoryService
                     }
                 }
 
-                if(!empty($data["custom_prices"])) {
-                    foreach($data["custom_prices"] as $price) {
+                if (!empty($data["custom_prices"])) {
+                    foreach ($data["custom_prices"] as $price) {
                         ProductCustomPrice::create([
                             'product_id'            => $this->model->id,
                             'customer_id'           => $price['customer_id'],
@@ -181,8 +182,8 @@ class ProductRepository extends RepositoryService
                         ]);
                     }
                 }
-                if(!empty($data["tag_ids"])) {
-                    foreach($data["tag_ids"] as $tag_id) {
+                if (!empty($data["tag_ids"])) {
+                    foreach ($data["tag_ids"] as $tag_id) {
                         ProductTag::create([
                             'product_id'    => $this->model->id,
                             'tag_id'        => $tag_id,
@@ -191,7 +192,6 @@ class ProductRepository extends RepositoryService
                 }
             }
         });
-
     }
     public function update($model, array $data)
     {
@@ -199,70 +199,70 @@ class ProductRepository extends RepositoryService
         $this->discounts = !empty($data["discounts"]);
         $this->priceTiers = !empty($data["price_tier_items"]);
 
-        parent::update($model,$data);
+        parent::update($model, $data);
         $this->createAttribute($data);
-        if($this->suppliers) {
+        if ($this->suppliers) {
             $this->updateSuppliers($data);
         }
-        if($this->discounts) {
+        if ($this->discounts) {
             $this->updateDiscounts($data);
         }
-        if($this->priceTiers) {
+        if ($this->priceTiers) {
             $this->updatepriceTiers($data);
         }
-        if(!empty($data['deleteDiscounts'])) {
+        if (!empty($data['deleteDiscounts'])) {
             foreach ($data['deleteDiscounts'] as $deleteDiscount) {
                 CustomerDiscount::where('id', $deleteDiscount['id'])->delete();
             }
         }
-        if(!empty($data['deleteSuppliers'])) {
+        if (!empty($data['deleteSuppliers'])) {
             foreach ($data['deleteSuppliers'] as $deleteSupplier) {
                 ProductSuppliers::where('id', $deleteSupplier['id'])->delete();
             }
         }
-        if(!empty($data['deleteSupplierLocations'])) {
+        if (!empty($data['deleteSupplierLocations'])) {
             foreach ($data['deleteSupplierLocations'] as $deleteSupplierLocation) {
                 ProductSupplierLocations::where('id', $deleteSupplierLocation['id'])->delete();
             }
         }
 
-        if(!empty($data["reorder_levels"])) {
+        if (!empty($data["reorder_levels"])) {
             $this->updateReorderLevels($data);
         }
 
-        if(!empty($data["delete_reorder_levels"])) {
-            foreach($data["delete_reorder_levels"] as $delete_reorder_level) {
+        if (!empty($data["delete_reorder_levels"])) {
+            foreach ($data["delete_reorder_levels"] as $delete_reorder_level) {
                 ProductReorderLevel::where('id', $delete_reorder_level['id'])->delete();
             }
         }
 
-        if(!empty($data["promos"])) {
+        if (!empty($data["promos"])) {
             $this->updatePromos($data);
         }
 
-        if(!empty($data["delete_promos"])) {
-            foreach($data["delete_promos"] as $delete_promo) {
+        if (!empty($data["delete_promos"])) {
+            foreach ($data["delete_promos"] as $delete_promo) {
                 ProductPromo::where('id', $delete_promo['id'])->delete();
             }
         }
 
-        if(!empty($data["custom_prices"])) {
+        if (!empty($data["custom_prices"])) {
             $this->updateCustomPrices($data);
         }
 
-        if(!empty($data["delete_custom_prices"])) {
-            foreach($data["delete_custom_prices"] as $delete_custom_price) {
+        if (!empty($data["delete_custom_prices"])) {
+            foreach ($data["delete_custom_prices"] as $delete_custom_price) {
                 ProductCustomPrice::where('id', $delete_custom_price['id'])->delete();
             }
         }
 
-        if(!empty($data["tag_ids"])) {
+        if (!empty($data["tag_ids"])) {
 
             $current_tags = $this->model->tags->pluck('tag_id')->toArray();
             $deleted_tags = array_diff($current_tags, $data["tag_ids"]);
 
-            foreach($data["tag_ids"] as $tag_id) {
-                if ( !in_array($tag_id, $current_tags)) {
+            foreach ($data["tag_ids"] as $tag_id) {
+                if (!in_array($tag_id, $current_tags)) {
                     ProductTag::create([
                         'product_id'    => $this->model->id,
                         'tag_id'        => $tag_id,
@@ -270,7 +270,7 @@ class ProductRepository extends RepositoryService
                 }
             }
 
-            foreach($deleted_tags as $tag_id) {
+            foreach ($deleted_tags as $tag_id) {
                 ProductTag::where('product_id', $this->model->id)->where('tag_id', $tag_id)->delete();
             }
         }
@@ -342,14 +342,14 @@ class ProductRepository extends RepositoryService
         return $new->id;
     }
 
-    private function updateSuppliers($data) {
+    private function updateSuppliers($data)
+    {
         $product_id         = $data['id'] ?? $this->model->id;; //Get CURRENT PRODUCT ID
         $suppliers = $data['suppliers'];
         $supplierLocations = $data['supplierLocations'];
 
 
-        foreach ($suppliers as $supplier)
-        {
+        foreach ($suppliers as $supplier) {
             $supplierArray = [
                 'product_id'    => $product_id,
                 'supplier_id'   => $supplier['supplier_id'],
@@ -360,34 +360,31 @@ class ProductRepository extends RepositoryService
                 'last_supplied' => $supplier['last_supplied'],
                 'minimum_order' => $supplier['minimum_order']
             ];
-            if(!empty($supplier['id'])) {
+            if (!empty($supplier['id'])) {
                 $new = ProductSuppliers::updateOrCreate(['id' =>  $supplier['id']], $supplierArray);
             } else {
                 $new = ProductSuppliers::updateOrCreate($supplierArray);
             }
 
-            if(!empty($supplierLocations)) {
+            if (!empty($supplierLocations)) {
 
                 foreach ($supplierLocations as $supplierLocation) {
-                    if($supplierLocation['supplier_id'] == $new['supplier_id']) {
+                    if ($supplierLocation['supplier_id'] == $new['supplier_id']) {
                         $supplierLocation['product_supplier_id'] = $new['id'];
                     }
                 }
             }
-
         }
-        if(!empty($supplierLocations)) {
+        if (!empty($supplierLocations)) {
 
             foreach ($supplierLocations as $supplierLocation) {
-                if(empty($supplierLocation['product_supplier_id'])) {
+                if (empty($supplierLocation['product_supplier_id'])) {
                     $allSups = ProductSuppliers::where('product_id', $product_id)->get();
                     foreach ($allSups as $sup) {
-                        if($sup->supplier->id == $supplierLocation['supplier_id']) {
+                        if ($sup->supplier->id == $supplierLocation['supplier_id']) {
                             $supplierLocation['product_supplier_id'] = $sup->id;
                         }
                     }
-
-
                 }
                 $supplierLocationsArray = [
                     'product_supplier_id'  => $supplierLocation['product_supplier_id'],
@@ -397,7 +394,7 @@ class ProductRepository extends RepositoryService
                     'reorder_qty'          => $supplierLocation['reorder_qty'],
                 ];
 
-                if(!empty($supplierLocation['id'])) {
+                if (!empty($supplierLocation['id'])) {
                     $new = ProductSupplierLocations::updateOrCreate(['id' =>  $supplierLocation['id']], $supplierLocationsArray);
                 } else {
                     $new = ProductSupplierLocations::updateOrCreate($supplierLocationsArray);
@@ -405,29 +402,28 @@ class ProductRepository extends RepositoryService
             }
         }
     }
-    
-    private function updatepriceTiers($data) {
+
+    private function updatepriceTiers($data)
+    {
         $priceTierItems = $data['price_tier_items'];
 
-        foreach ($priceTierItems as $priceTierItem)
-        {
+        foreach ($priceTierItems as $priceTierItem) {
             $discountsArray = [
-              
+
                 'custom_price'   => $priceTierItem['custom_price']
-                
+
             ];
-           
+
             PriceTierItems::updateOrCreate(['id' =>  $priceTierItem['id']], $discountsArray);
-           
         }
     }
-    private function updateDiscounts($data) {
+    private function updateDiscounts($data)
+    {
         $product_id         = $data['id'] ?? $this->model->id;; //Get CURRENT PRODUCT ID
         $discounts = $data['discounts'];
 
 
-        foreach ($discounts as $discount)
-        {
+        foreach ($discounts as $discount) {
             $discountsArray = [
                 'product_id'    => $product_id,
                 'customer_id'   => $discount['customer_id'],
@@ -436,15 +432,16 @@ class ProductRepository extends RepositoryService
                 'start_date'    => $discount['start_date'],
                 'end_date'      => $discount['end_date']
             ];
-            if(!empty($discount['id'])) {
+            if (!empty($discount['id'])) {
                 $new = CustomerDiscount::updateOrCreate(['id' =>  $discount['id']], $discountsArray);
             } else {
                 $new = CustomerDiscount::updateOrCreate($discountsArray);
             }
         }
     }
-    private function updateReorderLevels($data) {
-        foreach($data["reorder_levels"] as $reorder_level) {
+    private function updateReorderLevels($data)
+    {
+        foreach ($data["reorder_levels"] as $reorder_level) {
 
             $reorderLevelData = [
                 'product_id'    => $this->model->id,
@@ -453,7 +450,7 @@ class ProductRepository extends RepositoryService
                 'reorder_qty'   => $reorder_level['reorder_qty']
             ];
 
-            if(!empty($reorder_level['id'])) {
+            if (!empty($reorder_level['id'])) {
                 ProductReorderLevel::updateOrCreate(['id' =>  $reorder_level['id']], $reorderLevelData);
             } else {
                 ProductReorderLevel::create($reorderLevelData);
@@ -461,8 +458,9 @@ class ProductRepository extends RepositoryService
         }
     }
 
-    private function updatePromos($data) {
-        foreach($data["promos"] as $promo) {
+    private function updatePromos($data)
+    {
+        foreach ($data["promos"] as $promo) {
 
             $promoData = [
                 'product_id'            => $this->model->id,
@@ -474,7 +472,7 @@ class ProductRepository extends RepositoryService
                 'gift_product_id'       => $promo['gift_product_id'] ?? $this->model->id
             ];
 
-            if(!empty($promo['id'])) {
+            if (!empty($promo['id'])) {
                 ProductPromo::updateOrCreate(['id' =>  $promo['id']], $promoData);
             } else {
                 ProductPromo::create($promoData);
@@ -482,8 +480,9 @@ class ProductRepository extends RepositoryService
         }
     }
 
-    private function updateCustomPrices($data) {
-        foreach($data["custom_prices"] as $price) {
+    private function updateCustomPrices($data)
+    {
+        foreach ($data["custom_prices"] as $price) {
 
             $customPriceDate = [
                 'product_id'            => $this->model->id,
@@ -494,7 +493,7 @@ class ProductRepository extends RepositoryService
                 'disabled_at'           => !$price['is_enabled'] ? now() : null,
             ];
 
-            if(!empty($price['id'])) {
+            if (!empty($price['id'])) {
                 ProductCustomPrice::updateOrCreate(['id' =>  $price['id']], $customPriceDate);
             } else {
                 ProductCustomPrice::create($customPriceDate);
@@ -502,13 +501,12 @@ class ProductRepository extends RepositoryService
         }
     }
 
-    private function createDiscounts ($data)
+    private function createDiscounts($data)
     {
 
         $discounts = $data['discounts'];
 
-        foreach ($discounts as $discount)
-        {
+        foreach ($discounts as $discount) {
             $new                = new CustomerDiscount();
             $new->product_id    = $this->model->id;
             $new->customer_id   = $discount["customer_id"];
@@ -525,8 +523,7 @@ class ProductRepository extends RepositoryService
     {
         $suppliers = $data['suppliers'];
         $supplierLocations = $data['supplierLocations'];
-        foreach ($suppliers as $supplier)
-        {
+        foreach ($suppliers as $supplier) {
             $new                = new ProductSuppliers();
             $new->product_id    = $this->model->id;
             $new->product_name  = $supplier["product_name"];
@@ -537,10 +534,10 @@ class ProductRepository extends RepositoryService
             $new->last_supplied = $supplier["last_supplied"];
             $new->minimum_order = $supplier["minimum_order"];
             $new->save();
-            if(!empty($supplierLocations)) {
+            if (!empty($supplierLocations)) {
 
                 foreach ($supplierLocations as $supplierLocation) {
-                    if($supplierLocation['supplier_id'] == $new['supplier_id']) {
+                    if ($supplierLocation['supplier_id'] == $new['supplier_id']) {
                         $newLocation = new ProductSupplierLocations();
                         $newLocation->product_supplier_id = $new["id"];
                         $newLocation->location_id = $supplierLocation["location_id"];
@@ -551,7 +548,6 @@ class ProductRepository extends RepositoryService
                     }
                 }
             }
-
         }
 
         return $new->id;
@@ -600,8 +596,7 @@ class ProductRepository extends RepositoryService
                             if ($attributes[$i] != 0) {
                                 $get_array = $attributes[$i];
                                 // SAVING ALL FAMILY ATTRIBUTES
-                            FamilyAttribute::updateOrCreate(['family_id' => $data["family_id"], 'attribute_id' => $get_array["id"], 'value' => $get_array["value"]]);
-
+                                FamilyAttribute::updateOrCreate(['family_id' => $data["family_id"], 'attribute_id' => $get_array["id"], 'value' => $get_array["value"]]);
                             }
                         }
                     }
@@ -754,7 +749,7 @@ class ProductRepository extends RepositoryService
 
         $searchCriteria['per_page'] = 20;
         $this->queryBuilder->with('brand')
-        ->with('category')->with('availabilities.location');
+            ->with('category')->with('availabilities.location');
         if (!empty($searchCriteria['id'])) {
 
             $this->queryBuilder->where('id', $searchCriteria['id']);
@@ -762,13 +757,11 @@ class ProductRepository extends RepositoryService
             unset($searchCriteria['id']);
         }
         if (!empty($searchCriteria['location_id'])) {
-            $this->queryBuilder->with(['availabilities' => function ($query) use($searchCriteria) {
+            $this->queryBuilder->with(['availabilities' => function ($query) use ($searchCriteria) {
                 $query->where('location_id', $searchCriteria['location_id']);
             }]);
             unset($searchCriteria['location_id']);
         }
         return parent::findBy($searchCriteria);
-
     }
-
 }

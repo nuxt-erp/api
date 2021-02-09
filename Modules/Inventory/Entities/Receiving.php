@@ -5,6 +5,7 @@ namespace Modules\Inventory\Entities;
 use App\Models\ModelService;
 use App\Models\Supplier;
 use App\Models\Location;
+use App\Models\User;
 use Illuminate\Validation\Rule;
 
 class Receiving extends ModelService
@@ -19,10 +20,15 @@ class Receiving extends ModelService
 
     protected $table = 'inv_receiving';
 
+    protected $dates = [
+        'received_date'
+    ];
+
     protected $fillable = [
         'name', 'po_number', 'invoice_number',
         'status', 'supplier_id', 'author_id',
-        'location_id', 'allocation_status', 'tracking_number'
+        'location_id', 'allocation_status', 'tracking_number',
+        'received_date'
     ];
 
 
@@ -55,5 +61,10 @@ class Receiving extends ModelService
     public function supplier()
     {
         return $this->belongsTo(Supplier::class, 'supplier_id');
+    }
+
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'author_id');
     }
 }
