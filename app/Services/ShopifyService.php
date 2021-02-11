@@ -33,7 +33,7 @@ class ShopifyService
     public function __construct()
     {
         $config = Config::first();
-        if (!empty($config) && !empty($config->shopify_sync_sales)) {
+        if (!empty($config) && !empty($config->shopify_sync_sales) && $config->shopify_sync_sales === true) {
             $this->client = new ShopifySDK([
                 'ShopUrl'    => $config->shopify_store_name,
                 'ApiKey'     => $config->shopify_key,

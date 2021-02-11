@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
                 DB::transaction(function () {
 
                     $config = Config::find(1);
-                    if (!empty($config) && !empty($config->shopify_sync_sales)) {
+                    if (!empty($config) && !empty($config->shopify_sync_sales) && $config->shopify_sync_sales === true) {
                         $api = resolve('Shopify\API');
                         $api->syncOrders();
                     }
