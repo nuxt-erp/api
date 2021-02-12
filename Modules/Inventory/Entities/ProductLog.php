@@ -45,8 +45,7 @@ class ProductLog extends ModelService
         ];
 
         // CREATE
-        if (is_null($item))
-        {
+        if (is_null($item)) {
             $rules['product_id'][] = 'required';
         } else {
             //update
@@ -76,13 +75,12 @@ class ProductLog extends ModelService
             if ($get) {
                 return optional($get->customer)->name;
             }
-        }elseif ($this->type->value == self::TYPE_LOG_PURCHASE) {
+        } elseif ($this->type->value == self::TYPE_LOG_PURCHASE) {
             $get = Purchase::where('id', $this->ref_code_id)->with('supplier')->first();
             if ($get) {
                 return optional($get->supplier)->name;
             }
         }
-
     }
 
     public function user()
@@ -94,6 +92,4 @@ class ProductLog extends ModelService
     {
         return $this->belongsTo(LocationBin::class, 'bin_id', 'id');
     }
-
 }
-

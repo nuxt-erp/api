@@ -9,6 +9,8 @@ use Maatwebsite\Excel\Concerns\Importable;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\Availability;
+use Modules\Inventory\Entities\LocationBin;
+
 class StockAdjustmentImport implements ToArray, WithHeadingRow
 {
 
@@ -20,24 +22,28 @@ class StockAdjustmentImport implements ToArray, WithHeadingRow
 
     public function array(array $rows)
     {
-        DB::transaction(function () use ($rows)
-        {
+        DB::transaction(function () use ($rows) {
             $not_found  = [];
 
-            foreach ($rows as $row)
-            {
+            foreach ($rows as $row) {
                 $on_hand    = 0;
 
                 $product = Product::where('sku', $row['sku'])
-                ->with('location')
-                ->first();
+                    ->with('location')
+                    ->first();
 
-                if ($product)
-                {
+                if ($product) {
                     $new_qty = 0;
+                    $location = null;
+                    $bin = null;
+
                     if ($row['location'] != "") {
                         $location = Location::where('short_name', 'ILIKE', $row['location'])->first();
                         $on_hand = Availability::where(['product_id' => $product->id, 'location_id' => $location->id])->pluck('on_hand')->first();
+                    }
+
+                    if ($row['bin'] != "") {
+                        $bin = LocationBin::where('name', 'ILIKE', $row['bin'])->orWhere('barcode', 'ILIKE', $row['bin'])->first();
                     }
 
                     if ($row['qty'] != "") {
@@ -50,8 +56,9 @@ class StockAdjustmentImport implements ToArray, WithHeadingRow
                         'sku'           => $row['sku'],
                         'product_id'    => $product->id,
                         'name'          => $row['sku'] . ' - ' . $product->name,
-                        'location_id'   => $location->id,
-                        'location_name' => $location->short_name,
+                        'location_id'   => optional($location)->id ?? null,
+                        'location_name' => optional($location)->short_name ?? null,
+                        'bin_id'        => optional($bin)->id ?? null,
                         'on_hand'       => $on_hand,
                         'qty'           => $new_qty,
                         'variance'      => !empty($on_hand) ? $new_qty - $on_hand : 0

@@ -7,14 +7,16 @@ use App\Models\Location;
 
 class StockAdjustmentDetail extends ModelService
 {
+    const ADJUSTED   = 'adjusted';
+
     protected $connection = 'tenant';
 
-    public $table       = "inv_stock_adjustments_details";
+    public $table         = "inv_stock_adjustments_details";
 
-    protected $fillable = [
+    protected $fillable   = [
         'stock_adjustment_id', 'product_id', 'location_id',
         'stock_on_hand', 'qty', 'variance',
-        'abs_variance', 'notes', 'bin_id'
+        'abs_variance', 'notes', 'bin_id', 'status'
     ];
 
     public function getRules($request, $item = null)
@@ -29,16 +31,17 @@ class StockAdjustmentDetail extends ModelService
             'variance'                  => ['integer'],
             'abs_variance'              => ['integer'],
             'notes'                     => ['nullable', 'string', 'max:255'],
+            'status'                    => ['string'],
         ];
 
         // CREATE
-        if (is_null($item))
-        {
+        if (is_null($item)) {
             $rules['stock_adjustment_id'][]     = 'required';
             $rules['product_id'][]              = 'required';
             $rules['location_id'][]             = 'required';
             $rules['stock_on_hand'][]           = 'required';
             $rules['qty'][]                     = 'required';
+            $rules['status'][]                  = 'required';
         }
 
         return $rules;

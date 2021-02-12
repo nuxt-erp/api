@@ -20,12 +20,12 @@ class StockAdjustment extends ModelService
         $rules = [
             'notes' => ['nullable', 'string'],
         ];
-        
+
         return $rules;
     }
 
     public function details()
     {
         return $this->hasMany(StockAdjustmentDetail::class, 'stock_adjustment_id');
-    }   
+    }
 }
