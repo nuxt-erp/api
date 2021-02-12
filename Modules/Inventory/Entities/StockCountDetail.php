@@ -14,7 +14,7 @@ class StockCountDetail extends ModelService
     protected $fillable = [
         'stockcount_id', 'product_id', 'qty',
         'stock_on_hand', 'variance', 'notes',
-        'location_id', 'abs_variance', 'bin_id'
+        'location_id', 'bin_id'
     ];
 
     public function product()
