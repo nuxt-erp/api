@@ -4,20 +4,24 @@ namespace Modules\Inventory\Entities;
 
 use App\Models\Location;
 use App\Models\ModelService;
+class Constants {
 
+    const STATUS_DONE          = [ "DONE" => 1 ];
+    const STATUS_IN_PROGRESS   = [ "IN PROGRESS" => 0];
+    };
 class StockCount extends ModelService
 {
     protected $connection = 'tenant';
 
-    public $table       = "inv_stock_counts";
-
+    public $table              = "inv_stock_counts";
+ 
     protected $dates = [
         'date',
     ];
 
     protected $fillable = [
         'name', 'date', 'brand_id',
-        'category_id', 'location_id', 'target',
+        'category_id', 'location_id',
         'count_type_id', 'skip_today_received', 'add_discontinued',
         'variance_last_count_id', 'status'
     ];
@@ -29,14 +33,17 @@ class StockCount extends ModelService
         ];
 
         // CREATE
-        if (is_null($item))
-        {
+        if (is_null($item)) {
             $rules['name'][] = 'required';
         }
 
         return $rules;
     }
-
+    static function getStatuses()
+    {
+        $oClass = new \ReflectionClass(Constants::class);
+        return $oClass->getConstants();
+    }
     public function details()
     {
         return $this->hasManySync(StockCountDetail::class, 'stockcount_id', 'id');

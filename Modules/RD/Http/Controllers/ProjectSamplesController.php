@@ -24,7 +24,8 @@ class ProjectSamplesController extends ControllerService
         parent::__construct();
     }
 
-    public function getSampleStatuses(array $searchCriteria = []){
+    public function getSampleStatuses(array $searchCriteria = [])
+    {
 
 
         $statuses = $this->repository->model->getStatuses();
@@ -33,19 +34,19 @@ class ProjectSamplesController extends ControllerService
         $user = auth()->user();
         $role = '';
 
-        if($user->hasRole('rd_requester')) {
+        if ($user->hasRole('rd_requester')) {
             $role = 'rd_requester';
-        } else if($user->hasRole('rd_supervisor')) {
+        } else if ($user->hasRole('rd_supervisor')) {
             $role = 'rd_supervisor';
-        } else if($user->hasRole('rd_flavorist')) {
+        } else if ($user->hasRole('rd_flavorist')) {
             $role = 'rd_flavorist';
-        } else if($user->hasRole('rd_quality_control')) {
+        } else if ($user->hasRole('rd_quality_control')) {
             $role = 'rd_quality_control';
         }
 
         $keyValue   = [];
         $i          = 0;
-        if($user->hasRole('admin')){
+        if ($user->hasRole('admin')) {
             $status_list = [];
             foreach (Arr::flatten($statuses) as $status) {
                 $status_list[$status] = $status;
@@ -56,8 +57,7 @@ class ProjectSamplesController extends ControllerService
                 $keyValue[$i]['value'] = ucfirst($status);
                 $i++;
             }
-        }
-        else{
+        } else {
             $filtered = array_filter(
                 $statuses,
                 function ($key) use ($role) {
@@ -87,21 +87,20 @@ class ProjectSamplesController extends ControllerService
             switch ($item->status) {
                 case 'approved':
                 case 'waiting qc':
-                    if($user->hasRole('rd_quality_control')) {
+                    if ($user->hasRole('rd_quality_control')) {
                         $actions[] = [
                             'name'  => 'Generate Specs',
                             'code'  => 'generate',
                             'type'  => 'primary'
                         ];
-                    }
-                    else if ($user->hasRole('rd_flavorist')) {
+                    } else if ($user->hasRole('rd_flavorist')) {
                         $actions[] = [
                             'name'  => 'Preview',
                             'code'  => 'sample',
                             'type'  => 'primary'
                         ];
                     }
-                break;
+                    break;
 
                 case 'ready':
                     $actions[] = [
@@ -109,7 +108,7 @@ class ProjectSamplesController extends ControllerService
                         'code'  => 'generate',
                         'type'  => 'primary'
                     ];
-                break;
+                    break;
 
                 case 'pending':
                 case 'sent':
@@ -142,4 +141,3 @@ class ProjectSamplesController extends ControllerService
         return $this->indexResponse($request, $result);
     }
 }
-

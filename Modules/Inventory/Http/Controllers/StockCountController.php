@@ -33,6 +33,12 @@ class StockCountController extends ControllerService implements CheckPolicies
         return $this->sendArray($result);
     }
 
+    public function getStatuses()
+    {
+        $result = $this->repository->getStockCountStatuses();
+        return $this->sendArray($result);
+    }
+
     public function finish($stockcount_id)
     {
         $status = $this->repository->finish($stockcount_id);
