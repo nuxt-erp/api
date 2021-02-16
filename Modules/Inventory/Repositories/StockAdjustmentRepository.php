@@ -31,6 +31,7 @@ class StockAdjustmentRepository extends RepositoryService
     public function store($data)
     {
         DB::transaction(function () use ($data) {
+            $data['author_id'] = auth()->id();
             // SAVE STOCK ADJUSTMENT
             parent::store($data);
             // SAVE STOCK ADJUSTMENT PRODUCTS

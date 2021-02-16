@@ -11,7 +11,11 @@ class StockAdjustmentResource extends ResourceService
         return [
             'id'                => $this->id,
             'notes'             => $this->notes,
-            'created_at'        => optional($this->created_at)->format('Y-m-d H:i:s'),
+            'name'              => $this->name,
+            'author_id'         => $this->author_id,
+            'author_name'       => optional($this->author)->name,
+            'effective_date'    => optional($this->effective_date)->format('Y-m-d H:i'),
+            'created_at'        => optional($this->created_at)->format('Y-m-d'),
             'updated_at'        => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];
     }

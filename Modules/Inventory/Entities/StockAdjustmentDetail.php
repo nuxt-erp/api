@@ -4,6 +4,7 @@ namespace Modules\Inventory\Entities;
 
 use App\Models\ModelService;
 use App\Models\Location;
+use Modules\Inventory\Entities\LocationBin;
 
 class StockAdjustmentDetail extends ModelService
 {
@@ -54,5 +55,10 @@ class StockAdjustmentDetail extends ModelService
     public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');
+    }
+
+    public function bin()
+    {
+        return $this->belongsTo(LocationBin::class, 'bin_id');
     }
 }

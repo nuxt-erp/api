@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Entities;
 
 use App\Models\Location;
+use App\Models\User;
 use App\Models\ModelService;
 
 class StockAdjustment extends ModelService
@@ -11,14 +12,19 @@ class StockAdjustment extends ModelService
 
     public $table       = "inv_stock_adjustments";
 
+    protected $dates = [
+        'effective_date'
+    ];
+
     protected $fillable = [
-        'notes'
+        'notes', 'author_id', 'name', 'effective_date'
     ];
 
     public function getRules($request, $item = null)
     {
         $rules = [
-            'notes' => ['nullable', 'string'],
+            'author_id' => ['nullable', 'exists:tenant.users,id'],
+            'notes'     => ['nullable', 'string'],
         ];
 
         return $rules;
@@ -27,5 +33,10 @@ class StockAdjustment extends ModelService
     public function details()
     {
         return $this->hasMany(StockAdjustmentDetail::class, 'stock_adjustment_id');
+    }
+
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'author_id');
     }
 }
