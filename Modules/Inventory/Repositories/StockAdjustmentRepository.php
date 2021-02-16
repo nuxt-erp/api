@@ -8,6 +8,7 @@ use App\Repositories\RepositoryService;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductLog;
+use Modules\Inventory\Entities\StockAdjustment;
 use Modules\Inventory\Entities\StockAdjustmentDetail;
 
 class StockAdjustmentRepository extends RepositoryService
@@ -103,5 +104,20 @@ class StockAdjustmentRepository extends RepositoryService
                 );
             }
         }
+    }
+
+    public function destroy($id)
+    {
+        DB::transaction(function () use ($id)
+        {
+            $availability_repository = new AvailabilityRepository(new Availability());
+            $stockAdjustment = StockAdjustment::find($id)->with('details')->first();
+            lad($stockAdjustment->details);
+            foreach ($stockAdjustment->details as $value)
+            {
+                $availability_repository->updateStock($value->product_id, $value->qty, $value->location_id, null, "-", "Stock Adjustment", $id, 0, 0, "Remove item");
+            }
+            StockAdjustment::where('id', $id)->delete();
+        });
     }
 }
