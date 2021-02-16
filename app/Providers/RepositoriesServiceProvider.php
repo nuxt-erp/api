@@ -7,6 +7,7 @@ use App\Models\Config;
 use App\Models\Contact;
 use App\Models\Country;
 use App\Models\CronLog;
+use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\CustomerTag;
 use App\Models\Location;
@@ -27,6 +28,7 @@ use App\Repositories\ConfigRepository;
 use App\Repositories\ContactRepository;
 use App\Repositories\CountryRepository;
 use App\Repositories\CronLogRepository;
+use App\Repositories\CurrencyRepository;
 use App\Repositories\CustomerRepository;
 use App\Repositories\CustomerTagRepository;
 use App\Repositories\LocationRepository;
@@ -47,6 +49,7 @@ use App\Resources\ConfigResource;
 use App\Resources\ContactResource;
 use App\Resources\CountryResource;
 use App\Resources\CronLogResource;
+use App\Resources\CurrencyResource;
 use App\Resources\CustomerResource;
 use App\Resources\CustomerTagResource;
 use App\Resources\LocationResource;
@@ -232,6 +235,14 @@ class RepositoriesServiceProvider extends ServiceProvider
         $this->app->bind(CronLogResource::class, function () {
             return new CronLogResource(new CronLog());
         });
+
+        $this->app->bind(CurrencyRepository::class, function () {
+            return new CurrencyRepository(new Currency());
+        });
+
+        $this->app->bind(CurrencyResource::class, function () {
+            return new CurrencyResource(new Currency());
+        });
     }
 
     /**
@@ -260,7 +271,8 @@ class RepositoriesServiceProvider extends ServiceProvider
             TagRepository::class,
             CustomerTagRepository::class,
             SettingsImagesRepository::class,
-            CronLogRepository::class
+            CronLogRepository::class,
+            CurrencyRepository::class,
         ];
     }
 }

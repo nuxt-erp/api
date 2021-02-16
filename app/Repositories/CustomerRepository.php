@@ -53,7 +53,7 @@ class CustomerRepository extends RepositoryService
                     $new                  = new ProductCustomPrice();
                     $new->customer_id     = $this->model->id;
                     $new->product_id      = $custom_product_price['product_id'];
-                    $new->currency        = $custom_product_price['currency'];
+                    $new->currency_id     = $custom_product_price['currency_id'];
                     $new->custom_price    = $custom_product_price['custom_price'];
                     $new->is_enabled      = $custom_product_price['is_enabled'];
                     if (empty($custom_product_price['disabled_at']) && $custom_product_price['is_enabled'] === 0) {

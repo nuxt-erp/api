@@ -2,6 +2,8 @@
 
 namespace App\Resources;
 
+use Modules\Inventory\Transformers\ProductCustomPriceResource;
+
 class CustomerResource extends ResourceService
 {
     public function toArray($request)
@@ -17,7 +19,7 @@ class CustomerResource extends ResourceService
             'sales_rep_name'           => optional($this->sales_rep)->name,
             'contacts'                 => optional($this->contacts)->toArray(),
             'custom_discounts'         => optional($this->custom_discounts)->toArray(),
-            'custom_product_prices'    => optional($this->custom_product_prices)->toArray(),
+            'custom_product_prices'    => ProductCustomPriceResource::collection($this->custom_product_prices),
             'shopify_id'               => $this->shopify_id,
             'name'                     => $this->name,
             'email'                    => $this->email,
@@ -33,7 +35,6 @@ class CustomerResource extends ResourceService
             'updated_at'               => optional($this->updated_at)->format('Y-m-d H:i:s'),
             'tag_ids'                  => optional($this->tags)->pluck('tag_id'),
             'tag_names'                => implode(', ', optional($this->tag_parents)->pluck('tag')->pluck('name')->toArray())
-
         ];
     }
 }
