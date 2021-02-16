@@ -73,7 +73,6 @@ class StockCountRepository extends RepositoryService
 
     public function findProductsAvailabilities($filter)
     {
-        lad($filter);
         $qb = Product::whereHas(
             'availabilities',
             function ($query) use ($filter) {
@@ -128,7 +127,7 @@ class StockCountRepository extends RepositoryService
         if (!empty($filter['per_page'])) {
             $products = $qb->paginate($filter['per_page']);
         } else {
-            $products = $qb->limit(1)->get(); // get product with all bins
+            $products = $qb->get(); // get product with all bins
         }
 
         $location       = Location::find($filter['location_id']);
@@ -315,6 +314,7 @@ class StockCountRepository extends RepositoryService
             // SAVE STOCK TAKE
             parent::store($data);
             // SAVE STOCK TAKE PRODUCTS
+
             if (!empty($data['stock_count_filters'])) {
                 foreach ($data['stock_count_filters'] as $key => $list) {
                     if ($key === 'tag_ids') {
@@ -334,7 +334,6 @@ class StockCountRepository extends RepositoryService
                             ]);
                         }
                     } else if ($key === 'bin_ids') {
-
                         foreach ($list as $val) {
                             StockCountFilter::create([
                                 'type' => 'Modules\\Inventory\\Entities\\LocationBin',
@@ -343,7 +342,6 @@ class StockCountRepository extends RepositoryService
                             ]);
                         }
                     } else if ($key === 'category_ids') {
-
                         foreach ($list as $val) {
                             StockCountFilter::create([
                                 'type' => 'Modules\\Inventory\\Entities\\Category',
@@ -362,9 +360,16 @@ class StockCountRepository extends RepositoryService
                     }
                 }
             }
-            if (!empty($data['list_products'])) {
-                $this->model->details()->sync($data['list_products']);
+            
+            if(!empty($data['web'])) {
+                $products = $this->findProductsAvailabilities($data);
+                $this->model->details()->sync($products);
+            } else {
+                if(!empty($data['list_products'])) {
+                    $this->model->details()->sync($data['list_products']);
+                }
             }
+        
         });
     }
 
@@ -373,7 +378,28 @@ class StockCountRepository extends RepositoryService
         DB::transaction(function () use ($data, $model) {
             parent::update($model, $data);
             // UPDATE STOCK TAKE PRODUCTS
-            $this->model->details()->sync($data['list_products']);
+            if(!empty($data['web'])) {
+                foreach ($data['list_products'] as $detail) {
+                    StockCountDetail::updateOrCreate([
+                        'stockcount_id' => $model->id,
+                        'product_id' => $detail['product_id'],
+                        'location_id' => $detail['location_id'],
+                        'bin_id' => $detail['bin_id'],
+                    ], 
+                    [
+                        'qty' => $detail['qty'],
+                        'variance' => $detail['variance'],
+                        'notes' => $detail['notes'],
+                        'stock_on_hand' => $detail['on_hand']
+                    ]);
+    
+                }
+            } else {
+                if(!empty($data['list_products'])) {
+                    $this->model->details()->sync($data['list_products']);
+                }
+            }
+           
         });
     }
 

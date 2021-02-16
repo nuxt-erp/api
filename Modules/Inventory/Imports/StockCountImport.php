@@ -30,7 +30,6 @@ class StockCountImport implements ToArray, WithHeadingRow
                     ->with('brand')
                     ->with('category')
                     ->with('location')->first();
-                lad($row['sku']);
 
                 if ($product) {
                     $on_hand = null;
@@ -42,10 +41,6 @@ class StockCountImport implements ToArray, WithHeadingRow
                     if ($row['bin'] != "") {
                         $bin = LocationBin::where('name', 'ILIKE', $row['bin'])->orWhere('barcode', 'ILIKE', $row['bin'])->first();
                     }
-                    lad($product->brand->name);
-                    lad($product->category->name);
-                    lad($product->location->name);
-
 
                     $array = [
                         'brand_id'      => $product->brand_id,

@@ -13,6 +13,7 @@ class StockCountDetailRepository extends RepositoryService
             $this->queryBuilder
             ->where('stockcount_id', $searchCriteria['id']);
         }
+        $this->queryBuilder->with(['product', 'product.brand', 'product.category', 'bin', 'location']);
 
         return parent::findBy($searchCriteria);
     }
