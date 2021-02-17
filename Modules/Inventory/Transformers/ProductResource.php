@@ -61,8 +61,6 @@ class ProductResource extends ResourceService
             'price_tier_items'      =>$this->priceTierItems,
             'attributes_value'      =>$this->product_attributes,
             'searchable'            => $this->barcode ?? $this->sku,
-
-
         ];
     }
 }

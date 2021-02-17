@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSettingsImagesTable extends Migration
+class CreateCurrenciesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateSettingsImagesTable extends Migration
      */
     public function up()
     {
-        Schema::connection('tenant')->create('settings_images', function (Blueprint $table) {
+        Schema::connection('tenant')->create('currencies', function (Blueprint $table) {
             $table->id();
-            $table->string('path');
-            $table->string('type')->nullable();
-            $table->string('thumb_path')->nullable();
-            $table->tinyInteger('order')->default(1);
+            $table->string('name')->unique();
+            $table->string('code')->nullable()->unique();
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ class CreateSettingsImagesTable extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->dropIfExists('settings_images');
+        Schema::connection('tenant')->dropIfExists('currencies');
     }
 }

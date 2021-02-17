@@ -175,7 +175,7 @@ class ProductRepository extends RepositoryService
                         ProductCustomPrice::create([
                             'product_id'            => $this->model->id,
                             'customer_id'           => $price['customer_id'],
-                            'currency'              => strtoupper($price['currency']),
+                            'currency_id'           => $price['currency_id'],
                             'custom_price'          => $price['custom_price'] ?? 0,
                             'is_enabled'            => $price['is_enabled'],
                             'disabled_at'           => !$price['is_enabled'] ? now() : null,
@@ -355,7 +355,7 @@ class ProductRepository extends RepositoryService
                 'supplier_id'   => $supplier['supplier_id'],
                 'product_name'  => $supplier['product_name'],
                 'product_sku'   => $supplier['product_sku'],
-                'currency'      => $supplier['currency'],
+                'currency_id'   => $supplier['currency_id'],
                 'last_price'    => $supplier['last_price'],
                 'last_supplied' => $supplier['last_supplied'],
                 'minimum_order' => $supplier['minimum_order']
@@ -484,19 +484,19 @@ class ProductRepository extends RepositoryService
     {
         foreach ($data["custom_prices"] as $price) {
 
-            $customPriceDate = [
+            $customPriceData = [
                 'product_id'            => $this->model->id,
                 'customer_id'           => $price['customer_id'],
-                'currency'              => strtoupper($price['currency']),
+                'currency_id'           => $price['currency_id'],
                 'custom_price'          => $price['custom_price'] ?? 0,
                 'is_enabled'            => $price['is_enabled'],
                 'disabled_at'           => !$price['is_enabled'] ? now() : null,
             ];
 
             if (!empty($price['id'])) {
-                ProductCustomPrice::updateOrCreate(['id' =>  $price['id']], $customPriceDate);
+                ProductCustomPrice::updateOrCreate(['id' =>  $price['id']], $customPriceData);
             } else {
-                ProductCustomPrice::create($customPriceDate);
+                ProductCustomPrice::create($customPriceData);
             }
         }
     }

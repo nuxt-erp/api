@@ -2,6 +2,7 @@
 
 namespace Modules\Inventory\Entities;
 
+use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\ModelService;
 
@@ -16,8 +17,8 @@ class ProductCustomPrice extends ModelService
     ];
     
     protected $fillable = [
-        'product_id', 'customer_id', 'currency',
-        'custom_price','is_enabled', 'disabled_at'
+        'product_id', 'customer_id', 'currency_id',
+        'custom_price','is_enabled', 'disabled_at',
     ];
 
     public function getRules($request, $item = null)
@@ -25,6 +26,7 @@ class ProductCustomPrice extends ModelService
         $rules = [
             'product_id'        => ['exists:tenant.inv_products,id'],
             'customer_id'       => ['exists:tenant.customers,id'],
+            'currency_id'       => ['exists:tenant.currencies,id'],
         ];
 
         // CREATE
@@ -32,8 +34,8 @@ class ProductCustomPrice extends ModelService
         {
             $rules['product_id'][]    = 'required';
             $rules['customer_id'][]   = 'required';
-            $rules['currency'][]      = 'required';
             $rules['custom_price'][]  = 'required';
+            $rules['currency_id'][]   = 'required';
         }        
 
         return $rules;
@@ -47,5 +49,10 @@ class ProductCustomPrice extends ModelService
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class, 'currency_id');
     }
 }
