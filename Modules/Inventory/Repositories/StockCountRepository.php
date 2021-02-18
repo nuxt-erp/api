@@ -459,7 +459,7 @@ class StockCountRepository extends RepositoryService
                 'product'               => $item->product->name,
                 'brand'                 => $item->product->brand,
                 'category'              => optional($item->product->category)->name ?? null,
-                'location'              => $item->location->name,
+                'location'              => optional($item->location)->name ?? null,
                 'bin'                   => optional($item->bin)->name ?? null,
                 'on_hand'               => $item->stock_on_hand,
                 'stock_take_quantity'   => $item->qty,
