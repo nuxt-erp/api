@@ -107,13 +107,15 @@ class StockAdjustmentRepository extends RepositoryService
         }
     }
 
-    public function delete($item)
+    private function findStockAdjustmentLocations($id)
     {
-        $result = true;
+        $locations = StockAdjustmentDetail::select('location_id')->where('stock_adjustment_id', $id)->distinct()->get();
+        return $locations;
+    }
 
-        DB::transaction(function () use ($item)
-        {
-            lad($item->id);
+    public function destroy($item)
+    {
+        DB::transaction(function () use ($item) {
             $availability_repository = new AvailabilityRepository(new Availability());
             $stockAdjustment = StockAdjustment::find($item->id)->with('details')->first();
             lad($stockAdjustment->details);

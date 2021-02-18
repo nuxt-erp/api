@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Contact;
 use App\Models\Country;
 use App\Models\CronLog;
+use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\CustomerTag;
 use App\Models\Location;
@@ -78,5 +79,6 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(CustomerTag::class, CustomerTagPolicy::class);
         Gate::policy(SettingsImages::class, SettingsImagesPolicy::class);
         Gate::policy(CronLog::class, CronLogPolicy::class);
+        Gate::policy(Currency::class, CurrencyPolicy::class);
     }
 }
