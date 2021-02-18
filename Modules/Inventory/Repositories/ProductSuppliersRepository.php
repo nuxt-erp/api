@@ -15,17 +15,19 @@ class ProductSuppliersRepository extends RepositoryService
     public function skuSuppliers(array $searchCriteria = [])
     {
         if (!empty($searchCriteria['supplier_id'])) {
-         
+
             $this->queryBuilder->where('supplier_id', $searchCriteria['supplier_id']);
-            
-            unset($searchCriteria['id']);
+
+            unset($searchCriteria['supplier_id']);
         } 
         if (!empty($searchCriteria['product_sku'])) {
-         
+
             $this->queryBuilder->where('product_sku', $searchCriteria['product_sku']);
             
             unset($searchCriteria['product_sku']);
         }    
-        return parent::findBy($searchCriteria); 
+        
+        $res =  parent::findBy($searchCriteria);
+        return $res; 
     }
 }

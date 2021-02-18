@@ -5,6 +5,7 @@ namespace Modules\Inventory\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
+use Illuminate\Support\Arr;
 use Modules\Inventory\Repositories\ProductSuppliersRepository;
 use Modules\Inventory\Transformers\ProductSuppliersResource;
 
@@ -23,8 +24,8 @@ class ProductSuppliersController extends ControllerService implements CheckPolic
     
     public function skuSuppliers(Request $request)
     {
-        $items = $this->repository->skuSuppliers($request->all());
-        return $items;
+        $result = $this->repository->skuSuppliers($request->all());
+        return $result;
     }
     
 }

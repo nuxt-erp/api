@@ -140,7 +140,7 @@ class PurchaseRepository extends RepositoryService
                         );
 
                         $total += $total_item;
-
+                        lad($data['status']);
                         // We need to check update stock
                         if ($data['status']) { // Do not update when the stock is already received
                             // Increase stock quantity
