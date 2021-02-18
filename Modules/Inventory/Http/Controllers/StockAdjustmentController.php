@@ -19,10 +19,4 @@ class StockAdjustmentController extends ControllerService implements CheckPolici
         $this->resource = $resource;
         parent::__construct();
     }
-
-    public function findStockAdjustmentLocations(Request $request)
-    {
-        $result = $this->repository->findStockAdjustmentLocations($request->all());
-        return $this->sendArray($result);
-    }
 }

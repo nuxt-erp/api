@@ -106,12 +106,6 @@ class StockAdjustmentRepository extends RepositoryService
         }
     }
 
-    private function findStockAdjustmentLocations($id)
-    {
-        $locations = StockAdjustmentDetail::select('location_id')->where('stock_adjustment_id', $id)->distinct()->get();
-        return $locations;
-    }
-
     public function destroy($id)
     {
         DB::transaction(function () use ($id) {

@@ -35,6 +35,11 @@ class StockAdjustment extends ModelService
         return $this->hasMany(StockAdjustmentDetail::class, 'stock_adjustment_id');
     }
 
+    public function detailsWithLocationNames()
+    {
+        return $this->hasMany(StockAdjustmentDetail::class, 'stock_adjustment_id')->with('location');
+    }
+
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');
