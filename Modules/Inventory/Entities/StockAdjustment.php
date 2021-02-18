@@ -23,7 +23,6 @@ class StockAdjustment extends ModelService
     public function getRules($request, $item = null)
     {
         $rules = [
-            'author_id'     => ['exists:public.users,id'],
             'notes'         => ['nullable', 'string'],
         ];
 
