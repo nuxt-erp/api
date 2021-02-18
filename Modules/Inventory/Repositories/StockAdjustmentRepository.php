@@ -127,7 +127,6 @@ class StockAdjustmentRepository extends RepositoryService
         $details = StockAdjustmentDetail::where('stock_adjustment_id', $id)->with(['product', 'product.brand', 'location', 'bin'])->get();
         $collection = [];
 
-        lad($details);
         foreach ($details as $item) {
             $product = [
                 'sku'                   => $item->product->sku,

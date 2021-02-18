@@ -143,9 +143,10 @@ class StockCountRepository extends RepositoryService
         return !empty($filter['per_page']) ? ['list' => $availabilities, 'pagination' => Arr::except($collection, 'data')] : $availabilities;
     }
 
-    public function getStockCountStatuses() {
+    public function getStockCountStatuses()
+    {
         $statuses = $this->model->getStatuses();
-        lad($statuses); 
+        lad($statuses);
         $keyValue = [];
         $i = 0;
         foreach ($statuses as $key => $nested) {
@@ -156,7 +157,7 @@ class StockCountRepository extends RepositoryService
                 $i++;
             }
         }
-        return $keyValue;   
+        return $keyValue;
     }
 
     public function findProductsAvailabilitiesMobile($filter)
@@ -359,16 +360,15 @@ class StockCountRepository extends RepositoryService
                     }
                 }
             }
-            
-            if(!empty($data['web'])) {
+
+            if (!empty($data['web'])) {
                 $products = $this->findProductsAvailabilities($data);
                 $this->model->details()->sync($products);
             } else {
-                if(!empty($data['list_products'])) {
+                if (!empty($data['list_products'])) {
                     $this->model->details()->sync($data['list_products']);
                 }
             }
-        
         });
     }
 
@@ -377,28 +377,28 @@ class StockCountRepository extends RepositoryService
         DB::transaction(function () use ($data, $model) {
             parent::update($model, $data);
             // UPDATE STOCK TAKE PRODUCTS
-            if(!empty($data['web'])) {
+            if (!empty($data['web'])) {
                 foreach ($data['list_products'] as $detail) {
-                    StockCountDetail::updateOrCreate([
-                        'stockcount_id' => $model->id,
-                        'product_id' => $detail['product_id'],
-                        'location_id' => $detail['location_id'],
-                        'bin_id' => $detail['bin_id'],
-                    ], 
-                    [
-                        'qty' => $detail['qty'],
-                        'variance' => $detail['variance'],
-                        'notes' => $detail['notes'],
-                        'stock_on_hand' => $detail['on_hand']
-                    ]);
-    
+                    StockCountDetail::updateOrCreate(
+                        [
+                            'stockcount_id' => $model->id,
+                            'product_id' => $detail['product_id'],
+                            'location_id' => $detail['location_id'],
+                            'bin_id' => $detail['bin_id'],
+                        ],
+                        [
+                            'qty' => $detail['qty'],
+                            'variance' => $detail['variance'],
+                            'notes' => $detail['notes'],
+                            'stock_on_hand' => $detail['on_hand']
+                        ]
+                    );
                 }
             } else {
-                if(!empty($data['list_products'])) {
+                if (!empty($data['list_products'])) {
                     $this->model->details()->sync($data['list_products']);
                 }
             }
-           
         });
     }
 
@@ -446,5 +446,30 @@ class StockCountRepository extends RepositoryService
             StockCount::where('id', $stockcount_id)->update(['status' => true]);
             return true;
         });
+    }
+
+    public function exportStockCount($id)
+    {
+        $stock_items = StockCountDetail::where('stockcount_id', $id)->with(['product', 'product.brand', 'product.category', 'location', 'bin'])->get();
+        $collection = [];
+
+        foreach ($stock_items as $item) {
+            $product = [
+                'sku'                   => $item->product->sku,
+                'product'               => $item->product->name,
+                'brand'                 => $item->product->brand,
+                'category'              => optional($item->product->category)->name ?? null,
+                'location'              => $item->location->name,
+                'bin'                   => optional($item->bin)->name ?? null,
+                'on_hand'               => $item->stock_on_hand,
+                'stock_take_quantity'   => $item->qty,
+                'variance'              => $item->variance,
+                'notes'                 => $item->notes
+            ];
+
+            array_push($collection, $product);
+        }
+
+        return $collection;
     }
 }

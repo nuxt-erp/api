@@ -44,4 +44,10 @@ class StockCountController extends ControllerService implements CheckPolicies
         $status = $this->repository->finish($stockcount_id);
         return $this->send();
     }
+
+    public function export($stockcount_id)
+    {
+        $result = $this->repository->exportStockCount($stockcount_id);
+        return $this->setStatusCode(201)->sendArray($result);
+    }
 }
