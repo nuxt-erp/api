@@ -129,9 +129,9 @@ class StockAdjustmentRepository extends RepositoryService
 
         foreach ($details as $item) {
             $product = [
-                'sku'                   => $item->product->sku,
-                'product'               => $item->product->name,
-                'brand'                 => $item->product->brand,
+                'sku'                   => optional($item->product)->sku ?? null,
+                'product'               => optional($item->product)->name ?? null,
+                'brand'                 => optional($item->product->brand)->name ?? null,
                 'location'              => optional($item->location)->name ?? null,
                 'bin'                   => optional($item->bin)->name ?? null,
                 'on_hand'               => $item->stock_on_hand,
