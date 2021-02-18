@@ -21,6 +21,7 @@ class StockAdjustmentRepository extends RepositoryService
             'direction'     => 'asc'
         ];
 
+
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
                 ->where('id', $searchCriteria['id']);
@@ -106,18 +107,24 @@ class StockAdjustmentRepository extends RepositoryService
         }
     }
 
-    public function destroy($id)
+    public function delete($item)
     {
-        DB::transaction(function () use ($id)
+        $result = true;
+
+        DB::transaction(function () use ($item)
         {
+            lad($item->id);
             $availability_repository = new AvailabilityRepository(new Availability());
-            $stockAdjustment = StockAdjustment::find($id)->with('details')->first();
+            $stockAdjustment = StockAdjustment::find($item->id)->with('details')->first();
             lad($stockAdjustment->details);
             foreach ($stockAdjustment->details as $value)
             {
-                $availability_repository->updateStock($value->product_id, $value->qty, $value->location_id, null, "-", "Stock Adjustment", $id, 0, 0, "Remove item");
+                $availability_repository->updateStock($value->product_id, $value->qty, $value->location_id, null, "-", "Stock Adjustment", $item->id, 0, 0, "Remove item");
             }
-            StockAdjustment::where('id', $id)->delete();
+            StockAdjustmentDetail::where('stock_adjustment_id', $item->id)->delete();
         });
+
+        return parent::delete($item);
+
     }
 }

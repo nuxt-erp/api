@@ -27,7 +27,6 @@ class StockCountRepository extends RepositoryService
 
         // SUM OF ABS VARIANCE
         $this->queryBuilder->addSelect(\DB::raw('(SELECT SUM(ABS(variance)) FROM inv_stock_count_details sd2 WHERE sd2.stockcount_id = inv_stock_counts.id) as abs_variance'));
-
         $searchCriteria['order_by'] = [
             'field'         => 'id',
             'direction'     => 'asc'
