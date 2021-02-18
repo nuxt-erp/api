@@ -54,10 +54,12 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('stock_count_filters', 'StockCountFilterController');
         Route::resource('stock_adjustments', 'StockAdjustmentController');
         Route::resource('stock_adjustment_details', 'StockAdjustmentDetailController');
+        Route::get('stock_adjustment_export/{id?}', 'StockAdjustmentController@export');
         Route::resource('stock_count', 'StockCountController');
         Route::get('stock_count_statuses', 'StockCountController@getStatuses');
         Route::resource('stock_count_details', 'StockCountDetailController');
         Route::get('stock_count/finish/{id?}', 'StockCountController@finish'); // ADJUST AND FINISH STOCK TAKE
+        Route::get('stock_count/export/{id?}', 'StockCountController@export');
         Route::get('stock_on_hand', 'AvailabilityController@stockOnHand');
         Route::get('stock_count_data', 'ProductController@stockCountData');
         Route::get('start_stock_count', 'StockCountController@start');

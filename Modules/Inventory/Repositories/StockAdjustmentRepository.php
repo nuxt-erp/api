@@ -121,4 +121,28 @@ class StockAdjustmentRepository extends RepositoryService
 
         return parent::delete($item);
     }
+
+    public function exportStockAdjustment($id)
+    {
+        $details = StockAdjustmentDetail::where('stock_adjustment_id', $id)->with(['product', 'product.brand', 'location', 'bin'])->get();
+        $collection = [];
+
+        foreach ($details as $item) {
+            $product = [
+                'sku'                   => $item->product->sku,
+                'product'               => $item->product->name,
+                'brand'                 => $item->product->brand,
+                'location'              => $item->location->name,
+                'bin'                   => $item->bin,
+                'on_hand'               => $item->stock_on_hand,
+                'new_quantity'          => $item->qty,
+                'variance'              => $item->variance,
+                'notes'                 => $item->notes
+            ];
+
+            array_push($collection, $product);
+        }
+
+        return $collection;
+    }
 }
