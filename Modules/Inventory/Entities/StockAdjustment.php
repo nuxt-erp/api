@@ -17,14 +17,14 @@ class StockAdjustment extends ModelService
     ];
 
     protected $fillable = [
-        'notes', 'author_id', 'name', 'effective_date'
+        'notes', 'author_id', 'location_id', 'name', 'effective_date'
     ];
 
     public function getRules($request, $item = null)
     {
         $rules = [
-            'author_id' => ['exists:public.users,id'],
-            'notes'     => ['nullable', 'string'],
+            'author_id'     => ['exists:public.users,id'],
+            'notes'         => ['nullable', 'string'],
         ];
 
         return $rules;
@@ -38,6 +38,11 @@ class StockAdjustment extends ModelService
     public function detailsWithLocationNames()
     {
         return $this->hasMany(StockAdjustmentDetail::class, 'stock_adjustment_id')->with('location');
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id');
     }
 
     public function author()
