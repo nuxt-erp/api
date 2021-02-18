@@ -54,6 +54,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('stock_count_filters', 'StockCountFilterController');
         Route::resource('stock_adjustments', 'StockAdjustmentController');
         Route::resource('stock_adjustment_details', 'StockAdjustmentDetailController');
+        Route::get('stock_adjustment_export/{id?}', 'StockAdjustmentController@export');
         Route::resource('stock_count', 'StockCountController');
         Route::get('stock_count_statuses', 'StockCountController@getStatuses');
         Route::resource('stock_count_details', 'StockCountDetailController');
