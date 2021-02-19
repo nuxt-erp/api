@@ -112,7 +112,6 @@ class StockAdjustmentRepository extends RepositoryService
         DB::transaction(function () use ($item) {
             $availability_repository = new AvailabilityRepository(new Availability());
             $stockAdjustment = StockAdjustment::find($item->id)->with('details')->first();
-            lad($stockAdjustment->details);
             foreach ($stockAdjustment->details as $value) {
                 $availability_repository->updateStock($value->product_id, $value->qty, $value->location_id, null, "-", "Stock Adjustment", $item->id, 0, 0, "Remove item");
             }

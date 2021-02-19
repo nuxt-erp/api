@@ -29,15 +29,14 @@ class TransferController extends ControllerService implements CheckPolicies
 
     public function exportPackingSlip($id)
     {
-       $details = TransferDetails::where('transfer_id', $id)->with('product')->get();
-       $collection = [];
+        $details = TransferDetails::where('transfer_id', $id)->with(['product', 'product.brand'])->get();
+        $collection = [];
 
-        foreach ($details as $item)
-        {
+        foreach ($details as $item) {
             $product = [
-                'SKU'                   => $item->product->sku,
-                'Product Name/Variants' => $item->product->name,
-                'Brand'                 => $item->product->brand->name,
+                'SKU'                   => optional($item->product)->sku ?? null,
+                'Product Name/Variants' => optional($item->product)->name ?? null,
+                'Brand'                 => optional($item->product->brand)->name ?? null,
                 'Planned QTY'           => $item->qty,
                 'Sent QTY'              => $item->qty_sent,
                 'Received QTY'          => $item->qty_received,
@@ -48,11 +47,5 @@ class TransferController extends ControllerService implements CheckPolicies
         }
 
         return $this->setStatusCode(201)->sendArray($collection);
-    }
-
-    public function remove(Request $request) {
-        $this->repository->remove($request->id);     
-        return $this->sendArray(['ok' => true]);
-       
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Inventory\Entities;
 
 use App\Models\ModelService;
@@ -25,7 +26,7 @@ class Transfer extends ModelService
     public function getRules($request, $item = null)
     {
         $rules = [
-           // 'carrier_id'   => ['nullable', 'exists:parameters,id'],
+            // 'carrier_id'   => ['nullable', 'exists:parameters,id'],
         ];
         return $rules;
     }

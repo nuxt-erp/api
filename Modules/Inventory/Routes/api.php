@@ -66,7 +66,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('start_stock_count_mobile', 'StockCountController@startMobile');
 
         Route::resource('transfers', 'TransferController');
-        Route::get('transfer/remove/{id?}', 'TransferController@remove');
         Route::get('transfer/packingSlip/{id?}', 'TransferController@exportPackingSlip'); // EXPORT PACKING SLIP
         Route::resource('transfer_details', 'TransferDetailsController');
         //Route::resource('product_families', 'ProductFamilyController');
