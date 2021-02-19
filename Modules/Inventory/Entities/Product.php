@@ -30,10 +30,10 @@ class Product extends ModelService
         'cost', 'price', 'barcode',
         'length', 'width', 'height',
         'weight', 'launch_at', 'is_enabled',
-        'disabled_at', 'sales_channel','stock_locator',
+        'disabled_at', 'sales_channel', 'stock_locator',
         'measure_id', 'carton_length', 'carton_width',
         'carton_height', 'carton_weight', 'msrp',
-        'carton_barcode', 'carton_qty','taxable',
+        'carton_barcode', 'carton_qty', 'taxable',
         'flavor_id'
     ];
 
@@ -48,7 +48,7 @@ class Product extends ModelService
             'family_id'     => ['nullable', 'exists:tenant.inv_families,id'],
             'measure_id'    => ['nullable', 'exists:tenant.inv_measure,id'],
             'location_id'   => ['nullable', 'exists:tenant.locations,id'],
-            'carton_barcode'=> ['nullable', 'string', 'max:255'],
+            'carton_barcode' => ['nullable', 'string', 'max:255'],
             'carton_qty'    => ['nullable', 'numeric']
             //@todo add more validation
         ];
@@ -79,6 +79,24 @@ class Product extends ModelService
         foreach ($this->product_attributes as $key => $p_attribute) {
             $string .= ($key == 0  ? '' : ', ') . $p_attribute->attribute->name . ': ' . $p_attribute->value;
         }
+        return $string;
+    }
+
+    public function getDetailsAttributeValue()
+    {
+        $string = $this->sku . ' - ' . $this->name;
+
+        if (!empty($this->brand)) {
+            $string .= ' - ' .  optional($this->brand)->name;
+        }
+
+        if (!empty($this->product_attributes)) {
+            if (count($this->product_attributes) > 0) $string .= ' - ';
+            foreach ($this->product_attributes as $key => $p_attribute) {
+                $string .= ($key == 0  ? '' : ', ') . $p_attribute->value;
+            }
+        }
+
         return $string;
     }
 
@@ -114,7 +132,8 @@ class Product extends ModelService
         return 0;
     }
 
-    public function product_attributes(){
+    public function product_attributes()
+    {
         return $this->hasMany(ProductAttributes::class, 'product_id', 'id');
     }
 
@@ -175,5 +194,4 @@ class Product extends ModelService
     {
         return $this->hasMany(PriceTierItems::class, 'product_id', 'id');
     }
-
 }

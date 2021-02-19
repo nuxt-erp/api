@@ -24,10 +24,11 @@ class ListResource extends ResourceService
         lad($this->model);
         switch ($this->model) {
             case 'Product':
-                $resource['label']    = $this->sku . ' - ' . $this->name;
-                $resource['sku']      = $this->sku;
-                $resource['cost']     = $this->cost;
+                $resource['label']             = $this->sku . ' - ' . $this->name;
+                $resource['sku']               = $this->sku;
+                $resource['cost']              = $this->cost;
                 $resource['complete_name']     = $this->sku . ' - ' . $this->name;
+                $resource['display_name']      = $this->getDetailsAttributeValue();
                 break;
             case 'Parameter':
                 $resource['name']           = $this->name;
