@@ -12,6 +12,9 @@ class Transfer extends ModelService
 
     public $table       = "inv_transfers";
 
+    protected $dates = [
+        'pu_date', 'eta'
+    ];
     protected $fillable = [
         'pu_date', 'created_at', 'updated_at',
         'carrier_id', 'eta', 'shipment_type_id',

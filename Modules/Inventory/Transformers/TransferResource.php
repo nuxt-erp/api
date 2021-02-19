@@ -12,7 +12,7 @@ class TransferResource extends ResourceService
             'id'                    => $this->id,
             'created_at'            => $this->created_at,
             'updated_at'            => $this->updated_at,
-            'pu_date'               => $this->pu_date,            
+            'pu_date'               => optional($this->pu_date)->format('Y-m-d H:i:s'),
             'tracking_number'       => $this->tracking_number,
             'carrier_id'            => $this->carrier_id,
             'carrier_name'          => optional($this->parameter_carrier)->value,
@@ -25,7 +25,7 @@ class TransferResource extends ResourceService
             'location_from_name'    => optional($this->location_from)->name,
             'location_to_id'        => $this->location_to_id,
             'location_to_name'      => optional($this->location_to)->name,
-            'eta'                   => $this->eta,
+            'eta'                   => optional($this->eta)->format('Y-m-d H:i:s'),
             'is_enable'             => $this->is_enable,
             'status_label'          => ($this->is_enable == true ? "In Progress" : "Received"),
             'can_be_deleted'        => false

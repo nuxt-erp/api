@@ -13,6 +13,13 @@ class Purchase extends ModelService
 
     protected $table = 'pur_purchases';
 
+    const DRAFT_ORDER           = 'draft order';
+    const PARTIALLY_RECEIVED    = 'partially received';
+    const AWAITING_PAYMENT      = 'awaiting payment';
+    const RECEIVED              = 'received';
+    const AWAITING_DELIVERY     = 'awaiting delivery';
+    const VOIDED                = 'voided';
+
     protected $dates = [
         'purchase_date',
     ];
@@ -30,12 +37,15 @@ class Purchase extends ModelService
         $rules = [
             'supplier_id'   => ['nullable', 'exists:tenant.suppliers,id'],
             'location_id'   => ['nullable', 'exists:tenant.locations,id'],
+            'status'        => ['string', 'max:50'],
+
         ];
 
         // CREATE
         if (is_null($item))
         {
             $rules['po_number'][] = 'unique:tenant.pur_purchases';
+            $rules['status'][]    = 'required';
         }
         else{
             $rules['po_number'][] = Rule::unique('tenant.pur_purchases')->ignore($item->id);

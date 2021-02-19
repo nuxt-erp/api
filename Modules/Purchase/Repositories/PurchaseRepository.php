@@ -59,6 +59,8 @@ class PurchaseRepository extends RepositoryService
         {
             if(!empty($data['name']) && $data['name']) $data['po_number']  = $data['name'];
 
+            if(empty($data['tracking_number']) && !empty($data['status']) && $data['status'] !== Purchase::AWAITING_PAYMENT) $data['status'] = Purchase::DRAFT_ORDER;
+            
             parent::store($data);
 
             if(!empty($data["supplier_id"])){
@@ -68,7 +70,11 @@ class PurchaseRepository extends RepositoryService
 
             // Save purchase details
             
-            $this->savePurchaseDetails($data, $this->model->id);
+            $status = $this->savePurchaseDetails($data, $this->model->id);
+            if(!empty($status)) {
+                $this->model->status = $status;
+                $this->model->save();
+            }
         });
     }
 
@@ -76,17 +82,26 @@ class PurchaseRepository extends RepositoryService
     {
         DB::transaction(function () use ($data, $model)
         {
+            if(empty($data['tracking_number']) && !empty($data['status']) && $data['status'] !== Purchase::AWAITING_PAYMENT) $data['status'] = Purchase::DRAFT_ORDER;
+            
             parent::update($model, $data);
+
+            $status = $this->savePurchaseDetails($data, $this->model->id);
+            if(!empty($status)) {
+                $this->model->status = $status;
+                $this->model->save();
+            }
             // UPDATE STOCK TAKE PRODUCTS
-            $this->savePurchaseDetails($data, $this->model->id);
         });
     }
 
     private function savePurchaseDetails($data, $id)
     {
+        $status = null;
         //@todo update product cost?
-        DB::transaction(function () use ($data, $id)
+        DB::transaction(function () use ($data, $id, &$status)
         {
+
             if (!empty($data["list_products"]))
             {
                 $total      = 0;
@@ -96,8 +111,9 @@ class PurchaseRepository extends RepositoryService
                 PurchaseDetail::where('purchase_id', $id)->delete();
 
                 $availability_repository = new AvailabilityRepository(new Availability());
-
-                foreach ($data['list_products'] as $item) // EACH ATTRIBUTE
+                $all_received   = true; 
+                $none_received  = true; 
+                foreach ($data['list_products'] as $item)  // EACH ATTRIBUTE
                 {
 
                     $qty            = $item['qty'] ?? 0;
@@ -140,24 +156,58 @@ class PurchaseRepository extends RepositoryService
                         );
 
                         $total += $total_item;
-                        lad($data['status']);
-                        // We need to check update stock
-                        if ($data['status']) { // Do not update when the stock is already received
+                        
+                        if($qty_received < $qty && $qty_received > 0)  {
+                            lad('$qty < $qty_received && $qty_received > 0');
+                            lad('$qty: ' . $qty . ' $qty_received: ' . $qty_received);
+
+                            // updateStock($product_id, $qty, $location_id, $bin_id, $operator, $type, $ref_code, $on_order_qty = 0, $allocated_qty = 0, $description = '')
+                            $all_received = false;
+                            $none_received = false;
+
+                            // Increase stock quantity
+                            $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], $bin_id, '+', 'Purchase', $id, $qty - $qty_received, 0, 'Received');
+
+                            // Decrease on order quantity
+                            $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], $bin_id, '-', 'Purchase', $id, $qty - $qty_received, 0, 'Ordered');
+                        
+                        } else if($qty_received < $qty  && $qty_received === 0) { 
+                            lad('$qty < $qty_received  && $qty_received === 0');
+                            lad('$qty: ' . $qty . ' $qty_received: ' . $qty_received);
+
+                            $all_received = false;
+
+                            $availability_repository->updateStock($product_id, $qty, $data['location_id'], $bin_id, '+', 'Purchase', $id, $qty, 0, 'Ordered');
+                        
+                        } else if($qty_received >= $qty) {
+                            lad('$qty >= $qty_received');
+                            lad('$qty: ' . $qty . ' $qty_received: ' . $qty_received);
+
+                          
                             // Increase stock quantity
                             $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], $bin_id, '+', 'Purchase', $id, 0, 0, 'Received');
 
                             // Decrease on order quantity
                             $availability_repository->updateStock($product_id, $qty_received, $data['location_id'], $bin_id, '-', 'Purchase', $id, $qty, 0, 'Ordered');
-                        }
-                        else{ // Not fulfilled, update on order quantity
-                            $availability_repository->updateStock($product_id, $qty, $data['location_id'], $bin_id, '+', 'Purchase', $id, $qty, 0, 'Ordered');
+                            
                         }
                     }
+
+                        
+                }                
+                if($none_received && !$all_received && !empty($data['tracking_number'])) {
+                    $status     = Purchase::AWAITING_DELIVERY;
+                } else if($all_received) {
+                    $status     = Purchase::RECEIVED;
+                } else if (!$none_received && ! $all_received) {
+                    $status     = Purchase::PARTIALLY_RECEIVED;   
                 }
+            }
                 // Total purchase
                // Purchase::where('id', $id)->update(['total' => $total]);
-            }
+            
         });
+        return $status;
     }
 
     public function destroy($id)
