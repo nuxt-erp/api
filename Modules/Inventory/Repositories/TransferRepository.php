@@ -1,6 +1,7 @@
 <?php
 
 namespace Modules\Inventory\Repositories;
+
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Arr;
 use Auth;
@@ -25,17 +26,16 @@ class TransferRepository extends RepositoryService
 
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder
-            ->where('id', Arr::pull($searchCriteria, 'id'));
+                ->where('id', Arr::pull($searchCriteria, 'id'));
         }
 
-     //   $this->queryBuilder->where('company_id', Auth::user()->company_id);
+        //   $this->queryBuilder->where('company_id', Auth::user()->company_id);
         return parent::findBy($searchCriteria);
     }
 
     public function store($data)
     {
-        DB::transaction(function () use ($data)
-        {
+        DB::transaction(function () use ($data) {
             parent::store($data);
             // SAVE Transfer DETAILS
             $this->saveTransferDetails($data, $this->model->id);
@@ -43,8 +43,7 @@ class TransferRepository extends RepositoryService
     }
     public function update($model, array $data)
     {
-        DB::transaction(function () use ($data, $model)
-        {
+        DB::transaction(function () use ($data, $model) {
             parent::update($model, $data);
             // UPDATE STOCK TAKE PRODUCTS
             $this->saveTransferDetails($data, $this->model->id);
@@ -53,11 +52,10 @@ class TransferRepository extends RepositoryService
 
     private function saveTransferDetails($data, $id)
     {
-        DB::transaction(function () use ($data, $id){
+        DB::transaction(function () use ($data, $id) {
             $availability_repository = new AvailabilityRepository(new Availability());
 
-            if (!empty($data['list_products']))
-            {
+            if (!empty($data['list_products'])) {
                 // DELETE ITEMS TO INSERT THEM AGAIN
                 TransferDetails::where('transfer_id', $id)->delete();
                 $list_products = $data['list_products'];
@@ -69,28 +67,33 @@ class TransferRepository extends RepositoryService
                     $product_id     = $item['product_id'] ?? $item['name'] ?? null;
                     if ($product_id) {
 
-                        TransferDetails::updateOrCreate([
-                            'transfer_id'    => $id,
-                            'product_id'     => $product_id],
-                        [
-                            'transfer_id'    => $id,
-                            'product_id'     => $product_id,
-                            'qty'            => $qty,
-                            'qty_sent'       => $qty_sent,
-                            'qty_received'   => $qty_received,
-                            'variance'       => ($qty_sent - $qty_received)
-                        ]);
+                        TransferDetails::updateOrCreate(
+                            [
+                                'transfer_id'    => $id,
+                                'product_id'     => $product_id
+                            ],
+                            [
+                                'transfer_id'    => $id,
+                                'product_id'     => $product_id,
+                                'qty'            => $qty,
+                                'qty_sent'       => $qty_sent,
+                                'qty_received'   => $qty_received,
+                                'variance'       => ($qty_sent - $qty_received)
+                            ]
+                        );
 
-                        // Transfer received, update stock levels on both locations
-                        if ($qty_received > 0) {
-                            // Increment stock from receiver location
-                            $availability_repository->updateStock($product_id, $qty_received, $data['location_to_id'], null, '+', 'Transfer', $id,0,0, 'Receiving quantity');
+                        //only update stock when received
+                        if ($data['is_enable'] === 0) {
+                            // Transfer received, update stock levels on both locations
+                            if ($qty_received > 0) {
+                                // Increment stock from receiver location
+                                $availability_repository->updateStock($product_id, $qty_received, $data['location_to_id'], null, '+', 'Transfer', $id, 0, 0, 'Receiving quantity');
 
-                            // Decrement stock from sender
-                            $availability_repository->updateStock($product_id, $qty_received, $data['location_from_id'], null, '-', 'Transfer', $id, 0,0, 'Sending quantity');
+                                // Decrement stock from sender
+                                $availability_repository->updateStock($product_id, $qty_received, $data['location_from_id'], null, '-', 'Transfer', $id, 0, 0, 'Sending quantity');
 
-                          //Transfer::where('id', $id)->update(['is_enable' => 0]); // Transfer status
-
+                                //Transfer::where('id', $id)->update(['is_enable' => 0]); // Transfer status
+                            }
                         }
                     }
                 }
@@ -98,25 +101,20 @@ class TransferRepository extends RepositoryService
         });
     }
 
-    public function remove($id)
+    public function delete($item)
     {
-        DB::transaction(function () use ($id)
-        {
+        DB::transaction(function () use ($item) {
             $availability_repository = new AvailabilityRepository(new Availability());
-            $transfer = Transfer::find('id', $id);
-            if(!empty($transfer->details)){
-                foreach ($transfer->details as $value)
-                {
-                    if ($value->qty_received > 0) { // IF ALREADY RECEIVED
-                       $availability_repository->updateStock($value->product_id, $value->qty_received, $transfer->location_to->id, null, '-', 'Transfer', $id, 0,0, 'Undo transfer item - receiver');    // DECREMENT STOCK FROM RECEIVER LOCATION
-                       $availability_repository->updateStock($value->product_id, $value->qty_received, $transfer->location_from->id, null, '+', 'Transfer', $id, 0,0, 'Undo transfer item - sender');  // INCREMENT STOCK FROM SENDER LOCATION
-                    }
+            $transfer = Transfer::find($item->id)->with('details')->first();
+            foreach ($transfer->details as $value) {
+                if ($value->qty_received > 0) { // IF ALREADY RECEIVED
+                    $availability_repository->updateStock($value->product_id, $value->qty_received, $transfer->location_to->id, null, '-', 'Transfer', $item->id, 0, 0, 'Undo transfer item - receiver');    // DECREMENT STOCK FROM RECEIVER LOCATION
+                    $availability_repository->updateStock($value->product_id, $value->qty_received, $transfer->location_from->id, null, '+', 'Transfer', $item->id, 0, 0, 'Undo transfer item - sender');  // INCREMENT STOCK FROM SENDER LOCATION
                 }
             }
-
-            // parent::delete($id);
-            Transfer::where('id', $id)->delete();
+            TransferDetails::where('transfer_id', $item->id)->delete();
         });
-    }
 
+        return parent::delete($item);
+    }
 }

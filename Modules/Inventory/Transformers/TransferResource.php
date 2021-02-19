@@ -12,7 +12,7 @@ class TransferResource extends ResourceService
             'id'                    => $this->id,
             'created_at'            => $this->created_at,
             'updated_at'            => $this->updated_at,
-            'pu_date'               => $this->pu_date,            
+            'pu_date'               => $this->pu_date,
             'tracking_number'       => $this->tracking_number,
             'carrier_id'            => $this->carrier_id,
             'carrier_name'          => optional($this->parameter_carrier)->value,
