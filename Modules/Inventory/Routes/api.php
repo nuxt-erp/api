@@ -106,5 +106,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('products/{sku}', 'ImportController@syncProduct'); // sync in DEAR only one product
         Route::post('xls/stock_count', 'ImportController@xlsInsertStock');
         Route::post('xls/stock_adjustments', 'ImportController@xlsAdjustStock');
+        Route::post('xls/stock_transfer', 'ImportController@xlsInsertTransfer');
     });
 });

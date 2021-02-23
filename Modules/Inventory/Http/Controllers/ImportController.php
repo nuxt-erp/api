@@ -10,13 +10,15 @@ use Modules\Inventory\Imports\ProductsImport;
 use Modules\Inventory\Imports\BinsImport;
 use Modules\Inventory\Imports\StockAdjustmentImport;
 use Modules\Inventory\Imports\StockCountImport;
+use Modules\Inventory\Imports\TransferImport;
 use stdClass;
 use Modules\Inventory\Transformers\ProductResource;
 
 class ImportController extends ControllerService
 {
 
-    public function productsImport(Request $request){
+    public function productsImport(Request $request)
+    {
 
         $import = new stdClass;
         if ($request->hasFile('excel') && $request->file('excel')->isValid()) {
@@ -24,15 +26,15 @@ class ImportController extends ControllerService
             $import = new ProductsImport;
             $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
         }
-        if(!isset($import->rows) || $import->rows <= 0){
+        if (!isset($import->rows) || $import->rows <= 0) {
             $this->setStatus(FALSE);
             $this->setMessage('No rows processed');
         }
         return $this->sendObject($import);
-
     }
 
-    public function availabilityImport(Request $request){
+    public function availabilityImport(Request $request)
+    {
 
         $import = new stdClass;
         if ($request->hasFile('excel') && $request->file('excel')->isValid()) {
@@ -40,15 +42,15 @@ class ImportController extends ControllerService
             $import = new AvailabilityImport;
             $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
         }
-        if(!isset($import->rows) || $import->rows <= 0){
+        if (!isset($import->rows) || $import->rows <= 0) {
             $this->setStatus(FALSE);
             $this->setMessage('No rows processed');
         }
         return $this->sendObject($import);
-
     }
-    
-    public function binsImport(Request $request){
+
+    public function binsImport(Request $request)
+    {
 
         $import = new stdClass;
         if ($request->hasFile('excel') && $request->file('excel')->isValid()) {
@@ -56,12 +58,11 @@ class ImportController extends ControllerService
             $import = new BinsImport;
             $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
         }
-        if(!isset($import->rows) || $import->rows <= 0){
+        if (!isset($import->rows) || $import->rows <= 0) {
             $this->setStatus(FALSE);
             $this->setMessage('No rows processed');
         }
         return $this->sendObject($import);
-
     }
 
     public function xlsInsertStock(Request $request)
@@ -73,7 +74,23 @@ class ImportController extends ControllerService
             $import = new StockCountImport;
             $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
         }
-        if(!isset($import->rows) || $import->rows < 1){
+        if (!isset($import->rows) || $import->rows < 1) {
+            $this->setStatus(FALSE);
+            $this->setMessage('No rows processed');
+        }
+        return $this->sendObject($import);
+    }
+
+    public function xlsInsertTransfer(Request $request)
+    {
+
+        $import = new stdClass;
+        if ($request->hasFile('excel') && $request->file('excel')->isValid()) {
+            $path = $request->excel->store('imports');
+            $import = new TransferImport;
+            $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
+        }
+        if (!isset($import->rows) || $import->rows < 1) {
             $this->setStatus(FALSE);
             $this->setMessage('No rows processed');
         }
@@ -88,7 +105,7 @@ class ImportController extends ControllerService
             $import = new StockAdjustmentImport;
             $import->import($path, 'local', \Maatwebsite\Excel\Excel::XLSX);
         }
-        if(!isset($import->rows) || $import->rows < 1){
+        if (!isset($import->rows) || $import->rows < 1) {
             $this->setStatus(FALSE);
             $this->setMessage('No rows processed');
         }
@@ -134,7 +151,6 @@ class ImportController extends ControllerService
             'errors'    => [],
             'rows'      => $result
         ]);
-
     }
 
     public function dearSyncAvailabilities()
@@ -147,7 +163,6 @@ class ImportController extends ControllerService
             'errors'    => [],
             'rows'      => $result
         ]);
-
     }
 
     public function dearSyncBrands()
@@ -171,5 +186,4 @@ class ImportController extends ControllerService
             'rows'      => $result
         ]);
     }
-
 }
