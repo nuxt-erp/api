@@ -23,5 +23,10 @@ Route::middleware('auth:api')->group(function () {
         Route::get('purchase/delete/{id?}', 'PurchaseController@destroy');
         Route::get('get_po_number', 'PurchaseController@getNextPONumber');
         Route::get('check_po_number/{po_number}', 'PurchaseController@checkPoNumber');
+        Route::get('purchase_statuses', 'PurchaseController@getStatuses');
+
+    });
+    Route::group(['prefix' => 'import'], function () {
+        Route::post('xls/purchase', 'ImportController@xlsInsertPurchase');
     });
 });

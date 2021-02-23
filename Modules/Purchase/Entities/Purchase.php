@@ -6,7 +6,14 @@ use App\Models\ModelService;
 use App\Models\Location;
 use App\Models\Supplier;
 use Illuminate\Validation\Rule;
-
+class Constants {
+    const DRAFT_ORDER           = [ 'draft order'        => 0 ];
+    const PARTIALLY_RECEIVED    = [ 'partially received' => 1 ];
+    const AWAITING_PAYMENT      = [ 'awaiting payment'   => 2 ];
+    const RECEIVED              = [ 'received'           => 3 ];
+    const AWAITING_DELIVERY     = [ 'awaiting delivery'  => 4 ];
+    const VOIDED                = [ 'voided'             => 5 ];
+    };
 class Purchase extends ModelService
 {
     protected $connection = 'tenant';
@@ -21,14 +28,14 @@ class Purchase extends ModelService
     const VOIDED                = 'voided';
 
     protected $dates = [
-        'purchase_date',
+        'purchase_date', 'invoice_date'
     ];
     protected $fillable = [
         'supplier_id', 'author_id', 'location_id',
         'status', 'ref_code', 'invoice_number', 'tracking_number',
         'notes', 'discount', 'taxes',
         'shipping', 'subtotal', 'total',
-        'purchase_date', 'po_number'
+        'purchase_date', 'invoice_date', 'po_number'
     ];
 
     public function getRules($request, $item = null)
@@ -53,6 +60,22 @@ class Purchase extends ModelService
 
 
         return $rules;
+    }
+    
+    public static function getStatuses() {
+        $oClass = new \ReflectionClass(Constants::class);
+        return $oClass->getConstants();
+    }
+    
+    public function getStatusId($status)
+    {
+        $constants = $this->getStatuses();
+        foreach ($constants as $constant_assoc) {
+            if (!empty($constant_assoc[$status])) {
+                return $constant_assoc[$status];
+            }            
+        }
+        return null;
     }
 
     public function details()

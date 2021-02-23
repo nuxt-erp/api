@@ -7,6 +7,9 @@ use Auth;
 //use App\Traits\StockTrait;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\RepositoryService;
+use Modules\Purchase\Entities\PurchaseDetail;
+use Modules\Inventory\Repositories\AvailabilityRepository;
+use Modules\Inventory\Entities\Availability;
 
 class PurchaseDetailRepository extends RepositoryService
 {
@@ -33,28 +36,25 @@ class PurchaseDetailRepository extends RepositoryService
         parent::store($data);
     }
 
-    public function delete($id)
+    public function delete($item)
     {
-        DB::transaction(function () use ($id)
+        DB::transaction(function () use ($item)
         {
-            $parseId = $id["id"];
-            $getItem = DB::table('pur_purchase_details')->where('pur_purchase_details.id', $parseId)
-            ->join('pur_purchases', 'pur_purchases.id', 'pur_purchase_details.purchase_id')
-            ->first();
+            $detail = PurchaseDetail::find($item->id);
+            $availability_repository = new AvailabilityRepository(new Availability());
 
-            if ($getItem) {
+            if ($detail) {
 
-                if ($getItem->status == 1) { // Completed
+                if ($detail->status == 1) { // Completed
                     // Decrement stock on hand qty
-                    //$this->updateStock(Auth::user()->company_id, $getItem->product_id, $getItem->qty, $getItem->location_id, null, "-", "Purchase", $id, 0, 0, "Removed item");
+                    $availability_repository->updateStock($detail->product_id, $detail->qty_received, $detail->location_id, null, "-", "Purchase", $item->id, 0, 0, "Remove item");
                 } else {
                     // Decrement stock on order qty
-                    //$this->updateStock(Auth::user()->company_id, $getItem->product_id, 0, $getItem->location_id, null, "-", "Purchase", $id, $getItem->qty, 0, 0, "Removed item");
+                    $availability_repository->updateStock($detail->product_id, 0, $detail->location_id, null, "-", "Purchase", $item->id, $detail->qty, 0, "Remove item");
                 }
 
             }
-
-            parent::delete($id);
+            parent::delete($item);
 
         });
     }
