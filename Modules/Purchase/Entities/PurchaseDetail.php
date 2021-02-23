@@ -19,9 +19,9 @@ class PurchaseDetail extends ModelService
 
     protected $fillable = [
         'purchase_id', 'product_id', 'qty',
-        'price', 'sub_total', 'total',
+        'price', 'sub_total', 'total', 'qty_allocated',
         'estimated_date', 'qty_received', 'received_date',
-        'ref', 'item_status', 'taxes',
+        'ref', 'item_status', 'taxes', 'allocation_created',
         'discounts','tax_rule_id', 'bin_id', 'location_id'
     ];
 

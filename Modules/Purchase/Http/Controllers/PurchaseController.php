@@ -36,4 +36,11 @@ class PurchaseController extends ControllerService implements CheckPolicies
             return $this->setStatus(true)->send();
         }
     }
+
+    public function getStatuses()
+    {
+        $result = $this->repository->getPurchaseStatuses();
+        return $this->sendArray($result);
+    }
+
 }

@@ -114,15 +114,19 @@ class AvailabilityRepository extends RepositoryService
             $qty                = $type == 'Purchase' ? $on_order_qty : ($type == 'Sale' ? $allocated_qty : $qty) ;
         }
 
+     
+
         $qb = Availability::where('product_id', $product_id);
-        if(!empty($location_id)){
-            $qb->where('location_id', $location_id);
+        $qb->where('location_id', $location_id);
+        if(empty($bin_id)){
+            $qb->whereNull('bin_id');
         }
-        if(!empty($bin_id)){
+        else{
             $qb->where('bin_id', $bin_id);
         }
-
+        
         $availability = $qb->first();
+
         if(!$availability){
             $availability = Availability::create([
                 'product_id'    => $product_id,
