@@ -7,12 +7,15 @@ use Illuminate\Validation\Rule;
 
 class TransferDetails extends ModelService
 {
-   
-    protected $connection = 'tenant';
+    const WARNING   = 'warning';
+    const OK        = 'ok';
+    const RECEIVED  = 'received';
 
-    public $table       = "inv_transfer_details";
+    protected $connection  = 'tenant';
 
-    protected $fillable = [
+    public $table          = "inv_transfer_details";
+
+    protected $fillable    = [
         'transfer_id', 'product_id', 'qty', 'qty_received', 'qty_sent', 'variance'
     ];
 
@@ -25,6 +28,18 @@ class TransferDetails extends ModelService
         return $rules;
     }
 
+    public function getAvailabilitiesStatus()
+    {
+        $on_hand = Availability::where(['product_id' => $this->product_id, 'location_id' => $this->transfer->location_from->id])->pluck('on_hand')->first();
+        if (!$this->transfer->is_enable) {
+            return array($on_hand, TransferDetails::RECEIVED);
+        }
+        if ($this->qty_sent > $on_hand) {
+            return array($on_hand, TransferDetails::WARNING);
+        }
+        return array($on_hand, TransferDetails::OK);
+    }
+
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
@@ -34,5 +49,4 @@ class TransferDetails extends ModelService
     {
         return $this->belongsTo(Transfer::class, 'transfer_id');
     }
-
 }

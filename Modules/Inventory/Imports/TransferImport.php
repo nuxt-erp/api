@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Concerns\Importable;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\Availability;
+use Modules\Inventory\Entities\TransferDetails;
 
 class TransferImport implements ToArray, WithHeadingRow
 {
@@ -32,6 +33,7 @@ class TransferImport implements ToArray, WithHeadingRow
                 if ($product) {
                     $qty = 0;
                     $qty_sent = 0;
+                    $qty_received = 0;
                     $on_hand = 0;
 
                     if ($row['location_from'] != "") {
@@ -51,6 +53,9 @@ class TransferImport implements ToArray, WithHeadingRow
                     if ($row['qty_sent'] != "") {
                         $qty_sent = $row['qty_sent'];
                     }
+                    if ($row['qty_received'] != "") {
+                        $qty_received = $row['qty_received'];
+                    }
 
                     $array = [
                         'name'                  => $product->name,
@@ -63,9 +68,10 @@ class TransferImport implements ToArray, WithHeadingRow
                         'qty'                   => $qty,
                         'on_hand'               => $on_hand,
                         'qty_sent'              => $qty_sent,
-                        'qty_received'          => !empty($row['qty_received']) ? $row['qty_received'] : 0,
+                        'qty_received'          => $qty_received,
                         'sku'                   => $row['sku'],
-                        'variance'              => !empty($on_hand) ? $qty - $on_hand : 0,
+                        'variance'              => $qty_sent - $qty_received,
+                        'status'                => $qty_sent > $on_hand ? TransferDetails::WARNING : TransferDetails::OK,
                         'can_be_deleted'        => 1
                     ];
 

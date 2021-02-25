@@ -21,6 +21,39 @@ class TransferRepository extends RepositoryService
 
     public function findBy(array $searchCriteria = [])
     {
+
+        lad($searchCriteria);
+
+        if (!empty($searchCriteria['filter_received'])) {
+            if ($searchCriteria['filter_received'] == 1) {
+                $this->queryBuilder->where('is_enable', false);
+            }
+        }
+
+        if (!empty($searchCriteria['shipment_type_name'])) {
+            $value = '%' . Arr::pull($searchCriteria, 'shipment_type_name') . '%';
+            $this->queryBuilder->whereHas('parameter_shipment', function ($query) use ($value) {
+                $query->where('name', 'ILIKE', 'shipment_type')->where('value', 'ILIKE', $value);
+            });
+        }
+
+        if (!empty($searchCriteria['carrier_name'])) {
+            $value = '%' . Arr::pull($searchCriteria, 'carrier_name') . '%';
+            $this->queryBuilder->whereHas('parameter_carrier', function ($query) use ($value) {
+                $query->where('name', 'ILIKE', 'carrier')->where('value', 'ILIKE', $value);
+            });
+        }
+
+        if (!empty($searchCriteria['location_name'])) {
+            $location = '%' . Arr::pull($searchCriteria, 'location_name') . '%';
+            $this->queryBuilder->whereHas('location_from', function ($query) use ($location) {
+                $query->where('name', 'ILIKE', $location);
+            })
+                ->orWhereHas('location_to', function ($query) use ($location) {
+                    $query->where('name', 'ILIKE', $location);
+                });
+        }
+
         $searchCriteria['order_by'] = [
             'field'         => 'id',
             'direction'     => 'asc'

@@ -21,10 +21,12 @@ class TransferDetailsResource extends ResourceService
             'product_name'      => optional($this->product)->name,
             'display_name'      => optional($this->product)->getDetailsAttributeValue(),
             'name'              => optional($this->product)->name,
+            'on_hand'           => $this->getAvailabilitiesStatus()[0],
             'qty'               => $this->qty,
             'qty_received'      => $this->qty_received,
             'qty_sent'          => $this->qty_sent,
             'variance'          => $this->variance,
+            'status'            => $this->getAvailabilitiesStatus()[1],
             'can_be_deleted'    => true
         ];
     }
