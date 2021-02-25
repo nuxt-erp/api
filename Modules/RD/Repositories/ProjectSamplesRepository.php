@@ -21,17 +21,32 @@ class ProjectSamplesRepository extends RepositoryService
             $this->queryBuilder->where('assignee_id', $user->id);
         }
 
+        if($user->hasRole('rd_quality_control')){
+            if(!empty($searchCriteria['tab'])){
+                $tab = Arr::pull($searchCriteria, 'tab');
+                $this->queryBuilder
+                ->where('status', 'ILIKE', $tab == 'pending' ? 'waiting qc' : 'ready');
+            }
+            else{
+                $this->queryBuilder
+                ->where('status', 'ILIKE', 'waiting qc')
+                ->orWhere('status', 'ILIKE', 'ready');
+            }
+        }
+        else{
+            if(!empty($searchCriteria['tab'])){
+                $tab = Arr::pull($searchCriteria, 'tab');
+                if($tab == 'pending'){
+                    $this->queryBuilder->where('status', '<>', 'approved');
+                }
+                else{
+                    $this->queryBuilder->where('status', 'approved');
+                }
+            }
+        }
+
         if(!empty($searchCriteria['status'])){
             $this->queryBuilder->where('status', strtolower(Arr::pull($searchCriteria, 'status')));
-        }
-
-        if(!empty($searchCriteria['exclude_status'])){
-            $this->queryBuilder->where('status', '<>',strtolower(Arr::pull($searchCriteria, 'exclude_status')));
-        }
-
-        elseif($user->hasRole('rd_quality_control')){
-            $this->queryBuilder->where('status', 'ILIKE', 'waiting qc')
-            ->orWhere('status', 'ILIKE', 'ready');
         }
 
         if(!empty($searchCriteria['created_at'])){
