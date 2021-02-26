@@ -17,26 +17,26 @@ class RecipeSpecificationPolicy
 
     public function index(User $currentUser)
     {
-        return $currentUser->hasRole('rd_quality_control', 'admin', 'rd_flavorist');
+        return $currentUser->hasRole('rd_quality_control', 'rd_supervisor', 'admin', 'rd_flavorist');
     }
 
     public function show(User $currentUser, RecipeSpecification $target)
     {
-        return $currentUser->hasRole('rd_quality_control', 'admin', 'rd_flavorist');
+        return $currentUser->hasRole('rd_quality_control', 'rd_supervisor', 'admin', 'rd_flavorist');
     }
 
     public function store(User $currentUser)
     {
-        return $currentUser->hasRole('rd_quality_control', 'admin');
+        return $currentUser->hasRole('rd_quality_control', 'rd_supervisor', 'admin');
     }
 
     public function update(User $currentUser, RecipeSpecification $target)
     {
-        return $currentUser->hasRole('rd_quality_control', 'admin');
+        return $currentUser->hasRole('rd_quality_control', 'rd_supervisor', 'admin');
     }
 
     public function destroy(User $currentUser, RecipeSpecification $target)
     {
-        return $currentUser->hasRole('rd_quality_control', 'admin');
+        return $currentUser->hasRole('rd_quality_control', 'rd_supervisor', 'admin');
     }
 }
