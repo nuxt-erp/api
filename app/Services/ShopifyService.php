@@ -292,17 +292,11 @@ class ShopifyService
                         }
                     }
                 });
-            }
-            $end = microtime(true);
-            CronLog::create([
-                'error'          => null,
-                'import_count'   => $cont,
-                'execution_time' => $end - $start
-            ]);
+            }        
         } catch (Throwable $e) {
             $end = microtime(true);
             CronLog::create([
-                'error'         => $e->getMessage(),
+                'error'         => substr($e->getMessage(), 0, 254),
                 'import_count'  => $cont,
                 'execution_time' => $end - $start
             ]);

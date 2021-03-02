@@ -30,7 +30,7 @@ class PurchaseDetailResource extends JsonResource
             'sub_total'           => $this->gross_total,
             'total'               => $this->total,
             'taxes'               => $this->taxes,
-            'discounts'           => $this->discounts,
+            'discounts'           => $this->discounts ?? 0,
             'estimated_date'      => $this->estimated_date,
             'qty_received'        => $this->qty_received,
             'qty_allocated'       => $this->qty_allocated,

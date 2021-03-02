@@ -34,7 +34,7 @@ class Purchase extends ModelService
         'supplier_id', 'author_id', 'location_id',
         'status', 'ref_code', 'invoice_number', 'tracking_number',
         'notes', 'discount', 'taxes',
-        'shipping', 'subtotal', 'total',
+        'shipping', 'subtotal', 'total', 'iteration',
         'purchase_date', 'invoice_date', 'po_number'
     ];
 

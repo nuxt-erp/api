@@ -178,7 +178,7 @@ class StockCountRepository extends RepositoryService
         }
 
         if (!empty($filter['searchable'])) {
-            $qb->where('barcode', 'ILIKE', $filter['searchable'])->orWhere('sku', 'ILIKE',  $filter['searchable']);
+            $qb->where('barcode', 'ILIKE', $filter['searchable'])->orWhere('sku', 'ILIKE',  $filter['searchable'])->orWhere('carton_barcode', 'ILIKE',  $filter['searchable']);
         }
 
         if (!empty($filter['category_ids'])) {
@@ -263,23 +263,26 @@ class StockCountRepository extends RepositoryService
         $bin_searchable = $availability ? optional($availability->bin)->barcode : ($bin->barcode ?? null);
 
         return [
-            'product_id'        => $product->id,
-            'product_name'      => $product->sku . ' - ' . $product->name,
-            'product_full_name' => $product->full_description,
-            'product_sku'       => $product->sku,
-            'product_brand'     => optional($product->brand)->name,
-            'product_category'  => optional($product->category)->name,
-            'searchable'        => $product->barcode ?? $product->sku,
-            'location_id'       => $location_id,
-            'location_name'     => $location_name,
-            'bin_id'            => $bin_id,
-            'bin_name'          => $bin_name,
-            'bin_searchable'    => $bin_searchable,
-            'on_hand'           => $on_hand,
-            'available'         => $available,
-            'qty'               => 0,
-            'variance'          => 0,
-            'notes'             => null
+            'product_id'                => $product->id,
+            'product_name'              => $product->sku . ' - ' . $product->name,
+            'product_full_name'         => $product->full_description,
+            'product_sku'               => $product->sku,
+            'product_barcode'           => $product->barcode,
+            'product_carton_barcode'    => $product->carton_barcode,
+            'product_carton_qty'        => $product->carton_qty,    
+            'product_brand'             => optional($product->brand)->name,
+            'product_category'          => optional($product->category)->name,
+            'searchable'                => $product->barcode ?? $product->sku,
+            'location_id'               => $location_id,
+            'location_name'             => $location_name,
+            'bin_id'                    => $bin_id,
+            'bin_name'                  => $bin_name,
+            'bin_searchable'            => $bin_searchable,
+            'on_hand'                   => $on_hand,
+            'available'                 => $available,
+            'qty'                       => 0,
+            'variance'                  => 0,
+            'notes'                     => null
         ];
     }
 

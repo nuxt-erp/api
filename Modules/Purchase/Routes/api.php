@@ -24,6 +24,8 @@ Route::middleware('auth:api')->group(function () {
         Route::get('get_po_number', 'PurchaseController@getNextPONumber');
         Route::get('check_po_number/{po_number}', 'PurchaseController@checkPoNumber');
         Route::get('purchase_statuses', 'PurchaseController@getStatuses');
+        Route::get('clone_purchase/{id?}', 'PurchaseController@clone');
+
 
     });
     Route::group(['prefix' => 'import'], function () {
