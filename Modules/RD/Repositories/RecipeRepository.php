@@ -1,6 +1,7 @@
 <?php
 
 namespace Modules\RD\Repositories;
+
 use Illuminate\Support\Facades\DB;
 use App\Repositories\RepositoryService;
 use Illuminate\Support\Arr;
@@ -10,26 +11,29 @@ class RecipeRepository extends RepositoryService
 {
     public function findBy(array $searchCriteria = [])
     {
-        if(!empty($searchCriteria['list'])) {
+
+        if (!empty($searchCriteria['internal_code'])) {
+            $this->queryBuilder->where('internal_code', $searchCriteria['internal_code']);
+        }
+
+        if (!empty($searchCriteria['list'])) {
             $this->queryBuilder->orderBy('name', 'asc');
         }
 
-        if(empty($searchCriteria['version'])){
+        if (empty($searchCriteria['version'])) {
             $this->queryBuilder->where('last_version', TRUE);
         }
 
-        if(!empty($searchCriteria['order_by'])) {
+        if (!empty($searchCriteria['order_by'])) {
             $this->queryBuilder->orderBy('name', $searchCriteria['order_by']);
         }
         return parent::findBy($searchCriteria);
-
     }
 
     public function store(array $data)
     {
         //@todo update last_version = false in the old recipes
-        DB::transaction(function () use ($data)
-        {
+        DB::transaction(function () use ($data) {
             $user = auth()->user();
             $data['author_id']      = $user->id;
             $data['status']         = Recipe::NEW_RECIPE;
@@ -37,20 +41,17 @@ class RecipeRepository extends RepositoryService
 
 
             parent::store($data);
-
         });
 
         if (Arr::has($data, 'attribute_ids')) {
             $this->model->attributes()->sync($data['attribute_ids']);
         }
-
     }
 
     public function update($model, array $data)
     {
 
-        DB::transaction(function () use ($data, $model)
-        {
+        DB::transaction(function () use ($data, $model) {
             if (Arr::has($data, 'attribute_ids')) {
                 $model->attributes()->sync($data['attribute_ids']);
             }
@@ -62,4 +63,9 @@ class RecipeRepository extends RepositoryService
         });
     }
 
+    public function getNextRecipeID()
+    {
+        $last_id = Recipe::latest('id')->pluck('id')->first();
+        return $last_id > 0 ? ($last_id + 1) : 1;
+    }
 }

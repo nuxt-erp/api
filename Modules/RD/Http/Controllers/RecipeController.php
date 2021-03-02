@@ -28,7 +28,8 @@ class RecipeController extends ControllerService
         parent::__construct();
     }
 
-    public function print($user_id, $recipe_id){
+    public function print($user_id, $recipe_id)
+    {
 
         $user = User::find($user_id);
 
@@ -37,31 +38,31 @@ class RecipeController extends ControllerService
         DB::reconnect('tenant');
 
         $recipe         = Recipe::with(['ingredients', 'type', 'attributes'])->find($recipe_id);
-        if(!$recipe){
+        if (!$recipe) {
             die('Recipe not found!');
         }
 
         $sample_size    = Parameter::where('name', 'recipe_sample_size')->first();
-        if(!$sample_size){
+        if (!$sample_size) {
             die('Sample Size not found!');
         }
 
-        $total_material_cost= 0;
+        $total_material_cost = 0;
         $total_material     = 0;
-        $total_material_perc= 0;
+        $total_material_perc = 0;
         foreach ($recipe->ingredients as $ingredient) {
 
             // PERCENT IS SET
-            if($ingredient->percent && $ingredient->percent > 0){
+            if ($ingredient->percent && $ingredient->percent > 0) {
                 $ingredient->quantity = $sample_size->value * ($ingredient->percent / 100);
             }
             // QTY IS SET
-            elseif($ingredient->quantity && $ingredient->quantity > 0){
+            elseif ($ingredient->quantity && $ingredient->quantity > 0) {
                 $ingredient->percent = (100 * $ingredient->quantity) / $sample_size->value;
             }
 
-            if($ingredient->quantity && $ingredient->quantity > 0){
-                $total_material_cost+= $ingredient->cost;
+            if ($ingredient->quantity && $ingredient->quantity > 0) {
+                $total_material_cost += $ingredient->cost;
                 $total_material     += $ingredient->quantity;
             }
         }
@@ -71,7 +72,7 @@ class RecipeController extends ControllerService
         $total_carrier_cost = 0;
         $total_carrier      = 0;
         $total_carrier_perc = 0;
-        if($recipe->carrier){
+        if ($recipe->carrier) {
             $total_carrier      = $total_material >= $sample_size->value ? 0 : $sample_size->value - $total_material;
             $total_carrier_cost = $total_carrier * $recipe->carrier->cost;
             $total_carrier_perc = 100 - $total_material_perc;
@@ -89,15 +90,15 @@ class RecipeController extends ControllerService
             'recipe'                => $recipe,
         ];
 
-        if($recipe){
+        if ($recipe) {
             return view('rd::recipe', $data);
             //$pdf = PDF::loadView('rd::recipe', $data);
             //return $pdf->stream('recipe.pdf');
         }
-
     }
 
-    public function printSpecification($user_id, $recipe_specification_id){
+    public function printSpecification($user_id, $recipe_specification_id)
+    {
 
         $user = User::find($user_id);
 
@@ -122,18 +123,23 @@ class RecipeController extends ControllerService
         ];
 
         foreach ($all_attributes as $attribute) {
-            $key_value [$attribute['value']] = false;
+            $key_value[$attribute['value']] = false;
         }
 
         foreach ($recipe_specification->spec_attributes as $attribute) {
             $key_value[$attribute->value] = true;
         }
 
-        if($recipe_specification){
+        if ($recipe_specification) {
             // return view('rd::recipe-specifications', ['recipe_specification' => $recipe_specification,'key_titles' => $key_titles, 'key_value' => $key_value ]);
-            $pdf = PDF::loadView('rd::recipe-specifications', ['recipe_specification' => $recipe_specification,'key_titles' => $key_titles, 'key_value' => $key_value ]);
+            $pdf = PDF::loadView('rd::recipe-specifications', ['recipe_specification' => $recipe_specification, 'key_titles' => $key_titles, 'key_value' => $key_value]);
             return $pdf->stream('recipe-specifications.pdf');
         }
+    }
 
+    public function getNextRecipeID()
+    {
+        $next_recipe_id = $this->repository->getNextRecipeID();
+        return $this->setStatus(true)->sendArray(['recipe_id' => $next_recipe_id]);
     }
 }
