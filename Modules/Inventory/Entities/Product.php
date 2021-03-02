@@ -40,16 +40,16 @@ class Product extends ModelService
     public function getRules($request, $item = null)
     {
         $rules = [
-            'name'          => ['string', 'max:100'],
-            'flavor_id'     => ['nullable', 'exists:tenant.inv_flavors,id'],
-            'brand_id'      => ['nullable', 'exists:tenant.inv_brands,id'],
-            'category_id'   => ['nullable', 'exists:tenant.inv_categories,id'],
-            'supplier_id'   => ['nullable', 'exists:tenant.suppliers,id'],
-            'family_id'     => ['nullable', 'exists:tenant.inv_families,id'],
-            'measure_id'    => ['nullable', 'exists:tenant.inv_measure,id'],
-            'location_id'   => ['nullable', 'exists:tenant.locations,id'],
+            'name'           => ['string', 'max:100'],
+            'flavor_id'      => ['nullable', 'exists:tenant.inv_flavors,id'],
+            'brand_id'       => ['nullable', 'exists:tenant.inv_brands,id'],
+            'category_id'    => ['nullable', 'exists:tenant.inv_categories,id'],
+            'supplier_id'    => ['nullable', 'exists:tenant.suppliers,id'],
+            'family_id'      => ['nullable', 'exists:tenant.inv_families,id'],
+            'measure_id'     => ['nullable', 'exists:tenant.inv_measure,id'],
+            'location_id'    => ['nullable', 'exists:tenant.locations,id'],
             'carton_barcode' => ['nullable', 'string', 'max:255'],
-            'carton_qty'    => ['nullable', 'numeric']
+            'carton_qty'     => ['nullable', 'numeric']
             //@todo add more validation
         ];
 

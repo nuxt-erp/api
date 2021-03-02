@@ -37,6 +37,12 @@ class PurchaseController extends ControllerService implements CheckPolicies
         }
     }
 
+    public function clone($id)
+    {
+        $cloned = $this->repository->clone($id);
+        return $this->sendArray($cloned);
+    }
+
     public function getStatuses()
     {
         $result = $this->repository->getPurchaseStatuses();

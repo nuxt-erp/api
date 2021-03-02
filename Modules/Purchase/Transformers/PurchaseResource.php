@@ -12,15 +12,16 @@ class PurchaseResource extends ResourceService
      * @param  \Illuminate\Http\Request
      * @return array
      */
-    
+
     public function toArray($request)
     {
 
         return [
             'id'                => $this->id,
             'po_number'         => $this->po_number,
-            'name'              => $this->po_number,
+            'name'              => $this->po_number ,
             'ref_code'          => $this->ref_code,
+            'iteration'         => $this->iteration,
             'purchase_date'     => optional($this->purchase_date)->format('Y-m-d H:i:s'),
             'invoice_date'      => optional($this->invoice_date)->format('Y-m-d H:i:s'),
             'supplier_id'       => $this->supplier_id,
@@ -33,12 +34,11 @@ class PurchaseResource extends ResourceService
             'total'             => $this->total,
             'subtotal'          => $this->subtotal,
             'taxes'             => $this->taxes,
-            'discount'          => $this->discount,
+            'discount'          => $this->discount ?? 0,
             'location_id'       => $this->location_id,
             'location_name'     => optional($this->location)->name,
             'eta'               => $this->getEarliestEtaAttribute(),
             'can_be_deleted'    => true
         ];
-
     }
 }
