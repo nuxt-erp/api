@@ -53,7 +53,7 @@ class ShopifyService
         $start = microtime(true);
         $cont = 0;
 
-        try {
+        // try {
 
             //@todo change all date functions calls to use Carbon package
 
@@ -292,15 +292,16 @@ class ShopifyService
                         }
                     }
                 });
-            }        
-        } catch (Throwable $e) {
-            $end = microtime(true);
-            CronLog::create([
-                'error'         => substr($e->getMessage(), 0, 254),
-                'import_count'  => $cont,
-                'execution_time' => $end - $start
-            ]);
-        }
+            }
+
+        // } catch (Throwable $e) {
+        //     $end = microtime(true);
+        //     CronLog::create([
+        //         'error'          => substr($e->getMessage(), 0, 254),
+        //         'import_count'   => $cont,
+        //         'execution_time' => $end - $start
+        //     ]);
+        // }
     }
 
     private function syncCustomer($order)
