@@ -30,6 +30,8 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('recipe_specification_attributes', 'RecipeSpecificationAttributesController');
         Route::resource('recipe_import_settings', 'RecipeImportSettingsController');
 
+        Route::get('next_recipe_id', 'RecipeController@getNextRecipeID');
+
         Route::resource('projects', 'ProjectController');
         Route::resource('project_samples', 'ProjectSamplesController');
         Route::resource('project_sample_attributes', 'ProjectSampleAttributesController');
@@ -48,6 +50,5 @@ Route::middleware('auth:api')->group(function () {
         Route::get('sample_flows', 'FlowController@getSampleFlows');
 
         Route::post('recipes_import/{type}', 'ImportController@recipesImport');
-
     });
 });
