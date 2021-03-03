@@ -67,7 +67,7 @@ class PurchaseRepository extends RepositoryService
 
 
         if (!empty($searchCriteria['exclude_received'])) {
-            $this->queryBuilder->where('status', 'ILIKE', Purchase::RECEIVED);
+            $this->queryBuilder->where('status', '<>', Purchase::RECEIVED);
         }
 
         return parent::findBy($searchCriteria);

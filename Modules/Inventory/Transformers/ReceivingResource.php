@@ -29,11 +29,11 @@ class ReceivingResource extends ResourceService
             'location_id'       => $this->location_id,
             'location_name'     => optional($this->location)->name,
             'receiving_details' => ReceivingDetailResource::collection($this->details),
-            'received_date'     => optional($this->received_date)->format('Y-m-d'),
+            'received_date'     => optional($this->received_date)->format('Y-m-d H:i:s'),
             'author_id'         => $this->author_id,
             'author_name'       => optional($this->author)->name,
-            'created_at'        => optional($this->created_at)->format('Y-m-d'),
-            'updated_at'        => optional($this->updated_at)->format('Y-m-d'),
+            'created_at'        => optional($this->created_at)->format('Y-m-d H:i:s'),
+            'updated_at'        => optional($this->updated_at)->format('Y-m-d H:i:s'),
         ];
     }
 }
