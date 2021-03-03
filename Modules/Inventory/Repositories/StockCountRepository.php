@@ -364,7 +364,7 @@ class StockCountRepository extends RepositoryService
                 }
             }
 
-            if (!empty($data['web'])) {
+            if (!empty($data['start']) && $data['start']) {
                 $products = $this->findProductsAvailabilities($data);
                 $this->model->details()->sync($products);
             } else {
