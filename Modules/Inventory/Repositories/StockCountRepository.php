@@ -72,6 +72,7 @@ class StockCountRepository extends RepositoryService
 
     public function findProductsAvailabilities($filter)
     {
+
         $qb = Product::whereHas(
             'availabilities',
             function ($query) use ($filter) {
@@ -129,7 +130,7 @@ class StockCountRepository extends RepositoryService
             $products = $qb->get(); // get product with all bins
         }
 
-        $location       = Location::find($filter['location_id']);
+        $location       = Location::where('id', $filter['location_id'])->get()[0];
         $availabilities = [];
 
         foreach ($products as $product) {
@@ -139,7 +140,7 @@ class StockCountRepository extends RepositoryService
         }
 
         $collection = $products->toArray();
-
+        // return $collection;
         return !empty($filter['per_page']) ? ['list' => $availabilities, 'pagination' => Arr::except($collection, 'data')] : $availabilities;
     }
 
@@ -256,11 +257,11 @@ class StockCountRepository extends RepositoryService
 
         $on_hand        = $availability ? $availability->on_hand : 0;
         $available      = $availability ? $availability->available : 0;
-        $location_id    = $availability ? $availability->location_id : $location->id;
-        $location_name  = $availability ? optional($availability->location)->name : $location->name;
-        $bin_id         = $availability ? $availability->bin_id : ($bin->id ?? null);
-        $bin_name       = $availability ? optional($availability->bin)->name : ($bin->name ?? null);
-        $bin_searchable = $availability ? optional($availability->bin)->barcode : ($bin->barcode ?? null);
+        $location_id    = $location === null ? $availability->location_id : $location->id;
+        $location_name  = $location === null ? optional($availability->location)->name : $location->name;
+        $bin_id         = $bin === null ? $availability->bin_id : ($bin->id ?? null);
+        $bin_name       = $bin === null ? optional($availability->bin)->name : ($bin->name ?? null);
+        $bin_searchable = $bin === null ? optional($availability->bin)->barcode : ($bin->barcode ?? null);
 
         return [
             'product_id'                => $product->id,
@@ -364,7 +365,8 @@ class StockCountRepository extends RepositoryService
                 }
             }
 
-            if (!empty($data['start']) && $data['start'] === true) {
+            if (!empty($data['start']) && $data['start']) {
+                lad('start');
                 $products = $this->findProductsAvailabilities($data);
                 $this->model->details()->sync($products);
             } else {
