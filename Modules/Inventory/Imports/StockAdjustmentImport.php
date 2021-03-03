@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\LocationBin;
+use Modules\Inventory\Entities\StockAdjustment;
 
 class StockAdjustmentImport implements ToArray, WithHeadingRow
 {
@@ -36,9 +37,10 @@ class StockAdjustmentImport implements ToArray, WithHeadingRow
                     $new_qty = 0;
                     $location = null;
                     $bin = null;
+                    $adjustment_type = StockAdjustment::TYPE_ADD;
 
                     if ($row['location'] != "") {
-                        $location = Location::where('short_name', 'ILIKE', $row['location'])->first();
+                        $location = Location::where('name', 'ILIKE', $row['location'])->orWhere('short_name', 'ILIKE', $row['location'])->first();
                         $on_hand = Availability::where(['product_id' => $product->id, 'location_id' => $location->id])->pluck('on_hand')->first();
                     }
 
@@ -50,19 +52,21 @@ class StockAdjustmentImport implements ToArray, WithHeadingRow
                         $new_qty = $on_hand + $row['qty'];
                     } else {
                         $new_qty = $row['new_qty'];
+                        $adjustment_type = StockAdjustment::TYPE_REPLACE;
                     }
 
                     $array = [
-                        'sku'           => $row['sku'],
-                        'product_id'    => $product->id,
-                        'complete_name' => $row['sku'] . ' - ' . $product->name,
-                        'location_id'   => optional($location)->id ?? null,
-                        'location_name' => optional($location)->short_name ?? null,
-                        'bin_id'        => optional($bin)->id ?? null,
-                        'bin_name'      => optional($bin)->name ?? null,
-                        'on_hand'       => $on_hand,
-                        'qty'           => $new_qty,
-                        'variance'      => !empty($on_hand) ? $new_qty - $on_hand : 0
+                        'sku'                 => $row['sku'],
+                        'product_id'          => $product->id,
+                        'complete_name'       => $row['sku'] . ' - ' . $product->name,
+                        'adjustment_type'     => ucfirst($adjustment_type),
+                        'location_id'         => optional($location)->id ?? null,
+                        'location_name'       => optional($location)->short_name ?? null,
+                        'bin_id'              => optional($bin)->id ?? null,
+                        'bin_name'            => optional($bin)->name ?? null,
+                        'on_hand'             => $on_hand,
+                        'qty'                 => $new_qty,
+                        'variance'            => !empty($on_hand) ? $new_qty - $on_hand : 0
                     ];
 
                     array_push($this->products, $array);

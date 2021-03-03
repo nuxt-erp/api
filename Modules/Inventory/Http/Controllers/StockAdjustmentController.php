@@ -25,4 +25,10 @@ class StockAdjustmentController extends ControllerService implements CheckPolici
         $result = $this->repository->exportStockAdjustment($stockadjustment_id);
         return $this->setStatusCode(201)->sendArray($result);
     }
+
+    public function getStatuses()
+    {
+        $result = $this->repository->getAdjustmentStatuses();
+        return $this->sendArray($result);
+    }
 }

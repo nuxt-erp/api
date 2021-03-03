@@ -19,6 +19,7 @@ class StockAdjustmentDetailResource extends ResourceService
             'bin_id'                => $this->bin_id,
             'bin_name'              => optional($this->bin)->name,
             'qty'                   => $this->qty,
+            'adjustment_type'       => $this->adjustment_type,
             'on_hand'               => $this->stock_on_hand,
             'variance'              => $this->variance,
             'status'                => $this->status,

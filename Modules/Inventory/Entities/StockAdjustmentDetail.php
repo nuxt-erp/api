@@ -10,13 +10,16 @@ class StockAdjustmentDetail extends ModelService
 {
     const ADJUSTED   = 'adjusted';
 
+    const TYPE_ADD       = 'add';
+    const TYPE_REPLACE   = 'replace';
+
     protected $connection = 'tenant';
 
     public $table         = "inv_stock_adjustments_details";
 
     protected $fillable   = [
         'stock_adjustment_id', 'product_id', 'location_id',
-        'stock_on_hand', 'qty', 'variance',
+        'stock_on_hand', 'qty', 'variance', 'adjustment_type',
         'abs_variance', 'notes', 'bin_id', 'status'
     ];
 
@@ -32,6 +35,7 @@ class StockAdjustmentDetail extends ModelService
             'variance'                  => ['integer'],
             'abs_variance'              => ['integer'],
             'notes'                     => ['nullable', 'string', 'max:255'],
+            'adjustment_type'           => ['nullable', 'string', 'max:255'],
             'status'                    => ['string'],
         ];
 

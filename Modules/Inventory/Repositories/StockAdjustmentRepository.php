@@ -10,7 +10,7 @@ use Modules\Inventory\Entities\Availability;
 use Modules\Inventory\Entities\ProductLog;
 use Modules\Inventory\Entities\StockAdjustment;
 use Modules\Inventory\Entities\StockAdjustmentDetail;
-
+use Modules\Inventory\Repositories\AvailabilityRepository;
 class StockAdjustmentRepository extends RepositoryService
 {
 
@@ -55,6 +55,7 @@ class StockAdjustmentRepository extends RepositoryService
         if (!empty($data['list_products'])) {
             // DELETE ITEMS TO INSERT THEM AGAIN
             StockAdjustmentDetail::where('stock_adjustment_id', $id)->delete();
+            $availabilityRepository = new AvailabilityRepository(new Availability());
 
             foreach ($data['list_products'] as $product) {
                 $qty    = $product['qty'] ?? 0;
@@ -62,33 +63,41 @@ class StockAdjustmentRepository extends RepositoryService
 
                 StockAdjustmentDetail::updateOrCreate([
                     'stock_adjustment_id' => $id,
-                    'product_id'    => $product['product_id'],
-                    'location_id'   => $product['location_id'],
-                    'bin_id'        => $product['bin_id'] ?? null
+                    'product_id'       => $product['product_id'],
+                    'location_id'      => $product['location_id'],
+                    'bin_id'           => $product['bin_id'] ?? null
                 ], [
-                    'qty'           => $qty,
-                    'stock_on_hand' => $product['on_hand'],
-                    'variance'      => ($qty - $product['on_hand']),
-                    'abs_variance'  => abs($qty - $product['on_hand']),
-                    'status'        => StockAdjustmentDetail::ADJUSTED,
-                    'notes'         => $notes
+                    'qty'              => $qty,
+                    'stock_on_hand'    => $product['on_hand'],
+                    'variance'         => ($qty - $product['on_hand']),
+                    'abs_variance'     => abs($qty - $product['on_hand']),
+                    'adjustment_type'  => strtolower($product['adjustment_type']),
+                    'status'           => StockAdjustmentDetail::ADJUSTED,
+                    'notes'            => $notes
                 ]);
 
                 // UPDATE PRODUCT AVAILABILITY
-                Availability::updateOrCreate(
-                    [
-                        'product_id'  => $product['product_id'],
-                        'location_id' => $product['location_id'],
-                        'bin_id'      => $product['bin_id'] ?? null
-                    ],
-                    [
-                        'on_hand'   => $qty
-                    ]
-                );
+                if(strtolower($product['adjustment_type']) === StockAdjustment::TYPE_ADD) {
+                    $availabilityRepository->updateStock($product['product_id'], $qty,  $product['location_id'], $product['bin_id'] ?? null, '+', 'Stock Adjustment', $id, 0, 0, 'Adjust Stock (add)');
+
+                } else if (strtolower($product['adjustment_type']) === StockAdjustment::TYPE_REPLACE) {
+                    $availabilityRepository->updateStock($product['product_id'], 0,  $product['location_id'], $product['bin_id'] ?? null, '+', 'Stock Adjustment', $id, 0, $qty, 'Adjust Stock (replace)');
+                    Availability::updateOrCreate(
+                        [
+                            'product_id'     => $product['product_id'],
+                            'location_id'    => $product['location_id'],
+                            'bin_id'         => $product['bin_id'] ?? null
+                        ],
+                        [
+                            'on_hand'        => $qty
+                        ]
+                    );
+                } 
+                
 
                 // UPDATE PRODUCT LOG
                 $type = Parameter::firstOrCreate(
-                    ['name' => 'product_log_type', 'value' => 'Stock Adjustment']
+                    ['name'    => 'product_log_type', 'value' => 'Stock Adjustment']
                 );
                 ProductLog::updateOrCreate(
                     [
@@ -107,19 +116,57 @@ class StockAdjustmentRepository extends RepositoryService
         }
     }
 
-    public function destroy($item)
+    public function delete($item)
     {
         DB::transaction(function () use ($item) {
+            lad($item->id);
             $availability_repository = new AvailabilityRepository(new Availability());
-            $stockAdjustment = StockAdjustment::find($item->id)->with('details')->first();
-            foreach ($stockAdjustment->details as $value) {
-                $availability_repository->updateStock($value->product_id, $value->qty, $value->location_id, null, "-", "Stock Adjustment", $item->id, 0, 0, "Remove item");
+            $stockAdjustment = StockAdjustment::where('id', $item->id)->with('details')->get()[0];
+            $details = $stockAdjustment->details;
+            lad($stockAdjustment);
+
+
+            foreach ($details as $value) {   
+                lad($value->adjustment_type);
+                if(strtolower($value->adjustment_type) === StockAdjustment::TYPE_ADD) {
+                    $availability_repository->updateStock($value->product_id, $value->qty, $value->location_id, null, "-", "Stock Adjustment", $item->id, 0, 0, "Remove item");
+                } else if (strtolower($value->adjustment_type) === StockAdjustment::TYPE_REPLACE) {
+                    $availability_repository->updateStock($value->product_id, 0, $value->location_id, null, "-", "Stock Adjustment", $item->id, 0, $value->qty, "Reset adjustment -back to previous qty");
+                    Availability::updateOrCreate(
+                        [
+                            'product_id'     => $value->product_id,
+                            'location_id'    => $value->location_id,
+                            'bin_id'         => $value->bin_id 
+                        ],
+                        [
+                            'on_hand'        => $value->stock_on_hand
+                        ]
+                    );
+                } 
+
             }
             StockAdjustmentDetail::where('stock_adjustment_id', $item->id)->delete();
         });
 
         return parent::delete($item);
     }
+
+    public function getAdjustmentStatuses()
+    {
+        $statuses = $this->model->getStatuses();
+        $keyValue = [];
+        $i = 0;
+        foreach ($statuses as $key => $nested) {
+            foreach ($nested as $value => $id) {
+                $keyValue[$i]['id'] = $id;
+                $keyValue[$i]['label'] = ucfirst($value);
+                $keyValue[$i]['value'] = ucfirst($value);
+                $i++;
+            }
+        }
+        return $keyValue;
+    }
+
 
     public function exportStockAdjustment($id)
     {
