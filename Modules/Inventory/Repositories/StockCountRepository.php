@@ -70,7 +70,7 @@ class StockCountRepository extends RepositoryService
         return parent::findBy($searchCriteria);
     }
 
-    public function findProductsAvailabilities($filter)
+    public function findProductsAvailabilities($filter, $stock_count = null)
     {
 
         $qb = Product::whereHas(
@@ -132,13 +132,32 @@ class StockCountRepository extends RepositoryService
 
         $location       = Location::where('id', $filter['location_id'])->get()[0];
         $availabilities = [];
-
-        foreach ($products as $product) {
-            foreach ($product['availabilities'] as $availability) {
-                $availabilities[] = $this->getAvailability($product, $location, $availability, !empty($availability['bin']) ? $availability['bin'] : null);
+        if($stock_count === null) {
+            foreach ($products as $product) {
+                foreach ($product['availabilities'] as $availability) {
+                    $availabilities[] = $this->getAvailability($product, $location, $availability, !empty($availability['bin']) ? $availability['bin'] : null);
+                }
             }
+    
+        } else {
+            
+            foreach ($products as $product) {
+                foreach ($product['availabilities'] as $availability) {
+                    $availabilities[] = [
+                        'stockcount_id' => $stock_count->id,
+                        'product_id'    => $product->id,
+                        'qty'           => 0,
+                        'stock_on_hand' => $availability->available ?? 0,
+                        'variance'      => (0 -$availability->available) ?? 0,
+                        'notes'         => '',
+                        'location_id'   => $availability->location_id,
+                        'bin_id'        => $availability->bin_id
+                    ];
+                }
+            }
+    
         }
-
+        
         $collection = $products->toArray();
         // return $collection;
         return !empty($filter['per_page']) ? ['list' => $availabilities, 'pagination' => Arr::except($collection, 'data')] : $availabilities;
@@ -238,6 +257,7 @@ class StockCountRepository extends RepositoryService
                 if (!empty($filter['bin_ids']) && !empty($availability->bin_id)) {
                     if (in_array($availability->bin_id, $filter['bin_ids'])) {
                         $bin = LocationBin::find($availability->bin_id);
+                        
                         $availabilities_to_send[] = $this->getAvailability($product, $location, $availability, $bin);
                     }
                 } else {
@@ -367,8 +387,11 @@ class StockCountRepository extends RepositoryService
 
             if (!empty($data['start']) && $data['start']) {
                 lad('start');
-                $products = $this->findProductsAvailabilities($data);
-                $this->model->details()->sync($products);
+                $products = $this->findProductsAvailabilities($data, $this->model);
+                foreach(collect($products)->chunk(100) as $chunk) {
+                    StockCountDetail::insert($chunk->toArray());
+                }
+                // $this->model->details()->sync($products);
             } else {
                 if (!empty($data['list_products'])) {
                     $this->model->details()->sync($data['list_products']);
