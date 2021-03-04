@@ -147,8 +147,8 @@ class StockCountRepository extends RepositoryService
                         'stockcount_id' => $stock_count->id,
                         'product_id'    => $product->id,
                         'qty'           => 0,
-                        'stock_on_hand' => $availability->available ?? 0,
-                        'variance'      => (0 -$availability->available) ?? 0,
+                        'stock_on_hand' => $availability->on_hand,
+                        'variance'      => (0 - $availability->on_hand),
                         'notes'         => '',
                         'location_id'   => $availability->location_id,
                         'bin_id'        => $availability->bin_id
@@ -388,7 +388,7 @@ class StockCountRepository extends RepositoryService
             if (!empty($data['start']) && $data['start']) {
                 lad('start');
                 $products = $this->findProductsAvailabilities($data, $this->model);
-                foreach(collect($products)->chunk(100) as $chunk) {
+                foreach(collect($products)->chunk(500) as $chunk) {
                     StockCountDetail::insert($chunk->toArray());
                 }
                 // $this->model->details()->sync($products);
