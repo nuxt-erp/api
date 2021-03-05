@@ -271,4 +271,32 @@ class AvailabilityRepository extends RepositoryService
        return isset($item)?$item->on_hand:0;
     }
 
+    public function getProductAvailabilitiesTable($product_id) {
+        $parents = Availability::where('product_id', $product_id)->whereNull('bin_id')->get();
+        foreach($parents as $parent) {
+            $parent['has_children'] = false;
+            $parent['product_name'] = optional($parent->product)->getFullDescriptionAttribute();
+            $parent['location_name'] = optional($parent->location)->name;
+            $parent['bin_name'] = optional($parent->bin)->name;
+            $parent['sku'] =  $parent->product ? optional($parent->product)->sku : '';
+            $children = Availability::where('product_id', $product_id)->where('location_id', $parent->location_id)->whereNotNull('bin_id')->get();
+            if(count($children) > 0) {
+                $parent['children'] = $children;
+                $parent['has_children'] = true;
+                $parent['expanded'] = false;
+                $child_index = 0;
+                foreach($parent['children'] as $child) {
+                    $child['bin_name'] = optional($child->bin)->name;
+                    $child['expanded'] = false;
+                    $child['first_child'] = $child_index === 0;
+                    $child['last_child'] = $child_index === (count($parent['children']) - 1);
+                    $child_index ++;
+
+                }
+            }
+        }
+        return $parents;
+
+    }
+
 }

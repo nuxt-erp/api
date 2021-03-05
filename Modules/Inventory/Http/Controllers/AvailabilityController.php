@@ -38,4 +38,12 @@ class AvailabilityController extends ControllerService implements CheckPolicies
     }
 
 
+    public function getProductAvailabilitiesTable($product_id)
+    {
+        $items = $this->repository->getProductAvailabilitiesTable($product_id);
+        return $this->sendArray($items);
+
+    }
+
+
 }
