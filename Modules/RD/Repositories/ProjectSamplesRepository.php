@@ -91,7 +91,7 @@ class ProjectSamplesRepository extends RepositoryService
                 if (!empty($data['recipe_id'])) {
                     $recipe = Recipe::find($data['recipe_id']);
                     if (!empty($recipe->type_id)) {
-                        $data['internal_code'] = !isempty($recipe->internal_code) ? $recipe->internal_code : $recipe->type->value . '-' . $data['recipe_id'];
+                        $data['internal_code'] = !empty($recipe->internal_code) ? $recipe->internal_code : $recipe->type->value . '-' . $data['recipe_id'];
                     }
                 }
 
@@ -261,7 +261,7 @@ class ProjectSamplesRepository extends RepositoryService
 
             // UPDATE SAMPLE INTERNAL CODE
             if ($recipe && $recipe->type) {
-                $data['internal_code'] = !isempty($recipe->internal_code) ? $recipe->internal_code : $recipe->type->value . '-' . $recipe->id;
+                $data['internal_code'] = !empty($recipe->internal_code) ? $recipe->internal_code : $recipe->type->value . '-' . $recipe->id;
             }
 
             parent::update($model, $data);

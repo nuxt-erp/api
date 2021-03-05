@@ -47,6 +47,7 @@ class ProductResource extends ResourceService
             'measure_id'            => $this->measure_id,
             'measure_name'          => optional($this->measure)->name,
             'name_full'             => $this->full_description,
+            'display_name'          => $this->getDetailsAttributeValue(),
             'product_attributes'    => $this->details,
             'in_transit_suppliers'  => $this->getInTransitAttribute($this->id),
             'in_transit_transfers'  => $this->getInTransitTransferAttribute($this->id),

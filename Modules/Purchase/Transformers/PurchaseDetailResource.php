@@ -25,6 +25,7 @@ class PurchaseDetailResource extends JsonResource
             'bin_id'              => $this->bin_id,
             'bin_name'            => optional($this->bin)->name,
             'name'                => optional($this->product)->name,
+            'display_name'        => optional($this->product)->getDetailsAttributeValue(),
             'qty'                 => $this->qty,
             'price'               => $this->price,
             'sub_total'           => $this->gross_total,
