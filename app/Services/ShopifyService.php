@@ -258,7 +258,25 @@ class ShopifyService
 
                                 // Check fulfillment event
                                 // VERY SLOWWWWWW HERE!!!!
+                                // Query;
+                                // $graphQL = <<<Query
+                                // {
+                                //     fulfillment(id: "gid://shopify/Fulfillment/3235096461411") {
+                                //       events(first:1, reverse:true) {
+                                //         edges {
+                                //           node {
+                                //             id          
+                                //           }
+                                //         }
+                                //       }
+                                //     }
+                                //   }
+                                  
+                                // Query;
+                                
+                                // $data =$this->client->GraphQL->post($graphQL);
                                 $events = $this->client->Order($order["id"])->Fulfillment($order['fulfillments'][0]['id'])->Event->get();
+                                echo '$events: '.print_r($events).'<br><br>';
 
                                 if ($events) {
                                     $parse_location = explode(" ", $events[0]["message"]);
