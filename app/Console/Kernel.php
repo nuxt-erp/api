@@ -32,22 +32,22 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(function () {
 
-            $companies = Company::all();
+            // $companies = Company::all();
 
-            foreach ($companies as $company) {
-                config(['database.connections.tenant.schema' => $company->schema]);
-                DB::reconnect('tenant');
-                DB::transaction(function () {
+            // foreach ($companies as $company) {
+            //     config(['database.connections.tenant.schema' => $company->schema]);
+            //     DB::reconnect('tenant');
+            //     DB::transaction(function () {
 
-                    $config = Config::find(1);
-                    if (!empty($config) && !empty($config->shopify_sync_sales) && $config->shopify_sync_sales === true) {
-                        $api = resolve('Shopify\API');
-                        $api->syncOrders();
-                    }
-                });
+            //         $config = Config::find(1);
+            //         if (!empty($config) && !empty($config->shopify_sync_sales) && $config->shopify_sync_sales === true) {
+            //             $api = resolve('Shopify\API');
+            //             $api->syncOrders();
+            //         }
+            //     });
 
-                # code...
-            }
+            //     # code...
+            // }
 
             //     $api    = resolve('Dear\API');
             //     $user = User::where('email', 'ILIKE', '%dear%')->first();
