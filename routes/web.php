@@ -17,3 +17,5 @@ Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 Route::get('install_modules/{name}/{seed?}', 'RegisterController@installModules');
 Route::get('migrate_products/{name}', 'MigrationController@cvlProductMigration');
 Route::get('migrate_recipes/{name}', 'MigrationController@cvlRecipeMigration');
+
+Route::get('test', 'DashboardController@test');

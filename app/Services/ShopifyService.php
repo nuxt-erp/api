@@ -50,8 +50,10 @@ class ShopifyService
     // Sync order with Shopify
     public function syncOrders()
     {
-        $start = microtime(true);
-        $cont = 0;
+        echo 'syncOrders START=======>'.'<br><br>';
+        $time_start = microtime(true);
+
+        echo 'Start: '.$time_start.'<br><br>';
 
         // try {
 
@@ -63,236 +65,251 @@ class ShopifyService
             // -2 minutes (Orders from the last 2 minutes)
             //$date = date('Y-m-d\TH:i:s', strtotime('-2 minutes', strtotime(date('Y-m-d\TH:i:s'))));
 
-            $date = Carbon::now()->format('Y-m-d\TH:i:s\Z');
-            $date_min = Carbon::now()->addMinutes(-2)->format('Y-m-d\TH:i:s\Z');
+        $date = Carbon::now()->format('Y-m-d\TH:i:s\Z');
+        $date_min = Carbon::now()->addMinutes(-2)->format('Y-m-d\TH:i:s\Z');
 
-            $params = [
-                'updated_at_min' => $date_min,
-                'updated_at_max' => $date,
-                'status'         => 'any',
-                'limit'          => $this->limit
-            ];
+        echo '$date: '.$date.'<br>';
+        echo '$date_min: '.$date_min.'<br>';
 
-            if ($this->client) {
-                $orders = $this->client->Order->get($params);
+        $params = [
+            'updated_at_min' => $date_min,
+            'updated_at_max' => $date,
+            'status'         => 'any',
+            'limit'          => $this->limit
+        ];
 
-                DB::transaction(function () use ($orders, &$cont) {
-                    $fulfillment_status_list = [];
-                    $financial_status_list  = [];
-                    $allow_stock_move = true;
+        if ($this->client) {
+            $orders = $this->client->Order->get($params);
 
-                    foreach ($orders as $order) {
-                        $cont++;
-                        // Remove # character from the Shopify order name
-                        $original_order_number = str_replace("#", "", $order['name']);
-                        $order_number = filter_var($order['name'], FILTER_SANITIZE_NUMBER_INT);
+            DB::transaction(function () use ($orders) {
+                $fulfillment_status_list = [];
+                $financial_status_list  = [];
+                $allow_stock_move = true;
 
-                        // Get financial status - Remove order if refunded - or cancelled
-                        if ($order['financial_status'] == 'refunded' || ($order['cancelled_at'] != '' || $order['cancel_reason'] != '')) {
-                            $sale_id = Sale::where('order_number', $order_number)->pluck('id')->first();
-                            $this->removeSale($sale_id); // Refunded
-                        } else {
+                foreach ($orders as $order) {
+                    // Remove # character from the Shopify order name
+                    $original_order_number = str_replace("#", "", $order['name']);
+                    echo '$original_order_number: '.$original_order_number.'<br>';
+                    $order_number = filter_var($order['name'], FILTER_SANITIZE_NUMBER_INT);
 
-                            $tmp_order = !is_numeric($order_number) ? substr($order_number, 0, (strlen($order_number) - 1)) : $order_number;
+                    // Get financial status - Remove order if refunded - or cancelled
+                    if ($order['financial_status'] == 'refunded' || ($order['cancelled_at'] != '' || $order['cancel_reason'] != '')) {
+                        $sale_id = Sale::where('order_number', $order_number)->pluck('id')->first();
+                        $this->removeSale($sale_id); // Refunded
+                        echo 'refund<br>';
+                    } else {
 
-                            // Get all previous orders - Could be one or more previous orders (Ex. 123A, 123B, 123C)
-                            // or Search for another other with same number but with letter at the final (updated order - more recent).
-                            $sales = Sale::where('order_number', 'ILIKE', '%' . $tmp_order . '%')
-                                ->where('order_number', '<>', $order_number) // Do not remove itself
-                                ->select('id')->get();
+                        $tmp_order = !is_numeric($order_number) ? substr($order_number, 0, (strlen($order_number) - 1)) : $order_number;
 
-                            // If found a letter at the end (Ex. 12345A) - It means order updated
-                            foreach ($sales as $sale) {
-                                if (!is_numeric($order_number) || (is_numeric($order_number) && !is_numeric($sale->order_number))) { // Found updated order. Remove the current order with no letter
-                                    $this->updateMovements($sale->id); // Remove previous order
-                                    $sale->update([
-                                        'order_number' => $original_order_number
-                                    ]);
-                                }
-                            }
+                        // Get all previous orders - Could be one or more previous orders (Ex. 123A, 123B, 123C)
+                        // or Search for another other with same number but with letter at the final (updated order - more recent).
+                        $sales = Sale::where('order_number', 'ILIKE', '%' . $tmp_order . '%')
+                            ->where('order_number', '<>', $order_number) // Do not remove itself
+                            ->select('id')->get();
 
-                            // Find or create a customer
-                            $customer_id = $this->syncCustomer($order);
-
-                            if (!empty($order['financial_status']) && !isset($financial_status_list[$order['financial_status']])) {
-                                $financial_status = Parameter::firstOrCreate(
-                                    ['name' => 'sales_financial_status', 'value' => $order['financial_status']]
-                                );
-                                $financial_status_list[$order['financial_status']] = $financial_status->id;
-                            }
-
-                            if (!empty($order['fulfillment_status']) && !isset($fulfillment_status_list[$order['fulfillment_status']])) {
-                                $fulfillment_status = Parameter::firstOrCreate(
-                                    ['name' => 'sales_fulfillment_status', 'value' => $order['fulfillment_status']]
-                                );
-                                $fulfillment_status_list[$order['fulfillment_status']] = $fulfillment_status->id;
-                            }
-
-                            // Parse sale header
-                            $data['order_number']           = $original_order_number;
-                            $data['customer_id']            = $customer_id;
-                            $data['sales_date']             = date('Y-m-d H:i:s', strtotime($order['processed_at']));
-                            $data['financial_status_id']    = $financial_status_list[$order['financial_status']] ?? null;
-                            $data['financial_status_name']  = $order['financial_status'] ?? '';
-                            $data['fulfillment_status_id']  = $fulfillment_status_list[$order['fulfillment_status']] ?? null;
-                            $data['fulfillment_status_name'] = $order['fulfillment_status'] ?? '';
-                            //$data['author_id']              = $this->user->id;
-                            $data['subtotal']               = $order['subtotal_price'];
-                            $data['discount']               = $order['total_discounts'];
-                            $data['taxes']                  = $order['total_tax'];
-                            $data['shipping']               = isset($order['shipping_lines'][0]['price']) ? $order['shipping_lines'][0]['price'] : 0;
-                            $data['total']                  = $order['total_price'];
-
-                            $sale = Sale::where('order_number', $original_order_number)->first();
-
-                            if ($sale) { // Update
-                                $allow_stock_move = ($sale->fulfillment_status_id == null || ($sale->fulfillment_status_id != $data['fulfillment_status_id'])); // Allow movement stock when updating existent order just if the fulfillment status had changed
-                                $sale->fill([
-                                    'financial_status_id'   => $data['financial_status_id'],
-                                    'fulfillment_status_id' => $data['fulfillment_status_id'],
-                                    'customer_id'           => $customer_id,
-                                    'subtotal'              => isset($order['current_subtotal_price']) ? $order['current_subtotal_price'] : $order['subtotal_price'],
-                                    'discount'              => isset($order['current_total_discounts']) ? $order['current_total_discounts'] : $order['total_discounts'],
-                                    'taxes'                 => isset($order['current_total_tax']) ? $order['current_total_tax'] : $order['total_tax'],
-                                    'shipping'              => isset($order['shipping_lines'][0]['price']) ? $order['shipping_lines'][0]['price'] : 0,
-                                    'total'                 => isset($order['current_total_price']) ? $order['current_total_price'] : $order['total_price'],
+                        // If found a letter at the end (Ex. 12345A) - It means order updated
+                        foreach ($sales as $sale) {
+                            if (!is_numeric($order_number) || (is_numeric($order_number) && !is_numeric($sale->order_number))) { // Found updated order. Remove the current order with no letter
+                                $this->updateMovements($sale->id); // Remove previous order
+                                $sale->update([
+                                    'order_number' => $original_order_number
                                 ]);
-                                $sale->save();
-                            } else { // New
-                                $sale = Sale::create($data);
+                            }
+                        }
+
+                        // Find or create a customer
+                        $customer_id = $this->syncCustomer($order);
+
+                        if (!empty($order['financial_status']) && !isset($financial_status_list[$order['financial_status']])) {
+                            $financial_status = Parameter::firstOrCreate(
+                                ['name' => 'sales_financial_status', 'value' => $order['financial_status']]
+                            );
+                            $financial_status_list[$order['financial_status']] = $financial_status->id;
+                        }
+
+                        if (!empty($order['fulfillment_status']) && !isset($fulfillment_status_list[$order['fulfillment_status']])) {
+                            $fulfillment_status = Parameter::firstOrCreate(
+                                ['name' => 'sales_fulfillment_status', 'value' => $order['fulfillment_status']]
+                            );
+                            $fulfillment_status_list[$order['fulfillment_status']] = $fulfillment_status->id;
+                        }
+
+                        // Parse sale header
+                        $data['order_number']           = $original_order_number;
+                        $data['customer_id']            = $customer_id;
+                        $data['sales_date']             = date('Y-m-d H:i:s', strtotime($order['processed_at']));
+                        $data['financial_status_id']    = $financial_status_list[$order['financial_status']] ?? null;
+                        $data['financial_status_name']  = $order['financial_status'] ?? '';
+                        $data['fulfillment_status_id']  = $fulfillment_status_list[$order['fulfillment_status']] ?? null;
+                        $data['fulfillment_status_name'] = $order['fulfillment_status'] ?? '';
+                        //$data['author_id']              = $this->user->id;
+                        $data['subtotal']               = $order['subtotal_price'];
+                        $data['discount']               = $order['total_discounts'];
+                        $data['taxes']                  = $order['total_tax'];
+                        $data['shipping']               = isset($order['shipping_lines'][0]['price']) ? $order['shipping_lines'][0]['price'] : 0;
+                        $data['total']                  = $order['total_price'];
+
+                        $sale = Sale::where('order_number', $original_order_number)->first();
+
+                        if ($sale) { // Update
+                            $allow_stock_move = ($sale->fulfillment_status_id == null || ($sale->fulfillment_status_id != $data['fulfillment_status_id'])); // Allow movement stock when updating existent order just if the fulfillment status had changed
+                            $sale->fill([
+                                'financial_status_id'   => $data['financial_status_id'],
+                                'fulfillment_status_id' => $data['fulfillment_status_id'],
+                                'customer_id'           => $customer_id,
+                                'subtotal'              => isset($order['current_subtotal_price']) ? $order['current_subtotal_price'] : $order['subtotal_price'],
+                                'discount'              => isset($order['current_total_discounts']) ? $order['current_total_discounts'] : $order['total_discounts'],
+                                'taxes'                 => isset($order['current_total_tax']) ? $order['current_total_tax'] : $order['total_tax'],
+                                'shipping'              => isset($order['shipping_lines'][0]['price']) ? $order['shipping_lines'][0]['price'] : 0,
+                                'total'                 => isset($order['current_total_price']) ? $order['current_total_price'] : $order['total_price'],
+                            ]);
+                            $sale->save();
+                        } else { // New
+                            $sale = Sale::create($data);
+                        }
+
+                        // Reset array
+                        $parse_items = [];
+
+                        // Search products
+                        foreach ($order['line_items'] as $items) {
+
+                            $product_id = Product::where('sku', $items['sku'])->pluck('id')->first();
+
+                            if (!empty($items['fulfillment_status']) && !isset($fulfillment_status_list[$items['fulfillment_status']])) {
+                                $fulfillment_status = Parameter::firstOrCreate(
+                                    ['name' => 'sales_fulfillment_status', 'value' => $items['fulfillment_status']]
+                                );
+                                $fulfillment_status_list[$items['fulfillment_status']] = $fulfillment_status->id;
                             }
 
-                            // Reset array
-                            $parse_items = [];
+                            // If not found, create a new product
+                            if ($product_id == null) {
 
-                            // Search products
-                            foreach ($order['line_items'] as $items) {
+                                $variant = $this->client->ProductVariant($items["variant_id"])->get(); // Get more details from prod variant
+                                $prod = $this->client->Product($items["product_id"])->get(); // Shopify Product
+
+                                $variant2 = "";
+                                if (isset($variant['option2'])) {
+                                    $variant2 = $variant['option2'];
+                                }
+
+                                // Product name
+                                $name = $items['title'] . ' - ' . (isset($variant['option1']) ? $variant['option1'] : "") . ($variant2 != "" ? (' - ' . $variant2) : '');
+
+                                // Category
+                                $category = Category::firstOrCreate(['name' => trim(strtoupper($prod["product_type"]))], ['is_enabled' => 1]);
+
+                                // Brand
+                                $brand = Brand::firstOrCreate(['name' => trim(strtoupper($prod["vendor"]))], ['is_enabled' => 1]);
 
                                 $product_id = Product::where('sku', $items['sku'])->pluck('id')->first();
 
-                                if (!empty($items['fulfillment_status']) && !isset($fulfillment_status_list[$items['fulfillment_status']])) {
+                                if ($product_id == null) {
+                                    // New product
+                                    $new_prod = new Product;
+                                    $new_prod->sku = $items["sku"];
+                                    $new_prod->name = $name;
+                                    $new_prod->category_id = $category->id;
+                                    $new_prod->brand_id = $brand->id;
+                                    $new_prod->save();
+
+                                    $product_id = $new_prod->id;
+                                }
+                            }
+
+                            array_push(
+                                $parse_items,
+                                [
+                                    'sale_id'               => $sale->id,
+                                    'product_id'            => $product_id,
+                                    'qty'                   => $items['quantity'],
+                                    'price'                 => $items['price'],
+                                    'discount_value'        => $items['total_discount'],
+                                    'total_item'            => ($items['quantity'] * $items['price']),
+                                    'shopify_id'            => $items['id'],
+                                    'fulfillment_status_id' => $fulfillment_status_list[$items['fulfillment_status']] ?? null
+                                ]
+                            );
+                        }
+
+                        // Save products
+                        $this->saveSaleDetails($parse_items, $sale->id);
+
+                        // Reset array
+                        $parse_fulfillments = array();
+
+                        // Fulfillments
+                        if (isset($order['fulfillments'][0])) {
+
+                            if ($allow_stock_move == true) { // Do not update again stock when update sale
+
+                                $fulfillment_date   = $order['fulfillments'][0]['updated_at'] ?? null;
+
+                                if (!empty($order['fulfillments'][0]['status']) && !isset($fulfillment_status_list[$order['fulfillments'][0]['status']])) {
                                     $fulfillment_status = Parameter::firstOrCreate(
-                                        ['name' => 'sales_fulfillment_status', 'value' => $items['fulfillment_status']]
+                                        ['name' => 'sales_fulfillment_status', 'value' => $order['fulfillments'][0]['status']]
                                     );
-                                    $fulfillment_status_list[$items['fulfillment_status']] = $fulfillment_status->id;
+                                    $fulfillment_status_list[$order['fulfillments'][0]['status']] = $fulfillment_status->id;
                                 }
 
-                                // If not found, create a new product
-                                if ($product_id == null) {
+                                // Search location based on Shopify location_id
+                                $location_id = null;
 
-                                    $variant = $this->client->ProductVariant($items["variant_id"])->get(); // Get more details from prod variant
-                                    $prod = $this->client->Product($items["product_id"])->get(); // Shopify Product
+                                // Check fulfillment event
+                                // VERY SLOWWWWWW HERE!!!!
+                                $events = $this->client->Order($order["id"])->Fulfillment($order['fulfillments'][0]['id'])->Event->get();
 
-                                    $variant2 = "";
-                                    if (isset($variant['option2'])) {
-                                        $variant2 = $variant['option2'];
+                                if ($events) {
+                                    $parse_location = explode(" ", $events[0]["message"]);
+                                    if (isset($parse_location[0])) {
+                                        $location_id = Location::where('name', 'like', '%' . $parse_location[0] . '%')->pluck('id')->first();
                                     }
+                                } else {
 
-                                    // Product name
-                                    $name = $items['title'] . ' - ' . (isset($variant['option1']) ? $variant['option1'] : "") . ($variant2 != "" ? (' - ' . $variant2) : '');
+                                    if (isset($order['fulfillments'][0]['location_id'])) {
+                                        $location_id = Location::where('shopify_id', $order['fulfillments'][0]['location_id'])->pluck('id')->first();
+                                    }
+                                }
 
-                                    // Category
-                                    $category = Category::firstOrCreate(['name' => trim(strtoupper($prod["product_type"]))], ['is_enabled' => 1]);
-
-                                    // Brand
-                                    $brand = Brand::firstOrCreate(['name' => trim(strtoupper($prod["vendor"]))], ['is_enabled' => 1]);
+                                foreach ($order['fulfillments'][0]['line_items'] as $items) {
 
                                     $product_id = Product::where('sku', $items['sku'])->pluck('id')->first();
 
-                                    if ($product_id == null) {
-                                        // New product
-                                        $new_prod = new Product;
-                                        $new_prod->sku = $items["sku"];
-                                        $new_prod->name = $name;
-                                        $new_prod->category_id = $category->id;
-                                        $new_prod->brand_id = $brand->id;
-                                        $new_prod->save();
-
-                                        $product_id = $new_prod->id;
-                                    }
-                                }
-
-                                array_push(
-                                    $parse_items,
-                                    [
-                                        'sale_id'               => $sale->id,
-                                        'product_id'            => $product_id,
-                                        'qty'                   => $items['quantity'],
-                                        'price'                 => $items['price'],
-                                        'discount_value'        => $items['total_discount'],
-                                        'total_item'            => ($items['quantity'] * $items['price']),
-                                        'shopify_id'            => $items['id'],
-                                        'fulfillment_status_id' => $fulfillment_status_list[$items['fulfillment_status']] ?? null
-                                    ]
-                                );
-                            }
-
-                            // Save products
-                            $this->saveSaleDetails($parse_items, $sale->id);
-
-                            // Reset array
-                            $parse_fulfillments = array();
-
-                            // Fulfillments
-                            if (isset($order['fulfillments'][0])) {
-
-                                if ($allow_stock_move == true) { // Do not update again stock when update sale
-
-                                    $fulfillment_date   = $order['fulfillments'][0]['updated_at'] ?? null;
-
-                                    if (!empty($order['fulfillments'][0]['status']) && !isset($fulfillment_status_list[$order['fulfillments'][0]['status']])) {
-                                        $fulfillment_status = Parameter::firstOrCreate(
-                                            ['name' => 'sales_fulfillment_status', 'value' => $order['fulfillments'][0]['status']]
+                                    if ($product_id) {
+                                        array_push(
+                                            $parse_fulfillments,
+                                            [
+                                                'product_id'                => $product_id,
+                                                'quantity'                  => $items['quantity'],
+                                                'location_id'               => $location_id,
+                                                'fulfillment_status_id'     => $fulfillment_status_list[$order['fulfillments'][0]['status']] ?? null,
+                                                'fulfillment_status_name'   => $order['fulfillments'][0]['status'] ?? '',
+                                                'fulfillment_date'          => $fulfillment_date
+                                            ]
                                         );
-                                        $fulfillment_status_list[$order['fulfillments'][0]['status']] = $fulfillment_status->id;
                                     }
-
-                                    // Search location based on Shopify location_id
-                                    $location_id = null;
-
-                                    // Check fulfillment event
-                                    $events = $this->client->Order($order["id"])->Fulfillment($order['fulfillments'][0]['id'])->Event->get();
-
-                                    if ($events) {
-                                        $parse_location = explode(" ", $events[0]["message"]);
-                                        if (isset($parse_location[0])) {
-                                            $location_id = Location::where('name', 'like', '%' . $parse_location[0] . '%')->pluck('id')->first();
-                                        }
-                                    } else {
-
-                                        if (isset($order['fulfillments'][0]['location_id'])) {
-                                            $location_id = Location::where('shopify_id', $order['fulfillments'][0]['location_id'])->pluck('id')->first();
-                                        }
-                                    }
-
-                                    foreach ($order['fulfillments'][0]['line_items'] as $items) {
-
-                                        $product_id = Product::where('sku', $items['sku'])->pluck('id')->first();
-
-                                        if ($product_id) {
-                                            array_push(
-                                                $parse_fulfillments,
-                                                [
-                                                    'product_id'                => $product_id,
-                                                    'quantity'                  => $items['quantity'],
-                                                    'location_id'               => $location_id,
-                                                    'fulfillment_status_id'     => $fulfillment_status_list[$order['fulfillments'][0]['status']] ?? null,
-                                                    'fulfillment_status_name'   => $order['fulfillments'][0]['status'] ?? '',
-                                                    'fulfillment_date'          => $fulfillment_date
-                                                ]
-                                            );
-                                        }
-                                    }
-
-                                    // Set fulfillments
-                                    $this->checkFulfillments($parse_fulfillments, $sale->id);
-                                    $data['fulfillments'] = array();
                                 }
+
+                                // Set fulfillments
+                                $this->checkFulfillments($parse_fulfillments, $sale->id);
+                                $data['fulfillments'] = array();
                             }
                         }
                     }
-                });
-            }
+                }
+            });
+        }
+
+
+        $time_end = microtime(true);
+        echo '<br>End: '.$time_end;
+
+        $execution_time = ($time_end - $time_start)/60;
+
+        echo '<br><b>Total Execution Time:</b> '.$execution_time.' Mins<br><br>';
+
+        echo 'syncOrders END=======>'.'<br><br>';
 
         // } catch (Throwable $e) {
         //     $end = microtime(true);

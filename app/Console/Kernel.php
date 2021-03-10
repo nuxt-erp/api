@@ -32,19 +32,41 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(function () {
 
-            $companies = Company::all();
+            // $companies = Company::all();
 
-            foreach ($companies as $company) {
-                config(['database.connections.tenant.schema' => $company->schema]);
-                DB::reconnect('tenant');
-                $config = Config::find(1);
-                if (!empty($config) && !empty($config->shopify_sync_sales) && $config->shopify_sync_sales === true) {
-                    $api = resolve('Shopify\API');
-                    $api->syncOrders();
-                }
+            // foreach ($companies as $company) {
+            //     config(['database.connections.tenant.schema' => $company->schema]);
+            //     DB::reconnect('tenant');
+            //     DB::transaction(function () {
 
-                # code...
-            }
+            //         $config = Config::find(1);
+            //         if (!empty($config) && !empty($config->shopify_sync_sales) && $config->shopify_sync_sales === true) {
+            //             $api = resolve('Shopify\API');
+            //             $api->syncOrders();
+            //         }
+            //     });
+
+            //     # code...
+            // }
+
+            //     $api    = resolve('Dear\API');
+            //     $user = User::where('email', 'ILIKE', '%dear%')->first();
+
+            //     $result = $api->syncProds();
+            //     Import::create([
+            //         'name'      => Import::DEAR_SYNC_PRODUCTS,
+            //         'author_id' => $user->id,
+            //         'rows'      => $result,
+            //         'status'    => 'cron_update'
+            //     ]);
+
+            //     $result = $api->syncRecipes();
+            //     Import::create([
+            //         'name'      => Import::DEAR_SYNC_RECIPE,
+            //         'author_id' => $user->id,
+            //         'rows'      => $result,
+            //         'status'    => 'cron_update'
+            //     ]);
         })->everyMinute()
             ->name('shopify_sales')
             ->withoutOverlapping();

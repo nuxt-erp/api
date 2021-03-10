@@ -2,16 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
+use App\Models\Config;
 use App\Models\User;
 use App\Resources\UserResource;
 use Illuminate\Routing\Controller;
 use Modules\Inventory\Entities\Product;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends ControllerService
 {
     use ResponseTrait;
+
+    public function test(){
+
+        $companies = Company::all();
+
+        foreach ($companies as $company) {
+            config(['database.connections.tenant.schema' => $company->schema]);
+            DB::reconnect('tenant');
+            DB::transaction(function () {
+
+                $config = Config::find(1);
+                if (!empty($config) && !empty($config->shopify_sync_sales) && $config->shopify_sync_sales === true) {
+                    $api = resolve('Shopify\API');
+                    $api->syncOrders();
+                }
+            });
+        }
+    }
 
     public function __construct()
     {
