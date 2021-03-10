@@ -83,6 +83,10 @@ class Purchase extends ModelService
         return $this->hasMany(PurchaseDetail::class, 'purchase_id');
     }
 
+    public function tracking_numbers()
+    {
+        return $this->hasManySync(PurchaseTrackingNumber::class, 'purchase_id', 'id');
+    }
     public function location()
     {
         return $this->belongsTo(Location::class, 'location_id');

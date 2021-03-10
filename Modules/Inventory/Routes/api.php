@@ -78,6 +78,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('families', 'FamilyController');
 
         Route::resource('availabilities', 'AvailabilityController');
+        Route::get('availabilities_export', 'AvailabilityController@exportAll');
         Route::resource('family_attributes', 'FamilyAttributeController');
 
         Route::get('sku_suppliers', 'ProductSuppliersController@skuSuppliers');

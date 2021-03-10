@@ -299,4 +299,22 @@ class AvailabilityRepository extends RepositoryService
 
     }
 
+    public function exportAll()
+    {
+        $collection = Availability::with(['location', 'product', 'bin'])->get();
+        $to_return = [];
+        foreach($collection as $avail) {
+            array_push($to_return, [
+                'product_name'    => !empty($avail->product) ? $avail->product->name : null, 
+                'location_name'   => !empty($avail->location) ? $avail->location->name :null, 
+                'available'       => $avail->available,
+                'on_hand'         => $avail->on_hand, 
+                'on_order'        => $avail->on_order, 
+                'allocated'       => $avail->allocated,
+                'bin_name'        => !empty($avail->bin) ? $avail->bin->name : null,
+            ]);
+        }
+        return $to_return;
+    }
+
 }

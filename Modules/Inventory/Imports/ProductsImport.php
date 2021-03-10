@@ -31,8 +31,9 @@ class ProductsImport implements ToArray, WithHeadingRow
 
             $custom_names = [];
             $settings->each(function ($item, $key) use(&$custom_names){
-                $custom_names[$item->entity.'_'.$item->column_name] = strtolower($item->custom_name);
+                $custom_names[$item->entity.'_'.$item->column_name] = str_replace(' ', '_', strtolower($item->custom_name)) ;
             });
+            lad($custom_names);
 
 
             foreach ($rows as $key => $row)
@@ -43,7 +44,10 @@ class ProductsImport implements ToArray, WithHeadingRow
                 $measure_name   = $row[$custom_names['measure_name'] ?? 'measure'] ?? null;
                 $barcode        = $row[$custom_names['product_barcode'] ?? 'barcode'] ?? null;
                 $description    = $row[$custom_names['product_description'] ?? 'description'] ?? null;
-
+                $carton_barcode = $row[$custom_names['product_carton_barcode'] ?? 'barcode'] ?? null;
+                $carton_qty     = $row[$custom_names['product_carton_qty'] ?? 'carton_qty'] ?? null;
+                lad($row);
+                lad($row[$custom_names['product_carton_qty']]);
                 if(!empty($sku) && !empty($product_name)){
 
                     $category = null;
@@ -63,11 +67,14 @@ class ProductsImport implements ToArray, WithHeadingRow
                     $product = Product::updateOrCreate([
                         'sku'   => $sku,
                     ],[
-                        'name'          => $product_name,
-                        'barcode'       => $barcode,
-                        'category_id'   => $category->id ?? null,
-                        'measure_id'    => $measure->id ?? null,
-                        'description'   => $description
+                        'name'              => $product_name,
+                        'barcode'           => $barcode,
+                        'category_id'       => $category->id ?? null,
+                        'measure_id'        => $measure->id ?? null,
+                        'description'       => $description,
+                        'carton_barcode'    => $carton_barcode,
+                        'carton_qty'        => $carton_qty
+
                     ]);
                     $this->rows++;
                 }

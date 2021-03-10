@@ -78,14 +78,17 @@ class PurchaseRepository extends RepositoryService
         DB::transaction(function () use ($data) {
             if (!empty($data['name']) && $data['name']) $data['po_number']  = $data['name'];
 
-            if (empty($data['tracking_number']) && !empty($data['status']) && $data['status'] !== Purchase::AWAITING_PAYMENT) $data['status'] = Purchase::DRAFT_ORDER;
+            if (empty($data['tracking_numbers']) && count($data['tracking_numbers']) > 0 && !empty($data['status']) && $data['status'] !== Purchase::AWAITING_PAYMENT) $data['status'] = Purchase::DRAFT_ORDER;
 
             parent::store($data);
+            $this->model->tracking_numbers()->sync($data['tracking_numbers']);
 
             if (!empty($data["supplier_id"])) {
                 // Update supplier date last purchase
                 Supplier::where('id', $data["supplier_id"])->update(['last_order_at' => date('Y-m-d')]);
             }
+            $this->model->tracking_numbers()->sync($data['tracking_numbers']);
+
 
             // Save purchase details
 
@@ -103,9 +106,10 @@ class PurchaseRepository extends RepositoryService
     public function update($model, array $data)
     {
         DB::transaction(function () use ($data, $model) {
-            if (empty($data['tracking_number']) && !empty($data['status']) && $data['status'] !== Purchase::AWAITING_PAYMENT) $data['status'] = Purchase::DRAFT_ORDER;
+            if (empty($data['tracking_numbers']) && count($data['tracking_numbers']) > 0 && !empty($data['status']) && $data['status'] !== Purchase::AWAITING_PAYMENT) $data['status'] = Purchase::DRAFT_ORDER;
 
             parent::update($model, $data);
+            $this->model->tracking_numbers()->sync($data['tracking_numbers']);
 
             $status = $this->savePurchaseDetails($data, $this->model->id);
             if (!empty($status)) {
@@ -348,16 +352,34 @@ class PurchaseRepository extends RepositoryService
         }
         return $keyValue;
     }
-
+    
     public function getNextPONumber()
     {
         $last_id = Purchase::latest('id')->pluck('id')->first();
         return $last_id > 0 ? ($last_id + 1) : 1;
+        
     }
 
     public function checkPoNumber($po_number)
     {
         $purchase = Purchase::where('po_number', $po_number)->first();
         return $purchase;
+    }
+
+    public function checkPoItems($receiving)
+    {
+        $product_ids = PurchaseDetail::where('purchase_id', $receiving['purchase_id'])->get()->pluck('product_id')->toArray();
+        lad($product_ids);
+        if(!empty($product_ids)) {
+            foreach($receiving['receiving_details'] as $key => $detail) {
+
+                if(in_array($detail['product_id'], $product_ids)) {
+                    // $detail['in_purchase'] = true;
+                    $receiving['receiving_details'][$key]['in_purchase'] = true;
+                }
+            }
+        }
+       
+        return $receiving['receiving_details'];
     }
 }

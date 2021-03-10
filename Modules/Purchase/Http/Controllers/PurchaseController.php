@@ -6,6 +6,8 @@ use App\Concerns\CheckPolicies;
 use App\Http\Controllers\ControllerService;
 use Modules\Purchase\Repositories\PurchaseRepository;
 use Modules\Purchase\Transformers\PurchaseResource;
+use Illuminate\Http\Request;
+
 
 class PurchaseController extends ControllerService implements CheckPolicies
 {
@@ -35,6 +37,12 @@ class PurchaseController extends ControllerService implements CheckPolicies
         } else {
             return $this->setStatus(true)->send();
         }
+    }
+
+    public function checkPoItems(Request $request)
+    {
+        $result = $this->repository->checkPoItems($request->all());
+        return $this->sendArray($result);
     }
 
     public function clone($id)

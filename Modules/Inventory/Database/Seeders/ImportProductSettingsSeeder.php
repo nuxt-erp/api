@@ -18,6 +18,7 @@ class ImportProductSettingsSeeder extends Seeder
     {
         Model::unguard();
 
+        
         ProductImportSettings::firstOrCreate(
             ['column_name' => 'sku', 'entity' => 'product']
         );
@@ -36,6 +37,11 @@ class ImportProductSettingsSeeder extends Seeder
         ProductImportSettings::firstOrCreate(
             ['column_name' => 'description', 'entity' => 'product']
         );
-
+        ProductImportSettings::firstOrCreate(
+            ['column_name' => 'carton_barcode', 'entity' => 'product']
+        );
+        ProductImportSettings::firstOrCreate(
+            ['column_name' => 'carton_qty', 'entity' => 'product']
+        );
     }
 }

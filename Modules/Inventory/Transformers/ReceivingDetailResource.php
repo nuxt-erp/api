@@ -27,6 +27,7 @@ class ReceivingDetailResource extends ResourceService
             'qty_received'          => $this->qty_received,
             'received_date'         => $this->received_date,
             'item_status'           => $this->item_status,
+            'in_purchase'           => false,
             'created_at'            => optional($this->created_at)->format('Y-m-d'),
             'updated_at'            => optional($this->updated_at)->format('Y-m-d'),
         ];

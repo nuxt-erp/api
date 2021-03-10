@@ -8,15 +8,15 @@ use Illuminate\Console\Scheduling\Schedule;
 // models
 use Modules\Purchase\Entities\Purchase;
 use Modules\Purchase\Entities\PurchaseDetail;
-
+use Modules\Purchase\Entities\PurchaseTrackingNumber;
 // repositories
 use Modules\Purchase\Repositories\PurchaseRepository;
 use Modules\Purchase\Repositories\PurchaseDetailRepository;
-
+use Modules\Purchase\Repositories\PurchaseTrackingNumberRepository;
 // resources
 use Modules\Purchase\Transformers\PurchaseResource;
 use Modules\Purchase\Transformers\PurchaseDetailResource;
-
+use Modules\Purchase\Transformers\PurchaseTrackingNumberResource;
 
 class PurchaseServiceProvider extends ServiceProvider
 {
@@ -66,6 +66,14 @@ class PurchaseServiceProvider extends ServiceProvider
         $this->app->bind(PurchaseDetailResource::class, function () {
             return new PurchaseDetailResource(new PurchaseDetail());
         });
+
+        $this->app->bind(PurchaseTrackingNumberRepository::class, function () {
+            return new PurchaseTrackingNumberRepository(new PurchaseTrackingNumber());
+        });
+
+        $this->app->bind(PurchaseTrackingNumberResource::class, function () {
+            return new PurchaseTrackingNumberResource(new PurchaseTrackingNumber());
+        });
     }
 
     /**
@@ -78,6 +86,7 @@ class PurchaseServiceProvider extends ServiceProvider
         return [
             PurchaseRepository::class,
             PurchaseDetailRepository::class,
+            PurchaseTrackingNumberRepository::class,
         ];
     }
 

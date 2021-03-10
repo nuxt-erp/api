@@ -45,5 +45,11 @@ class AvailabilityController extends ControllerService implements CheckPolicies
 
     }
 
+    public function exportAll()
+    {
+        $result = $this->repository->exportAll();
+        return $this->setStatusCode(201)->sendArray($result);
+    }
+
 
 }
