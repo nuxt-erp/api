@@ -37,5 +37,6 @@ class ModuleSeeder extends Seeder
         Module::updateOrCreate([
             'name'  => 'Purchase'
         ]);
+        
     }
 }

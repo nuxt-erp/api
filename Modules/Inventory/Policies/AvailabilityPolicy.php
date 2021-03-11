@@ -20,6 +20,11 @@ class AvailabilityPolicy
         return $currentUser->isAdmin();
     }
 
+    public function exportAll(User $currentUser)
+    {
+        return TRUE;
+    }
+
     public function show(User $currentUser, Availability $target)
     {
         return $currentUser->isAdmin();

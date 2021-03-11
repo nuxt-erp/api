@@ -14,9 +14,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('product_images/{path}', 'ProductImagesController@getImage');
+Route::get('availabilities_export/{user_id}', 'AvailabilityController@exportAll');
+
 
 Route::middleware('auth:api')->group(function () {
 
+    
+    
     // INVENTORY
     Route::group(['prefix' => 'inventory'], function () {
         Route::resource('brands', 'BrandController');
@@ -78,7 +82,6 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('families', 'FamilyController');
 
         Route::resource('availabilities', 'AvailabilityController');
-        Route::get('availabilities_export', 'AvailabilityController@exportAll');
         Route::resource('family_attributes', 'FamilyAttributeController');
 
         Route::get('sku_suppliers', 'ProductSuppliersController@skuSuppliers');

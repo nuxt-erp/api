@@ -3,11 +3,13 @@
 namespace Modules\Inventory\Http\Controllers;
 
 use App\Concerns\CheckPolicies;
+use App\Exports\AvailabilitiesExport;
 use App\Http\Controllers\ControllerService;
 use Illuminate\Http\Request;
-use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Repositories\AvailabilityRepository;
 use Modules\Inventory\Transformers\AvailabilityResource;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class AvailabilityController extends ControllerService implements CheckPolicies
 {
@@ -37,7 +39,6 @@ class AvailabilityController extends ControllerService implements CheckPolicies
 
     }
 
-
     public function getProductAvailabilitiesTable($product_id)
     {
         $items = $this->repository->getProductAvailabilitiesTable($product_id);
@@ -45,11 +46,12 @@ class AvailabilityController extends ControllerService implements CheckPolicies
 
     }
 
-    public function exportAll()
+    public function exportAll($user_id)
     {
-        $result = $this->repository->exportAll();
-        return $this->setStatusCode(201)->sendArray($result);
+     
+        $result = $this->repository->exportAll($user_id);
+        lad($result);
+        return Excel::download(new AvailabilitiesExport($result), 'stock_on_hand.xlsx');
     }
-
 
 }

@@ -38,6 +38,7 @@ class ShopifyService
                 'ShopUrl'    => $config->shopify_store_name,
                 'ApiKey'     => $config->shopify_key,
                 'Password'   => $config->shopify_password,
+                'AccessToken'   => $config->shopify_password,
                 //'ApiVersion' => $config->shopify_api_version
             ]);
         }
@@ -118,7 +119,9 @@ class ShopifyService
                         }
 
                         // Find or create a customer
-                        $customer_id = $this->syncCustomer($order);
+                        $customer_info = $this->syncCustomer($order);
+                        $customer_id = $customer_info['customer_id'];
+                        $customer_location_id = $customer_info['location_id'];
 
                         if (!empty($order['financial_status']) && !isset($financial_status_list[$order['financial_status']])) {
                             $financial_status = Parameter::firstOrCreate(
@@ -258,29 +261,71 @@ class ShopifyService
 
                                 // Check fulfillment event
                                 // VERY SLOWWWWWW HERE!!!!
-                                // Query;
-                                // $graphQL = <<<Query
-                                // {
-                                //     fulfillment(id: "gid://shopify/Fulfillment/3235096461411") {
-                                //       events(first:1, reverse:true) {
-                                //         edges {
-                                //           node {
-                                //             id          
-                                //           }
-                                //         }
-                                //       }
-                                //     }
-                                //   }
-                                  
-                                // Query;
+                                $data = null;
+                                $graphQL = 
+<<<Query
+                                query fulfillmentById(\$id: ID!) {
+                                    fulfillment(id: \$id) {
+                                    events(first:10) {
+                                        edges {
+                                        node {
+                                            status
+                                            id
+                                        }
+                                        }
+                                    }    
+                                    }
+                                }
                                 
-                                // $data =$this->client->GraphQL->post($graphQL);
-                                $events = $this->client->Order($order["id"])->Fulfillment($order['fulfillments'][0]['id'])->Event->get();
-                                echo '$events: '.print_r($events).'<br><br>';
+Query;
 
-                                if ($events) {
+                                $variables = [
+                                    "id" => "gid://shopify/Fulfillment/" . $order['fulfillments'][0]['id']
+                                ];
+                                $data = $this->client->GraphQL->post($graphQL, null, null, $variables);
+                                echo '$gql: '.print_r($data).'<br><br>';
+                                $id = null;
+                                $transit_count = 0;
+                                if(!empty($data) && !empty($data['data']) && !empty($data['data']['fulfillment'])) {
+                                    $fulfillment_gql = $data['data']['fulfillment'];
+                                    if(!empty($fulfillment_gql['events']) && !empty($fulfillment_gql['events']['edges'])) {
+                                        $edges = $fulfillment_gql['events']['edges'];
+                                        foreach($edges as $edge) {
+                                            $node = $edge['node'];
+                                            if($node['status'] === "IN_TRANSIT") {
+                                                echo 'gid://shopify/FulfillmentEvent/: '.str_replace("gid://shopify/FulfillmentEvent/", "", $node['id']).'<br><br>';
+                                                $id = str_replace("gid://shopify/FulfillmentEvent/", "", $node['id']);
+                                                $transit_count ++;
+                                            }
+                                        }
+                                    }
+                                }
+                                // $data =$this->client->GraphQL->post($graphQL);
+                                // $time_start_events = microtime(true);
+
+
+                                // $time_end_events = microtime(true);
+
+                                // echo '$events time: '.($time_end_events - $time_start_events).'<br><br>';
+
+                                if ($id !== null & $transit_count < 2) {
+                                    $event = $this->client->Order($order["id"])->Fulfillment($order['fulfillments'][0]['id'])->Event($id)->get();
+                                    echo '$event: '.print_r($event).'<br><br>';
+
+                                    $parse_location = explode(" ", $event["message"]);
+                                    if (isset($parse_location[0])) {
+                                        echo '$parse_location: '.$parse_location[0].'<br><br>';
+
+                                        $location_id = Location::where('name', 'like', '%' . $parse_location[0] . '%')->pluck('id')->first();
+                                    }
+                                } else if ($id !== null & $transit_count >= 2) {
+                                    $events = $this->client->Order($order["id"])->Fulfillment($order['fulfillments'][0]['id'])->Event()->get();
+                                    echo '$events: '.print_r($events[0]).'<br><br>';
+
                                     $parse_location = explode(" ", $events[0]["message"]);
                                     if (isset($parse_location[0])) {
+                                        echo '$parse_location: '.$parse_location[0].'<br><br>';
+
                                         $location_id = Location::where('name', 'like', '%' . $parse_location[0] . '%')->pluck('id')->first();
                                     }
                                 } else {
@@ -288,6 +333,12 @@ class ShopifyService
                                     if (isset($order['fulfillments'][0]['location_id'])) {
                                         $location_id = Location::where('shopify_id', $order['fulfillments'][0]['location_id'])->pluck('id')->first();
                                     }
+                                }
+
+                                if(empty($location_id)) {
+                                    $location_id = $customer_location_id;
+                                    echo '$location_id: '.print_r($location_id).'<br><br>';
+
                                 }
 
                                 foreach ($order['fulfillments'][0]['line_items'] as $items) {
@@ -341,10 +392,13 @@ class ShopifyService
 
     private function syncCustomer($order)
     {
-        $customer_id = Customer::where(['shopify_id' => $order['customer']['id'], 'email' => substr($order['customer']['email'], 0, 160)])->pluck('id')->first();
-        if (!$customer_id) {
+        $customer = Customer::where(['shopify_id' => $order['customer']['id'], 'email' => substr($order['customer']['email'], 0, 160)])->get()->first();
+        $customer_id = null;
+        if (!$customer) {
             $country                    = $order['customer']['default_address']['country'] ? $this->checkCountry($order['customer']['default_address']['country']) : null;
             $province                   = $country ? $this->checkProvince($country->id, $order['customer']['default_address']['province_code'], $order['customer']['default_address']['province']) : null;
+
+            $location_id                = $province ? $province->location_id : null;
             $name                       = $order['customer']['default_address']['first_name'];
 
             if (!empty($name) && !empty($order['customer']['default_address']['last_name'])) {
@@ -364,8 +418,12 @@ class ShopifyService
                 'phone_number'          => substr($order['customer']['default_address']['phone'], 0, 20)
             ]);
             $customer_id                = $new->id;
+        } else {
+            $customer_id                = $customer->id;
+            $location_id                = $customer->province ? $customer->province->location_id : null;
         }
-        return $customer_id;
+
+        return [ 'customer_id' => $customer_id, 'location_id' => $location_id ];
     }
 
     private function checkProvince($country_id, $code, $name)
@@ -401,34 +459,54 @@ class ShopifyService
                 $fulfillment_status_name = '';
                 $fulfillment_date       = '';
                 $product_id             = 0;
+                // Foreach attribute
+                // foreach ($v as $key => $value) {
+
+                //     if ($key == 'quantity') {
+                //         $quantity = $value;
+                //     }
+
+                //     if ($key == 'fulfillment_status_id') {
+                //         $fulfillment_status_id = $value;
+                //     }
+
+                //     if ($key == 'fulfillment_status_name') {
+                //         $fulfillment_status_name = $value;
+                //     }
+
+                //     if ($key == 'fulfillment_date') {
+                //         $fulfillment_date = $value;
+                //     }
+
+                //     if ($key == 'product_id') {
+                //         $product_id = $value;
+                //     }
+
+                //     if ($key == 'location_id') {
+                //         $location_id = $value;
+                //     }
+                // }
 
                 // Foreach attribute
-                foreach ($v as $key => $value) {
-
-                    if ($key == 'quantity') {
-                        $quantity = $value;
-                    }
-
-                    if ($key == 'fulfillment_status_id') {
-                        $fulfillment_status_id = $value;
-                    }
-
-                    if ($key == 'fulfillment_status_name') {
-                        $fulfillment_status_name = $value;
-                    }
-
-                    if ($key == 'fulfillment_date') {
-                        $fulfillment_date = $value;
-                    }
-
-                    if ($key == 'product_id') {
-                        $product_id = $value;
-                    }
-
-                    if ($key == 'location_id') {
-                        $location_id = $value;
-                    }
+                if(!empty($data['quantity'])) {
+                    $quantity = $data['quantity'];
                 }
+                if(!empty($data['fulfillment_status_id'])) {
+                    $fulfillment_status_id = $data['fulfillment_status_id'];
+                }
+                if(!empty($data['fulfillment_status_name'])) {
+                    $fulfillment_status_name = $data['fulfillment_status_name'];
+                }
+                if(!empty($data['fulfillment_date'])) {
+                    $fulfillment_date = $data['fulfillment_date'];
+                }
+                if(!empty($data['product_id'])) {
+                    $product_id = $data['product_id'];
+                }
+                if(!empty($data['location_id'])) {
+                    $location_id = $data['location_id'];
+                }
+     
 
                 if ($product_id != 0) {
                     $operation = ($fulfillment_status_name == 'success' ? '-' : ($fulfillment_status_name == 'cancelled' ? '+' : '-'));

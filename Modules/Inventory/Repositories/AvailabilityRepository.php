@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Auth;
 use Illuminate\Support\Arr;
 use Modules\Inventory\Entities\Availability;
-use Modules\Inventory\Entities\Product;
 use Modules\Inventory\Entities\ProductLog;
+use App\Models\User;
 
 class AvailabilityRepository extends RepositoryService
 {
@@ -299,12 +299,17 @@ class AvailabilityRepository extends RepositoryService
 
     }
 
-    public function exportAll()
-    {
+    public function exportAll($user_id) {
+        $user = User::find($user_id);
+
+        DB::setDefaultConnection('tenant');
+        config(['database.connections.tenant.schema' => $user->company->schema]);
+        DB::reconnect('tenant');
+
         $collection = Availability::with(['location', 'product', 'bin'])->get();
-        $to_return = [];
+        $result = [];
         foreach($collection as $avail) {
-            array_push($to_return, [
+            array_push($result, [
                 'product_name'    => !empty($avail->product) ? $avail->product->name : null, 
                 'location_name'   => !empty($avail->location) ? $avail->location->name :null, 
                 'available'       => $avail->available,
@@ -314,7 +319,7 @@ class AvailabilityRepository extends RepositoryService
                 'bin_name'        => !empty($avail->bin) ? $avail->bin->name : null,
             ]);
         }
-        return $to_return;
+        return $result;
     }
 
 }

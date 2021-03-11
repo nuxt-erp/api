@@ -1,7 +1,7 @@
 <?php
 
 namespace Modules\Inventory\Database\Seeders;
-
+use Database\Seeders\CountryProvinceSeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,6 +22,8 @@ class InventoryDatabaseSeeder extends Seeder
         $this->call(ImportAvailabilitySettingsSeeder::class);
         $this->call(ImportBinSettingsSeeder::class);
         $this->call(ImportProductSettingsSeeder::class);
+        $this->call(CountryProvinceSeeder::class);
+
         
     }
 }

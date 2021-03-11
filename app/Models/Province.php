@@ -20,6 +20,7 @@ class Province extends ModelService
             'name'          => ['string', 'max:255'],
             'code'          => ['string', 'max:2'],
             'country_id'    => ['exists:tenant.countries,id'],
+            'location_id'   => ['exists:tenant.locations,id'],
         ];
 
         // CREATE
@@ -42,5 +43,10 @@ class Province extends ModelService
     public function country()
     {
         return $this->belongsTo(Country::class);
+    }
+    
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
     }
 }
