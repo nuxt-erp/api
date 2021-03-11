@@ -337,13 +337,16 @@ Query;
 
                                 if(empty($location_id)) {
                                     $location_id = $customer_location_id;
-                                    echo '$location_id: '.print_r($location_id).'<br><br>';
+                                    echo 'empty $location_id: '.print_r($location_id).'<br><br>';
 
+                                } else {
+                                    echo '$location_id: '.print_r($location_id).'<br><br>';
                                 }
 
                                 foreach ($order['fulfillments'][0]['line_items'] as $items) {
 
                                     $product_id = Product::where('sku', $items['sku'])->pluck('id')->first();
+                                    echo '$product_id: '.$product_id.'<br><br>';
 
                                     if ($product_id) {
                                         array_push(
@@ -488,23 +491,23 @@ Query;
                 // }
 
                 // Foreach attribute
-                if(!empty($data['quantity'])) {
-                    $quantity = $data['quantity'];
+                if(!empty($v['quantity'])) {
+                    $quantity = $v['quantity'];
                 }
-                if(!empty($data['fulfillment_status_id'])) {
-                    $fulfillment_status_id = $data['fulfillment_status_id'];
+                if(!empty($v['fulfillment_status_id'])) {
+                    $fulfillment_status_id = $v['fulfillment_status_id'];
                 }
-                if(!empty($data['fulfillment_status_name'])) {
-                    $fulfillment_status_name = $data['fulfillment_status_name'];
+                if(!empty($v['fulfillment_status_name'])) {
+                    $fulfillment_status_name = $v['fulfillment_status_name'];
                 }
-                if(!empty($data['fulfillment_date'])) {
-                    $fulfillment_date = $data['fulfillment_date'];
+                if(!empty($v['fulfillment_date'])) {
+                    $fulfillment_date = $v['fulfillment_date'];
                 }
-                if(!empty($data['product_id'])) {
-                    $product_id = $data['product_id'];
+                if(!empty($v['product_id'])) {
+                    $product_id = $v['product_id'];
                 }
-                if(!empty($data['location_id'])) {
-                    $location_id = $data['location_id'];
+                if(!empty($v['location_id'])) {
+                    $location_id = $v['location_id'];
                 }
      
 
@@ -530,6 +533,8 @@ Query;
      */
     public function setItemFulfilled($product_id, $quantity, $location_id, $operation, $fulfillment_status_id, $fulfillment_date, $sale_id)
     {
+        echo '<br>setItemFulfilled</b> $product_id<br><br>'.$product_id.'$quantity<br><br>'. $quantity .'$location_id<br><br>'. $location_id .'$operation<br><br>'. $operation . '$fulfillment_status_id<br><br>'. $fulfillment_status_id .'$sale_id<br><br>'. $sale_id .'<br><br>';
+
         // Update stock on hand
         $this->updateStock($product_id, $quantity, $location_id, null, $operation, 'Sale', $sale_id, 0, 0, ($operation == '+' ? 'Item cancelled fulfillment' : 'Item fulfilled'));
 
