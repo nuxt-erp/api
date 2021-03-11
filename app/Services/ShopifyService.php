@@ -462,33 +462,6 @@ Query;
                 $fulfillment_status_name = '';
                 $fulfillment_date       = '';
                 $product_id             = 0;
-                // Foreach attribute
-                // foreach ($v as $key => $value) {
-
-                //     if ($key == 'quantity') {
-                //         $quantity = $value;
-                //     }
-
-                //     if ($key == 'fulfillment_status_id') {
-                //         $fulfillment_status_id = $value;
-                //     }
-
-                //     if ($key == 'fulfillment_status_name') {
-                //         $fulfillment_status_name = $value;
-                //     }
-
-                //     if ($key == 'fulfillment_date') {
-                //         $fulfillment_date = $value;
-                //     }
-
-                //     if ($key == 'product_id') {
-                //         $product_id = $value;
-                //     }
-
-                //     if ($key == 'location_id') {
-                //         $location_id = $value;
-                //     }
-                // }
 
                 // Foreach attribute
                 if(!empty($v['quantity'])) {

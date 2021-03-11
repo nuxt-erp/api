@@ -34,9 +34,13 @@ class PurchaseRepository extends RepositoryService
         if (!empty($searchCriteria['id'])) {
             $this->queryBuilder->where('id', Arr::pull($searchCriteria, 'id'));
         }
-        if (!empty($searchCriteria['tracking_number'])) {
+        if (!empty($searchCriteria['tracking_numbers_name'])) {
+            $name = '%' . Arr::pull($searchCriteria, 'tracking_numbers_name') . '%';
+
             $this->queryBuilder
-                ->where('tracking_number', 'ILIKE', $searchCriteria['tracking_number']);
+                ->whereHas('tracking_numbers', function ($query) use ($name) {
+                    $query->where('tracking_number', 'ILIKE', $name);
+                });
         }
         if (!empty($searchCriteria['supplier_name'])) {
             $name = '%' . Arr::pull($searchCriteria, 'supplier_name') . '%';
