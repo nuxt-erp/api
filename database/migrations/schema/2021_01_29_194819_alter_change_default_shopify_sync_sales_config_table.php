@@ -14,7 +14,7 @@ class AlterChangeDefaultShopifySyncSalesConfigTable extends Migration
     public function up()
     {
         Schema::connection('tenant')->table('configs', function (Blueprint $table) {
-            $table->boolean('shopify_sync_sales')->default(0)->change();;
+            $table->boolean('shopify_sync_sales')->default(0)->change();
         });
     }
 
@@ -26,7 +26,7 @@ class AlterChangeDefaultShopifySyncSalesConfigTable extends Migration
     public function down()
     {
         Schema::connection('tenant')->table('configs', function (Blueprint $table) {
-            $table->boolean('shopify_sync_sales')->default(1)->change();;
+            $table->boolean('shopify_sync_sales')->default(1)->change();
         });
     }
 }
