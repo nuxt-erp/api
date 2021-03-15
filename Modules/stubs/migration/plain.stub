@@ -15,7 +15,6 @@ class $CLASS$ extends Migration
     {
         Schema::connection('tenant')->create('$TABLE$', function (Blueprint $table) {
             $table->id();
-$FIELDS$
             $table->timestamps();
         });
     }

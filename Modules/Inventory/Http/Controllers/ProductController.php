@@ -78,6 +78,7 @@ class ProductController extends ControllerService implements CheckPolicies
             return $this->notFoundResponse([]);
         }
     }
+
     public function stockCountData(Request $request)
     {
         $items = $this->repository->stockCountData($request->all());

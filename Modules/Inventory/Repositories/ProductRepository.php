@@ -208,7 +208,7 @@ class ProductRepository extends RepositoryService
             $this->updateDiscounts($data);
         }
         if ($this->priceTiers) {
-            $this->updatepriceTiers($data);
+            $this->updatePriceTiers($data);
         }
         if (!empty($data['deleteDiscounts'])) {
             foreach ($data['deleteDiscounts'] as $deleteDiscount) {
@@ -345,8 +345,8 @@ class ProductRepository extends RepositoryService
     private function updateSuppliers($data)
     {
         $product_id         = $data['id'] ?? $this->model->id;; //Get CURRENT PRODUCT ID
-        $suppliers = $data['suppliers'];
-        $supplierLocations = $data['supplierLocations'];
+        $suppliers          = $data['suppliers'];
+        $supplierLocations  = $data['supplierLocations'];
 
 
         foreach ($suppliers as $supplier) {
@@ -363,7 +363,7 @@ class ProductRepository extends RepositoryService
             if (!empty($supplier['id'])) {
                 $new = ProductSuppliers::updateOrCreate(['id' =>  $supplier['id']], $supplierArray);
             } else {
-                $new = ProductSuppliers::updateOrCreate($supplierArray);
+                $new = ProductSuppliers::create($supplierArray);
             }
 
             if (!empty($supplierLocations)) {
@@ -403,7 +403,7 @@ class ProductRepository extends RepositoryService
         }
     }
 
-    private function updatepriceTiers($data)
+    private function updatePriceTiers($data)
     {
         $priceTierItems = $data['price_tier_items'];
 
@@ -519,6 +519,7 @@ class ProductRepository extends RepositoryService
 
         return $new->id;
     }
+
     private function createSuppliers($data)
     {
         $suppliers = $data['suppliers'];

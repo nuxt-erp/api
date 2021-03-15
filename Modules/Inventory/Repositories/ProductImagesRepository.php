@@ -17,7 +17,8 @@ class ProductImagesRepository extends RepositoryService
                 parent::store([
                     'product_id'    => $data['product_id'],
                     'path'          => $file['path'],
-                    'thumb_path'    => $file['thumb_path']
+                    'thumb_path'    => $file['thumb_path'],
+                    'is_default'    => $file['is_default'] ?? 0
                 ]);
             }
         });

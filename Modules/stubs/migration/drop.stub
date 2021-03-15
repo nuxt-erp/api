@@ -25,7 +25,6 @@ class $CLASS$ extends Migration
     {
         Schema::connection('tenant')->create('$TABLE$', function (Blueprint $table) {
             $table->bigIncrements('id');
-$FIELDS$
             $table->timestamps();
         });
     }

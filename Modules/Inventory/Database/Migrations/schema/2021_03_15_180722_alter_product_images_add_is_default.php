@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class $CLASS$ extends Migration
+class AlterProductImagesAddIsDefault extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class $CLASS$ extends Migration
      */
     public function up()
     {
-        Schema::connection('tenant')->create('$TABLE$', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::connection('tenant')->table('inv_product_images', function (Blueprint $table) {
+            $table->boolean('is_default')->default(0);
         });
     }
 
@@ -26,6 +25,8 @@ class $CLASS$ extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->dropIfExists('$TABLE$');
+        Schema::connection('tenant')->table('inv_product_images', function (Blueprint $table) {
+            $table->dropColumn('is_default');
+        });
     }
 }

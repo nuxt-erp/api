@@ -36,8 +36,6 @@ class ProductImagesController extends ControllerService
         $user = auth()->user();
         $files = [];
 
-        lad($request->all());
-        
         if ($request->hasFile('files') && $request->filled('product_id')) {
             $x = 0;
 
@@ -54,10 +52,6 @@ class ProductImagesController extends ControllerService
                     $constraint->aspectRatio();
                 });
                 if ($request->filled('watermark')) {
-                    lad($request->watermark);
-                    lad($request->watermark_location);
-                    lad($request->watermark_opacity);
-                    lad($request->watermark_size);
                     $watermark = Image::make(base64_encode(Storage::disk('s3')->get(SettingsImages::where('type', '=', 'watermark')->first()->path)));
                     $resizePercentage = $request->watermark_size;//70% less then an actual image (play with this value)
                     $watermarkSize = round($img->width() * ($resizePercentage / 100), 2); //watermark will be $resizePercentage less then the actual width of the image
@@ -80,7 +74,7 @@ class ProductImagesController extends ControllerService
                 // save thumbnail
                 Storage::disk('s3')->put($thumb_path, $resource);
 
-                $files[] = ['path' => $path, 'thumb_path' => $thumb_path];
+                $files[] = ['path' => $path, 'thumb_path' => $thumb_path, 'is_default' => 0];
             }
             $request->merge(['paths' => $files]);
         }
