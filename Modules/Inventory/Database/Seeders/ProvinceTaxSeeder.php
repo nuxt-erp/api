@@ -23,7 +23,7 @@ class ProvinceTaxSeeder extends Seeder
         ]);
 
         $provinces = [
-            'NL' => Province::updateOrcreate([
+            'NL' => Province::updateOrCreate([
                 'code'      => 'NL',
                 ],
                 [
@@ -31,7 +31,7 @@ class ProvinceTaxSeeder extends Seeder
                 'code'      => 'NL',
                 'country_id'=> $canada->id
             ]),
-            'PE' => Province::updateOrcreate([
+            'PE' => Province::updateOrCreate([
                 'code'      => 'PE',
             ],
             [
@@ -39,7 +39,7 @@ class ProvinceTaxSeeder extends Seeder
                 'code'      => 'PE',
                 'country_id'=> $canada->id
             ]),
-            'NS' => Province::updateOrcreate([
+            'NS' => Province::updateOrCreate([
                 'code'      => 'NS',
                 ],
                 [
@@ -47,7 +47,7 @@ class ProvinceTaxSeeder extends Seeder
                 'code'      => 'NS',
                 'country_id'=> $canada->id
             ]),
-            'NB' => Province::updateOrcreate([
+            'NB' => Province::updateOrCreate([
                 'code'      => 'NB',
             ],
             [
@@ -55,7 +55,7 @@ class ProvinceTaxSeeder extends Seeder
                 'code'      => 'NB',
                 'country_id'=> $canada->id
             ]),
-            'QC' => Province::updateOrcreate(
+            'QC' => Province::updateOrCreate(
                 [
                     'code'      => 'QC',
                 ],
@@ -64,7 +64,7 @@ class ProvinceTaxSeeder extends Seeder
                 'code'      => 'QC',
                 'country_id'=> $canada->id
             ]),
-            'ON' => Province::updateOrcreate([
+            'ON' => Province::updateOrCreate([
                  'code'      => 'ON',
                 ],
                 [
@@ -72,7 +72,7 @@ class ProvinceTaxSeeder extends Seeder
                 'code'      => 'ON',
                 'country_id'=> $canada->id
             ]),
-            'MB' => Province::updateOrcreate([
+            'MB' => Province::updateOrCreate([
                 'code'      => 'MB',
             ],
             [
@@ -80,7 +80,7 @@ class ProvinceTaxSeeder extends Seeder
                 'code'      => 'MB',
                 'country_id'=> $canada->id
             ]),
-            'SK' => Province::updateOrcreate([
+            'SK' => Province::updateOrCreate([
                 'code'      => 'SK',
             ],
             [
@@ -88,7 +88,7 @@ class ProvinceTaxSeeder extends Seeder
                 'code'      => 'SK',
                 'country_id'=> $canada->id
             ]),
-            'AB' => Province::updateOrcreate([
+            'AB' => Province::updateOrCreate([
                 'code'      => 'AB',
             ],
             [
@@ -96,7 +96,7 @@ class ProvinceTaxSeeder extends Seeder
                 'code'      => 'AB',
                 'country_id'=> $canada->id
             ]),
-            'BC' => Province::updateOrcreate([
+            'BC' => Province::updateOrCreate([
                 'code'      => 'BC',
             ],
             [
@@ -104,7 +104,7 @@ class ProvinceTaxSeeder extends Seeder
                 'code'      => 'BC',
                 'country_id'=> $canada->id
             ]),
-            'YT' => Province::updateOrcreate([
+            'YT' => Province::updateOrCreate([
                 'code'      => 'YT',
             ],
             [
@@ -112,7 +112,7 @@ class ProvinceTaxSeeder extends Seeder
                 'code'      => 'YT',
                 'country_id'=> $canada->id
             ]),
-            'NT' => Province::updateOrcreate([
+            'NT' => Province::updateOrCreate([
                 'code'      => 'NT',
             ],
             [
@@ -120,7 +120,7 @@ class ProvinceTaxSeeder extends Seeder
                 'code'      => 'NT',
                 'country_id'=> $canada->id
             ]),
-            'NU' => Province::updateOrcreate([
+            'NU' => Province::updateOrCreate([
                 'code'      => 'NU',
             ],
             [
@@ -130,7 +130,7 @@ class ProvinceTaxSeeder extends Seeder
             ]),
         ];
         $tax_rules = [
-            'on_hst' => TaxRule::updateOrcreate(
+            'on_hst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'ON HST 13%'
             ],
@@ -142,7 +142,7 @@ class ProvinceTaxSeeder extends Seeder
                 'province_id'     => $provinces['ON']->id
             ]),
 
-            'ab_gst' => TaxRule::updateOrcreate(
+            'ab_gst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'AB GST 5%'
             ],
@@ -154,7 +154,7 @@ class ProvinceTaxSeeder extends Seeder
                 'province_id'     => $provinces['AB']->id
             ]),
 
-            'bc_gst' => TaxRule::updateOrcreate(
+            'bc_gst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'BC GST 12%'
             ],
@@ -165,7 +165,7 @@ class ProvinceTaxSeeder extends Seeder
                 'status'          => 1,
                 'province_id'     => $provinces['BC']->id
             ]),
-            'entertainment' => TaxRule::updateOrcreate(
+            'entertainment' => TaxRule::updateOrCreate(
             [
                 'name'            => 'Entertainment 6.5%'
             ],
@@ -176,7 +176,7 @@ class ProvinceTaxSeeder extends Seeder
                 'status'          => 1,
                 'province_id'     => null
             ]),
-            'nl_hst' => TaxRule::updateOrcreate(
+            'nl_hst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'NL HST 15%'
             ],
@@ -187,7 +187,7 @@ class ProvinceTaxSeeder extends Seeder
                 'status'          => 1,
                 'province_id'     => $provinces['NL']->id
             ]),
-            'nu_gst' => TaxRule::updateOrcreate(
+            'nu_gst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'NU GST 5%'
             ],
@@ -198,7 +198,7 @@ class ProvinceTaxSeeder extends Seeder
                 'status'          => 1,
                 'province_id'     => $provinces['NU']->id
             ]),
-            'nb_hst' => TaxRule::updateOrcreate(
+            'nb_hst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'NB HST 15%'
             ],
@@ -209,7 +209,7 @@ class ProvinceTaxSeeder extends Seeder
                 'status'          => 1,
                 'province_id'     => $provinces['NB']->id
             ]),
-            'nt_gst' => TaxRule::updateOrcreate(
+            'nt_gst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'NT GST 5%'
             ],
@@ -220,7 +220,7 @@ class ProvinceTaxSeeder extends Seeder
                 'status'          => 1,
                 'province_id'     => $provinces['NT']->id
             ]),
-            'ns_hst' => TaxRule::updateOrcreate(
+            'ns_hst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'NS HST 15%'
             ],
@@ -231,7 +231,7 @@ class ProvinceTaxSeeder extends Seeder
                 'status'          => 1,
                 'province_id'     => $provinces['NS']->id
             ]),
-            'pe_hst' => TaxRule::updateOrcreate(
+            'pe_hst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'PE HST 15%'
             ],
@@ -242,7 +242,7 @@ class ProvinceTaxSeeder extends Seeder
                 'status'          => 1,
                 'province_id'     => $provinces['PE']->id
             ]),
-            'mb_gst' => TaxRule::updateOrcreate(
+            'mb_gst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'MB GST 12%'
             ],
@@ -253,7 +253,7 @@ class ProvinceTaxSeeder extends Seeder
                 'status'          => 1,
                 'province_id'     => $provinces['MB']->id
             ]),
-            'qc_gst' => TaxRule::updateOrcreate(
+            'qc_gst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'QC GST 14.98%'
             ],
@@ -264,7 +264,7 @@ class ProvinceTaxSeeder extends Seeder
                 'status'          => 1,
                 'province_id'     => $provinces['QC']->id
             ]),
-            'yt_gst' => TaxRule::updateOrcreate(
+            'yt_gst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'YT GST 5%'
             ],
@@ -275,7 +275,7 @@ class ProvinceTaxSeeder extends Seeder
                 'status'          => 1,
                 'province_id'     => $provinces['YT']->id
             ]),
-            'sk_gst' => TaxRule::updateOrcreate(
+            'sk_gst' => TaxRule::updateOrCreate(
             [
                 'name'            => 'SK GST 11%'
             ],
@@ -289,7 +289,7 @@ class ProvinceTaxSeeder extends Seeder
 
         ];
         $tax_components = [
-            'on_hst' => TaxRuleComponent::updateOrcreate(
+            'on_hst' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['on_hst']->id,
                 'component_name'  => 'HST',
@@ -298,7 +298,7 @@ class ProvinceTaxSeeder extends Seeder
                 'seq'             => 0
             ]),
 
-            'ab_gst' => TaxRuleComponent::updateOrcreate(
+            'ab_gst' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['ab_gst']->id,
                 'component_name'  => 'GST',
@@ -306,7 +306,7 @@ class ProvinceTaxSeeder extends Seeder
                 'compound'        => 0,
                 'seq'             => 0
             ]),
-            'bc_gst' => TaxRuleComponent::updateOrcreate(
+            'bc_gst' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['bc_gst']->id,
                 'component_name'  => 'GST',
@@ -314,7 +314,7 @@ class ProvinceTaxSeeder extends Seeder
                 'compound'        => 0,
                 'seq'             => 0
             ]),
-            'entertainment' => TaxRuleComponent::updateOrcreate(
+            'entertainment' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['entertainment']->id,
                 'component_name'  => 'Entertainment',
@@ -322,7 +322,7 @@ class ProvinceTaxSeeder extends Seeder
                 'compound'        => 0,
                 'seq'             => 0
             ]),
-            'nl_hst' => TaxRuleComponent::updateOrcreate(
+            'nl_hst' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['nl_hst']->id,
                 'component_name'  => 'HST',
@@ -330,7 +330,7 @@ class ProvinceTaxSeeder extends Seeder
                 'compound'        => 0,
                 'seq'             => 0
             ]),
-            'nu_gst' => TaxRuleComponent::updateOrcreate(
+            'nu_gst' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['nu_gst']->id,
                 'component_name'  => 'GST',
@@ -338,7 +338,7 @@ class ProvinceTaxSeeder extends Seeder
                 'compound'        => 0,
                 'seq'             => 0
             ]),
-            'nb_hst' => TaxRuleComponent::updateOrcreate(
+            'nb_hst' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['nb_hst']->id,
                 'component_name'  => 'HST',
@@ -346,7 +346,7 @@ class ProvinceTaxSeeder extends Seeder
                 'compound'        => 0,
                 'seq'             => 0
             ]),
-            'nt_gst' => TaxRuleComponent::updateOrcreate(
+            'nt_gst' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['nt_gst']->id,
                 'component_name'  => 'GST',
@@ -354,7 +354,7 @@ class ProvinceTaxSeeder extends Seeder
                 'compound'        => 0,
                 'seq'             => 0
             ]),
-            'ns_hst' => TaxRuleComponent::updateOrcreate(
+            'ns_hst' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['ns_hst']->id,
                 'component_name'  => 'HST',
@@ -362,7 +362,7 @@ class ProvinceTaxSeeder extends Seeder
                 'compound'        => 0,
                 'seq'             => 0
             ]),
-            'pe_hst' => TaxRuleComponent::updateOrcreate(
+            'pe_hst' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['pe_hst']->id,
                 'component_name'  => 'HST',
@@ -370,7 +370,7 @@ class ProvinceTaxSeeder extends Seeder
                 'compound'        => 0,
                 'seq'             => 0
             ]),
-            'mb_gst' => TaxRuleComponent::updateOrcreate(
+            'mb_gst' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['mb_gst']->id,
                 'component_name'  => 'GST',
@@ -378,7 +378,7 @@ class ProvinceTaxSeeder extends Seeder
                 'compound'        => 0,
                 'seq'             => 0
             ]),
-            'yt_gst' => TaxRuleComponent::updateOrcreate(
+            'yt_gst' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['yt_gst']->id,
                 'component_name'  => 'GST',
@@ -386,7 +386,7 @@ class ProvinceTaxSeeder extends Seeder
                 'compound'        => 0,
                 'seq'             => 0
             ]),
-            'sk_gst' => TaxRuleComponent::updateOrcreate(
+            'sk_gst' => TaxRuleComponent::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['sk_gst']->id,
                 'component_name'  => 'GST',
@@ -398,142 +398,142 @@ class ProvinceTaxSeeder extends Seeder
         ];
 
         $tax_scopes = [
-            'on_hst_sales' => TaxRuleScope::updateOrcreate(
+            'on_hst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['on_hst']->id,
                 'scope'           => 'sales'
             ]),
-            'on_hst_purchases' => TaxRuleScope::updateOrcreate(
+            'on_hst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['on_hst']->id,
                 'scope'           => 'purchases'
             ]),
-            'ab_gst_sales' => TaxRuleScope::updateOrcreate(
+            'ab_gst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['ab_gst']->id,
                 'scope'           => 'sales'
             ]),
-            'ab_gst_purchases' => TaxRuleScope::updateOrcreate(
+            'ab_gst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['ab_gst']->id,
                 'scope'           => 'purchases'
             ]),
-            'ab_gst_sales' => TaxRuleScope::updateOrcreate(
+            'ab_gst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['ab_gst']->id,
                 'scope'           => 'sales'
             ]),
-            'ab_gst_purchases' => TaxRuleScope::updateOrcreate(
+            'ab_gst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['ab_gst']->id,
                 'scope'           => 'purchases'
             ]),
-            'entertainment' => TaxRuleScope::updateOrcreate(
+            'entertainment' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['entertainment']->id,
                 'scope'           => 'sales'
             ]),
-            'entertainment' => TaxRuleScope::updateOrcreate(
+            'entertainment' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['entertainment']->id,
                 'scope'           => 'purchases'
             ]),
-            'nl_hst_sales' => TaxRuleScope::updateOrcreate(
+            'nl_hst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['nl_hst']->id,
                 'scope'           => 'sales'
             ]),
-            'nl_hst_purchases' => TaxRuleScope::updateOrcreate(
+            'nl_hst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['nl_hst']->id,
                 'scope'           => 'purchases'
             ]),
-            'nu_gst_sales' => TaxRuleScope::updateOrcreate(
+            'nu_gst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['nu_gst']->id,
                 'scope'           => 'sales'
             ]),
-            'nu_gst_purchases' => TaxRuleScope::updateOrcreate(
+            'nu_gst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['nu_gst']->id,
                 'scope'           => 'purchases'
             ]),
-            'nb_hst_sales' => TaxRuleScope::updateOrcreate(
+            'nb_hst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['nb_hst']->id,
                 'scope'           => 'sales'
             ]),
-            'nb_hst_purchases' => TaxRuleScope::updateOrcreate(
+            'nb_hst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['nb_hst']->id,
                 'scope'           => 'purchases'
             ]),
-            'nt_gst_sales' => TaxRuleScope::updateOrcreate(
+            'nt_gst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['nt_gst']->id,
                 'scope'           => 'sales'
             ]),
-            'nt_gst_purchases' => TaxRuleScope::updateOrcreate(
+            'nt_gst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['nt_gst']->id,
                 'scope'           => 'purchases'
             ]),
-            'ns_hst_sales' => TaxRuleScope::updateOrcreate(
+            'ns_hst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['ns_hst']->id,
                 'scope'           => 'sales'
             ]),
-            'ns_hst_purchases' => TaxRuleScope::updateOrcreate(
+            'ns_hst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['ns_hst']->id,
                 'scope'           => 'purchases'
             ]),
-            'pe_hst_sales' => TaxRuleScope::updateOrcreate(
+            'pe_hst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['pe_hst']->id,
                 'scope'           => 'sales'
             ]),
-            'pe_hst_purchases' => TaxRuleScope::updateOrcreate(
+            'pe_hst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['pe_hst']->id,
                 'scope'           => 'purchases'
             ]),
-            'mb_gst_sales' => TaxRuleScope::updateOrcreate(
+            'mb_gst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['mb_gst']->id,
                 'scope'           => 'sales'
             ]),
-            'mb_gst_purchases' => TaxRuleScope::updateOrcreate(
+            'mb_gst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['mb_gst']->id,
                 'scope'           => 'purchases'
             ]),
-            'qc_gst_sales' => TaxRuleScope::updateOrcreate(
+            'qc_gst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['qc_gst']->id,
                 'scope'           => 'sales'
             ]),
-            'qc_gst_purchases' => TaxRuleScope::updateOrcreate(
+            'qc_gst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['qc_gst']->id,
                 'scope'           => 'purchases'
             ]),
-            'yt_gst_sales' => TaxRuleScope::updateOrcreate(
+            'yt_gst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['yt_gst']->id,
                 'scope'           => 'sales'
             ]),
-            'yt_gst_purchases' => TaxRuleScope::updateOrcreate(
+            'yt_gst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['yt_gst']->id,
                 'scope'           => 'purchases'
             ]),
-            'sk_gst_sales' => TaxRuleScope::updateOrcreate(
+            'sk_gst_sales' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['sk_gst']->id,
                 'scope'           => 'sales'
             ]),
-            'sk_gst_purchases' => TaxRuleScope::updateOrcreate(
+            'sk_gst_purchases' => TaxRuleScope::updateOrCreate(
             [
                 'tax_rule_id'     => $tax_rules['sk_gst']->id,
                 'scope'           => 'purchases'

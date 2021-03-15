@@ -25,6 +25,7 @@ use App\Models\User;
 use App\Policies\ContactPolicy;
 use App\Policies\CountryPolicy;
 use App\Policies\CronLogPolicy;
+use App\Policies\CurrencyPolicy;
 use App\Policies\CustomerPolicy;
 use App\Policies\CustomerTagPolicy;
 use App\Policies\LocationPolicy;
